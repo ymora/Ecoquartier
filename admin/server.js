@@ -65,30 +65,13 @@ app.get('/list-images', async (req, res) => {
         const especePath = path.join(imagesDir, especeId);
         const files = await fs.readdir(especePath);
         
-        // Pattern pour détecter les images numérotées OU non numérotées
-        const patternWithNumber = /^(.+?)_(.+?)_(\d+)\.(jpg|jpeg|png|webp)$/i;
-        const patternWithoutNumber = /^(.+?)_(.+?)\.(jpg|jpeg|png|webp)$/i;
+        // Pattern pour détecter uniquement les images numérotées (format standard)
+        const pattern = /^(.+?)_(.+?)_(\d+)\.(jpg|jpeg|png|webp)$/i;
         
         files.forEach(file => {
-          let match = file.match(patternWithNumber);
-          let hasNumber = true;
-          
-          if (!match) {
-            // Essayer sans numéro
-            match = file.match(patternWithoutNumber);
-            hasNumber = false;
-          }
-          
+          const match = file.match(pattern);
           if (match) {
-            let fileEspece, fileType, fileNumber, fileExt;
-            
-            if (hasNumber) {
-              [, fileEspece, fileType, fileNumber, fileExt] = match;
-              fileNumber = parseInt(fileNumber);
-            } else {
-              [, fileEspece, fileType, fileExt] = match;
-              fileNumber = 1; // Par défaut si pas de numéro
-            }
+            const [, fileEspece, fileType, fileNumber, fileExt] = match;
             
             // Filtrer par type si spécifié
             if (type && fileType !== type) return;
@@ -99,9 +82,8 @@ app.get('/list-images', async (req, res) => {
               especeNom: fileEspece.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
               type: fileType,
               typeNom: getTypeLabel(fileType),
-              number: fileNumber,
-              path: `/images/${especeId}/${file}`,
-              hasNumber: hasNumber
+              number: parseInt(fileNumber),
+              path: `/images/${especeId}/${file}`
             });
           }
         });

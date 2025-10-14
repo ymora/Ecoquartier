@@ -167,7 +167,7 @@ function renderExistingImages() {
   }
 
   existingImagesGrid.innerHTML = state.existingImages.map(img => `
-    <div class="existing-item" data-filename="${escapeHTML(img.filename)}">
+    <div class="existing-item" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}">
       <input 
         type="checkbox" 
         class="existing-item-checkbox"
@@ -208,8 +208,12 @@ function renderExistingImages() {
         #${escapeHTML(String(img.number))}
       </span>
       
-      <button class="btn-small btn-primary" data-filename="${escapeHTML(img.filename)}">
-        💾 Sauver
+      <button class="btn-icon btn-primary-icon" data-filename="${escapeHTML(img.filename)}" title="Sauvegarder les modifications">
+        💾
+      </button>
+      
+      <button class="btn-icon btn-danger-icon" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}" title="Supprimer cette image">
+        🗑️
       </button>
     </div>
   `).join('');
@@ -237,10 +241,44 @@ function attachExistingImageListeners() {
   });
 
   // Boutons sauver
-  document.querySelectorAll('.existing-item .btn-primary').forEach(btn => {
+  document.querySelectorAll('.existing-item .btn-primary-icon').forEach(btn => {
     btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
       const filename = e.currentTarget.dataset.filename;
       await renameExistingImage(filename);
+    });
+  });
+
+  // Boutons supprimer individuels
+  document.querySelectorAll('.existing-item .btn-danger-icon').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const filename = e.currentTarget.dataset.filename;
+      const espece = e.currentTarget.dataset.espece;
+      
+      if (!confirm(`Supprimer ${filename} ?`)) return;
+      
+      try {
+        const response = await fetch('/delete-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ espece, filename })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          addLog('success', result.message);
+          await loadExistingImages();
+          renderExistingImages();
+        } else {
+          addLog('error', result.error);
+        }
+      } catch (err) {
+        addLog('error', 'Erreur: ' + err.message);
+      }
+      
+      showLog();
     });
   });
 
@@ -248,10 +286,12 @@ function attachExistingImageListeners() {
   document.querySelectorAll('.config-espece-existing, .config-type-existing').forEach(select => {
     select.addEventListener('change', (e) => {
       const filename = e.target.dataset.filename;
-      const btn = document.querySelector(`.existing-item .btn-primary[data-filename="${filename}"]`);
+      const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
+      const btn = item.querySelector('.btn-primary-icon');
       if (btn) {
         btn.style.background = '#ed8936'; // Orange pour indiquer changement non sauvé
-        btn.textContent = '💾 Sauver *';
+        btn.style.borderColor = '#ed8936';
+        btn.setAttribute('title', 'Sauvegarder les modifications *');
       }
     });
   });
@@ -364,14 +404,14 @@ function closeImageModal() {
 
 // Gestion sélection images
 function toggleImageSelection(filename, selected) {
-  const card = document.querySelector(`.image-card[data-filename="${filename}"]`);
+  const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
   
   if (selected) {
     state.selectedImages.add(filename);
-    card.classList.add('selected');
+    if (item) item.classList.add('selected');
   } else {
     state.selectedImages.delete(filename);
-    card.classList.remove('selected');
+    if (item) item.classList.remove('selected');
   }
   
   updateSelectionUI();
@@ -391,17 +431,21 @@ async function deleteSelectedImages() {
   if (!confirm(`Supprimer ${count} image(s) ?`)) return;
 
   deleteSelectedBtn.disabled = true;
-  deleteSelectedBtn.textContent = '⏳ Suppression...';
+  deleteSelectedBtn.setAttribute('title', 'Suppression en cours...');
   
   const results = [];
   
   for (const filename of state.selectedImages) {
+    // Trouver l'espèce de cette image
+    const img = state.existingImages.find(i => i.filename === filename);
+    if (!img) continue;
+    
     try {
       const response = await fetch('/delete-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          espece: state.filterEspece,
+          espece: img.espece,
           filename: filename
         })
       });
@@ -426,7 +470,7 @@ async function deleteSelectedImages() {
   updateSelectionUI();
   
   deleteSelectedBtn.disabled = false;
-  deleteSelectedBtn.textContent = '🗑️ Supprimer la sélection';
+  deleteSelectedBtn.setAttribute('title', 'Supprimer la sélection');
   
   showLog();
 }

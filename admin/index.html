@@ -9,43 +9,38 @@
 <body>
   <div class="admin-container">
     <header class="admin-header">
-      <h1>🌳 Gestionnaire d'Images</h1>
-      <p class="subtitle">Haies de l'Écocartier de Bessancourt</p>
-    </header>
-
-    <div class="admin-content">
-    <!-- SECTION 1: FILTRES -->
-    <section class="filters-section">
-      <h2>🔍 Filtres</h2>
-      <div class="filters-row">
-        <div class="filter-group">
-          <label>Espèce</label>
-          <select id="filterEspece">
-            <option value="">-- Toutes les espèces --</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Type d'image</label>
-          <select id="filterType">
-            <option value="">-- Tous les types --</option>
-          </select>
-        </div>
-        <button id="resetFilters" class="btn-secondary">🔄 Réinitialiser</button>
-      </div>
-    </section>
-
-    <!-- SECTION 2: IMAGES EXISTANTES -->
-    <section class="existing-section">
-      <div class="section-header">
-        <h2>📷 Images existantes</h2>
-        <div class="section-actions">
-          <span id="selectedCount" class="selected-count">0 sélectionnée(s)</span>
-          <button id="deleteSelected" class="btn-danger" disabled>🗑️ Supprimer la sélection</button>
+      <div class="header-left">
+        <div class="header-title">
+          <h1>🌳 Gestionnaire d'Images</h1>
+          <p class="subtitle">Haies de l'Écocartier de Bessancourt</p>
         </div>
       </div>
       
+      <div class="header-right">
+        <div class="header-filters">
+          <select id="filterEspece" class="filter-select">
+            <option value="">Toutes espèces</option>
+          </select>
+          <select id="filterType" class="filter-select">
+            <option value="">Tous types</option>
+          </select>
+          <button id="resetFilters" class="btn-icon" title="Réinitialiser filtres">🔄</button>
+        </div>
+        
+        <div class="header-selection">
+          <span id="selectedCount" class="selected-count">0 sélectionnée(s)</span>
+          <button id="deleteSelected" class="btn-icon btn-danger-icon" disabled title="Supprimer la sélection">🗑️</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="admin-content">
+
+    <!-- SECTION: IMAGES EXISTANTES -->
+    <section class="existing-section">
+      <h2>📷 Images existantes</h2>
       <div id="existingImagesGrid" class="images-grid">
-        <p class="empty-message">Sélectionnez des filtres pour voir les images</p>
+        <p class="empty-message">Chargement...</p>
       </div>
     </section>
 
