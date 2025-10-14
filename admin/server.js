@@ -33,6 +33,16 @@ app.use((req, res, next) => {
 // Servir les images du projet
 app.use('/images', express.static(path.join(__dirname, '..', 'client', 'public', 'images')));
 
+// Servir le fichier images_completes.json
+app.get('/images_completes.json', async (req, res) => {
+  try {
+    const jsonPath = path.join(__dirname, '..', 'images_completes.json');
+    res.sendFile(jsonPath);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Lister les images existantes pour une espèce et un type
 app.get('/list-images', async (req, res) => {
   try {

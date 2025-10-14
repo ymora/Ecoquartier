@@ -53,7 +53,7 @@ async function init() {
 // Charger la configuration
 async function loadConfig() {
   try {
-    const response = await fetch('../images_completes.json');
+    const response = await fetch('/images_completes.json');
     const config = await response.json();
     
     ESPECES.length = 0;

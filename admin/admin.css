@@ -5,18 +5,19 @@
 }
 
 :root {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-tertiary: #0f3460;
-  --border-color: #2a2a4e;
-  --text-primary: #e8e8e8;
-  --text-secondary: #a8a8b8;
+  /* Thème de l'application principale */
+  --bg-primary: #fafbfc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f7f2;
+  --border-color: #d4e4d7;
+  --text-primary: #2c3e50;
+  --text-secondary: #5a6c7d;
   --accent-primary: #2e8b57;
-  --accent-secondary: #48bb78;
-  --danger: #e63946;
-  --warning: #f39c12;
+  --accent-secondary: #3d9970;
+  --danger: #e74c3c;
+  --warning: #ed8936;
   --success: #48bb78;
-  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow: rgba(0, 0, 0, 0.1);
 }
 
 body {
@@ -24,6 +25,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text-primary);
   line-height: 1.6;
+  min-height: 100vh;
 }
 
 .admin-container {
@@ -134,12 +136,13 @@ section h2 {
 
 .image-card {
   position: relative;
-  background: var(--bg-tertiary);
+  background: var(--bg-secondary);
   border: 2px solid var(--border-color);
   border-radius: 8px;
   padding: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .image-card:hover {
@@ -150,7 +153,8 @@ section h2 {
 
 .image-card.selected {
   border-color: var(--accent-primary);
-  background: rgba(46, 139, 87, 0.1);
+  background: var(--bg-tertiary);
+  box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
 }
 
 .image-card-checkbox {
