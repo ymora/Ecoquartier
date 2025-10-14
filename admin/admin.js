@@ -34,42 +34,64 @@ const logContainer = document.getElementById('logContainer');
 const log = document.getElementById('log');
 
 // Drag & Drop handlers
-dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  fileInput.click();
+});
 
 dropzone.addEventListener('dragover', (e) => {
   e.preventDefault();
+  e.stopPropagation();
   dropzone.classList.add('dragover');
 });
 
-dropzone.addEventListener('dragleave', () => {
+dropzone.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
   dropzone.classList.remove('dragover');
 });
 
 dropzone.addEventListener('drop', (e) => {
   e.preventDefault();
+  e.stopPropagation();
   dropzone.classList.remove('dragover');
+  console.log('Files dropped:', e.dataTransfer.files.length);
   handleFiles(e.dataTransfer.files);
 });
 
 fileInput.addEventListener('change', (e) => {
+  console.log('Files selected:', e.target.files.length);
   handleFiles(e.target.files);
 });
 
 // Gestion des fichiers
 function handleFiles(files) {
+  console.log('handleFiles called with:', files);
+  
+  if (!files || files.length === 0) {
+    console.error('No files provided');
+    return;
+  }
+  
   Array.from(files).forEach(file => {
+    console.log('Processing file:', file.name, file.type);
     if (file.type.startsWith('image/')) {
       addImageToList(file);
+    } else {
+      console.warn('File skipped (not an image):', file.name);
     }
   });
   updateUI();
 }
 
 function addImageToList(file) {
+  console.log('addImageToList:', file.name);
   const id = Date.now() + Math.random();
   const reader = new FileReader();
   
   reader.onload = (e) => {
+    console.log('Image loaded, creating preview');
     const imageData = {
       id,
       file,
@@ -83,6 +105,10 @@ function addImageToList(file) {
     pendingImages.push(imageData);
     renderImageItem(imageData);
     updateUI();
+  };
+  
+  reader.onerror = (e) => {
+    console.error('FileReader error:', e);
   };
   
   reader.readAsDataURL(file);

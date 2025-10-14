@@ -11,13 +11,16 @@ const PORT = 3001;
 
 // Configuration multer (upload temporaire)
 const upload = multer({ 
-  dest: 'admin/temp/',
+  dest: path.join(__dirname, 'temp'),
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
 });
 
 // Middleware
 app.use(express.json());
-app.use(express.static('admin'));
+app.use(express.urlencoded({ extended: true }));
+
+// Servir les fichiers statiques depuis le dossier admin
+app.use(express.static(path.join(__dirname)));
 
 // CORS pour localhost
 app.use((req, res, next) => {
