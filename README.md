@@ -27,21 +27,33 @@ npm run dev
 
 → Ouvrir http://localhost:5173
 
-## 📸 Compléter les Images (5 minutes)
+## 📸 Gestion des Images
 
 ### **État actuel : 17/54 images (31%)**
 
-### **Workflow** :
+### **Méthode 1 : Interface Admin** ⭐ (Recommandée - Nouveau !)
 
 ```bash
-# 1. Copier PROMPT_CHATGPT_TROUVER_URLS.txt dans ChatGPT
-# 2. Copier images_completes.json dans le prompt
-# 3. ChatGPT cherche les 37 URLs manquantes (vraies photos)
-# 4. Copier le JSON retourné → images_completes.json
-# 5. Lancer le script
-python telecharger_toutes_images.py
+# 1. Lancer l'interface admin
+npm run admin
 
-# ✅ 54/54 images téléchargées !
+# 2. Ouvrir http://localhost:3001
+
+# 3. Glisser-déposer vos images
+# 4. Sélectionner espèce + type pour chaque image
+# 5. Valider
+# 6. Publier → Git push automatique !
+
+✅ 30 secondes par image !
+```
+
+Voir détails : `GUIDE_ADMIN.md`
+
+### **Méthode 2 : Script Python** (Téléchargement massif)
+
+```bash
+# ChatGPT trouve URLs → images_completes.json → Script
+python telecharger_toutes_images.py
 ```
 
 Voir détails : `GUIDE_IMAGES.md`
