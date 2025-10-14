@@ -44,8 +44,13 @@ body {
   flex: 1;
   padding: 2rem;
   margin-left: 280px;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, padding 0.3s ease;
   overflow-y: auto;
+}
+
+/* Content quand menu fermé sur PC */
+.content.menu-closed {
+  margin-left: 0;
 }
 
 .content.full-width {

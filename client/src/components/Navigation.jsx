@@ -2,21 +2,18 @@ import { useState, useEffect } from 'react';
 import { FaBars, FaTree, FaLeaf, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import './Navigation.css';
 
-function Navigation({ plantes, selectedId, onSelect }) {
-  // Détecter si mobile
+function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
+  // Détecter si mobile (pour overlay uniquement)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isOpen, setIsOpen] = useState(!isMobile); // Fermé sur mobile par défaut
+  const [isOpen, setIsOpen] = useState(true); // Ouvert par défaut (pliable sur tous les appareils)
   const [arbresExpanded, setArbresExpanded] = useState(true);
   const [arbustesExpanded, setArbustesExpanded] = useState(true);
 
-  // Détecter redimensionnement
+  // Détecter redimensionnement (pour overlay)
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      if (!mobile) {
-        setIsOpen(true); // Toujours ouvert sur desktop
-      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -24,7 +21,11 @@ function Navigation({ plantes, selectedId, onSelect }) {
   }, []);
 
   const toggleNav = () => {
-    setIsOpen(!isOpen);
+    const newState = !isOpen;
+    setIsOpen(newState);
+    if (onMenuToggle) {
+      onMenuToggle(newState);
+    }
   };
 
   const toggleArbres = () => {

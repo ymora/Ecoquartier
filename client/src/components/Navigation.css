@@ -12,7 +12,7 @@
   font-size: 1.2rem;
   box-shadow: 0 4px 10px var(--shadow);
   transition: all 0.3s ease;
-  display: none;
+  display: block; /* Toujours visible, même sur PC */
 }
 
 .nav-toggle:hover {
@@ -171,29 +171,16 @@
   pointer-events: none;
 }
 
-/* Responsive Mobile */
-@media (max-width: 768px) {
-  .nav-toggle {
-    display: block;
-  }
-
-  .navigation {
-    transform: translateX(-100%);
-    width: 85vw;
-    max-width: 320px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .navigation.open {
-    transform: translateX(0);
-  }
-
-  .navigation.closed {
-    transform: translateX(-100%);
-  }
+/* Comportement identique sur tous les appareils */
+.navigation.closed {
+  transform: translateX(-100%);
 }
 
-/* Overlay pour fermer le menu sur mobile */
+.navigation.open {
+  transform: translateX(0);
+}
+
+/* Overlay (sur mobile uniquement) */
 @media (max-width: 768px) {
   .nav-overlay {
     position: fixed;
@@ -208,6 +195,12 @@
 
   .nav-overlay.visible {
     display: block;
+  }
+
+  .navigation {
+    width: 85vw;
+    max-width: 320px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   }
 }
 

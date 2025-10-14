@@ -11,6 +11,7 @@ import './App.css';
 function App() {
   const [selectedPlante, setSelectedPlante] = useState(plantesData[0]);
   const [modeComparaison, setModeComparaison] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(true);
 
   const handleSelectPlante = (planteId) => {
     const plante = plantesData.find(p => p.id === planteId);
@@ -21,6 +22,10 @@ function App() {
 
   const toggleModeComparaison = () => {
     setModeComparaison(!modeComparaison);
+  };
+
+  const handleMenuToggle = (isOpen) => {
+    setMenuOpen(isOpen);
   };
 
   return (
@@ -63,8 +68,9 @@ function App() {
             plantes={plantesData}
             selectedId={selectedPlante.id}
             onSelect={handleSelectPlante}
+            onMenuToggle={handleMenuToggle}
           />
-          <main className="content">
+          <main className={`content ${!menuOpen ? 'menu-closed' : ''}`}>
             <ArbusteDetail arbuste={selectedPlante} />
           </main>
         </div>
