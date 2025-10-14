@@ -9,53 +9,77 @@
 <body>
   <div class="admin-container">
     <header class="admin-header">
-      <h1>🌳 Admin Images - Haies Bessancourt</h1>
-      <p class="subtitle">Interface locale de gestion des images</p>
+      <h1>🌳 Gestionnaire d'Images</h1>
+      <p class="subtitle">Haies de l'Écocartier de Bessancourt</p>
     </header>
 
-    <div class="admin-content">
-      <!-- Zone de drop -->
-      <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none;">
-      <div id="dropzone" class="dropzone">
-        <div class="dropzone-content">
-          <svg class="upload-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          <p class="dropzone-text">Glissez vos images ici</p>
-          <p class="dropzone-subtext">ou cliquez pour parcourir (sélection multiple possible)</p>
-          <p class="dropzone-formats">Formats: JPG, PNG, WebP (max 5 MB) • Plusieurs images du même type = numérotation auto</p>
+    <!-- SECTION 1: FILTRES -->
+    <section class="filters-section">
+      <h2>🔍 Filtres</h2>
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>Espèce</label>
+          <select id="filterEspece">
+            <option value="">-- Toutes les espèces --</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Type d'image</label>
+          <select id="filterType">
+            <option value="">-- Tous les types --</option>
+          </select>
+        </div>
+        <button id="resetFilters" class="btn-secondary">🔄 Réinitialiser</button>
+      </div>
+    </section>
+
+    <!-- SECTION 2: IMAGES EXISTANTES -->
+    <section class="existing-section">
+      <div class="section-header">
+        <h2>📷 Images existantes</h2>
+        <div class="section-actions">
+          <span id="selectedCount" class="selected-count">0 sélectionnée(s)</span>
+          <button id="deleteSelected" class="btn-danger" disabled>🗑️ Supprimer la sélection</button>
         </div>
       </div>
+      
+      <div id="existingImagesGrid" class="images-grid">
+        <p class="empty-message">Sélectionnez des filtres pour voir les images</p>
+      </div>
+    </section>
 
-      <!-- Liste des images en attente -->
-      <div id="imagesList" class="images-list"></div>
+    <!-- SECTION 3: UPLOAD -->
+    <section class="upload-section">
+      <h2>📤 Ajouter de nouvelles images</h2>
+      
+      <!-- Zone de drop compacte -->
+      <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none;">
+      <div id="dropzone" class="dropzone-compact">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span>Glisser-déposer ou cliquer (JPG, PNG, WebP)</span>
+      </div>
+
+      <!-- Liste des images à uploader -->
+      <div id="uploadQueue" class="upload-queue"></div>
 
       <!-- Actions globales -->
-      <div id="actions" class="actions hidden">
-        <div class="actions-summary">
-          <span id="imageCount">0</span> image(s) prête(s)
-        </div>
-        <div class="actions-buttons">
-          <button id="clearAll" class="btn btn-secondary">
-            🗑️ Tout effacer
-          </button>
-          <button id="publishBtn" class="btn btn-primary">
-            🚀 Publier sur GitHub
-          </button>
-        </div>
+      <div id="uploadActions" class="upload-actions hidden">
+        <button id="uploadAll" class="btn-primary">🚀 Envoyer toutes les images</button>
+        <button id="clearQueue" class="btn-secondary">🗑️ Vider la file</button>
       </div>
+    </section>
 
-      <!-- Log des opérations -->
-      <div id="logContainer" class="log-container hidden">
-        <h3>📋 Journal des opérations</h3>
-        <div id="log" class="log"></div>
-      </div>
+    <!-- LOG -->
+    <div id="logContainer" class="log-container hidden">
+      <h3>📋 Journal</h3>
+      <div id="log" class="log"></div>
     </div>
   </div>
 
   <script src="admin.js"></script>
 </body>
 </html>
-
