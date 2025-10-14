@@ -15,7 +15,8 @@ let state = {
   filterType: '',
   existingImages: [],
   selectedImages: new Set(),
-  uploadQueue: []
+  uploadQueue: [],
+  pendingChanges: {} // Changements en attente par filename
 };
 
 // Éléments DOM
@@ -245,7 +246,7 @@ function attachExistingImageListeners() {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const filename = e.currentTarget.dataset.filename;
-      await renameExistingImage(filename);
+      await saveImageChanges(filename);
     });
   });
 
@@ -282,60 +283,59 @@ function attachExistingImageListeners() {
     });
   });
 
-  // Changements de selects
-  document.querySelectorAll('.config-espece-existing, .config-type-existing').forEach(select => {
-    select.addEventListener('change', (e) => {
+  // Changements de selects et numéro (tracking sans sauvegarde)
+  document.querySelectorAll('.config-espece-existing, .config-type-existing, .input-number').forEach(element => {
+    element.addEventListener('change', (e) => {
       const filename = e.target.dataset.filename;
       const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
-      const btn = item.querySelector('.btn-success-outline');
-      if (btn) {
-        btn.classList.add('modified');
-        btn.setAttribute('title', 'Sauvegarder les modifications *');
+      
+      if (!item) return;
+      
+      // Initialiser les changements pour ce fichier si nécessaire
+      if (!state.pendingChanges[filename]) {
+        const img = state.existingImages.find(i => i.filename === filename);
+        state.pendingChanges[filename] = {
+          filename: filename,
+          originalEspece: img.espece,
+          originalType: img.type,
+          originalNumber: img.number,
+          newEspece: img.espece,
+          newType: img.type,
+          newNumber: img.number
+        };
       }
       
-      // Marquer la ligne comme modifiée
-      item.classList.add('has-changes');
+      // Mettre à jour les changements
+      const especeSelect = item.querySelector('.config-espece-existing');
+      const typeSelect = item.querySelector('.config-type-existing');
+      const numberInput = item.querySelector('.input-number');
+      
+      state.pendingChanges[filename].newEspece = especeSelect.value;
+      state.pendingChanges[filename].newType = typeSelect.value;
+      state.pendingChanges[filename].newNumber = parseInt(numberInput.value);
+      
+      // Vérifier s'il y a vraiment des changements
+      const hasChanges = 
+        state.pendingChanges[filename].newEspece !== state.pendingChanges[filename].originalEspece ||
+        state.pendingChanges[filename].newType !== state.pendingChanges[filename].originalType ||
+        state.pendingChanges[filename].newNumber !== state.pendingChanges[filename].originalNumber;
+      
+      const btn = item.querySelector('.btn-success-outline');
+      
+      if (hasChanges) {
+        // Marquer comme modifié
+        item.classList.add('has-changes');
+        btn.classList.add('modified');
+        btn.setAttribute('title', 'Sauvegarder tous les changements');
+      } else {
+        // Retirer l'indicateur si retour à l'état original
+        item.classList.remove('has-changes');
+        btn.classList.remove('modified');
+        btn.setAttribute('title', 'Sauvegarder les modifications');
+        delete state.pendingChanges[filename];
+      }
       
       updateSaveAllButton();
-    });
-  });
-
-  // Changements de numéro (permutation automatique)
-  document.querySelectorAll('.input-number').forEach(input => {
-    input.addEventListener('change', async (e) => {
-      const filename = e.target.dataset.filename;
-      const currentNumber = parseInt(e.target.dataset.currentNumber);
-      const newNumber = parseInt(e.target.value);
-      
-      if (newNumber === currentNumber || newNumber < 1) {
-        e.target.value = currentNumber;
-        return;
-      }
-      
-      const img = state.existingImages.find(i => i.filename === filename);
-      if (!img) return;
-      
-      // Désactiver l'input pendant l'opération
-      e.target.disabled = true;
-      
-      // Vérifier si le nouveau numéro existe déjà
-      const targetImg = state.existingImages.find(i => 
-        i.espece === img.espece && 
-        i.type === img.type && 
-        i.number === newNumber
-      );
-      
-      if (targetImg) {
-        // Permutation automatique
-        addLog('info', `🔄 Permutation #${currentNumber} ↔ #${newNumber}...`);
-        await swapImageNumbers(img, targetImg);
-      } else {
-        // Pas de conflit, juste renommer
-        addLog('info', `🔄 Changement #${currentNumber} → #${newNumber}...`);
-        await changeImageNumber(img, newNumber);
-      }
-      
-      e.target.disabled = false;
     });
   });
 }
@@ -420,14 +420,12 @@ async function saveAllModifications() {
     return;
   }
   
-  if (!confirm(`Sauvegarder ${modifiedItems.length} modification(s) ?`)) return;
-  
   saveAllBtn.disabled = true;
   showLog();
   
   for (const btn of modifiedItems) {
     const filename = btn.dataset.filename;
-    await renameExistingImage(filename);
+    await saveImageChanges(filename);
   }
   
   saveAllBtn.disabled = false;
@@ -450,68 +448,133 @@ function updateSaveAllButton() {
   }
 }
 
-// Renommer une image existante
-async function renameExistingImage(oldFilename) {
-  const item = document.querySelector(`.existing-item[data-filename="${oldFilename}"]`);
-  const especeSelect = item.querySelector('.config-espece-existing');
-  const typeSelect = item.querySelector('.config-type-existing');
-  const btn = item.querySelector('.btn-primary');
-  
-  const newEspece = especeSelect.value;
-  const newType = typeSelect.value;
-  
-  // Trouver l'image dans state
-  const img = state.existingImages.find(i => i.filename === oldFilename);
-  if (!img) return;
-  
-  // Si rien n'a changé
-  if (img.espece === newEspece && img.type === newType) {
+// Sauvegarder tous les changements d'une image
+async function saveImageChanges(filename) {
+  const changes = state.pendingChanges[filename];
+  if (!changes) {
     alert('Aucune modification détectée');
     return;
   }
   
+  const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
+  const btn = item.querySelector('.btn-success-outline');
+  
   btn.disabled = true;
-  btn.textContent = '⏳ Sauvegarde...';
+  showLog();
   
   try {
-    const response = await fetch('/rename-image', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        oldFilename: oldFilename,
-        oldEspece: img.espece,
-        newEspece: newEspece,
-        newType: newType
-      })
-    });
+    const img = state.existingImages.find(i => i.filename === filename);
+    if (!img) return;
     
-    const result = await response.json();
+    // Déterminer le type d'opération
+    const hasNumberChange = changes.newNumber !== changes.originalNumber;
+    const hasTypeOrEspeceChange = 
+      changes.newEspece !== changes.originalEspece || 
+      changes.newType !== changes.originalType;
     
-    if (result.success) {
-      addLog('success', result.message);
-      btn.classList.remove('modified');
-      btn.classList.add('saved');
-      btn.setAttribute('title', '✓ Sauvegardé');
+    // Si changement de numéro ET espèce/type, faire espèce/type d'abord
+    if (hasTypeOrEspeceChange) {
+      addLog('info', `🔄 Modification espèce/type...`);
+      const response = await fetch('/rename-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          oldFilename: filename,
+          oldEspece: changes.originalEspece,
+          newEspece: changes.newEspece,
+          newType: changes.newType
+        })
+      });
       
-      // Retirer l'indicateur de changement de la ligne
-      item.classList.remove('has-changes');
+      const result = await response.json();
+      if (result.success) {
+        addLog('success', result.message);
+      } else {
+        addLog('error', result.error);
+        btn.disabled = false;
+        return;
+      }
+    } else if (hasNumberChange) {
+      // Seulement changement de numéro
+      const targetImg = state.existingImages.find(i => 
+        i.espece === img.espece && 
+        i.type === img.type && 
+        i.number === changes.newNumber
+      );
       
-      // Recharger les images
-      setTimeout(async () => {
-        await loadExistingImages();
-        renderExistingImages();
-        updateSaveAllButton();
-      }, 1000);
-    } else {
-      addLog('error', result.error);
-      btn.disabled = false;
+      if (targetImg) {
+        // Permutation
+        addLog('info', `🔄 Permutation #${changes.originalNumber} ↔ #${changes.newNumber}...`);
+        const response = await fetch('/swap-images', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image1: {
+              filename: filename,
+              espece: img.espece,
+              type: img.type,
+              number: img.number
+            },
+            image2: {
+              filename: targetImg.filename,
+              espece: targetImg.espece,
+              type: targetImg.type,
+              number: targetImg.number
+            }
+          })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          addLog('success', result.message);
+        } else {
+          addLog('error', result.error);
+          btn.disabled = false;
+          return;
+        }
+      } else {
+        // Simple changement de numéro
+        addLog('info', `🔄 Changement #${changes.originalNumber} → #${changes.newNumber}...`);
+        const response = await fetch('/change-number', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: filename,
+            espece: img.espece,
+            type: img.type,
+            currentNumber: changes.originalNumber,
+            newNumber: changes.newNumber
+          })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          addLog('success', result.message);
+        } else {
+          addLog('error', result.error);
+          btn.disabled = false;
+          return;
+        }
+      }
     }
+    
+    // Succès : nettoyer les changements
+    delete state.pendingChanges[filename];
+    btn.classList.remove('modified');
+    btn.classList.add('saved');
+    item.classList.remove('has-changes');
+    
+    // Recharger
+    setTimeout(async () => {
+      await loadExistingImages();
+      renderExistingImages();
+      updateSaveAllButton();
+    }, 1000);
+    
   } catch (err) {
     addLog('error', 'Erreur: ' + err.message);
     btn.disabled = false;
   }
-  
-  showLog();
 }
 
 // Modal d'image en plein écran
