@@ -209,24 +209,54 @@ function renderImageItem(imageData) {
     imageData.type = e.target.value;
     
     if (imageData.espece && imageData.type) {
-      // Vérifier si l'image existe déjà
-      const targetName = `${imageData.espece}_${imageData.type}.jpg`;
-      const exists = await checkImageExists(imageData.espece, targetName);
+      // Charger les images existantes
+      const existingImages = await loadExistingImages(imageData.espece, imageData.type);
       
-      imageData.exists = exists;
-      imageData.targetName = targetName;
-      
-      if (exists) {
+      // Afficher les images existantes
+      if (existingImages.length > 0) {
         statusZone.innerHTML = `
-          <div class="status-message warning">
-            ⚠️ Une image existe déjà pour ${ESPECES.find(e => e.id === imageData.espece).nom} - ${TYPES.find(t => t.id === imageData.type).nom}
-            <br>Cliquer sur "Valider" la remplacera
+          <div class="existing-images-section">
+            <h5>📷 Images existantes (${existingImages.length}) :</h5>
+            <div class="existing-images-grid">
+              ${existingImages.map(img => `
+                <div class="existing-image-item">
+                  <img src="http://localhost:3001${img.path}" alt="${img.filename}" class="existing-image-thumb">
+                  <span class="existing-image-name">#${img.number}</span>
+                  <button class="btn-delete-existing" data-espece="${imageData.espece}" data-filename="${img.filename}">
+                    🗑️
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+            <div class="status-message success">
+              ✓ Votre nouvelle image sera ajoutée avec le numéro ${existingImages.length + 1}
+            </div>
           </div>
         `;
+        
+        // Event listeners pour les boutons de suppression
+        statusZone.querySelectorAll('.btn-delete-existing').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const espece = btn.dataset.espece;
+            const filename = btn.dataset.filename;
+            
+            if (confirm(`Supprimer ${filename} ?`)) {
+              const result = await deleteExistingImage(espece, filename);
+              if (result.success) {
+                alert(result.message);
+                // Recharger la liste
+                typeSelect.dispatchEvent(new Event('change'));
+              } else {
+                alert('Erreur: ' + result.error);
+              }
+            }
+          });
+        });
       } else {
         statusZone.innerHTML = `
           <div class="status-message success">
-            ✓ Nouveau fichier - Sera nommé : ${targetName}
+            ✓ Prêt à ajouter la première image pour ce type
           </div>
         `;
       }
@@ -259,6 +289,33 @@ async function checkImageExists(espece, filename) {
     return data.exists;
   } catch (err) {
     return false;
+  }
+}
+
+// Charger les images existantes pour une espèce et un type
+async function loadExistingImages(espece, type) {
+  try {
+    const response = await fetch(`http://localhost:3001/list-images?espece=${espece}&type=${type}`);
+    const data = await response.json();
+    return data.images || [];
+  } catch (err) {
+    console.error('Erreur chargement images:', err);
+    return [];
+  }
+}
+
+// Supprimer une image existante
+async function deleteExistingImage(espece, filename) {
+  try {
+    const response = await fetch('http://localhost:3001/delete-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ espece, filename })
+    });
+    return await response.json();
+  } catch (err) {
+    console.error('Erreur suppression:', err);
+    return { success: false, error: err.message };
   }
 }
 

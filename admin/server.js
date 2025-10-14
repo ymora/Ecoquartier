@@ -25,9 +25,71 @@ app.use(express.static(path.join(__dirname)));
 // CORS pour localhost
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
+});
+
+// Servir les images du projet
+app.use('/images', express.static(path.join(__dirname, '..', 'client', 'public', 'images')));
+
+// Lister les images existantes pour une espèce et un type
+app.get('/list-images', async (req, res) => {
+  try {
+    const { espece, type } = req.query;
+    
+    if (!espece || !type) {
+      return res.json({ images: [] });
+    }
+    
+    const targetDir = path.join(__dirname, '..', 'client', 'public', 'images', espece);
+    
+    try {
+      const files = await fs.readdir(targetDir);
+      const pattern = new RegExp(`^${espece}_${type}_(\\d+)\\.(jpg|jpeg|png|webp)$`, 'i');
+      
+      const matchingImages = files
+        .filter(f => pattern.test(f))
+        .map(f => {
+          const match = f.match(pattern);
+          return {
+            filename: f,
+            number: parseInt(match[1]),
+            path: `/images/${espece}/${f}`
+          };
+        })
+        .sort((a, b) => a.number - b.number);
+      
+      res.json({ images: matchingImages });
+    } catch (err) {
+      // Dossier n'existe pas encore
+      res.json({ images: [] });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Supprimer une image
+app.post('/delete-image', async (req, res) => {
+  try {
+    const { espece, filename } = req.body;
+    
+    if (!espece || !filename) {
+      return res.status(400).json({ success: false, error: 'Paramètres manquants' });
+    }
+    
+    const imagePath = path.join(__dirname, '..', 'client', 'public', 'images', espece, filename);
+    
+    try {
+      await fs.unlink(imagePath);
+      res.json({ success: true, message: `✓ ${filename} supprimé` });
+    } catch (err) {
+      res.status(404).json({ success: false, error: 'Image introuvable' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // Vérifier si une image existe
