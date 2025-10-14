@@ -323,21 +323,131 @@ function attachExistingImageListeners() {
       const btn = item.querySelector('.btn-success-outline');
       
       if (hasChanges) {
-        // Marquer comme modifié
-        item.classList.add('has-changes');
-        btn.classList.add('modified');
-        btn.setAttribute('title', 'Sauvegarder tous les changements');
+        // Vérifier les conflits
+        const conflict = detectConflict(filename, state.pendingChanges[filename]);
+        
+        if (conflict) {
+          // CONFLIT détecté
+          item.classList.add('has-conflict');
+          item.classList.remove('has-changes');
+          btn.classList.add('conflict');
+          btn.classList.remove('modified');
+          btn.disabled = true;
+          btn.setAttribute('title', conflict.message);
+          
+          // Afficher suggestion
+          showConflictSuggestion(item, conflict.suggestion);
+        } else {
+          // Marquer comme modifié (pas de conflit)
+          item.classList.add('has-changes');
+          item.classList.remove('has-conflict');
+          btn.classList.add('modified');
+          btn.classList.remove('conflict');
+          btn.disabled = false;
+          btn.setAttribute('title', 'Sauvegarder tous les changements');
+          hideConflictSuggestion(item);
+        }
       } else {
         // Retirer l'indicateur si retour à l'état original
         item.classList.remove('has-changes');
+        item.classList.remove('has-conflict');
         btn.classList.remove('modified');
+        btn.classList.remove('conflict');
+        btn.disabled = false;
         btn.setAttribute('title', 'Sauvegarder les modifications');
         delete state.pendingChanges[filename];
+        hideConflictSuggestion(item);
       }
       
       updateSaveAllButton();
     });
   });
+}
+
+// Détecter les conflits entre modifications en attente
+function detectConflict(currentFilename, changes) {
+  const targetKey = `${changes.newEspece}_${changes.newType}_${changes.newNumber}`;
+  
+  // Vérifier les modifications en attente
+  for (const [filename, pendingChange] of Object.entries(state.pendingChanges)) {
+    if (filename === currentFilename) continue;
+    
+    const pendingKey = `${pendingChange.newEspece}_${pendingChange.newType}_${pendingChange.newNumber}`;
+    
+    if (pendingKey === targetKey) {
+      return {
+        message: `⚠️ Conflit avec ${filename} (aussi ${changes.newType} #${changes.newNumber})`,
+        suggestion: getSuggestedNumber(changes.newEspece, changes.newType)
+      };
+    }
+  }
+  
+  // Vérifier les images existantes non modifiées
+  const existingConflict = state.existingImages.find(img =>
+    img.filename !== currentFilename &&
+    img.espece === changes.newEspece &&
+    img.type === changes.newType &&
+    img.number === changes.newNumber &&
+    !state.pendingChanges[img.filename] // Pas déjà en cours de modification
+  );
+  
+  if (existingConflict) {
+    return {
+      message: `⚠️ Le numéro #${changes.newNumber} existe déjà (permutation auto lors de la sauvegarde)`,
+      suggestion: null // Permutation OK, pas de suggestion
+    };
+  }
+  
+  return null;
+}
+
+// Trouver le prochain numéro disponible pour une espèce/type
+function getSuggestedNumber(espece, type) {
+  const existing = state.existingImages
+    .filter(img => img.espece === espece && img.type === type)
+    .map(img => img.number);
+  
+  const pending = Object.values(state.pendingChanges)
+    .filter(change => change.newEspece === espece && change.newType === type)
+    .map(change => change.newNumber);
+  
+  const allNumbers = [...existing, ...pending];
+  const maxNumber = allNumbers.length > 0 ? Math.max(...allNumbers) : 0;
+  
+  return maxNumber + 1;
+}
+
+// Afficher suggestion de numéro
+function showConflictSuggestion(item, suggestion) {
+  if (!suggestion) return;
+  
+  let suggestionDiv = item.querySelector('.conflict-suggestion');
+  if (!suggestionDiv) {
+    suggestionDiv = document.createElement('div');
+    suggestionDiv.className = 'conflict-suggestion';
+    item.appendChild(suggestionDiv);
+  }
+  
+  suggestionDiv.innerHTML = `
+    <span>Prochain dispo : #${String(suggestion).padStart(2, '0')}</span>
+    <button class="btn-apply-suggestion" data-number="${suggestion}">Appliquer</button>
+  `;
+  
+  // Event listener pour appliquer la suggestion
+  const applyBtn = suggestionDiv.querySelector('.btn-apply-suggestion');
+  applyBtn.addEventListener('click', () => {
+    const numberInput = item.querySelector('.input-number');
+    numberInput.value = suggestion;
+    numberInput.dispatchEvent(new Event('change'));
+  });
+}
+
+// Cacher suggestion de conflit
+function hideConflictSuggestion(item) {
+  const suggestionDiv = item.querySelector('.conflict-suggestion');
+  if (suggestionDiv) {
+    suggestionDiv.remove();
+  }
 }
 
 // Permuter les numéros de deux images
