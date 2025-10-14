@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { reglementationData } from '../data/reglementationData';
 import { informationsComplementaires } from '../data/informationsComplementaires';
 import FiabiliteBadge from './FiabiliteBadge';
@@ -8,6 +8,7 @@ import './Comparateur.css';
 function Comparateur({ plantes }) {
   const [selectedPlantes, setSelectedPlantes] = useState([]);
   const [imageIndices, setImageIndices] = useState({});
+  const [visibleCriteres, setVisibleCriteres] = useState({});
 
   const togglePlante = (plante) => {
     if (selectedPlantes.find(p => p.id === plante.id)) {
@@ -41,23 +42,60 @@ function Comparateur({ plantes }) {
   };
 
   const criteres = [
-    { key: 'type', label: 'Type', icon: '🌳', fiabilite: 'haute' },
-    { key: 'tailleMaturite', label: 'Taille à maturité', icon: '📏', fiabilite: 'moyenne' },
-    { key: 'floraison.periode', label: 'Floraison', icon: '🌸', fiabilite: 'moyenne' },
-    { key: 'floraison.couleur', label: 'Couleur fleurs', icon: '🎨', fiabilite: 'haute' },
-    { key: 'floraison.parfum', label: 'Parfum', icon: '👃', fiabilite: 'haute' },
-    { key: 'fructification.periode', label: 'Fruits', icon: '🍇', fiabilite: 'moyenne' },
-    { key: 'feuillage.type', label: 'Feuillage', icon: '🍃', fiabilite: 'haute' },
-    { key: 'feuillage.couleurAutomne', label: 'Couleur automne', icon: '🍂', fiabilite: 'moyenne' },
-    { key: 'exposition', label: 'Exposition', icon: '☀️', fiabilite: 'haute' },
-    { key: 'rusticite', label: 'Rusticité', icon: '❄️', fiabilite: 'moyenne' },
-    { key: 'sol.type', label: 'Type de sol', icon: '🌍', fiabilite: 'haute' },
-    { key: 'sol.ph', label: 'pH du sol', icon: '🧪', fiabilite: 'haute' },
-    { key: 'croissance', label: 'Croissance', icon: '📈', fiabilite: 'moyenne' },
-    { key: 'arrosage', label: 'Arrosage', icon: '💧', fiabilite: 'haute' },
-    { key: 'taille.periode', label: 'Période de taille', icon: '✂️', fiabilite: 'haute' },
-    { key: 'taille.frequence', label: 'Fréquence taille', icon: '🔄', fiabilite: 'haute' }
+    { id: 'type', key: 'type', label: 'Type', icon: '🌳', fiabilite: 'haute', defaultVisible: true },
+    { id: 'taille', key: 'tailleMaturite', label: 'Taille à maturité', icon: '📏', fiabilite: 'moyenne', defaultVisible: true },
+    { id: 'floraison', key: 'floraison.periode', label: 'Floraison', icon: '🌸', fiabilite: 'moyenne', defaultVisible: true },
+    { id: 'couleurFleurs', key: 'floraison.couleur', label: 'Couleur fleurs', icon: '🎨', fiabilite: 'haute', defaultVisible: true },
+    { id: 'parfum', key: 'floraison.parfum', label: 'Parfum', icon: '👃', fiabilite: 'haute', defaultVisible: false },
+    { id: 'fruits', key: 'fructification.periode', label: 'Fruits', icon: '🍇', fiabilite: 'moyenne', defaultVisible: false },
+    { id: 'feuillage', key: 'feuillage.type', label: 'Feuillage', icon: '🍃', fiabilite: 'haute', defaultVisible: true },
+    { id: 'automne', key: 'feuillage.couleurAutomne', label: 'Couleur automne', icon: '🍂', fiabilite: 'moyenne', defaultVisible: true },
+    { id: 'exposition', key: 'exposition', label: 'Exposition', icon: '☀️', fiabilite: 'haute', defaultVisible: true },
+    { id: 'rusticite', key: 'rusticite', label: 'Rusticité', icon: '❄️', fiabilite: 'moyenne', defaultVisible: false },
+    { id: 'solType', key: 'sol.type', label: 'Type de sol', icon: '🌍', fiabilite: 'haute', defaultVisible: false },
+    { id: 'solPh', key: 'sol.ph', label: 'pH du sol', icon: '🧪', fiabilite: 'haute', defaultVisible: false },
+    { id: 'croissance', key: 'croissance', label: 'Croissance', icon: '📈', fiabilite: 'moyenne', defaultVisible: false },
+    { id: 'arrosage', key: 'arrosage', label: 'Arrosage', icon: '💧', fiabilite: 'haute', defaultVisible: false },
+    { id: 'taillePeriode', key: 'taille.periode', label: 'Période de taille', icon: '✂️', fiabilite: 'haute', defaultVisible: true },
+    { id: 'tailleFreq', key: 'taille.frequence', label: 'Fréquence taille', icon: '🔄', fiabilite: 'haute', defaultVisible: false }
   ];
+  
+  const sectionsSpeciales = [
+    { id: 'toxicite', label: 'Toxicité', icon: '⚠️', defaultVisible: true },
+    { id: 'biodiversite', label: 'Biodiversité', icon: '🦋', defaultVisible: false },
+    { id: 'utilisations', label: 'Utilisations', icon: '💡', defaultVisible: false },
+    { id: 'pollinisation', label: 'Pollinisation', icon: '🐝', defaultVisible: false },
+    { id: 'allergies', label: 'Allergies', icon: '🤧', defaultVisible: true },
+    { id: 'animaux', label: 'Animaux', icon: '🐾', defaultVisible: true },
+    { id: 'racines', label: 'Racines', icon: '🌱', defaultVisible: true },
+    { id: 'distanceVoisin', label: 'Distance Voisinage', icon: '⚖️', defaultVisible: true },
+    { id: 'interdiction', label: 'Interdiction Taille', icon: '🔴', defaultVisible: true },
+    { id: 'dangersTaille', label: 'Dangers Taille', icon: '⚠️', defaultVisible: false },
+    { id: 'fondations', label: 'Distance Fondations', icon: '🏗️', defaultVisible: false },
+    { id: 'canalisations', label: 'Distance Canalisations', icon: '🚰', defaultVisible: false }
+  ];
+
+  // Initialiser la visibilité par défaut
+  useEffect(() => {
+    const initial = {};
+    criteres.forEach(c => initial[c.id] = c.defaultVisible);
+    sectionsSpeciales.forEach(s => initial[s.id] = s.defaultVisible);
+    setVisibleCriteres(initial);
+  }, []);
+
+  const toggleCritere = (id) => {
+    setVisibleCriteres(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  const toggleAll = (visible) => {
+    const newState = {};
+    criteres.forEach(c => newState[c.id] = visible);
+    sectionsSpeciales.forEach(s => newState[s.id] = visible);
+    setVisibleCriteres(newState);
+  };
 
   const getValue = (plante, key) => {
     const keys = key.split('.');
@@ -72,6 +110,14 @@ function Comparateur({ plantes }) {
     <div className="comparateur">
       <div className="comparateur-header">
         <h1>🔍 Mode Comparaison</h1>
+        <div className="visibility-controls">
+          <button onClick={() => toggleAll(true)} className="btn-show-all">
+            <FaEye /> Tout afficher
+          </button>
+          <button onClick={() => toggleAll(false)} className="btn-hide-all">
+            <FaEyeSlash /> Tout masquer
+          </button>
+        </div>
       </div>
 
       {selectedPlantes.length === 0 && (
@@ -168,18 +214,28 @@ function Comparateur({ plantes }) {
 
             {/* Lignes de critères */}
             {criteres.map(critere => (
-              <div key={critere.key} className="comparison-row">
-                <div className="comparison-label-cell">
-                  <span className="critere-icon">{critere.icon}</span>
-                  <strong>{critere.label}</strong>
-                  {critere.fiabilite && <FiabiliteBadge niveau={critere.fiabilite} />}
-                </div>
-                {selectedPlantes.map(plante => (
-                  <div key={plante.id} className="comparison-cell">
-                    {getValue(plante, critere.key)}
+              visibleCriteres[critere.id] && (
+                <div key={critere.key} className="comparison-row">
+                  <div className="comparison-label-cell">
+                    <button 
+                      className="toggle-critere-btn"
+                      onClick={() => toggleCritere(critere.id)}
+                      aria-label="Masquer ce critère"
+                      title="Masquer"
+                    >
+                      <FaEyeSlash />
+                    </button>
+                    <span className="critere-icon">{critere.icon}</span>
+                    <strong>{critere.label}</strong>
+                    {critere.fiabilite && <FiabiliteBadge niveau={critere.fiabilite} />}
                   </div>
-                ))}
-              </div>
+                  {selectedPlantes.map(plante => (
+                    <div key={plante.id} className="comparison-cell">
+                      {getValue(plante, critere.key)}
+                    </div>
+                  ))}
+                </div>
+              )
             ))}
 
             {/* Toxicité */}
