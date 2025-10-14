@@ -118,6 +118,34 @@ function getTypeLabel(type) {
   return labels[type] || type;
 }
 
+// Fonction helper pour Git commit + push
+async function gitCommitAndPush(message) {
+  const projectRoot = path.join(__dirname, '..');
+  
+  try {
+    // Git add
+    await execPromise('git add client/public/images/', { cwd: projectRoot });
+    
+    // Git commit
+    const safeMessage = message.replace(/["'`$\\]/g, '\\$&');
+    await execPromise(`git commit -m "${safeMessage}"`, { cwd: projectRoot });
+    
+    // Git push (en arrière-plan, pas d'attente)
+    execPromise('git push', { cwd: projectRoot }).catch(() => {
+      // Ignore les erreurs de push (peut être lent)
+    });
+    
+    return true;
+  } catch (err) {
+    // Si pas de changements, ce n'est pas une erreur
+    if (err.message && err.message.includes('nothing to commit')) {
+      return true;
+    }
+    console.error('Git error:', err.message);
+    return false;
+  }
+}
+
 // Permuter les numéros de deux images
 app.post('/swap-images', async (req, res) => {
   try {
@@ -142,9 +170,12 @@ app.post('/swap-images', async (req, res) => {
       await fs.rename(path2, path1);
       await fs.rename(tempPath, path2);
       
+      // Git commit + push en arrière-plan
+      gitCommitAndPush(`Swap: ${image1.filename} ↔ ${image2.filename}`);
+      
       res.json({
         success: true,
-        message: `✓ Permutation #${image1.number} ↔ #${image2.number}`
+        message: `✓ Permutation #${image1.number} ↔ #${image2.number} (push GitHub en cours...)`
       });
     } catch (err) {
       res.status(500).json({ success: false, error: 'Erreur permutation: ' + err.message });
@@ -154,7 +185,7 @@ app.post('/swap-images', async (req, res) => {
   }
 });
 
-// Changer le numéro d'une image (sans conflit)
+.// Changer le numéro d'une image (sans conflit)
 app.post('/change-number', async (req, res) => {
   try {
     const { filename, espece, type, currentNumber, newNumber } = req.body;
@@ -176,9 +207,12 @@ app.post('/change-number', async (req, res) => {
     try {
       await fs.rename(oldPath, newPath);
       
+      // Git commit + push en arrière-plan
+      gitCommitAndPush(`Change: ${filename} → ${newFilename}`);
+      
       res.json({
         success: true,
-        message: `✓ #${currentNumber} → #${newNumber}`,
+        message: `✓ #${currentNumber} → #${newNumber} (push GitHub en cours...)`,
         newFilename
       });
     } catch (err) {
@@ -224,9 +258,12 @@ app.post('/rename-image', async (req, res) => {
       // Supprimer l'ancien
       await fs.unlink(oldPath);
       
+      // Git commit + push en arrière-plan
+      gitCommitAndPush(`Rename: ${oldFilename} → ${newFilename}`);
+      
       res.json({ 
         success: true, 
-        message: `✓ ${oldFilename} → ${newFilename}`,
+        message: `✓ ${oldFilename} → ${newFilename} (push GitHub en cours...)`,
         newFilename
       });
     } catch (err) {
@@ -250,7 +287,14 @@ app.post('/delete-image', async (req, res) => {
     
     try {
       await fs.unlink(imagePath);
-      res.json({ success: true, message: `✓ ${filename} supprimé` });
+      
+      // Git commit + push en arrière-plan
+      gitCommitAndPush(`Delete: ${filename}`);
+      
+      res.json({ 
+        success: true, 
+        message: `✓ ${filename} supprimé (push GitHub en cours...)` 
+      });
     } catch (err) {
       res.status(404).json({ success: false, error: 'Image introuvable' });
     }
@@ -302,6 +346,7 @@ app.post('/upload', upload.array('images'), async (req, res) => {
     const files = req.files;
     
     const results = [];
+    const uploadedFiles = [];
     
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -330,6 +375,7 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         // Supprimer le fichier temporaire
         await fs.unlink(file.path);
         
+        uploadedFiles.push(numberedName);
         results.push({
           success: true,
           message: `✓ ${numberedName} ajouté`,
@@ -343,10 +389,16 @@ app.post('/upload', upload.array('images'), async (req, res) => {
       }
     }
     
+    // Git commit + push en arrière-plan pour toutes les images uploadées
+    if (uploadedFiles.length > 0) {
+      gitCommitAndPush(`Upload: ${uploadedFiles.length} image(s) - ${uploadedFiles.join(', ')}`);
+    }
+    
     res.json({
       success: true,
       processed: results.filter(r => r.success).length,
-      details: results
+      details: results,
+      message: uploadedFiles.length > 0 ? 'Push GitHub en cours...' : ''
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
