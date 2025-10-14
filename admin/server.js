@@ -195,9 +195,12 @@ app.post('/git-publish', async (req, res) => {
     // Git add
     await execPromise('git add client/public/images/', { cwd: projectRoot });
     
-    // Git commit
-    const commitMessage = `Add: ${count} nouvelle(s) image(s) via interface admin`;
-    await execPromise(`git commit -m "${commitMessage}"`, { cwd: projectRoot });
+    // Git commit - Sécurisé contre injection de commande
+    const safeCount = parseInt(count) || 0;
+    const commitMessage = `Add: ${safeCount} nouvelle(s) image(s) via interface admin`;
+    // Échapper les caractères dangereux
+    const sanitizedMessage = commitMessage.replace(/["'`$\\]/g, '\\$&');
+    await execPromise(`git commit -m "${sanitizedMessage}"`, { cwd: projectRoot });
     
     // Git push
     await execPromise('git push', { cwd: projectRoot });

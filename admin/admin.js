@@ -220,9 +220,9 @@ function renderImageItem(imageData) {
             <div class="existing-images-grid">
               ${existingImages.map(img => `
                 <div class="existing-image-item">
-                  <img src="http://localhost:3001${img.path}" alt="${img.filename}" class="existing-image-thumb">
-                  <span class="existing-image-name">#${img.number}</span>
-                  <button class="btn-delete-existing" data-espece="${imageData.espece}" data-filename="${img.filename}">
+                  <img src="http://localhost:3001${escapeHTML(img.path)}" alt="${escapeHTML(img.filename)}" class="existing-image-thumb">
+                  <span class="existing-image-name">#${escapeHTML(String(img.number))}</span>
+                  <button class="btn-delete-existing" data-espece="${escapeHTML(imageData.espece)}" data-filename="${escapeHTML(img.filename)}">
                     🗑️
                   </button>
                 </div>
