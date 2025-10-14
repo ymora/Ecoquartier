@@ -272,8 +272,14 @@ function attachExistingImageListeners() {
         
         if (result.success) {
           addLog('success', result.message);
+          
+          // Supprimer les changements en attente pour cette image
+          delete state.pendingChanges[filename];
+          
+          // Recharger sans perdre les autres modifications
           await loadExistingImages();
           renderExistingImages();
+          restorePendingChanges(); // Restaurer les modifications en attente
         } else {
           addLog('error', result.error);
         }
@@ -463,6 +469,54 @@ function hideConflictSuggestion(item) {
   if (suggestionDiv) {
     suggestionDiv.remove();
   }
+}
+
+// Restaurer les modifications en attente après rechargement
+function restorePendingChanges() {
+  for (const [filename, changes] of Object.entries(state.pendingChanges)) {
+    const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
+    if (!item) {
+      // Image supprimée, nettoyer
+      delete state.pendingChanges[filename];
+      continue;
+    }
+    
+    // Appliquer les valeurs modifiées
+    const especeSelect = item.querySelector('.config-espece-existing');
+    const typeSelect = item.querySelector('.config-type-existing');
+    const numberInput = item.querySelector('.input-number');
+    
+    if (especeSelect) especeSelect.value = changes.newEspece;
+    if (typeSelect) typeSelect.value = changes.newType;
+    if (numberInput) numberInput.value = changes.newNumber;
+    
+    // Vérifier les conflits et appliquer les styles
+    const hasChanges = 
+      changes.newEspece !== changes.originalEspece ||
+      changes.newType !== changes.originalType ||
+      changes.newNumber !== changes.originalNumber;
+    
+    if (hasChanges) {
+      const conflict = detectConflict(filename, changes);
+      const btn = item.querySelector('.btn-success-outline');
+      
+      if (conflict) {
+        item.classList.add('has-conflict');
+        btn.classList.add('conflict');
+        btn.disabled = true;
+        btn.setAttribute('title', conflict.message);
+        if (conflict.suggestion) {
+          showConflictSuggestion(item, conflict.suggestion);
+        }
+      } else {
+        item.classList.add('has-changes');
+        btn.classList.add('modified');
+        btn.setAttribute('title', 'Sauvegarder tous les changements');
+      }
+    }
+  }
+  
+  updateSaveAllButton();
 }
 
 // Permuter les numéros de deux images
