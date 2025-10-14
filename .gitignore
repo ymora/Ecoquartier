@@ -4,6 +4,11 @@ archive/
 # Dossier de téléchargement temporaire
 downloads/
 
+# Admin
+node_modules/
+admin/temp/
+package-lock.json
+
 # Images originales (déjà copiées dans client/public)
 # Garder pour référence mais ne pas commit les doublons
 # Décommenter si vous voulez ignorer complètement:

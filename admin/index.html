@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Images - Haies Bessancourt</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-container">
+    <header class="admin-header">
+      <h1>🌳 Admin Images - Haies Bessancourt</h1>
+      <p class="subtitle">Interface locale de gestion des images</p>
+    </header>
+
+    <div class="admin-content">
+      <!-- Zone de drop -->
+      <div id="dropzone" class="dropzone">
+        <div class="dropzone-content">
+          <svg class="upload-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p class="dropzone-text">Glissez vos images ici</p>
+          <p class="dropzone-subtext">ou cliquez pour parcourir</p>
+          <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png" hidden>
+        </div>
+      </div>
+
+      <!-- Liste des images en attente -->
+      <div id="imagesList" class="images-list"></div>
+
+      <!-- Actions globales -->
+      <div id="actions" class="actions hidden">
+        <div class="actions-summary">
+          <span id="imageCount">0</span> image(s) prête(s)
+        </div>
+        <div class="actions-buttons">
+          <button id="clearAll" class="btn btn-secondary">
+            🗑️ Tout effacer
+          </button>
+          <button id="publishBtn" class="btn btn-primary">
+            🚀 Publier sur GitHub
+          </button>
+        </div>
+      </div>
+
+      <!-- Log des opérations -->
+      <div id="logContainer" class="log-container hidden">
+        <h3>📋 Journal des opérations</h3>
+        <div id="log" class="log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
+
