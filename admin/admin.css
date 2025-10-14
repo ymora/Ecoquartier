@@ -711,15 +711,6 @@ section h2 {
   }
 }
 
-@keyframes glow-pulse-strong {
-  0%, 100% { 
-    box-shadow: 0 4px 16px rgba(237, 137, 54, 0.5);
-  }
-  50% { 
-    box-shadow: 0 6px 28px rgba(237, 137, 54, 0.8);
-  }
-}
-
 @keyframes bounce {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
