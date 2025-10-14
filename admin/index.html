@@ -15,6 +15,7 @@
 
     <div class="admin-content">
       <!-- Zone de drop -->
+      <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none;">
       <div id="dropzone" class="dropzone">
         <div class="dropzone-content">
           <svg class="upload-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -24,7 +25,7 @@
           </svg>
           <p class="dropzone-text">Glissez vos images ici</p>
           <p class="dropzone-subtext">ou cliquez pour parcourir</p>
-          <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png" hidden>
+          <p class="dropzone-formats">Formats: JPG, PNG, WebP (max 5 MB)</p>
         </div>
       </div>
 

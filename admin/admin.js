@@ -74,12 +74,15 @@ function handleFiles(files) {
     return;
   }
   
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  
   Array.from(files).forEach(file => {
     console.log('Processing file:', file.name, file.type);
-    if (file.type.startsWith('image/')) {
+    if (validTypes.includes(file.type) || file.type.startsWith('image/')) {
       addImageToList(file);
     } else {
-      console.warn('File skipped (not an image):', file.name);
+      console.warn('File skipped (not an image):', file.name, file.type);
+      alert(`Fichier ${file.name} ignoré - Format non supporté. Utilisez JPG, PNG ou WebP.`);
     }
   });
   updateUI();

@@ -85,6 +85,13 @@ body {
   font-size: 0.9rem;
 }
 
+.dropzone-formats {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
 /* Liste des images */
 .images-list {
   display: flex;
