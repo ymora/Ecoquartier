@@ -185,7 +185,7 @@ app.post('/swap-images', async (req, res) => {
   }
 });
 
-.// Changer le numéro d'une image (sans conflit)
+// Changer le numéro d'une image (sans conflit)
 app.post('/change-number', async (req, res) => {
   try {
     const { filename, espece, type, currentNumber, newNumber } = req.body;
