@@ -31,15 +31,24 @@ body {
 .admin-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 0;
+}
+
+.admin-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
 }
 
 /* HEADER */
 .admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-primary);
   text-align: center;
-  padding-bottom: 1rem;
+  padding: 1rem 1.5rem;
   border-bottom: 2px solid var(--accent-primary);
   margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px var(--shadow);
 }
 
 .admin-header h1 {
