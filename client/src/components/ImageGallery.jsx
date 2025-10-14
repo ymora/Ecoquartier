@@ -13,50 +13,55 @@ function ImageGallery({ arbusteId, arbusteName }) {
     const loadImages = async () => {
       setLoading(true);
       try {
-        // Liste potentielle d'images
-        const potentialImages = [
-          { 
-            src: `/images/${arbusteId}/${arbusteId}_vue_generale.jpg`, 
-            legend: 'Vue générale',
-            alt: `${arbusteName} - Vue générale`
-          },
-          { 
-            src: `/images/${arbusteId}/${arbusteId}_bourgeons.jpg`, 
-            legend: 'Bourgeons au printemps',
-            alt: `${arbusteName} - Bourgeons`
-          },
-          { 
-            src: `/images/${arbusteId}/${arbusteId}_fleurs.jpg`, 
-            legend: 'Floraison',
-            alt: `${arbusteName} - Fleurs`
-          },
-          { 
-            src: `/images/${arbusteId}/${arbusteId}_fruits.jpg`, 
-            legend: 'Fruits / Fructification',
-            alt: `${arbusteName} - Fruits`
-          },
-          { 
-            src: `/images/${arbusteId}/${arbusteId}_automne.jpg`, 
-            legend: 'Couleurs automnales',
-            alt: `${arbusteName} - Automne`
-          },
-          { 
-            src: `/images/${arbusteId}/${arbusteId}_hiver.jpg`, 
-            legend: 'Aspect hivernal',
-            alt: `${arbusteName} - Hiver`
-          }
+        // Types d'images avec leurs légendes
+        const imageTypes = [
+          { type: 'vue_generale', legend: 'Vue générale', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+          { type: 'bourgeons', legend: 'Bourgeons au printemps', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+          { type: 'fleurs', legend: 'Floraison', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+          { type: 'fruits', legend: 'Fruits / Fructification', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+          { type: 'automne', legend: 'Couleurs automnales', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+          { type: 'hiver', legend: 'Aspect hivernal', extensions: ['.jpg', '.jpeg', '.png', '.webp'] }
         ];
         
-        // Vérifier quelles images existent réellement
         const validImages = [];
-        for (const img of potentialImages) {
-          try {
-            const response = await fetch(img.src, { method: 'HEAD' });
-            if (response.ok) {
-              validImages.push(img);
+        
+        // Pour chaque type, chercher toutes les images numérotées (_01, _02, etc.)
+        for (const imageType of imageTypes) {
+          let imageNumber = 1;
+          let foundForType = false;
+          
+          // Chercher jusqu'à 20 images par type (limite raisonnable)
+          while (imageNumber <= 20) {
+            const paddedNumber = String(imageNumber).padStart(2, '0');
+            let foundWithExtension = false;
+            
+            // Essayer toutes les extensions possibles
+            for (const ext of imageType.extensions) {
+              const imagePath = `/images/${arbusteId}/${arbusteId}_${imageType.type}_${paddedNumber}${ext}`;
+              
+              try {
+                const response = await fetch(imagePath, { method: 'HEAD' });
+                if (response.ok) {
+                  validImages.push({
+                    src: imagePath,
+                    legend: `${imageType.legend} ${imageNumber > 1 ? `(${imageNumber})` : ''}`,
+                    alt: `${arbusteName} - ${imageType.legend} ${imageNumber}`
+                  });
+                  foundForType = true;
+                  foundWithExtension = true;
+                  break; // On a trouvé avec cette extension, passer au numéro suivant
+                }
+              } catch (err) {
+                // Image n'existe pas avec cette extension, essayer la suivante
+              }
             }
-          } catch (err) {
-            // Image n'existe pas, on l'ignore
+            
+            // Si aucune extension n'a fonctionné pour ce numéro, arrêter pour ce type
+            if (!foundWithExtension) {
+              break;
+            }
+            
+            imageNumber++;
           }
         }
         

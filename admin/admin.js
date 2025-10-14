@@ -95,12 +95,37 @@ function addImageToList(file) {
   
   reader.onload = (e) => {
     console.log('Image loaded, creating preview');
+    
+    // Essayer de détecter automatiquement l'espèce et le type depuis le nom de fichier
+    const fileName = file.name.toLowerCase();
+    let detectedEspece = '';
+    let detectedType = '';
+    
+    // Détecter l'espèce
+    if (fileName.includes('kanzan')) detectedEspece = 'prunus-kanzan';
+    else if (fileName.includes('accolade')) detectedEspece = 'prunus-accolade';
+    else if (fileName.includes('sunset')) detectedEspece = 'prunus-sunset-boulevard';
+    else if (fileName.includes('noisetier')) detectedEspece = 'noisetier';
+    else if (fileName.includes('fusain')) detectedEspece = 'fusain';
+    else if (fileName.includes('troene')) detectedEspece = 'troene';
+    else if (fileName.includes('osmanthe')) detectedEspece = 'osmanthe';
+    else if (fileName.includes('cornouiller')) detectedEspece = 'cornouiller';
+    else if (fileName.includes('seringat')) detectedEspece = 'seringat';
+    
+    // Détecter le type
+    if (fileName.includes('vue') || fileName.includes('general')) detectedType = 'vue_generale';
+    else if (fileName.includes('bourgeon')) detectedType = 'bourgeons';
+    else if (fileName.includes('fleur')) detectedType = 'fleurs';
+    else if (fileName.includes('fruit')) detectedType = 'fruits';
+    else if (fileName.includes('automne')) detectedType = 'automne';
+    else if (fileName.includes('hiver')) detectedType = 'hiver';
+    
     const imageData = {
       id,
       file,
       preview: e.target.result,
-      espece: '',
-      type: '',
+      espece: detectedEspece,
+      type: detectedType,
       status: 'pending',
       exists: false
     };

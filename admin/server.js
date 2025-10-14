@@ -47,6 +47,24 @@ app.get('/check-image', async (req, res) => {
   }
 });
 
+// Fonction pour trouver le prochain numéro disponible
+async function getNextImageNumber(targetDir, baseName, extension) {
+  try {
+    const files = await fs.readdir(targetDir);
+    const pattern = new RegExp(`^${baseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}_(\\d+)${extension.replace('.', '\\.')}$`);
+    const numbers = files
+      .map(f => {
+        const match = f.match(pattern);
+        return match ? parseInt(match[1]) : 0;
+      })
+      .filter(n => n > 0);
+    
+    return numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
+  } catch {
+    return 1; // Dossier n'existe pas encore
+  }
+}
+
 // Upload des images
 app.post('/upload', upload.array('images'), async (req, res) => {
   try {
@@ -65,8 +83,17 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         const targetDir = path.join(__dirname, '..', 'client', 'public', 'images', config.espece);
         await fs.mkdir(targetDir, { recursive: true });
         
+        // Extraire le nom de base et l'extension
+        const extMatch = config.targetName.match(/(\.[^.]+)$/);
+        const extension = extMatch ? extMatch[1] : '.jpg';
+        const baseName = config.targetName.replace(extension, '');
+        
+        // Trouver le prochain numéro disponible
+        const nextNumber = await getNextImageNumber(targetDir, baseName, extension);
+        const numberedName = `${baseName}_${String(nextNumber).padStart(2, '0')}${extension}`;
+        
         // Chemin de destination final
-        const targetPath = path.join(targetDir, config.targetName);
+        const targetPath = path.join(targetDir, numberedName);
         
         // Copier le fichier
         await fs.copyFile(file.path, targetPath);
@@ -76,7 +103,8 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         
         results.push({
           success: true,
-          message: `✓ ${config.targetName} ${config.exists ? 'remplacé' : 'ajouté'}`
+          message: `✓ ${numberedName} ajouté`,
+          filename: numberedName
         });
       } catch (err) {
         results.push({

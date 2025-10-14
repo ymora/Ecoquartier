@@ -87,9 +87,11 @@ body {
 
 .dropzone-formats {
   color: var(--text-secondary);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   margin-top: 0.5rem;
   font-style: italic;
+  max-width: 600px;
+  line-height: 1.4;
 }
 
 /* Liste des images */
