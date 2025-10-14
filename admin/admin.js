@@ -293,6 +293,9 @@ function attachExistingImageListeners() {
         btn.setAttribute('title', 'Sauvegarder les modifications *');
       }
       
+      // Marquer la ligne comme modifiée
+      item.classList.add('has-changes');
+      
       updateSaveAllButton();
     });
   });

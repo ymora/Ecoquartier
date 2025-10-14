@@ -586,16 +586,51 @@ section h2 {
 }
 
 .btn-success-outline.modified {
-  background: linear-gradient(135deg, rgba(237, 137, 54, 0.2), rgba(237, 137, 54, 0.35));
+  background: linear-gradient(135deg, rgba(237, 137, 54, 0.3), rgba(237, 137, 54, 0.45));
   color: #d97706;
-  box-shadow: 0 4px 16px rgba(237, 137, 54, 0.4);
-  animation: glow-pulse 1.5s infinite;
+  box-shadow: 0 4px 16px rgba(237, 137, 54, 0.5);
+  animation: glow-pulse-strong 1.5s infinite;
+  position: relative;
+}
+
+.btn-success-outline.modified::after {
+  content: '!';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  background: var(--warning);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(237, 137, 54, 0.6);
+  animation: bounce 1s infinite;
+  border: 2px solid white;
 }
 
 .btn-success-outline.modified:hover {
-  background: linear-gradient(135deg, rgba(237, 137, 54, 0.4), rgba(237, 137, 54, 0.5));
-  box-shadow: 0 8px 28px rgba(237, 137, 54, 0.6);
+  background: linear-gradient(135deg, rgba(237, 137, 54, 0.5), rgba(237, 137, 54, 0.6));
+  box-shadow: 0 8px 28px rgba(237, 137, 54, 0.7);
   color: #b45309;
+}
+
+@keyframes glow-pulse-strong {
+  0%, 100% { 
+    box-shadow: 0 4px 16px rgba(237, 137, 54, 0.5);
+  }
+  50% { 
+    box-shadow: 0 6px 28px rgba(237, 137, 54, 0.8);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
 }
 
 /* BOUTON DANGER (Supprimer) */
