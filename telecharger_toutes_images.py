@@ -83,8 +83,9 @@ def main():
             
             print(f"[{i}/{total_images}] {img['nom']}")
             
-            if img['url'] == 'A_CHERCHER':
-                print(f"   A CHERCHER: ChatGPT trouvera l'URL")
+            # Sauter les images incomplètes (sans URL valide)
+            if not img['url'] or img['url'] == 'A_CHERCHER' or img['url'].startswith('http') == False:
+                print(f"   SKIP: URL manquante (ChatGPT doit completer)")
                 a_chercher_list.append({
                     'fichier': img['nom'],
                     'description': img['description'],

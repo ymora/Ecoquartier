@@ -1,31 +1,24 @@
-Je veux que tu trouves des URLs de VRAIES PHOTOS gratuites (Pexels, Unsplash, Pixabay) pour compléter ce fichier JSON.
+Trouve des URLs de VRAIES PHOTOS gratuites (Pexels, Unsplash) pour compléter ce JSON.
 
-MISSION :
-- Remplacer TOUS les "A_CHERCHER" par des URLs directes d'images JPG/JPEG
-- Trouver de VRAIES photos botaniques professionnelles (PAS générer avec DALL-E)
-- Les URLs doivent être des liens DIRECTS vers les fichiers image
+⚠️ IMPORTANT : 
+- Cherche de VRAIES photos botaniques (PAS générer avec DALL-E)
+- URLs = liens DIRECTS vers fichiers JPG/JPEG
+- Remplace tous les "A_CHERCHER" par des URLs
 
-FORMAT URLs VALIDES (liens directs) :
-✅ Pexels : https://images.pexels.com/photos/12345/pexels-photo-12345.jpeg?auto=compress&cs=tinysrgb&w=1600
-✅ Unsplash : https://images.unsplash.com/photo-xxxxx?w=1600
-✅ Pixabay : https://pixabay.com/get/gxxxxx_1600.jpg
+FORMAT URLs (liens directs obligatoires) :
+✅ https://images.pexels.com/photos/12345/pexels-photo-12345.jpeg?auto=compress&cs=tinysrgb&w=1600
+✅ https://images.unsplash.com/photo-xxxxx?w=1600
 
-❌ PAS : https://www.pexels.com/photo/... (page web)
-❌ PAS : Générer avec DALL-E
+MÉTHODE :
+1. Lire description (ex: "Capsules rose-rouge vif fusain")
+2. Chercher sur Pexels/Unsplash en anglais (ex: "euonymus europaeus fruits pink red capsules")
+3. Copier URL DIRECTE de l'image
+4. Remplacer "A_CHERCHER"
 
-MÉTHODE DE RECHERCHE :
-Pour chaque image "A_CHERCHER" :
-1. Lire la description (ex: "Capsules rose-rouge vif fusain automne")
-2. Chercher sur Pexels/Unsplash avec mots-clés anglais (ex: "euonymus fruits capsules pink red")
-3. Trouver l'URL DIRECTE de l'image
-4. Remplacer "A_CHERCHER" par cette URL
-
-VOICI LE JSON À COMPLÉTER :
+JSON À COMPLÉTER :
 
 ```json
-{COLLER_ICI_LE_CONTENU_DE_images_completes.json}
+{COLLER_LE_CONTENU_DE_images_completes.json_ICI}
 ```
 
-RETOURNE-MOI le JSON COMPLET avec toutes les URLs remplies, formaté correctement, prêt à copier-coller dans mon fichier images_completes.json.
-
-IMPORTANT : Ne génère PAS d'images, trouve des VRAIES photos existantes sur Pexels/Unsplash/Pixabay.
+Retourne le JSON COMPLET avec URLs, prêt à copier-coller.
