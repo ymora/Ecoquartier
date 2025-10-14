@@ -547,6 +547,7 @@ async function swapImageNumbers(img1, img2) {
       addLog('success', result.message);
       await loadExistingImages();
       renderExistingImages();
+      restorePendingChanges(); // Restaurer les modifications en attente
     } else {
       addLog('error', result.error);
     }
@@ -579,6 +580,7 @@ async function changeImageNumber(img, newNumber) {
       addLog('success', result.message);
       await loadExistingImages();
       renderExistingImages();
+      restorePendingChanges(); // Restaurer les modifications en attente
     } else {
       addLog('error', result.error);
     }
@@ -737,16 +739,18 @@ async function saveImageChanges(filename) {
       }
     }
     
-    // Succès : nettoyer les changements
+    // Succès : nettoyer les changements de cette image
     delete state.pendingChanges[filename];
     btn.classList.remove('modified');
-    btn.classList.add('saved');
+    btn.classList.remove('conflict');
     item.classList.remove('has-changes');
+    item.classList.remove('has-conflict');
     
-    // Recharger
+    // Recharger et restaurer les autres modifications
     setTimeout(async () => {
       await loadExistingImages();
       renderExistingImages();
+      restorePendingChanges(); // Restaurer les modifications des autres images
       updateSaveAllButton();
     }, 1000);
     
