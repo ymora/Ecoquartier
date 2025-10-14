@@ -24,6 +24,7 @@ const filterType = document.getElementById('filterType');
 const resetFiltersBtn = document.getElementById('resetFilters');
 const existingImagesGrid = document.getElementById('existingImagesGrid');
 const selectedCount = document.getElementById('selectedCount');
+const saveAllBtn = document.getElementById('saveAll');
 const deleteSelectedBtn = document.getElementById('deleteSelected');
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
@@ -100,6 +101,7 @@ function attachEventListeners() {
   resetFiltersBtn.addEventListener('click', resetFilters);
 
   // Sélection/suppression
+  saveAllBtn.addEventListener('click', saveAllModifications);
   deleteSelectedBtn.addEventListener('click', deleteSelectedImages);
 
   // Upload
@@ -208,12 +210,21 @@ function renderExistingImages() {
         #${escapeHTML(String(img.number))}
       </span>
       
-      <button class="btn-icon btn-primary-icon" data-filename="${escapeHTML(img.filename)}" title="Sauvegarder les modifications">
-        💾
+      <button class="btn-icon-outline btn-success-outline" data-filename="${escapeHTML(img.filename)}" title="Sauvegarder les modifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
       </button>
       
-      <button class="btn-icon btn-danger-icon" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}" title="Supprimer cette image">
-        🗑️
+      <button class="btn-icon-outline btn-danger-outline" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}" title="Supprimer cette image">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          <line x1="10" y1="11" x2="10" y2="17"/>
+          <line x1="14" y1="11" x2="14" y2="17"/>
+        </svg>
       </button>
     </div>
   `).join('');
@@ -241,7 +252,7 @@ function attachExistingImageListeners() {
   });
 
   // Boutons sauver
-  document.querySelectorAll('.existing-item .btn-primary-icon').forEach(btn => {
+  document.querySelectorAll('.existing-item .btn-success-outline').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const filename = e.currentTarget.dataset.filename;
@@ -250,7 +261,7 @@ function attachExistingImageListeners() {
   });
 
   // Boutons supprimer individuels
-  document.querySelectorAll('.existing-item .btn-danger-icon').forEach(btn => {
+  document.querySelectorAll('.existing-item .btn-danger-outline').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const filename = e.currentTarget.dataset.filename;
@@ -287,14 +298,51 @@ function attachExistingImageListeners() {
     select.addEventListener('change', (e) => {
       const filename = e.target.dataset.filename;
       const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
-      const btn = item.querySelector('.btn-primary-icon');
+      const btn = item.querySelector('.btn-success-outline');
       if (btn) {
-        btn.style.background = '#ed8936'; // Orange pour indiquer changement non sauvé
-        btn.style.borderColor = '#ed8936';
+        btn.classList.add('modified');
         btn.setAttribute('title', 'Sauvegarder les modifications *');
       }
+      
+      // Activer le bouton "Sauvegarder tout"
+      updateSaveAllButton();
     });
   });
+}
+
+// Sauvegarder toutes les modifications
+async function saveAllModifications() {
+  const modifiedItems = document.querySelectorAll('.existing-item .btn-success-outline.modified');
+  
+  if (modifiedItems.length === 0) {
+    alert('Aucune modification à sauvegarder');
+    return;
+  }
+  
+  if (!confirm(`Sauvegarder ${modifiedItems.length} modification(s) ?`)) return;
+  
+  saveAllBtn.disabled = true;
+  showLog();
+  
+  for (const btn of modifiedItems) {
+    const filename = btn.dataset.filename;
+    await renameExistingImage(filename);
+  }
+  
+  saveAllBtn.disabled = false;
+  updateSaveAllButton();
+}
+
+// Mettre à jour l'état du bouton "Sauvegarder tout"
+function updateSaveAllButton() {
+  const modifiedCount = document.querySelectorAll('.btn-success-outline.modified').length;
+  saveAllBtn.disabled = modifiedCount === 0;
+  
+  if (modifiedCount > 0) {
+    saveAllBtn.setAttribute('title', `Sauvegarder ${modifiedCount} modification(s)`);
+  } else {
+    saveAllBtn.setAttribute('title', 'Sauvegarder toutes les modifications');
+  }
 }
 
 // Renommer une image existante
@@ -336,23 +384,23 @@ async function renameExistingImage(oldFilename) {
     
     if (result.success) {
       addLog('success', result.message);
-      btn.style.background = '#48bb78'; // Vert
-      btn.textContent = '✓ Sauvé';
+      btn.classList.remove('modified');
+      btn.classList.add('saved');
+      btn.setAttribute('title', '✓ Sauvegardé');
       
       // Recharger les images
       setTimeout(async () => {
         await loadExistingImages();
         renderExistingImages();
+        updateSaveAllButton();
       }, 1000);
     } else {
       addLog('error', result.error);
       btn.disabled = false;
-      btn.textContent = '💾 Sauver';
     }
   } catch (err) {
     addLog('error', 'Erreur: ' + err.message);
     btn.disabled = false;
-    btn.textContent = '💾 Sauver';
   }
   
   showLog();
