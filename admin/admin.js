@@ -210,7 +210,7 @@ function renderImageItem(imageData) {
   validateBtn.addEventListener('click', () => {
     imageData.status = 'validated';
     div.style.opacity = '0.7';
-    div.style.borderColor = var(--success);
+    div.style.borderColor = '#48bb78';
     validateBtn.disabled = true;
     validateBtn.textContent = '✓ Validé';
     validateBtn.style.background = '#38a169';
