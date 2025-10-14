@@ -1,11 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaBars, FaTree, FaLeaf, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import './Navigation.css';
 
 function Navigation({ plantes, selectedId, onSelect }) {
-  const [isOpen, setIsOpen] = useState(true);
+  // Détecter si mobile
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isOpen, setIsOpen] = useState(!isMobile); // Fermé sur mobile par défaut
   const [arbresExpanded, setArbresExpanded] = useState(true);
   const [arbustesExpanded, setArbustesExpanded] = useState(true);
+
+  // Détecter redimensionnement
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setIsOpen(true); // Toujours ouvert sur desktop
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleNav = () => {
     setIsOpen(!isOpen);
@@ -19,16 +35,33 @@ function Navigation({ plantes, selectedId, onSelect }) {
     setArbustesExpanded(!arbustesExpanded);
   };
 
+  // Fermer le menu sur mobile après sélection
+  const handleSelect = (id) => {
+    onSelect(id);
+    if (isMobile) {
+      setIsOpen(false);
+    }
+  };
+
   // Séparer arbres et arbustes
   const arbres = plantes.filter(p => p.type === 'arbre');
   const arbustes = plantes.filter(p => p.type === 'arbuste');
 
   return (
     <>
+      {/* Overlay mobile pour fermer le menu */}
+      {isMobile && isOpen && (
+        <div 
+          className="nav-overlay visible" 
+          onClick={toggleNav}
+          aria-label="Fermer le menu"
+        />
+      )}
+
       <button 
         className="nav-toggle"
         onClick={toggleNav}
-        aria-label="Toggle navigation"
+        aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
       >
         <FaBars />
       </button>
@@ -49,7 +82,7 @@ function Navigation({ plantes, selectedId, onSelect }) {
               <button
                 key={arbre.id}
                 className={`nav-item ${selectedId === arbre.id ? 'active' : ''}`}
-                onClick={() => onSelect(arbre.id)}
+                onClick={() => handleSelect(arbre.id)}
               >
                 <span className="nav-item-name">{arbre.name}</span>
                 <span className="nav-item-scientific">{arbre.nomScientifique}</span>
@@ -74,7 +107,7 @@ function Navigation({ plantes, selectedId, onSelect }) {
               <button
                 key={arbuste.id}
                 className={`nav-item ${selectedId === arbuste.id ? 'active' : ''}`}
-                onClick={() => onSelect(arbuste.id)}
+                onClick={() => handleSelect(arbuste.id)}
               >
                 <span className="nav-item-name">{arbuste.name}</span>
                 <span className="nav-item-scientific">{arbuste.nomScientifique}</span>
