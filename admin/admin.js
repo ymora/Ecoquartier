@@ -300,7 +300,7 @@ function attachExistingImageListeners() {
     });
   });
 
-  // Changements de numéro (permutation)
+  // Changements de numéro (permutation automatique)
   document.querySelectorAll('.input-number').forEach(input => {
     input.addEventListener('change', async (e) => {
       const filename = e.target.dataset.filename;
@@ -315,6 +315,9 @@ function attachExistingImageListeners() {
       const img = state.existingImages.find(i => i.filename === filename);
       if (!img) return;
       
+      // Désactiver l'input pendant l'opération
+      e.target.disabled = true;
+      
       // Vérifier si le nouveau numéro existe déjà
       const targetImg = state.existingImages.find(i => 
         i.espece === img.espece && 
@@ -323,20 +326,16 @@ function attachExistingImageListeners() {
       );
       
       if (targetImg) {
-        // Permutation nécessaire
-        if (confirm(`Permuter #${currentNumber} ↔ #${newNumber} ?`)) {
-          await swapImageNumbers(img, targetImg);
-        } else {
-          e.target.value = currentNumber;
-        }
+        // Permutation automatique
+        addLog('info', `🔄 Permutation #${currentNumber} ↔ #${newNumber}...`);
+        await swapImageNumbers(img, targetImg);
       } else {
         // Pas de conflit, juste renommer
-        if (confirm(`Changer le numéro de #${currentNumber} à #${newNumber} ?`)) {
-          await changeImageNumber(img, newNumber);
-        } else {
-          e.target.value = currentNumber;
-        }
+        addLog('info', `🔄 Changement #${currentNumber} → #${newNumber}...`);
+        await changeImageNumber(img, newNumber);
       }
+      
+      e.target.disabled = false;
     });
   });
 }

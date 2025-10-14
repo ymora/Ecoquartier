@@ -310,6 +310,12 @@ section h2 {
 
 .input-number:hover {
   border-color: var(--accent-primary);
+  cursor: pointer;
+}
+
+.input-number:disabled {
+  opacity: 0.5;
+  cursor: wait;
 }
 
 .existing-item:hover {
