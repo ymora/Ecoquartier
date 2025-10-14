@@ -1,0 +1,19 @@
+Je veux que tu complètes ce fichier JSON en trouvant des URLs d'images GRATUITES (Pexels, Unsplash, Pixabay) pour remplacer tous les "CHATGPT_DALLE".
+
+Pour chaque image marquée "CHATGPT_DALLE", trouve une URL directe vers une image JPG qui correspond exactement à la description.
+
+IMPORTANT : Les URLs doivent être des liens DIRECTS vers les fichiers .jpg/.jpeg, pas des pages web.
+
+Format URLs valides :
+- Pexels : https://images.pexels.com/photos/XXXXX/pexels-photo-XXXXX.jpeg?auto=compress&cs=tinysrgb&w=1600
+- Unsplash : https://images.unsplash.com/photo-XXXXX?w=1600
+- Pixabay : https://pixabay.com/get/gXXXXXX_1600.jpg
+
+Voici le JSON à compléter :
+
+```json
+[COLLER ICI LE CONTENU DE images_completes.json]
+```
+
+Retourne-moi le JSON COMPLET avec toutes les URLs remplies, prêt à être copié-collé dans mon fichier images_completes.json.
+
