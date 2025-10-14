@@ -162,65 +162,6 @@ section h2 {
   font-weight: 700;
 }
 
-/* FILTRES */
-.filters-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 1rem;
-  align-items: end;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.filter-group label {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.filter-group select {
-  padding: 0.7rem;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.filter-group select:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
-}
-
-/* IMAGES EXISTANTES */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.section-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.selected-count {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
 .images-grid {
   display: flex;
   flex-direction: column;
@@ -414,15 +355,6 @@ section h2 {
   color: var(--text-primary);
   font-size: 0.85rem;
   min-width: 150px;
-}
-
-.existing-item-info {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  background: var(--bg-tertiary);
-  border-radius: 4px;
 }
 
 .empty-message {
@@ -741,21 +673,6 @@ section h2 {
   box-shadow: none;
 }
 
-/* ANIMATIONS */
-@keyframes glow-pulse {
-  0%, 100% { 
-    box-shadow: 0 4px 16px rgba(237, 137, 54, 0.4);
-  }
-  50% { 
-    box-shadow: 0 6px 24px rgba(237, 137, 54, 0.7);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
 .btn-primary {
   background: var(--accent-primary);
   color: white;
@@ -920,10 +837,6 @@ button:disabled {
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-  .filters-row {
-    grid-template-columns: 1fr;
-  }
-
   .upload-item,
   .existing-item {
     grid-template-columns: 1fr;

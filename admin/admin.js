@@ -14,7 +14,6 @@ let state = {
   filterEspece: '',
   filterType: '',
   existingImages: [],
-  selectedImages: new Set(),
   uploadQueue: [],
   pendingChanges: {} // Changements en attente par filename
 };
@@ -517,79 +516,6 @@ function restorePendingChanges() {
   }
   
   updateSaveAllButton();
-}
-
-// Permuter les numéros de deux images
-async function swapImageNumbers(img1, img2) {
-  try {
-    const response = await fetch('/swap-images', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        image1: {
-          filename: img1.filename,
-          espece: img1.espece,
-          type: img1.type,
-          number: img1.number
-        },
-        image2: {
-          filename: img2.filename,
-          espece: img2.espece,
-          type: img2.type,
-          number: img2.number
-        }
-      })
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      addLog('success', result.message);
-      await loadExistingImages();
-      renderExistingImages();
-      restorePendingChanges(); // Restaurer les modifications en attente
-    } else {
-      addLog('error', result.error);
-    }
-    
-    showLog();
-  } catch (err) {
-    addLog('error', 'Erreur permutation: ' + err.message);
-    showLog();
-  }
-}
-
-// Changer le numéro d'une image (sans conflit)
-async function changeImageNumber(img, newNumber) {
-  try {
-    const response = await fetch('/change-number', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        filename: img.filename,
-        espece: img.espece,
-        type: img.type,
-        currentNumber: img.number,
-        newNumber: newNumber
-      })
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      addLog('success', result.message);
-      await loadExistingImages();
-      renderExistingImages();
-      restorePendingChanges(); // Restaurer les modifications en attente
-    } else {
-      addLog('error', result.error);
-    }
-    
-    showLog();
-  } catch (err) {
-    addLog('error', 'Erreur changement numéro: ' + err.message);
-    showLog();
-  }
 }
 
 // Sauvegarder toutes les modifications

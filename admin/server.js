@@ -405,45 +405,6 @@ app.post('/upload', upload.array('images'), async (req, res) => {
   }
 });
 
-// Git commit et push
-app.post('/git-publish', async (req, res) => {
-  try {
-    const { count } = req.body;
-    const projectRoot = path.join(__dirname, '..');
-    
-    // Git add
-    await execPromise('git add client/public/images/', { cwd: projectRoot });
-    
-    // Git commit - Sécurisé contre injection de commande
-    const safeCount = parseInt(count) || 0;
-    const commitMessage = `Add: ${safeCount} nouvelle(s) image(s) via interface admin`;
-    // Échapper les caractères dangereux
-    const sanitizedMessage = commitMessage.replace(/["'`$\\]/g, '\\$&');
-    await execPromise(`git commit -m "${sanitizedMessage}"`, { cwd: projectRoot });
-    
-    // Git push
-    await execPromise('git push', { cwd: projectRoot });
-    
-    res.json({ 
-      success: true, 
-      message: `${count} image(s) publiée(s) sur GitHub` 
-    });
-  } catch (err) {
-    // Si pas de changements, ce n'est pas une erreur
-    if (err.message.includes('nothing to commit')) {
-      res.json({ 
-        success: true, 
-        message: 'Aucun changement à publier' 
-      });
-    } else {
-      res.status(500).json({ 
-        success: false, 
-        error: err.message 
-      });
-    }
-  }
-});
-
 // Créer le dossier temp si nécessaire
 fs.mkdir(path.join(__dirname, 'temp'), { recursive: true }).catch(() => {});
 
