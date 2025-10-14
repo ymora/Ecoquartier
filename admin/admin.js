@@ -23,9 +23,7 @@ const filterEspece = document.getElementById('filterEspece');
 const filterType = document.getElementById('filterType');
 const resetFiltersBtn = document.getElementById('resetFilters');
 const existingImagesGrid = document.getElementById('existingImagesGrid');
-const selectedCount = document.getElementById('selectedCount');
 const saveAllBtn = document.getElementById('saveAll');
-const deleteSelectedBtn = document.getElementById('deleteSelected');
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
 const uploadQueue = document.getElementById('uploadQueue');
@@ -100,9 +98,8 @@ function attachEventListeners() {
   filterType.addEventListener('change', handleFilterChange);
   resetFiltersBtn.addEventListener('click', resetFilters);
 
-  // Sélection/suppression
+  // Sauvegarder tout
   saveAllBtn.addEventListener('click', saveAllModifications);
-  deleteSelectedBtn.addEventListener('click', deleteSelectedImages);
 
   // Upload
   dropzone.addEventListener('click', () => fileInput.click());
@@ -120,11 +117,9 @@ function attachEventListeners() {
 async function handleFilterChange() {
   state.filterEspece = filterEspece.value;
   state.filterType = filterType.value;
-  state.selectedImages.clear();
   
   await loadExistingImages();
   renderExistingImages();
-  updateSelectionUI();
 }
 
 function resetFilters() {
@@ -132,10 +127,8 @@ function resetFilters() {
   filterType.value = '';
   state.filterEspece = '';
   state.filterType = '';
-  state.selectedImages.clear();
   state.existingImages = [];
   renderExistingImages();
-  updateSelectionUI();
 }
 
 // Charger les images existantes avec filtres
@@ -170,12 +163,6 @@ function renderExistingImages() {
 
   existingImagesGrid.innerHTML = state.existingImages.map(img => `
     <div class="existing-item" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}">
-      <input 
-        type="checkbox" 
-        class="existing-item-checkbox"
-        data-filename="${escapeHTML(img.filename)}"
-      >
-      
       <img 
         src="http://localhost:3001${escapeHTML(img.path)}" 
         alt="${escapeHTML(img.filename)}" 
@@ -244,14 +231,6 @@ function renderExistingImages() {
 
 // Attacher les event listeners aux images existantes
 function attachExistingImageListeners() {
-  // Checkboxes
-  document.querySelectorAll('.existing-item-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', (e) => {
-      const filename = e.target.dataset.filename;
-      toggleImageSelection(filename, e.target.checked);
-    });
-  });
-
   // Images (clic pour zoom)
   document.querySelectorAll('.existing-item-thumb').forEach(img => {
     img.addEventListener('click', (e) => {
@@ -568,79 +547,6 @@ function closeImageModal() {
     modal.classList.remove('active');
     document.body.style.overflow = '';
   }
-}
-
-// Gestion sélection images
-function toggleImageSelection(filename, selected) {
-  const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
-  
-  if (selected) {
-    state.selectedImages.add(filename);
-    if (item) item.classList.add('selected');
-  } else {
-    state.selectedImages.delete(filename);
-    if (item) item.classList.remove('selected');
-  }
-  
-  updateSelectionUI();
-}
-
-function updateSelectionUI() {
-  const count = state.selectedImages.size;
-  selectedCount.textContent = `${count} sélectionnée(s)`;
-  deleteSelectedBtn.disabled = count === 0;
-}
-
-// Supprimer les images sélectionnées
-async function deleteSelectedImages() {
-  const count = state.selectedImages.size;
-  if (count === 0) return;
-
-  if (!confirm(`Supprimer ${count} image(s) ?`)) return;
-
-  deleteSelectedBtn.disabled = true;
-  deleteSelectedBtn.setAttribute('title', 'Suppression en cours...');
-  
-  const results = [];
-  
-  for (const filename of state.selectedImages) {
-    // Trouver l'espèce de cette image
-    const img = state.existingImages.find(i => i.filename === filename);
-    if (!img) continue;
-    
-    try {
-      const response = await fetch('/delete-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          espece: img.espece,
-          filename: filename
-        })
-      });
-      
-      const result = await response.json();
-      results.push(result);
-      
-      if (result.success) {
-        addLog('success', result.message);
-      } else {
-        addLog('error', result.error);
-      }
-    } catch (err) {
-      addLog('error', `Erreur: ${filename} - ${err.message}`);
-    }
-  }
-
-  // Recharger les images
-  state.selectedImages.clear();
-  await loadExistingImages();
-  renderExistingImages();
-  updateSelectionUI();
-  
-  deleteSelectedBtn.disabled = false;
-  deleteSelectedBtn.setAttribute('title', 'Supprimer la sélection');
-  
-  showLog();
 }
 
 // Drag & Drop

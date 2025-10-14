@@ -110,17 +110,6 @@ body {
   border-left: 2px solid var(--border-color);
 }
 
-.selected-count {
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  font-weight: 700;
-  min-width: 120px;
-  background: linear-gradient(135deg, rgba(46, 139, 87, 0.1), rgba(46, 139, 87, 0.2));
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-}
-
 /* SECTIONS */
 section {
   background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.95));
@@ -211,7 +200,7 @@ section h2 {
 /* Images existantes (format liste) */
 .existing-item {
   display: grid;
-  grid-template-columns: auto 80px 1fr auto auto auto;
+  grid-template-columns: 80px 1fr auto auto auto;
   gap: 1rem;
   padding: 0.75rem;
   background: var(--bg-secondary);
@@ -262,16 +251,6 @@ section h2 {
   box-shadow: 0 3px 8px var(--shadow);
 }
 
-.existing-item.selected {
-  border-color: var(--accent-primary);
-  background: var(--bg-tertiary);
-}
-
-.existing-item-checkbox {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
 
 .existing-item-thumb {
   width: 80px;
