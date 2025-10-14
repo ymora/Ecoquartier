@@ -47,6 +47,11 @@ async function init() {
   await loadConfig();
   populateFilters();
   attachEventListeners();
+  
+  // Charger toutes les images au démarrage
+  await loadExistingImages();
+  renderExistingImages();
+  
   addLog('info', '✓ Interface chargée');
 }
 
@@ -133,15 +138,19 @@ function resetFilters() {
 
 // Charger les images existantes avec filtres
 async function loadExistingImages() {
-  if (!state.filterEspece || !state.filterType) {
-    state.existingImages = [];
-    return;
-  }
-
   try {
-    const response = await fetch(
-      `/list-images?espece=${state.filterEspece}&type=${state.filterType}`
-    );
+    // Construire l'URL avec filtres optionnels
+    let url = '/list-images';
+    const params = new URLSearchParams();
+    
+    if (state.filterEspece) params.append('espece', state.filterEspece);
+    if (state.filterType) params.append('type', state.filterType);
+    
+    if (params.toString()) {
+      url += '?' + params.toString();
+    }
+    
+    const response = await fetch(url);
     const data = await response.json();
     state.existingImages = data.images || [];
   } catch (err) {
@@ -152,16 +161,23 @@ async function loadExistingImages() {
 
 // Afficher les images existantes
 function renderExistingImages() {
-  if (!state.filterEspece || !state.filterType) {
-    existingImagesGrid.innerHTML = '<p class="empty-message">Sélectionnez des filtres pour voir les images</p>';
-    return;
-  }
-
   if (state.existingImages.length === 0) {
-    existingImagesGrid.innerHTML = '<p class="empty-message">Aucune image trouvée pour ces filtres</p>';
+    existingImagesGrid.innerHTML = '<p class="empty-message">Aucune image trouvée</p>';
     return;
   }
 
+  // Grouper les images par espèce et type si pas de filtres
+  const shouldGroup = !state.filterEspece && !state.filterType;
+  
+  if (shouldGroup) {
+    renderGroupedImages();
+  } else {
+    renderSimpleImages();
+  }
+}
+
+// Affichage simple (avec filtres)
+function renderSimpleImages() {
   existingImagesGrid.innerHTML = state.existingImages.map(img => `
     <div class="image-card" data-filename="${escapeHTML(img.filename)}">
       <input 
@@ -179,7 +195,62 @@ function renderExistingImages() {
     </div>
   `).join('');
 
-  // Event listeners pour les cartes
+  attachImageCardListeners();
+}
+
+// Affichage groupé (sans filtres)
+function renderGroupedImages() {
+  // Grouper par espèce
+  const grouped = {};
+  state.existingImages.forEach(img => {
+    if (!grouped[img.espece]) {
+      grouped[img.espece] = {
+        nom: img.especeNom,
+        images: []
+      };
+    }
+    grouped[img.espece].images.push(img);
+  });
+
+  let html = '';
+  Object.keys(grouped).sort().forEach(especeId => {
+    const group = grouped[especeId];
+    html += `
+      <div class="image-group-header">
+        <h3>${escapeHTML(group.nom)}</h3>
+        <span class="image-count">${group.images.length} image(s)</span>
+      </div>
+    `;
+    
+    group.images.forEach(img => {
+      html += `
+        <div class="image-card" data-filename="${escapeHTML(img.filename)}">
+          <input 
+            type="checkbox" 
+            class="image-card-checkbox"
+            data-filename="${escapeHTML(img.filename)}"
+          >
+          <img 
+            src="http://localhost:3001${escapeHTML(img.path)}" 
+            alt="${escapeHTML(img.filename)}" 
+            class="image-card-thumb"
+          >
+          <div class="image-card-info">
+            <span class="type-badge">${escapeHTML(img.typeNom)}</span>
+            <span class="number-badge">#${escapeHTML(String(img.number))}</span>
+          </div>
+          <div class="image-card-name">${escapeHTML(img.filename)}</div>
+        </div>
+      `;
+    });
+  });
+
+  existingImagesGrid.innerHTML = html;
+  attachImageCardListeners();
+}
+
+// Attacher les event listeners aux cartes
+function attachImageCardListeners() {
   document.querySelectorAll('.image-card').forEach(card => {
     const checkbox = card.querySelector('.image-card-checkbox');
     const filename = card.dataset.filename;

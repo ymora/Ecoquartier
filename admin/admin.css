@@ -179,6 +179,52 @@ section h2 {
   font-size: 0.8rem;
   color: var(--text-secondary);
   text-align: center;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.type-badge {
+  background: var(--bg-tertiary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.number-badge {
+  font-weight: 600;
+}
+
+.image-group-header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 6px;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.image-group-header:first-child {
+  margin-top: 0;
+}
+
+.image-group-header h3 {
+  font-size: 1rem;
+  color: var(--accent-primary);
+  margin: 0;
+}
+
+.image-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 .image-card-name {

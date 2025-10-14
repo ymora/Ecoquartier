@@ -43,42 +43,80 @@ app.get('/images_completes.json', async (req, res) => {
   }
 });
 
-// Lister les images existantes pour une espèce et un type
+// Lister toutes les images existantes (avec filtres optionnels)
 app.get('/list-images', async (req, res) => {
   try {
     const { espece, type } = req.query;
+    const imagesDir = path.join(__dirname, '..', 'client', 'public', 'images');
     
-    if (!espece || !type) {
-      return res.json({ images: [] });
-    }
-    
-    const targetDir = path.join(__dirname, '..', 'client', 'public', 'images', espece);
+    let allImages = [];
     
     try {
-      const files = await fs.readdir(targetDir);
-      const pattern = new RegExp(`^${espece}_${type}_(\\d+)\\.(jpg|jpeg|png|webp)$`, 'i');
+      const especes = await fs.readdir(imagesDir, { withFileTypes: true });
       
-      const matchingImages = files
-        .filter(f => pattern.test(f))
-        .map(f => {
-          const match = f.match(pattern);
-          return {
-            filename: f,
-            number: parseInt(match[1]),
-            path: `/images/${espece}/${f}`
-          };
-        })
-        .sort((a, b) => a.number - b.number);
+      for (const especeDir of especes) {
+        if (!especeDir.isDirectory()) continue;
+        
+        const especeId = especeDir.name;
+        
+        // Filtrer par espèce si spécifié
+        if (espece && especeId !== espece) continue;
+        
+        const especePath = path.join(imagesDir, especeId);
+        const files = await fs.readdir(especePath);
+        
+        // Pattern pour détecter les images numérotées
+        const pattern = /^(.+?)_(.+?)_(\d+)\.(jpg|jpeg|png|webp)$/i;
+        
+        files.forEach(file => {
+          const match = file.match(pattern);
+          if (match) {
+            const [, fileEspece, fileType, fileNumber, fileExt] = match;
+            
+            // Filtrer par type si spécifié
+            if (type && fileType !== type) return;
+            
+            allImages.push({
+              filename: file,
+              espece: fileEspece,
+              especeNom: fileEspece.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+              type: fileType,
+              typeNom: getTypeLabel(fileType),
+              number: parseInt(fileNumber),
+              path: `/images/${especeId}/${file}`
+            });
+          }
+        });
+      }
       
-      res.json({ images: matchingImages });
+      // Trier par espèce, type, puis numéro
+      allImages.sort((a, b) => {
+        if (a.espece !== b.espece) return a.espece.localeCompare(b.espece);
+        if (a.type !== b.type) return a.type.localeCompare(b.type);
+        return a.number - b.number;
+      });
+      
+      res.json({ images: allImages });
     } catch (err) {
-      // Dossier n'existe pas encore
       res.json({ images: [] });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Fonction helper pour les labels de types
+function getTypeLabel(type) {
+  const labels = {
+    vue_generale: 'Vue générale',
+    bourgeons: 'Bourgeons',
+    fleurs: 'Fleurs',
+    fruits: 'Fruits',
+    automne: 'Automne',
+    hiver: 'Hiver'
+  };
+  return labels[type] || type;
+}
 
 // Supprimer une image
 app.post('/delete-image', async (req, res) => {
