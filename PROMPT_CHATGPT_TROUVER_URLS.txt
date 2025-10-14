@@ -1,19 +1,31 @@
-Je veux que tu complètes ce fichier JSON en trouvant des URLs d'images GRATUITES (Pexels, Unsplash, Pixabay) pour remplacer tous les "CHATGPT_DALLE".
+Je veux que tu trouves des URLs de VRAIES PHOTOS gratuites (Pexels, Unsplash, Pixabay) pour compléter ce fichier JSON.
 
-Pour chaque image marquée "CHATGPT_DALLE", trouve une URL directe vers une image JPG qui correspond exactement à la description.
+MISSION :
+- Remplacer TOUS les "A_CHERCHER" par des URLs directes d'images JPG/JPEG
+- Trouver de VRAIES photos botaniques professionnelles (PAS générer avec DALL-E)
+- Les URLs doivent être des liens DIRECTS vers les fichiers image
 
-IMPORTANT : Les URLs doivent être des liens DIRECTS vers les fichiers .jpg/.jpeg, pas des pages web.
+FORMAT URLs VALIDES (liens directs) :
+✅ Pexels : https://images.pexels.com/photos/12345/pexels-photo-12345.jpeg?auto=compress&cs=tinysrgb&w=1600
+✅ Unsplash : https://images.unsplash.com/photo-xxxxx?w=1600
+✅ Pixabay : https://pixabay.com/get/gxxxxx_1600.jpg
 
-Format URLs valides :
-- Pexels : https://images.pexels.com/photos/XXXXX/pexels-photo-XXXXX.jpeg?auto=compress&cs=tinysrgb&w=1600
-- Unsplash : https://images.unsplash.com/photo-XXXXX?w=1600
-- Pixabay : https://pixabay.com/get/gXXXXXX_1600.jpg
+❌ PAS : https://www.pexels.com/photo/... (page web)
+❌ PAS : Générer avec DALL-E
 
-Voici le JSON à compléter :
+MÉTHODE DE RECHERCHE :
+Pour chaque image "A_CHERCHER" :
+1. Lire la description (ex: "Capsules rose-rouge vif fusain automne")
+2. Chercher sur Pexels/Unsplash avec mots-clés anglais (ex: "euonymus fruits capsules pink red")
+3. Trouver l'URL DIRECTE de l'image
+4. Remplacer "A_CHERCHER" par cette URL
+
+VOICI LE JSON À COMPLÉTER :
 
 ```json
-[COLLER ICI LE CONTENU DE images_completes.json]
+{COLLER_ICI_LE_CONTENU_DE_images_completes.json}
 ```
 
-Retourne-moi le JSON COMPLET avec toutes les URLs remplies, prêt à être copié-collé dans mon fichier images_completes.json.
+RETOURNE-MOI le JSON COMPLET avec toutes les URLs remplies, formaté correctement, prêt à copier-coller dans mon fichier images_completes.json.
 
+IMPORTANT : Ne génère PAS d'images, trouve des VRAIES photos existantes sur Pexels/Unsplash/Pixabay.
