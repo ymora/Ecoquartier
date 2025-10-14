@@ -725,7 +725,19 @@ function renderUploadQueue() {
     return;
   }
 
-  uploadQueue.innerHTML = state.uploadQueue.map(item => `
+  uploadQueue.innerHTML = state.uploadQueue.map(item => {
+    let nextNumberInfo = '';
+    
+    // Si espèce et type sont sélectionnés, calculer le prochain numéro
+    if (item.espece && item.type) {
+      const existingCount = state.existingImages.filter(img => 
+        img.espece === item.espece && img.type === item.type
+      ).length;
+      const nextNumber = existingCount + 1;
+      nextNumberInfo = `→ #${String(nextNumber).padStart(2, '0')}`;
+    }
+    
+    return `
     <div class="upload-item" data-id="${item.id}">
       <img src="${item.preview}" alt="${escapeHTML(item.file.name)}" class="upload-item-thumb">
       
@@ -751,6 +763,7 @@ function renderUploadQueue() {
               `).join('')}
             </select>
           </div>
+          ${nextNumberInfo ? `<div class="next-number-badge">${nextNumberInfo}</div>` : ''}
         </div>
       </div>
       
@@ -766,7 +779,8 @@ function renderUploadQueue() {
         🗑️
       </button>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   uploadActions.classList.remove('hidden');
 
@@ -776,7 +790,7 @@ function renderUploadQueue() {
       const item = state.uploadQueue.find(i => i.id === Number(e.target.dataset.id));
       item.espece = e.target.value;
       item.type = '';
-      renderUploadQueue();
+      renderUploadQueue(); // Re-render pour mettre à jour le badge numéro
     });
   });
 
@@ -784,7 +798,7 @@ function renderUploadQueue() {
     select.addEventListener('change', (e) => {
       const item = state.uploadQueue.find(i => i.id === Number(e.target.dataset.id));
       item.type = e.target.value;
-      renderUploadQueue();
+      renderUploadQueue(); // Re-render pour afficher le prochain numéro
     });
   });
 
