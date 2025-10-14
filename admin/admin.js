@@ -206,9 +206,19 @@ function renderExistingImages() {
         </div>
       </div>
       
-      <span class="existing-item-info">
-        #${escapeHTML(String(img.number))}
-      </span>
+      <div class="existing-item-number">
+        <label>#</label>
+        <input 
+          type="number" 
+          min="1" 
+          max="99" 
+          value="${img.number}" 
+          class="input-number"
+          data-filename="${escapeHTML(img.filename)}"
+          data-current-number="${img.number}"
+          title="Changer le numéro (permute automatiquement)"
+        >
+      </div>
       
       <button class="btn-icon-outline btn-success-outline" data-filename="${escapeHTML(img.filename)}" title="Sauvegarder les modifications">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -304,10 +314,120 @@ function attachExistingImageListeners() {
         btn.setAttribute('title', 'Sauvegarder les modifications *');
       }
       
-      // Activer le bouton "Sauvegarder tout"
       updateSaveAllButton();
     });
   });
+
+  // Changements de numéro (permutation)
+  document.querySelectorAll('.input-number').forEach(input => {
+    input.addEventListener('change', async (e) => {
+      const filename = e.target.dataset.filename;
+      const currentNumber = parseInt(e.target.dataset.currentNumber);
+      const newNumber = parseInt(e.target.value);
+      
+      if (newNumber === currentNumber || newNumber < 1) {
+        e.target.value = currentNumber;
+        return;
+      }
+      
+      const img = state.existingImages.find(i => i.filename === filename);
+      if (!img) return;
+      
+      // Vérifier si le nouveau numéro existe déjà
+      const targetImg = state.existingImages.find(i => 
+        i.espece === img.espece && 
+        i.type === img.type && 
+        i.number === newNumber
+      );
+      
+      if (targetImg) {
+        // Permutation nécessaire
+        if (confirm(`Permuter #${currentNumber} ↔ #${newNumber} ?`)) {
+          await swapImageNumbers(img, targetImg);
+        } else {
+          e.target.value = currentNumber;
+        }
+      } else {
+        // Pas de conflit, juste renommer
+        if (confirm(`Changer le numéro de #${currentNumber} à #${newNumber} ?`)) {
+          await changeImageNumber(img, newNumber);
+        } else {
+          e.target.value = currentNumber;
+        }
+      }
+    });
+  });
+}
+
+// Permuter les numéros de deux images
+async function swapImageNumbers(img1, img2) {
+  try {
+    const response = await fetch('/swap-images', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        image1: {
+          filename: img1.filename,
+          espece: img1.espece,
+          type: img1.type,
+          number: img1.number
+        },
+        image2: {
+          filename: img2.filename,
+          espece: img2.espece,
+          type: img2.type,
+          number: img2.number
+        }
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      addLog('success', result.message);
+      await loadExistingImages();
+      renderExistingImages();
+    } else {
+      addLog('error', result.error);
+    }
+    
+    showLog();
+  } catch (err) {
+    addLog('error', 'Erreur permutation: ' + err.message);
+    showLog();
+  }
+}
+
+// Changer le numéro d'une image (sans conflit)
+async function changeImageNumber(img, newNumber) {
+  try {
+    const response = await fetch('/change-number', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: img.filename,
+        espece: img.espece,
+        type: img.type,
+        currentNumber: img.number,
+        newNumber: newNumber
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      addLog('success', result.message);
+      await loadExistingImages();
+      renderExistingImages();
+    } else {
+      addLog('error', result.error);
+    }
+    
+    showLog();
+  } catch (err) {
+    addLog('error', 'Erreur changement numéro: ' + err.message);
+    showLog();
+  }
 }
 
 // Sauvegarder toutes les modifications

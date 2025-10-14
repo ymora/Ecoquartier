@@ -118,6 +118,77 @@ function getTypeLabel(type) {
   return labels[type] || type;
 }
 
+// Permuter les numéros de deux images
+app.post('/swap-images', async (req, res) => {
+  try {
+    const { image1, image2 } = req.body;
+    
+    if (!image1 || !image2) {
+      return res.status(400).json({ success: false, error: 'Paramètres manquants' });
+    }
+    
+    const imagesDir = path.join(__dirname, '..', 'client', 'public', 'images');
+    
+    // Chemins des fichiers
+    const path1 = path.join(imagesDir, image1.espece, image1.filename);
+    const path2 = path.join(imagesDir, image2.espece, image2.filename);
+    
+    // Fichier temporaire pour la permutation
+    const tempPath = path.join(imagesDir, image1.espece, `temp_swap_${Date.now()}.tmp`);
+    
+    try {
+      // Permutation en 3 étapes (éviter écrasement)
+      await fs.rename(path1, tempPath);
+      await fs.rename(path2, path1);
+      await fs.rename(tempPath, path2);
+      
+      res.json({
+        success: true,
+        message: `✓ Permutation #${image1.number} ↔ #${image2.number}`
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Erreur permutation: ' + err.message });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Changer le numéro d'une image (sans conflit)
+app.post('/change-number', async (req, res) => {
+  try {
+    const { filename, espece, type, currentNumber, newNumber } = req.body;
+    
+    if (!filename || !espece || !type || !currentNumber || !newNumber) {
+      return res.status(400).json({ success: false, error: 'Paramètres manquants' });
+    }
+    
+    const imagesDir = path.join(__dirname, '..', 'client', 'public', 'images');
+    const oldPath = path.join(imagesDir, espece, filename);
+    
+    // Extraire l'extension
+    const extMatch = filename.match(/(\.[^.]+)$/);
+    const extension = extMatch ? extMatch[1] : '.jpg';
+    
+    const newFilename = `${espece}_${type}_${String(newNumber).padStart(2, '0')}${extension}`;
+    const newPath = path.join(imagesDir, espece, newFilename);
+    
+    try {
+      await fs.rename(oldPath, newPath);
+      
+      res.json({
+        success: true,
+        message: `✓ #${currentNumber} → #${newNumber}`,
+        newFilename
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Erreur renommage: ' + err.message });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Renommer/déplacer une image
 app.post('/rename-image', async (req, res) => {
   try {
