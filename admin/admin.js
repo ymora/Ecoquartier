@@ -159,112 +159,207 @@ async function loadExistingImages() {
   }
 }
 
-// Afficher les images existantes
+// Afficher les images existantes (format liste unifié)
 function renderExistingImages() {
   if (state.existingImages.length === 0) {
     existingImagesGrid.innerHTML = '<p class="empty-message">Aucune image trouvée</p>';
     return;
   }
 
-  // Grouper les images par espèce et type si pas de filtres
-  const shouldGroup = !state.filterEspece && !state.filterType;
-  
-  if (shouldGroup) {
-    renderGroupedImages();
-  } else {
-    renderSimpleImages();
-  }
-}
-
-// Affichage simple (avec filtres)
-function renderSimpleImages() {
   existingImagesGrid.innerHTML = state.existingImages.map(img => `
-    <div class="image-card" data-filename="${escapeHTML(img.filename)}">
+    <div class="existing-item" data-filename="${escapeHTML(img.filename)}">
       <input 
         type="checkbox" 
-        class="image-card-checkbox"
+        class="existing-item-checkbox"
         data-filename="${escapeHTML(img.filename)}"
       >
+      
       <img 
         src="http://localhost:3001${escapeHTML(img.path)}" 
         alt="${escapeHTML(img.filename)}" 
-        class="image-card-thumb"
+        class="existing-item-thumb"
+        data-fullpath="${escapeHTML(img.path)}"
       >
-      <div class="image-card-info">#${escapeHTML(String(img.number))}</div>
-      <div class="image-card-name">${escapeHTML(img.filename)}</div>
+      
+      <div class="existing-item-config">
+        <div>
+          <div class="existing-item-name">${escapeHTML(img.filename)}</div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <select class="config-espece-existing" data-filename="${escapeHTML(img.filename)}">
+              ${ESPECES.map(e => `
+                <option value="${e.id}" ${img.espece === e.id ? 'selected' : ''}>
+                  ${escapeHTML(e.nom)}
+                </option>
+              `).join('')}
+            </select>
+            
+            <select class="config-type-existing" data-filename="${escapeHTML(img.filename)}">
+              ${TYPES.map(t => `
+                <option value="${t.id}" ${img.type === t.id ? 'selected' : ''}>
+                  ${escapeHTML(t.nom)}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <span class="existing-item-info">
+        #${escapeHTML(String(img.number))}
+      </span>
+      
+      <button class="btn-small btn-primary" data-filename="${escapeHTML(img.filename)}">
+        💾 Sauver
+      </button>
     </div>
   `).join('');
 
-  attachImageCardListeners();
+  attachExistingImageListeners();
 }
 
-// Affichage groupé (sans filtres)
-function renderGroupedImages() {
-  // Grouper par espèce
-  const grouped = {};
-  state.existingImages.forEach(img => {
-    if (!grouped[img.espece]) {
-      grouped[img.espece] = {
-        nom: img.especeNom,
-        images: []
-      };
-    }
-    grouped[img.espece].images.push(img);
-  });
-
-  let html = '';
-  Object.keys(grouped).sort().forEach(especeId => {
-    const group = grouped[especeId];
-    html += `
-      <div class="image-group-header">
-        <h3>${escapeHTML(group.nom)}</h3>
-        <span class="image-count">${group.images.length} image(s)</span>
-      </div>
-    `;
-    
-    group.images.forEach(img => {
-      html += `
-        <div class="image-card" data-filename="${escapeHTML(img.filename)}">
-          <input 
-            type="checkbox" 
-            class="image-card-checkbox"
-            data-filename="${escapeHTML(img.filename)}"
-          >
-          <img 
-            src="http://localhost:3001${escapeHTML(img.path)}" 
-            alt="${escapeHTML(img.filename)}" 
-            class="image-card-thumb"
-          >
-          <div class="image-card-info">
-            <span class="type-badge">${escapeHTML(img.typeNom)}</span>
-            <span class="number-badge">#${escapeHTML(String(img.number))}</span>
-          </div>
-          <div class="image-card-name">${escapeHTML(img.filename)}</div>
-        </div>
-      `;
-    });
-  });
-
-  existingImagesGrid.innerHTML = html;
-  attachImageCardListeners();
-}
-
-// Attacher les event listeners aux cartes
-function attachImageCardListeners() {
-  document.querySelectorAll('.image-card').forEach(card => {
-    const checkbox = card.querySelector('.image-card-checkbox');
-    const filename = card.dataset.filename;
-
-    card.addEventListener('click', (e) => {
-      if (e.target === checkbox) return;
-      checkbox.checked = !checkbox.checked;
-      toggleImageSelection(filename, checkbox.checked);
-    });
-
+// Attacher les event listeners aux images existantes
+function attachExistingImageListeners() {
+  // Checkboxes
+  document.querySelectorAll('.existing-item-checkbox').forEach(checkbox => {
     checkbox.addEventListener('change', (e) => {
+      const filename = e.target.dataset.filename;
       toggleImageSelection(filename, e.target.checked);
     });
   });
+
+  // Images (clic pour zoom)
+  document.querySelectorAll('.existing-item-thumb').forEach(img => {
+    img.addEventListener('click', (e) => {
+      const fullPath = e.target.dataset.fullpath;
+      openImageModal(`http://localhost:3001${fullPath}`);
+    });
+    img.style.cursor = 'pointer';
+  });
+
+  // Boutons sauver
+  document.querySelectorAll('.existing-item .btn-primary').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const filename = e.currentTarget.dataset.filename;
+      await renameExistingImage(filename);
+    });
+  });
+
+  // Changements de selects
+  document.querySelectorAll('.config-espece-existing, .config-type-existing').forEach(select => {
+    select.addEventListener('change', (e) => {
+      const filename = e.target.dataset.filename;
+      const btn = document.querySelector(`.existing-item .btn-primary[data-filename="${filename}"]`);
+      if (btn) {
+        btn.style.background = '#ed8936'; // Orange pour indiquer changement non sauvé
+        btn.textContent = '💾 Sauver *';
+      }
+    });
+  });
+}
+
+// Renommer une image existante
+async function renameExistingImage(oldFilename) {
+  const item = document.querySelector(`.existing-item[data-filename="${oldFilename}"]`);
+  const especeSelect = item.querySelector('.config-espece-existing');
+  const typeSelect = item.querySelector('.config-type-existing');
+  const btn = item.querySelector('.btn-primary');
+  
+  const newEspece = especeSelect.value;
+  const newType = typeSelect.value;
+  
+  // Trouver l'image dans state
+  const img = state.existingImages.find(i => i.filename === oldFilename);
+  if (!img) return;
+  
+  // Si rien n'a changé
+  if (img.espece === newEspece && img.type === newType) {
+    alert('Aucune modification détectée');
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.textContent = '⏳ Sauvegarde...';
+  
+  try {
+    const response = await fetch('/rename-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        oldFilename: oldFilename,
+        oldEspece: img.espece,
+        newEspece: newEspece,
+        newType: newType
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      addLog('success', result.message);
+      btn.style.background = '#48bb78'; // Vert
+      btn.textContent = '✓ Sauvé';
+      
+      // Recharger les images
+      setTimeout(async () => {
+        await loadExistingImages();
+        renderExistingImages();
+      }, 1000);
+    } else {
+      addLog('error', result.error);
+      btn.disabled = false;
+      btn.textContent = '💾 Sauver';
+    }
+  } catch (err) {
+    addLog('error', 'Erreur: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = '💾 Sauver';
+  }
+  
+  showLog();
+}
+
+// Modal d'image en plein écran
+function openImageModal(imageSrc) {
+  // Créer le modal s'il n'existe pas
+  let modal = document.getElementById('imageModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'imageModal';
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+      <div class="image-modal-overlay"></div>
+      <div class="image-modal-content">
+        <button class="image-modal-close">✕</button>
+        <img class="image-modal-img" src="" alt="Image en plein écran">
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Event listeners
+    modal.querySelector('.image-modal-overlay').addEventListener('click', closeImageModal);
+    modal.querySelector('.image-modal-close').addEventListener('click', closeImageModal);
+    
+    // Fermer avec Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeImageModal();
+      }
+    });
+  }
+  
+  // Afficher le modal
+  const img = modal.querySelector('.image-modal-img');
+  img.src = imageSrc;
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+  const modal = document.getElementById('imageModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
 }
 
 // Gestion sélection images

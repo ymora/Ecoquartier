@@ -118,6 +118,54 @@ function getTypeLabel(type) {
   return labels[type] || type;
 }
 
+// Renommer/déplacer une image
+app.post('/rename-image', async (req, res) => {
+  try {
+    const { oldFilename, oldEspece, newEspece, newType } = req.body;
+    
+    if (!oldFilename || !oldEspece || !newEspece || !newType) {
+      return res.status(400).json({ success: false, error: 'Paramètres manquants' });
+    }
+    
+    const imagesDir = path.join(__dirname, '..', 'client', 'public', 'images');
+    const oldPath = path.join(imagesDir, oldEspece, oldFilename);
+    
+    // Extraire le numéro et l'extension
+    const match = oldFilename.match(/^.+?_.+?_(\d+)(\..+)$/);
+    if (!match) {
+      return res.status(400).json({ success: false, error: 'Nom de fichier invalide' });
+    }
+    
+    const [, oldNumber, extension] = match;
+    
+    // Trouver le prochain numéro disponible pour le nouveau type
+    const targetDir = path.join(imagesDir, newEspece);
+    await fs.mkdir(targetDir, { recursive: true });
+    
+    const nextNumber = await getNextImageNumber(targetDir, `${newEspece}_${newType}`, extension);
+    const newFilename = `${newEspece}_${newType}_${String(nextNumber).padStart(2, '0')}${extension}`;
+    const newPath = path.join(targetDir, newFilename);
+    
+    try {
+      // Copier le fichier
+      await fs.copyFile(oldPath, newPath);
+      
+      // Supprimer l'ancien
+      await fs.unlink(oldPath);
+      
+      res.json({ 
+        success: true, 
+        message: `✓ ${oldFilename} → ${newFilename}`,
+        newFilename
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Erreur lors du déplacement: ' + err.message });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Supprimer une image
 app.post('/delete-image', async (req, res) => {
   try {
