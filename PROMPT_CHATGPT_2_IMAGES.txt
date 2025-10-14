@@ -1,0 +1,40 @@
+Génère avec DALL-E 3 ces 2 images botaniques photoréalistes et nomme-les EXACTEMENT :
+
+1. prunus-accolade_vue_generale.jpg
+   Cerisier Prunus Accolade (Prunus × subhirtella 'Accolade')
+   - Arbre 6-8 mètres de haut
+   - Port étalé GRACIEUX avec branches arquées
+   - Entièrement couvert de fleurs semi-doubles ROSE PÂLE à blanc rosé
+   - Floraison mars-avril (précoce)
+   - Contexte : jardin ou parc
+   - Style : photo professionnelle, lumière naturelle douce
+   - Vue : arbre entier en floraison
+
+2. prunus-sunset-boulevard_automne.jpg
+   Feuillage automnal Prunus Sunset Boulevard
+   - Feuillage ORANGE VIF à ROUGE FLAMBOYANT (spectaculaire)
+   - Couleurs d'automne éclatantes
+   - Arbre entier ou grande branche avec feuilles
+   - Saison : octobre-novembre
+   - Style : photo d'automne professionnelle
+   - Lumière : chaude, dorée
+   - Fond : ciel bleu d'automne ou arrière-plan naturel
+
+CRITÈRES TECHNIQUES :
+- Format : JPG haute résolution (minimum 1600x1200px)
+- Style : Photoréalisme botanique professionnel
+- Éclairage : Naturel, doux
+- Composition : Centrée, arrière-plan légèrement flou pour la vue générale
+- Netteté : HD
+- Couleurs : Fidèles à la réalité botanique
+
+NOMENCLATURE CRITIQUE :
+Nomme les fichiers téléchargés EXACTEMENT comme indiqué :
+- prunus-accolade_vue_generale.jpg (avec tiret et underscore)
+- prunus-sunset-boulevard_automne.jpg (avec tirets et underscore)
+
+Après génération :
+1. Télécharge les 2 images
+2. Vérifie les noms (doivent être EXACTS)
+3. Place-les dans le dossier "downloads" de mon projet
+
