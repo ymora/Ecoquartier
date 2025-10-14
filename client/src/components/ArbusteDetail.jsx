@@ -25,10 +25,7 @@ function ArbusteDetail({ arbuste }) {
   return (
     <div className="arbuste-detail">
       <div className="arbuste-header">
-        <h1>
-          {arbuste.name}
-          <FiabiliteBadge niveau="haute" info="Nom botanique vérifié - Source : Index Botanicus" />
-        </h1>
+        <h1>{arbuste.name}</h1>
         <p className="scientific-name">{arbuste.nomScientifique}</p>
         <p className="family">Famille : {arbuste.famille}</p>
       </div>
