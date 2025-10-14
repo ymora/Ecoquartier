@@ -106,14 +106,14 @@ Toute la documentation détaillée est maintenant dans le répertoire `docs/` :
 ```
 Haies/
 │
-├── 📄 README.md                        (Vue d'ensemble)
-├── 📄 DEPLOIEMENT.md                   (Guide Render)
-├── 📄 IMAGES.md                        (Guide images)
-├── 📄 CHANGELOG.md                     (Historique)
+├── 📄 README.md                        ← Simple (30 lignes)
 │
-├── 📂 docs/                            (Documentation technique)
-│   ├── VALIDATION_SOURCES.md
-│   ├── COMPARAISON_MODES.md
+├── 📂 docs/                            ← Toute la documentation
+│   ├── DEPLOIEMENT.md                  (Guide Render complet)
+│   ├── IMAGES.md                       (Guide images complet)
+│   ├── CHANGELOG.md                    (Historique versions)
+│   ├── VALIDATION_SOURCES.md           (Fiabilité données)
+│   ├── COMPARAISON_MODES.md            (Parité modes)
 │   └── STRUCTURE_PROJET.md             (ce fichier)
 │
 ├── 🔧 render.yaml                      (Config Render)
@@ -142,63 +142,66 @@ Haies/
 
 ## 🎯 GUIDE RAPIDE
 
+### **Pour commencer** :
+→ Lire **README.md** (racine)
+
 ### **Pour déployer** :
-→ Lire **DEPLOIEMENT.md**
+→ Lire **docs/DEPLOIEMENT.md**
 
 ### **Pour ajouter des images** :
-→ Lire **IMAGES.md**
+→ Lire **docs/IMAGES.md**
 
 ### **Pour comprendre la fiabilité des données** :
 → Lire **docs/VALIDATION_SOURCES.md**
 
-### **Pour comparer les modes d'affichage** :
-→ Lire **docs/COMPARAISON_MODES.md**
+### **Pour l'historique des versions** :
+→ Lire **docs/CHANGELOG.md**
 
 ---
 
 ## 📈 AVANT / APRÈS
 
-### ❌ Avant (11 fichiers .md)
+### ❌ Avant (6 fichiers .md à la racine)
 ```
-README.md
+README.md                         ← 162 lignes (trop détaillé)
 DEPLOIEMENT.md
-GUIDE_DEPLOIEMENT_RENDER.md     ← Redondant
-ETAPES_DEPLOIEMENT.md           ← Redondant
-DEPLOIEMENT_MANUEL_RENDER.md    ← Redondant
-GUIDE_TELECHARGEMENT.md         ← Redondant
-COMMENT_OBTENIR_URLS.md         ← Redondant
-PROBLEME_URLS.md                ← Redondant
-VALIDATION_SOURCES.md           ← Technique
-COMPARAISON_MODES.md            ← Technique
+IMAGES.md
 CHANGELOG.md
+AUTORISER_RENDER_GITHUB.md        ← Redondant
+TELECHARGER_IMAGES_MANUELLEMENT.md ← Redondant
 ```
 
-### ✅ Après (3 + 2 fichiers .md)
+### ✅ Après (1 fichier .md à la racine)
 ```
-README.md                       (Vue d'ensemble)
-DEPLOIEMENT.md                  (Consolidé × 3)
-IMAGES.md                       (Consolidé × 3)
-CHANGELOG.md                    (Historique)
+README.md                         ← 30 lignes (simplifié)
 
 docs/
-├── VALIDATION_SOURCES.md       (Technique)
-├── COMPARAISON_MODES.md        (Technique)
-└── STRUCTURE_PROJET.md         (Ce fichier)
+├── DEPLOIEMENT.md                (+ contenu AUTORISER_RENDER_GITHUB.md)
+├── IMAGES.md                     (+ contenu TELECHARGER_IMAGES...)
+├── CHANGELOG.md                  (déplacé)
+├── VALIDATION_SOURCES.md
+├── COMPARAISON_MODES.md
+└── STRUCTURE_PROJET.md
 ```
 
-**Réduction de 45% des fichiers !** 📉
+**Résultat** :
+- ✅ **1 seul fichier MD à la racine** (README simplifié)
+- ✅ **Toute la documentation dans docs/**
+- ✅ **Pas de redondance**
+- ✅ **Organisation claire et logique**
 
 ---
 
 ## ✅ AVANTAGES
 
-1. **Moins de confusion** - 3 guides clairs au lieu de 11
-2. **Pas de redondance** - Chaque info à un seul endroit
-3. **Organisation logique** - Guides essentiels en racine, technique dans docs/
-4. **Navigation facile** - README pointe vers tout
-5. **Maintenance simple** - Moins de fichiers à maintenir
+1. **Organisation claire** - 1 seul README simple à la racine
+2. **Documentation centralisée** - Tout dans `docs/`
+3. **Pas de redondance** - Contenu consolidé
+4. **Navigation facile** - Liens clairs depuis README
+5. **Maintenance simple** - Structure logique et organisée
+6. **Conformité** - Suit les meilleures pratiques GitHub
 
 ---
 
-**✅ Documentation consolidée et organisée !**
+**✅ Documentation consolidée et parfaitement organisée !**
 
