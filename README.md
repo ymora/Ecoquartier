@@ -1,44 +1,95 @@
-# 🌿 Les Haies de l'Écocartier de Bessancourt
+# 🌳 Les Haies de l'Écocartier de Bessancourt
 
-Application web interactive présentant les arbustes et arbres pour haies champêtres de l'écocartier de Bessancourt.
+Application web interactive pour découvrir les arbres et arbustes de l'écocartier de Bessancourt avec informations botaniques détaillées, réglementation et conseils d'entretien.
 
-## 🚀 Démarrage Rapide
+## 🎯 Fonctionnalités
+
+- ✅ **9 espèces documentées** (Prunus, Noisetier, Fusain, Troène, Osmanthe, Cornouiller, Seringat)
+- ✅ **Mode classique** : Fiches détaillées avec 7 onglets
+- ✅ **Mode comparaison** : Comparer 2-3 plantes côte à côte
+- ✅ **Galerie photos** : 6 types par espèce (vue, bourgeons, fleurs, fruits, automne, hiver)
+- ✅ **Réglementation** : Distances légales, système racinaire, risques
+- ✅ **Badges fiabilité** : Niveau de confiance des données
+- ✅ **Responsive** : Adapté mobile/tablette/desktop
+
+## 🚀 Installation Locale
 
 ```bash
+# Cloner le projet
+git clone https://github.com/ymora/Ecoquartier.git
+cd Ecoquartier
+
+# Installer et lancer
 cd client
 npm install
 npm run dev
 ```
 
-Ouvrir [http://localhost:5173](http://localhost:5173)
+→ Ouvrir http://localhost:5173
 
-## ✨ Fonctionnalités
+## 📸 Compléter les Images (5 minutes)
 
-- 🌳 **3 arbres** et **6 arbustes** documentés avec fiches botaniques complètes
-- 📋 Calendrier d'entretien annuel (12 mois)
-- ⚖️ Réglementation et distances légales (Code Civil)
-- 🔍 Mode comparaison (2-3 plantes côte à côte)
-- 📸 Galerie photos interactive avec zoom
-- 🦋 Informations biodiversité et écologie
-- ⚠️ Avertissements toxicité et précautions
+### **État actuel : 17/54 images (31%)**
 
-## 📚 Documentation Complète
+### **Workflow** :
 
-Toute la documentation est disponible dans le répertoire **[docs/](docs/)** :
+```bash
+# 1. Copier PROMPT_CHATGPT_TROUVER_URLS.txt dans ChatGPT
+# 2. Copier images_completes.json dans le prompt
+# 3. ChatGPT cherche les 37 URLs manquantes (vraies photos)
+# 4. Copier le JSON retourné → images_completes.json
+# 5. Lancer le script
+python telecharger_toutes_images.py
 
-- **[DEPLOIEMENT.md](docs/DEPLOIEMENT.md)** - Déployer sur Render en 7 minutes
-- **[IMAGES.md](docs/IMAGES.md)** - Guide complet pour ajouter/gérer les images
-- **[CHANGELOG.md](docs/CHANGELOG.md)** - Historique des versions
-- **[VALIDATION_SOURCES.md](docs/VALIDATION_SOURCES.md)** - Fiabilité des données
-- **[COMPARAISON_MODES.md](docs/COMPARAISON_MODES.md)** - Parité des modes d'affichage
-- **[STRUCTURE_PROJET.md](docs/STRUCTURE_PROJET.md)** - Organisation du projet
+# ✅ 54/54 images téléchargées !
+```
 
-## 🎯 Technologies
+Voir détails : `GUIDE_IMAGES.md`
 
-- **Frontend** : React 18 + Vite
-- **Styling** : CSS3 (thème clair naturel)
+## 🌐 Déploiement sur Render
+
+```bash
+# Le code est déjà sur GitHub : https://github.com/ymora/Ecoquartier
+
+# Sur Render :
+1. dashboard.render.com
+2. Sign Up with GitHub
+3. New + → Blueprint
+4. Connect "Ecoquartier"
+5. Apply (détecte render.yaml auto)
+6. Attendre 3-5 min
+
+✅ Site en ligne !
+```
+
+Voir détails : `docs/DEPLOIEMENT.md`
+
+## 📚 Documentation
+
+- **[GUIDE_IMAGES.md](GUIDE_IMAGES.md)** - Système d'images complet
+- **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)** - Déploiement Render
+- **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Historique versions
+- **[docs/VALIDATION_SOURCES.md](docs/VALIDATION_SOURCES.md)** - Fiabilité données
+
+## 🛠️ Technologies
+
+- **Frontend** : React 18.3 + Vite 6.3
+- **Styling** : CSS3 moderne (thème clair)
 - **Icons** : React Icons
-- **Déploiement** : Render
+- **Backend** : PHP (API images - optionnel)
+- **Déploiement** : Render (CDN + HTTPS auto)
+
+## 📊 Statistiques
+
+```
+Composants React   : 10
+Fichiers données   : 3
+Espèces           : 9
+Images prévues    : 54 (6 par espèce)
+Images actuelles  : 17
+Critères/plante   : 50+
+Onglets          : 7
+```
 
 ## 📄 Licence
 
