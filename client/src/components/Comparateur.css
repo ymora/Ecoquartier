@@ -16,28 +16,7 @@
 .comparateur-header h1 {
   font-size: 2rem;
   color: var(--accent-primary);
-}
-
-.close-comparateur {
-  background: var(--danger);
-  border: none;
-  color: white;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.close-comparateur:hover {
-  background: #c53030;
-  transform: rotate(90deg) scale(1.1);
+  text-align: center;
 }
 
 /* Intro */

@@ -5,7 +5,7 @@ import { informationsComplementaires } from '../data/informationsComplementaires
 import FiabiliteBadge from './FiabiliteBadge';
 import './Comparateur.css';
 
-function Comparateur({ plantes, onClose }) {
+function Comparateur({ plantes }) {
   const [selectedPlantes, setSelectedPlantes] = useState([]);
   const [imageIndices, setImageIndices] = useState({});
 
@@ -72,9 +72,6 @@ function Comparateur({ plantes, onClose }) {
     <div className="comparateur">
       <div className="comparateur-header">
         <h1>🔍 Mode Comparaison</h1>
-        <button className="close-comparateur" onClick={onClose} aria-label="Fermer">
-          <FaTimes />
-        </button>
       </div>
 
       {selectedPlantes.length === 0 && (
