@@ -1,27 +1,42 @@
 # 📁 Structure du Projet
 
-## 🎯 ORGANISATION SIMPLIFIÉE
+## 🎯 ORGANISATION CONSOLIDÉE
 
-La documentation a été consolidée de **11 fichiers .md** → **3 fichiers essentiels**
+La documentation a été entièrement consolidée dans le répertoire `docs/` pour une meilleure organisation.
 
 ---
 
-## 📚 DOCUMENTATION RACINE
+## 📚 DOCUMENTATION
 
-### **README.md** 
-→ Vue d'ensemble du projet, installation, utilisation
+### **README.md** (racine)
+→ **Vue d'ensemble simplifiée du projet**
+- Présentation du projet (5 lignes)
+- Installation rapide (3 commandes)
+- Fonctionnalités principales
+- Liens vers documentation complète dans `docs/`
+- Technologies utilisées
+
+**~30 lignes au total** - Simple et concis
+
+---
+
+## 📂 DOSSIER docs/
+
+Toute la documentation détaillée est maintenant dans le répertoire `docs/` :
 
 ### **DEPLOIEMENT.md** ⚡
 → **Guide complet déploiement Render en 7 minutes**
 - Étapes Git/GitHub/Render
 - Configuration automatique
-- Dépannage
+- Mises à jour
+- Domaine personnalisé
 - Plans & coûts
+- Dépannage
+- **ANNEXE** : Autoriser Render à accéder à GitHub
 
-**Remplace** :
-- ~~GUIDE_DEPLOIEMENT_RENDER.md~~
-- ~~ETAPES_DEPLOIEMENT.md~~
-- ~~DEPLOIEMENT_MANUEL_RENDER.md~~
+**Contenu consolidé de** :
+- ~~DEPLOIEMENT.md~~ (racine)
+- ~~AUTORISER_RENDER_GITHUB.md~~
 
 ### **IMAGES.md** 📸
 → **Guide complet gestion des images**
@@ -30,28 +45,40 @@ La documentation a été consolidée de **11 fichiers .md** → **3 fichiers ess
 - URLs manuelles (alternative)
 - Nomenclature & structure
 - Optimisation
+- Vérification et déploiement
 
-**Remplace** :
-- ~~GUIDE_TELECHARGEMENT.md~~
-- ~~COMMENT_OBTENIR_URLS.md~~
-- ~~PROBLEME_URLS.md~~
+**Contenu consolidé de** :
+- ~~IMAGES.md~~ (racine)
+- ~~TELECHARGER_IMAGES_MANUELLEMENT.md~~
 
 ### **CHANGELOG.md**
-→ Historique des versions et modifications
+→ **Historique des versions et modifications**
+- Version 1.0.0 (13/01/2025)
+- Fonctionnalités ajoutées
+- Corrections et améliorations
+- Statistiques techniques
 
----
-
-## 📂 DOSSIER docs/
-
-Documentation technique détaillée :
+**Déplacé de** : ~~CHANGELOG.md~~ (racine)
 
 ### **VALIDATION_SOURCES.md**
-→ Méthodologie de validation des données botaniques et légales
-→ Niveaux de fiabilité (Haute/Moyenne/Basse)
+→ **Méthodologie de validation des données**
+- Niveaux de fiabilité (Haute/Moyenne/Basse)
+- Sources officielles utilisées
+- Informations vérifiées
+- Badges de fiabilité
+- Disclaimer et responsabilité
 
 ### **COMPARAISON_MODES.md**
-→ Analyse détaillée de la parité entre mode classique et comparaison
-→ 50+ critères comparés
+→ **Parité entre modes d'affichage**
+- Analyse détaillée mode classique vs comparaison
+- 50+ critères comparés
+- Tableau de parité complet
+
+### **STRUCTURE_PROJET.md** (ce fichier)
+→ **Organisation du projet**
+- Structure des dossiers
+- Documentation consolidée
+- Architecture complète
 
 ---
 

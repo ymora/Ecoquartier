@@ -193,4 +193,55 @@ git push
 
 ---
 
+## 🔐 ANNEXE : Autoriser Render à Accéder à votre Repository GitHub
+
+Si vous ne voyez pas votre repository lors de la création du service sur Render, suivez ces étapes :
+
+### **Méthode Rapide (Recommandée)**
+
+1. **Sur Render Dashboard** : https://dashboard.render.com
+2. Cliquer **"New +"** → **"Blueprint"**
+3. Si votre repository n'apparaît pas, cliquer **"Configure Render on GitHub"**
+4. **Sur GitHub** (redirection automatique) :
+   - Choisir **"Only select repositories"**
+   - Cocher votre repository (ex: `haies-bessancourt`)
+   - Cliquer **"Install & Authorize"**
+5. **Retour sur Render** : Votre repository apparaît maintenant
+6. Cliquer **"Connect"**
+
+### **Méthode Alternative**
+
+1. Aller directement sur : https://github.com/settings/installations
+2. Trouver **"Render"** dans la liste
+3. Cliquer **"Configure"**
+4. Dans **Repository access** :
+   - Sélectionner **"Only select repositories"**
+   - Cliquer **"Select repositories"**
+   - Cocher votre repository
+5. Cliquer **"Save"**
+6. Retourner sur Render et rafraîchir la page
+
+### **Permissions Accordées**
+
+Render aura uniquement accès à :
+- ✅ **Lecture** : Code source et métadonnées
+- ✅ **Écriture** : Statuts de déploiement uniquement
+- ❌ **PAS d'accès** : Modification code, suppression, issues/PRs
+
+**C'est totalement sécurisé** ! 🔒
+
+### **Dépannage**
+
+**"No repositories found" même après autorisation**
+- Rafraîchir la page Render (F5)
+- Se déconnecter/reconnecter de Render
+- Vérifier que le repository est bien **public**
+
+**Repository visible mais "Connect" ne marche pas**
+- Vérifier que `render.yaml` existe à la racine
+- Vérifier que vous êtes sur la branche `main`
+- Re-pusher : `git push origin main`
+
+---
+
 **✅ Déploiement automatique avec `render.yaml` !**
