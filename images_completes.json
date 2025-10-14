@@ -8,12 +8,12 @@
         {
           "nom": "prunus-kanzan_vue_generale.jpg",
           "url": "https://images.pexels.com/photos/12100172/pexels-photo-12100172.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Arbre entier 8m en floraison, port érigé, couvert de fleurs doubles rose fuchsia"
+          "description": "Arbre entier 8m en floraison, port érigé, fleurs doubles rose fuchsia"
         },
         {
           "nom": "prunus-kanzan_bourgeons.jpg",
           "url": "https://images.pexels.com/photos/12514691/pexels-photo-12514691.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Bourgeons roses gonflés sur branches nues, fin mars avant ouverture"
+          "description": "Bourgeons roses gonflés sur branches nues, fin mars"
         },
         {
           "nom": "prunus-kanzan_fleurs.jpg",
@@ -28,7 +28,7 @@
         {
           "nom": "prunus-kanzan_automne.jpg",
           "url": "https://images.pexels.com/photos/2246476/pexels-photo-2246476.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Feuillage orange cuivré à bronze automne, arbre entier"
+          "description": "Feuillage orange cuivré à bronze automne"
         },
         {
           "nom": "prunus-kanzan_hiver.jpg",
@@ -45,7 +45,7 @@
         {
           "nom": "prunus-accolade_vue_generale.jpg",
           "url": "A_CHERCHER",
-          "description": "Arbre 7m port étalé gracieux branches arquées, fleurs rose pâle semi-doubles mars-avril"
+          "description": "Arbre 7m port gracieux branches arquées, fleurs rose pâle semi-doubles mars-avril"
         },
         {
           "nom": "prunus-accolade_bourgeons.jpg",
@@ -87,12 +87,12 @@
         {
           "nom": "prunus-sunset-boulevard_bourgeons.jpg",
           "url": "https://images.pexels.com/photos/3073666/pexels-photo-3073666.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Bourgeons et jeunes pousses POURPRES caractéristiques printemps"
+          "description": "Bourgeons et jeunes pousses POURPRES caractéristiques"
         },
         {
           "nom": "prunus-sunset-boulevard_fleurs.jpg",
           "url": "https://images.pexels.com/photos/2253879/pexels-photo-2253879.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Fleurs rose saumon/corail 4cm couleur unique entre saumon et corail"
+          "description": "Fleurs rose saumon/corail 4cm couleur unique"
         },
         {
           "nom": "prunus-sunset-boulevard_fruits.jpg",
@@ -119,7 +119,7 @@
         {
           "nom": "noisetier_vue_generale.jpg",
           "url": "https://images.pexels.com/photos/5255459/pexels-photo-5255459.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Arbuste 3-5m port buissonnant, avec noisettes ou en floraison"
+          "description": "Arbuste 3-5m port buissonnant avec noisettes"
         },
         {
           "nom": "noisetier_bourgeons.jpg",
@@ -129,12 +129,12 @@
         {
           "nom": "noisetier_fleurs.jpg",
           "url": "https://images.pexels.com/photos/4792495/pexels-photo-4792495.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Chatons mâles jaune doré pendants 5-8cm janvier-mars sur branches nues"
+          "description": "Chatons mâles jaune doré pendants 5-8cm janvier-mars"
         },
         {
           "nom": "noisetier_fruits.jpg",
           "url": "https://images.pexels.com/photos/5255439/pexels-photo-5255439.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Noisettes groupées par 2-4 dans involucre vert feuillu août-septembre"
+          "description": "Noisettes groupées par 2-4 dans involucre vert août-septembre"
         },
         {
           "nom": "noisetier_automne.jpg",
@@ -144,155 +144,7 @@
         {
           "nom": "noisetier_hiver.jpg",
           "url": "A_CHERCHER",
-          "description": "Branches nues avec chatons pendants en plein hiver janvier-février"
-        }
-      ]
-    },
-    {
-      "id": "fusain",
-      "nom": "Fusain d'Europe",
-      "type": "arbuste",
-      "images": [
-        {
-          "nom": "fusain_vue_generale.jpg",
-          "url": "A_CHERCHER",
-          "description": "Arbuste 3-6m port buissonnant arrondi, feuillage vert foncé"
-        },
-        {
-          "nom": "fusain_bourgeons.jpg",
-          "url": "A_CHERCHER",
-          "description": "Bourgeons verts ovoïdes opposés printemps mars-avril"
-        },
-        {
-          "nom": "fusain_fleurs.jpg",
-          "url": "A_CHERCHER",
-          "description": "Petites fleurs verdâtres-jaunâtres discrètes 1cm 4 pétales mai-juin"
-        },
-        {
-          "nom": "fusain_fruits.jpg",
-          "url": "A_CHERCHER",
-          "description": "Capsules rose-rouge vif 4 lobes caractéristiques avec graines orange septembre-octobre"
-        },
-        {
-          "nom": "fusain_automne.jpg",
-          "url": "A_CHERCHER",
-          "description": "Feuillage rouge écarlate spectaculaire + capsules roses automne"
-        },
-        {
-          "nom": "fusain_hiver.jpg",
-          "url": "A_CHERCHER",
-          "description": "Branches nues rameaux verts anguleux caractéristiques hiver"
-        }
-      ]
-    },
-    {
-      "id": "troene",
-      "nom": "Troène commun",
-      "type": "arbuste",
-      "images": [
-        {
-          "nom": "troene_vue_generale.jpg",
-          "url": "A_CHERCHER",
-          "description": "Arbuste 2-4m port dense semi-persistant, haie ou isolé"
-        },
-        {
-          "nom": "troene_bourgeons.jpg",
-          "url": "A_CHERCHER",
-          "description": "Bourgeons et jeunes pousses vert clair printemps avril"
-        },
-        {
-          "nom": "troene_fleurs.jpg",
-          "url": "A_CHERCHER",
-          "description": "Grappes coniques fleurs blanches crème parfumées 5-10cm juin-juillet"
-        },
-        {
-          "nom": "troene_fruits.jpg",
-          "url": "A_CHERCHER",
-          "description": "Baies noires brillantes toxiques en grappes denses automne-hiver"
-        },
-        {
-          "nom": "troene_automne.jpg",
-          "url": "A_CHERCHER",
-          "description": "Feuillage semi-persistant vert foncé avec baies noires automne"
-        },
-        {
-          "nom": "troene_hiver.jpg",
-          "url": "A_CHERCHER",
-          "description": "Feuillage partiellement persistant avec baies noires hiver"
-        }
-      ]
-    },
-    {
-      "id": "osmanthe",
-      "nom": "Osmanthe de Burkwood",
-      "type": "arbuste",
-      "images": [
-        {
-          "nom": "osmanthe_vue_generale.jpg",
-          "url": "A_CHERCHER",
-          "description": "Arbuste 2-3m port compact arrondi, feuillage persistant vert foncé brillant denté"
-        },
-        {
-          "nom": "osmanthe_bourgeons.jpg",
-          "url": "A_CHERCHER",
-          "description": "Bourgeons floraux blancs sur feuillage persistant brillant mars"
-        },
-        {
-          "nom": "osmanthe_fleurs.jpg",
-          "url": "A_CHERCHER",
-          "description": "Petites fleurs blanches tubulaires très parfumées (jasmin) en bouquets avril-mai"
-        },
-        {
-          "nom": "osmanthe_fruits.jpg",
-          "url": "A_CHERCHER",
-          "description": "Petits fruits bleu-noir rares (fructification peu fréquente en France)"
-        },
-        {
-          "nom": "osmanthe_automne.jpg",
-          "url": "A_CHERCHER",
-          "description": "Feuillage persistant vert foncé brillant automne (pas de changement couleur)"
-        },
-        {
-          "nom": "osmanthe_hiver.jpg",
-          "url": "A_CHERCHER",
-          "description": "Feuillage persistant vert foncé brillant protège du froid hiver"
-        }
-      ]
-    },
-    {
-      "id": "cornouiller",
-      "nom": "Cornouiller sanguin",
-      "type": "arbuste",
-      "images": [
-        {
-          "nom": "cornouiller_vue_generale.jpg",
-          "url": "https://images.pexels.com/photos/4503273/pexels-photo-4503273.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Arbuste 2-4m buissonnant, rameaux rouges visibles"
-        },
-        {
-          "nom": "cornouiller_bourgeons.jpg",
-          "url": "A_CHERCHER",
-          "description": "Bourgeons floraux blancs sur rameaux rouges printemps avril"
-        },
-        {
-          "nom": "cornouiller_fleurs.jpg",
-          "url": "https://images.pexels.com/photos/7728886/pexels-photo-7728886.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Corymbes plats 5cm fleurs blanc crème mai-juin"
-        },
-        {
-          "nom": "cornouiller_fruits.jpg",
-          "url": "https://images.pexels.com/photos/6231862/pexels-photo-6231862.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Drupes noir bleuté en grappes 6-8mm août-octobre"
-        },
-        {
-          "nom": "cornouiller_automne.jpg",
-          "url": "A_CHERCHER",
-          "description": "Feuillage pourpre-rouge + fruits noirs + rameaux rouges automne"
-        },
-        {
-          "nom": "cornouiller_hiver.jpg",
-          "url": "https://images.pexels.com/photos/12704347/pexels-photo-12704347.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "description": "Rameaux rouge vif spectaculaires branches nues hiver décembre-février"
+          "description": "Branches nues avec chatons pendants hiver janvier-février"
         }
       ]
     },
@@ -319,7 +171,7 @@
         {
           "nom": "fusain_fruits.jpg",
           "url": "A_CHERCHER",
-          "description": "Capsules rose-rouge vif 4 lobes caractéristiques avec graines orange spectaculaires septembre-octobre"
+          "description": "Capsules rose-rouge vif 4 lobes avec graines orange septembre-octobre gros plan spectaculaire"
         },
         {
           "nom": "fusain_automne.jpg",
@@ -341,22 +193,22 @@
         {
           "nom": "troene_vue_generale.jpg",
           "url": "A_CHERCHER",
-          "description": "Arbuste 2-4m port dense buissonnant, feuillage semi-persistant vert foncé brillant, haie ou isolé"
+          "description": "Arbuste 2-4m port dense semi-persistant vert foncé brillant, haie ou isolé"
         },
         {
           "nom": "troene_bourgeons.jpg",
           "url": "A_CHERCHER",
-          "description": "Bourgeons et jeunes pousses vert clair sur tiges vertes printemps avril"
+          "description": "Bourgeons et jeunes pousses vert clair sur tiges vertes avril"
         },
         {
           "nom": "troene_fleurs.jpg",
           "url": "A_CHERCHER",
-          "description": "Grappes coniques denses fleurs blanches crème parfumées 5-10cm juin-juillet"
+          "description": "Grappes coniques denses fleurs blanches crème parfumées 5-10cm juin-juillet gros plan"
         },
         {
           "nom": "troene_fruits.jpg",
           "url": "A_CHERCHER",
-          "description": "Baies noires brillantes toxiques lustré en grappes denses persistantes automne-hiver"
+          "description": "Baies noires brillantes toxiques lustré en grappes denses automne-hiver gros plan"
         },
         {
           "nom": "troene_automne.jpg",
@@ -378,7 +230,7 @@
         {
           "nom": "osmanthe_vue_generale.jpg",
           "url": "A_CHERCHER",
-          "description": "Arbuste 2-3m port compact arrondi, feuillage persistant vert foncé brillant denté"
+          "description": "Arbuste 2-3m port compact, feuillage persistant vert foncé brillant denté"
         },
         {
           "nom": "osmanthe_bourgeons.jpg",
@@ -388,22 +240,59 @@
         {
           "nom": "osmanthe_fleurs.jpg",
           "url": "A_CHERCHER",
-          "description": "Petites fleurs blanches tubulaires 1cm très parfumées jasmin en bouquets axillaires avril-mai"
+          "description": "Petites fleurs blanches tubulaires 1cm très parfumées jasmin avril-mai gros plan"
         },
         {
           "nom": "osmanthe_fruits.jpg",
           "url": "A_CHERCHER",
-          "description": "Petits fruits bleu-noir ovoïdes rares (fructification peu fréquente en France)"
+          "description": "Petits fruits bleu-noir ovoïdes rares (fructification peu fréquente)"
         },
         {
           "nom": "osmanthe_automne.jpg",
           "url": "A_CHERCHER",
-          "description": "Feuillage persistant vert foncé brillant automne (pas de changement couleur, reste vert)"
+          "description": "Feuillage persistant vert foncé brillant automne (reste vert, pas de changement)"
         },
         {
           "nom": "osmanthe_hiver.jpg",
           "url": "A_CHERCHER",
-          "description": "Feuillage persistant dense vert foncé brillant protège du froid hiver"
+          "description": "Feuillage persistant dense vert foncé brillant hiver"
+        }
+      ]
+    },
+    {
+      "id": "cornouiller",
+      "nom": "Cornouiller sanguin",
+      "type": "arbuste",
+      "images": [
+        {
+          "nom": "cornouiller_vue_generale.jpg",
+          "url": "https://images.pexels.com/photos/4503273/pexels-photo-4503273.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          "description": "Arbuste 2-4m buissonnant, rameaux rouges visibles"
+        },
+        {
+          "nom": "cornouiller_bourgeons.jpg",
+          "url": "A_CHERCHER",
+          "description": "Bourgeons floraux blancs sur rameaux rouges avril"
+        },
+        {
+          "nom": "cornouiller_fleurs.jpg",
+          "url": "https://images.pexels.com/photos/7728886/pexels-photo-7728886.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          "description": "Corymbes plats 5cm fleurs blanc crème mai-juin"
+        },
+        {
+          "nom": "cornouiller_fruits.jpg",
+          "url": "https://images.pexels.com/photos/6231862/pexels-photo-6231862.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          "description": "Drupes noir bleuté en grappes 6-8mm août-octobre gros plan"
+        },
+        {
+          "nom": "cornouiller_automne.jpg",
+          "url": "A_CHERCHER",
+          "description": "Feuillage pourpre-rouge + fruits noirs + rameaux rouges automne tricolore"
+        },
+        {
+          "nom": "cornouiller_hiver.jpg",
+          "url": "https://images.pexels.com/photos/12704347/pexels-photo-12704347.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          "description": "Rameaux rouge vif spectaculaires branches nues hiver décembre-février"
         }
       ]
     },
@@ -420,12 +309,12 @@
         {
           "nom": "seringat_bourgeons.jpg",
           "url": "A_CHERCHER",
-          "description": "Bourgeons floraux gonflés blancs sur rameaux brun clair mai avant ouverture"
+          "description": "Bourgeons floraux gonflés blancs sur rameaux brun clair mai"
         },
         {
           "nom": "seringat_fleurs.jpg",
           "url": "A_CHERCHER",
-          "description": "Fleurs blanches simples 4 pétales 3cm étamines jaunes très parfumées jasmin/oranger juin gros plan"
+          "description": "Fleurs blanches simples 4 pétales 3cm étamines jaunes très parfumées jasmin juin gros plan"
         },
         {
           "nom": "seringat_fruits.jpg",
@@ -435,7 +324,7 @@
         {
           "nom": "seringat_automne.jpg",
           "url": "A_CHERCHER",
-          "description": "Feuillage vert foncé jaune pâle automne (pas spectaculaire)"
+          "description": "Feuillage vert foncé jaunissant automne (pas spectaculaire)"
         },
         {
           "nom": "seringat_hiver.jpg",
@@ -447,17 +336,17 @@
   ],
   "statistiques": {
     "total_especes": 9,
-    "total_images_max": 54,
-    "images_pexels_ok": 17,
+    "total_images": 54,
+    "images_pexels": 17,
     "images_a_chercher": 37,
-    "note": "6 types par espèce: vue_generale, bourgeons, fleurs, fruits, automne, hiver"
+    "repartition": "6 types par espèce: vue_generale, bourgeons, fleurs, fruits, automne, hiver"
   },
   "instructions": {
-    "etape_1": "Donner ce JSON + PROMPT_CHATGPT_TROUVER_URLS.txt à ChatGPT",
-    "etape_2": "ChatGPT trouve toutes les URLs Pexels/Unsplash pour les 'A_CHERCHER'",
-    "etape_3": "Copier le JSON retourné par ChatGPT dans images_completes.json",
-    "etape_4": "Lancer: python telecharger_toutes_images.py",
-    "resultat": "54 images téléchargées automatiquement !",
+    "etape_1": "Copier PROMPT_CHATGPT_TROUVER_URLS.txt + ce JSON dans ChatGPT",
+    "etape_2": "ChatGPT cherche les 37 URLs manquantes (VRAIES photos Pexels/Unsplash)",
+    "etape_3": "Copier le JSON retourné par ChatGPT → images_completes.json",
+    "etape_4": "Relancer: python telecharger_toutes_images.py",
+    "resultat": "54 images téléchargées automatiquement!",
     "note": "ChatGPT doit trouver de VRAIES photos, PAS générer avec DALL-E"
   }
 }

@@ -60,16 +60,16 @@ def main():
     print(f"\nTotal a telecharger: {total_images} images")
     print(f"Especes: {len(config['especes'])}")
     
-    dalle_count = sum(1 for esp in config['especes'] for img in esp['images'] if img['url'] == 'CHATGPT_DALLE')
-    pexels_count = total_images - dalle_count
+    a_chercher_count = sum(1 for esp in config['especes'] for img in esp['images'] if img['url'] == 'A_CHERCHER')
+    pexels_count = total_images - a_chercher_count
     
-    print(f"- Pexels: {pexels_count} images")
-    print(f"- DALL-E: {dalle_count} images (a generer manuellement)")
+    print(f"- Pexels/Unsplash: {pexels_count} images")
+    print(f"- A chercher: {a_chercher_count} images (ChatGPT trouvera les URLs)")
     print("\nDemarrage...\n")
     
     success = []
     errors = []
-    dalle_list = []
+    a_chercher_list = []
     
     i = 0
     for espece in config['especes']:
@@ -83,9 +83,9 @@ def main():
             
             print(f"[{i}/{total_images}] {img['nom']}")
             
-            if img['url'] == 'CHATGPT_DALLE':
-                print(f"   DALLE: A generer avec ChatGPT")
-                dalle_list.append({
+            if img['url'] == 'A_CHERCHER':
+                print(f"   A CHERCHER: ChatGPT trouvera l'URL")
+                a_chercher_list.append({
                     'fichier': img['nom'],
                     'description': img['description'],
                     'espece': espece['nom']
@@ -104,15 +104,16 @@ def main():
     print("\n" + "="*70)
     print("  RESUME")
     print("="*70)
-    print(f"\nReussis (Pexels): {len(success)}/{pexels_count}")
-    print(f"Erreurs:          {len(errors)}/{pexels_count}")
-    print(f"A generer (DALL-E): {len(dalle_list)}")
+    print(f"\nReussis (Pexels/Unsplash): {len(success)}/{pexels_count}")
+    print(f"Erreurs:                   {len(errors)}/{pexels_count}")
+    print(f"A chercher par ChatGPT:    {len(a_chercher_list)}")
     
-    if dalle_list:
+    if a_chercher_list:
         print("\n" + "="*70)
-        print("  IMAGES A GENERER AVEC CHATGPT")
+        print("  IMAGES A TROUVER PAR CHATGPT")
         print("="*70)
-        for item in dalle_list:
+        print("\nChatGPT doit chercher de VRAIES photos pour:")
+        for item in a_chercher_list:
             print(f"\n{item['fichier']}")
             print(f"  Espece: {item['espece']}")
             print(f"  Description: {item['description']}")
@@ -121,19 +122,20 @@ def main():
         print("\n" + "="*70)
         print("  PROCHAINES ETAPES")
         print("="*70)
-        print("\n1. Generer les images DALL-E avec ChatGPT")
-        print("   Utiliser: PROMPT_CHATGPT_COMPLET.txt")
-        print("\n2. Placer les images DALL-E dans client/public/images/")
-        print("\n3. git add client/public/images/")
-        print("4. git commit -m 'Add: toutes les images (Pexels + DALL-E)'")
-        print("5. git push")
+        print("\n1. Utiliser PROMPT_CHATGPT_TROUVER_URLS.txt")
+        print("   ChatGPT trouve les URLs des vraies photos manquantes")
+        print("\n2. Copier le JSON retourne par ChatGPT dans images_completes.json")
+        print("\n3. Relancer: python telecharger_toutes_images.py")
+        print("\n4. git add client/public/images/")
+        print("5. git commit -m 'Add: toutes les images (54/54)'")
+        print("6. git push")
         print("\nRender redéploiera automatiquement !")
     
-    return len(success), len(errors), len(dalle_list)
+    return len(success), len(errors), len(a_chercher_list)
 
 if __name__ == "__main__":
     try:
-        success_count, error_count, dalle_count = main()
+        success_count, error_count, a_chercher_count = main()
         print(f"\n{'='*70}\n")
         exit(0 if error_count == 0 else 1)
     except KeyboardInterrupt:
