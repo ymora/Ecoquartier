@@ -194,18 +194,20 @@ function renderExistingImages() {
         </div>
       </div>
       
-      <div class="existing-item-number">
-        <label>#</label>
-        <input 
-          type="number" 
-          min="1" 
-          max="99" 
-          value="${img.number}" 
-          class="input-number"
-          data-filename="${escapeHTML(img.filename)}"
-          data-current-number="${img.number}"
-          title="Changer le numéro (permute automatiquement)"
-        >
+      <div class="existing-item-number-wrapper">
+        <div class="existing-item-number">
+          <label>#</label>
+          <input 
+            type="number" 
+            min="1" 
+            max="99" 
+            value="${img.number}" 
+            class="input-number"
+            data-filename="${escapeHTML(img.filename)}"
+            data-current-number="${img.number}"
+            title="Changer le numéro (permute automatiquement)"
+          >
+        </div>
       </div>
       
       <button class="btn-icon-outline btn-success-outline" data-filename="${escapeHTML(img.filename)}" title="Sauvegarder les modifications">
@@ -401,7 +403,7 @@ function detectConflict(currentFilename, changes) {
   return null;
 }
 
-// Trouver le prochain numéro disponible pour une espèce/type
+// Trouver le prochain numéro disponible pour une espèce/type (comble les trous)
 function getSuggestedNumber(espece, type) {
   const existing = state.existingImages
     .filter(img => img.espece === espece && img.type === type)
@@ -411,26 +413,39 @@ function getSuggestedNumber(espece, type) {
     .filter(change => change.newEspece === espece && change.newType === type)
     .map(change => change.newNumber);
   
-  const allNumbers = [...existing, ...pending];
-  const maxNumber = allNumbers.length > 0 ? Math.max(...allNumbers) : 0;
+  const allNumbers = [...new Set([...existing, ...pending])].sort((a, b) => a - b);
   
-  return maxNumber + 1;
+  // Si aucun numéro, commencer à 1
+  if (allNumbers.length === 0) return 1;
+  
+  // Chercher le premier trou dans la séquence
+  for (let i = 1; i <= allNumbers.length + 1; i++) {
+    if (!allNumbers.includes(i)) {
+      return i;
+    }
+  }
+  
+  // Par sécurité (ne devrait jamais arriver)
+  return allNumbers.length + 1;
 }
 
 // Afficher suggestion de numéro
 function showConflictSuggestion(item, suggestion) {
   if (!suggestion) return;
   
-  let suggestionDiv = item.querySelector('.conflict-suggestion');
+  const numberWrapper = item.querySelector('.existing-item-number-wrapper');
+  let suggestionDiv = numberWrapper.querySelector('.conflict-suggestion');
+  
   if (!suggestionDiv) {
     suggestionDiv = document.createElement('div');
     suggestionDiv.className = 'conflict-suggestion';
-    item.appendChild(suggestionDiv);
+    // Insérer AVANT l'input de numéro
+    numberWrapper.insertBefore(suggestionDiv, numberWrapper.firstChild);
   }
   
   suggestionDiv.innerHTML = `
-    <span>Prochain dispo : #${String(suggestion).padStart(2, '0')}</span>
-    <button class="btn-apply-suggestion" data-number="${suggestion}">Appliquer</button>
+    <span>Dispo: #${String(suggestion).padStart(2, '0')}</span>
+    <button class="btn-apply-suggestion" data-number="${suggestion}">✓</button>
   `;
   
   // Event listener pour appliquer la suggestion
