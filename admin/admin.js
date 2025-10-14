@@ -438,8 +438,12 @@ function updateSaveAllButton() {
   saveAllBtn.disabled = modifiedCount === 0;
   
   if (modifiedCount > 0) {
+    saveAllBtn.classList.add('has-changes');
+    saveAllBtn.setAttribute('data-count', modifiedCount);
     saveAllBtn.setAttribute('title', `Sauvegarder ${modifiedCount} modification(s)`);
   } else {
+    saveAllBtn.classList.remove('has-changes');
+    saveAllBtn.removeAttribute('data-count');
     saveAllBtn.setAttribute('title', 'Sauvegarder toutes les modifications');
   }
 }
@@ -486,6 +490,9 @@ async function renameExistingImage(oldFilename) {
       btn.classList.remove('modified');
       btn.classList.add('saved');
       btn.setAttribute('title', '✓ Sauvegardé');
+      
+      // Retirer l'indicateur de changement de la ligne
+      item.classList.remove('has-changes');
       
       // Recharger les images
       setTimeout(async () => {
