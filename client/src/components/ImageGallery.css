@@ -1,0 +1,244 @@
+.image-gallery {
+  margin: 2rem 0;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.image-gallery.loading,
+.image-gallery.no-images {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.image-gallery.no-images {
+  background: var(--bg-tertiary);
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+}
+
+.image-gallery.no-images p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.image-gallery.no-images .info-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.gallery-main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gallery-image-container {
+  position: relative;
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.gallery-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+.gallery-nav {
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px var(--shadow);
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.gallery-nav:hover {
+  background: var(--accent-secondary);
+  transform: scale(1.1);
+}
+
+.gallery-nav:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.gallery-nav:active {
+  transform: scale(0.95);
+}
+
+.zoom-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: white;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.zoom-button:hover {
+  background: var(--accent-primary);
+  transform: scale(1.1);
+}
+
+.image-legend {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  color: white;
+  padding: 1.5rem 1rem 1rem;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.gallery-indicators {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.indicator-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.indicator-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.indicator-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.indicator-dot:hover {
+  transform: scale(1.2);
+  border-color: var(--accent-primary);
+}
+
+.indicator-dot.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: scale(1.3);
+}
+
+/* Modal de zoom */
+.zoom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  cursor: zoom-out;
+  animation: fadeIn 0.3s ease;
+}
+
+.zoom-close {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 2001;
+}
+
+.zoom-close:hover {
+  background: #3a8eef;
+  transform: rotate(90deg) scale(1.1);
+}
+
+.zoomed-image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px var(--shadow);
+}
+
+@media (max-width: 768px) {
+  .gallery-image {
+    height: 250px;
+  }
+
+  .gallery-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .zoom-button {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  .zoom-close {
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .zoomed-image {
+    max-width: 95%;
+    max-height: 95%;
+  }
+}
+

@@ -1,0 +1,10 @@
+# Robots.txt pour Les Haies de Bessancourt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://haies-bessancourt.onrender.com/sitemap.xml
+
+# Empêcher l'indexation des assets
+Disallow: /assets/
+

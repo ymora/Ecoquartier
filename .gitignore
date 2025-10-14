@@ -1,0 +1,34 @@
+# Archive (anciens fichiers)
+archive/
+
+# Dossier de téléchargement temporaire
+downloads/
+
+# Images originales (déjà copiées dans client/public)
+# Garder pour référence mais ne pas commit les doublons
+# Décommenter si vous voulez ignorer complètement:
+# images/
+
+# Logs
+*.log
+
+# Environnement
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.tmp
+

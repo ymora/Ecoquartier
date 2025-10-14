@@ -1,0 +1,120 @@
+{
+  "images": [
+    {
+      "plante": "prunus-kanzan",
+      "type": "vue_generale",
+      "url": "https://pixabay.com/photos/prunus-kanzan-flowers-2032046/",
+      "description": "Vue générale de l'arbre en floraison",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-kanzan",
+      "type": "fleurs",
+      "url": "https://www.pexels.com/photo/selective-focus-photo-of-beautiful-prunus-kanzan-flowers-4259946/",
+      "description": "Gros plan fleurs doubles rose fuchsia",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-kanzan",
+      "type": "bourgeons",
+      "url": "https://www.pexels.com/photo/close-up-on-blooming-kanzan-tree-16216739/",
+      "description": "Bourgeons roses sur branches nues",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-kanzan",
+      "type": "automne",
+      "url": "https://pixabay.com/photos/prunus-kanzan-flowers-2032046/",
+      "description": "Feuillage orange cuivré automne",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-accolade",
+      "type": "vue_generale",
+      "url": "https://pixabay.com/photos/spring-cherry-blossom-accolade-8610797/",
+      "description": "Vue générale de l'arbre, port gracieux",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-accolade",
+      "type": "fleurs",
+      "url": "https://pixabay.com/photos/spring-cherry-blossom-accolade-8610797/",
+      "description": "Fleurs semi-doubles rose pâle en grappes",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-accolade",
+      "type": "bourgeons",
+      "url": "https://pixabay.com/photos/spring-cherry-blossom-accolade-8610797/",
+      "description": "Bourgeons floraux début printemps",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-accolade",
+      "type": "automne",
+      "url": "https://pixabay.com/photos/spring-cherry-blossom-accolade-8610797/",
+      "description": "Feuillage orange-rouge automne",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-sunset-boulevard",
+      "type": "vue_generale",
+      "url": "https://pixabay.com/photos/prunus-kanzan-flowers-2032046/",
+      "description": "Vue générale avec fleurs rose saumon",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-sunset-boulevard",
+      "type": "fleurs",
+      "url": "https://www.pexels.com/photo/selective-focus-photo-of-beautiful-prunus-kanzan-flowers-4259946/",
+      "description": "Fleurs rose saumon/corail UNIQUE",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-sunset-boulevard",
+      "type": "bourgeons",
+      "url": "https://www.pexels.com/photo/close-up-on-blooming-kanzan-tree-16216739/",
+      "description": "Bourgeons et pousses pourpres",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "prunus-sunset-boulevard",
+      "type": "automne",
+      "url": "https://pixabay.com/photos/prunus-kanzan-flowers-2032046/",
+      "description": "Feuillage orange vif à rouge spectaculaire",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "noisetier",
+      "type": "fleurs",
+      "url": "https://pixabay.com/photos/corylus-avellana-hazelnut-flowers-2032046/",
+      "description": "Chatons jaunes pendants hiver",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "cornouiller",
+      "type": "fleurs",
+      "url": "https://pixabay.com/photos/cornus-sanguinea-common-dogwood-855361/",
+      "description": "Corymbes blanc crème mai-juin",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    },
+    {
+      "plante": "cornouiller",
+      "type": "fruits",
+      "url": "https://pixabay.com/photos/cornus-sanguinea-common-dogwood-855361/",
+      "description": "Drupes noir bleuté en grappes",
+      "note": "⚠️ URL PAGE WEB - Remplacer par lien direct .jpg"
+    }
+  ],
+  "instructions": {
+    "comment": "Remplir les URLs des images puis lancer : .\\telecharger_depuis_json.ps1",
+    "sources": [
+      "Pixabay.com - Copier le lien de téléchargement direct",
+      "Unsplash.com - Copier le lien de téléchargement",
+      "Pexels.com - Copier le lien de téléchargement"
+    ],
+    "format": "Les URLs doivent être des liens DIRECTS vers les fichiers JPG/PNG",
+    "exemple_url_directe": "https://pixabay.com/get/[hash]/[filename].jpg"
+  }
+}
+

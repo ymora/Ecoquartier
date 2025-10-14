@@ -1,0 +1,386 @@
+.comparateur {
+  background: var(--bg-primary);
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.comparateur-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--accent-primary);
+}
+
+.comparateur-header h1 {
+  font-size: 2rem;
+  color: var(--accent-primary);
+}
+
+.close-comparateur {
+  background: var(--danger);
+  border: none;
+  color: white;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.close-comparateur:hover {
+  background: #c53030;
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* Intro */
+.comparateur-intro {
+  text-align: center;
+  padding: 2rem;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.comparateur-intro h2 {
+  color: var(--accent-primary);
+  margin-bottom: 0.5rem;
+}
+
+/* Sélecteur de plantes */
+.comparateur-selector {
+  margin-bottom: 2rem;
+}
+
+.comparateur-selector h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.selector-item {
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.selector-item:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.selector-item.selected {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  border-width: 3px;
+  box-shadow: 0 0 15px rgba(46, 139, 87, 0.3);
+}
+
+.selector-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.selector-type {
+  font-size: 1.5rem;
+}
+
+.selector-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Tableau de comparaison */
+.comparateur-table {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.comparison-grid {
+  display: table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.comparison-header-row,
+.comparison-row {
+  display: table-row;
+}
+
+.comparison-label-cell,
+.comparison-header-cell,
+.comparison-cell {
+  display: table-cell;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: top;
+}
+
+/* En-tête des colonnes */
+.comparison-header-cell {
+  background: var(--bg-tertiary);
+  text-align: center;
+  position: relative;
+  min-width: 280px;
+  max-width: 350px;
+}
+
+.comparison-header-cell h3 {
+  color: var(--accent-primary);
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+.comparison-header-cell .scientific {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.plante-type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--accent-primary);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.remove-plante {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--danger);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.remove-plante:hover {
+  background: #c53030;
+  transform: scale(1.1);
+}
+
+/* Colonne des labels */
+.comparison-label-cell {
+  background: var(--bg-tertiary);
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 200px;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+}
+
+.header-spacer {
+  background: var(--bg-secondary);
+}
+
+.critere-icon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+/* Cellules de données */
+.comparison-cell {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  min-width: 280px;
+  max-width: 350px;
+}
+
+.comparison-cell.danger {
+  background: rgba(245, 101, 101, 0.08);
+  border-left: 3px solid var(--danger);
+}
+
+.comparison-cell.safe {
+  background: rgba(72, 187, 120, 0.08);
+  border-left: 3px solid var(--success);
+}
+
+.small-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0.25rem 0;
+}
+
+.compact-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.compact-list li {
+  margin-bottom: 0.25rem;
+}
+
+.warning-text {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.success-compact {
+  color: var(--success);
+  font-weight: 500;
+}
+
+.highlight-compact {
+  background: rgba(237, 137, 54, 0.1);
+  padding: 0.5rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--warning);
+  margin-top: 0.5rem;
+}
+
+.comparison-cell.warning {
+  background: rgba(237, 137, 54, 0.05);
+}
+
+.alert-row .comparison-label-cell {
+  font-weight: 700;
+}
+
+/* Images comparatives */
+.image-row {
+  background: var(--bg-tertiary);
+}
+
+.image-cell {
+  padding: 0.5rem !important;
+}
+
+.comparison-image-container {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.comparison-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 5;
+  user-select: none;
+}
+
+.image-nav.prev {
+  left: 0.5rem;
+}
+
+.image-nav.next {
+  right: 0.5rem;
+}
+
+.image-nav:hover {
+  background: var(--accent-primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.image-counter {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* État vide */
+.comparateur-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .comparateur {
+    padding: 1rem;
+  }
+
+  .comparateur-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .selector-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-grid {
+    font-size: 0.85rem;
+  }
+
+  .comparison-label-cell,
+  .comparison-header-cell,
+  .comparison-cell {
+    padding: 0.75rem;
+    min-width: 200px;
+  }
+
+  .comparison-image-container {
+    height: 180px;
+  }
+}
+
