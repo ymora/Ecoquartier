@@ -549,8 +549,17 @@ function Comparateur({ plantes }) {
             </div>
 
             {/* NOUVEAU : Interdiction Taille */}
+            {visibleCriteres['interdiction'] && (
             <div className="comparison-row alert-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('interdiction')}
+                  aria-label="Masquer interdiction taille"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">🔴</span>
                 <strong>Interdiction Taille</strong>
                 <FiabiliteBadge niveau="haute" />
@@ -596,8 +605,17 @@ function Comparateur({ plantes }) {
             </div>
 
             {/* NOUVEAU : Distance Fondations */}
+            {visibleCriteres['fondations'] && (
             <div className="comparison-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('fondations')}
+                  aria-label="Masquer distance fondations"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">🏗️</span>
                 <strong>Distance Fondations</strong>
                 <FiabiliteBadge niveau="moyenne" />
@@ -610,10 +628,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Distance Canalisations */}
+            {visibleCriteres['canalisations'] && (
             <div className="comparison-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('canalisations')}
+                  aria-label="Masquer distance canalisations"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">🚰</span>
                 <strong>Distance Canalisations</strong>
                 <FiabiliteBadge niveau="moyenne" />
@@ -626,6 +654,7 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </div>
       )}
