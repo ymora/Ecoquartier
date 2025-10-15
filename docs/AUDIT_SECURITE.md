@@ -1,4 +1,4 @@
-# 🔍 AUDIT COMPLET DU CODE - Haies Bessancourt
+# 🔍 Audit Sécurité - Haies Bessancourt
 
 **Date**: 14 octobre 2025  
 **Version**: 1.0.0  

@@ -1,6 +1,20 @@
 # 📖 Guide Interface Admin - Haies Bessancourt
 
-## 🎯 Nouvelle Interface Simplifiée
+## 🚀 Démarrage
+
+### **Lancer l'interface admin**
+```bash
+npm run admin
+```
+
+### **Ouvrir dans le navigateur**
+```
+http://localhost:3001
+```
+
+---
+
+## 🎯 Interface Simplifiée
 
 L'interface admin a été **entièrement refondue** pour une utilisation **simple, logique et sans redondance**.
 

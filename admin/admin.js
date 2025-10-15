@@ -1,5 +1,16 @@
 // Configuration
-const ESPECES = [];
+const ESPECES = [
+  { id: 'prunus-kanzan', nom: 'Cerisier du Japon Kanzan' },
+  { id: 'prunus-accolade', nom: 'Cerisier Accolade' },
+  { id: 'prunus-sunset-boulevard', nom: 'Cerisier Sunset Boulevard' },
+  { id: 'noisetier', nom: 'Noisetier' },
+  { id: 'fusain', nom: "Fusain d'Europe" },
+  { id: 'troene', nom: 'Troène commun' },
+  { id: 'osmanthe', nom: 'Osmanthe de Burkwood' },
+  { id: 'cornouiller', nom: 'Cornouiller sanguin' },
+  { id: 'seringat', nom: 'Seringat' }
+];
+
 const TYPES = [
   { id: 'vue_generale', nom: 'Vue générale' },
   { id: 'bourgeons', nom: 'Bourgeons' },
@@ -43,7 +54,6 @@ function escapeHTML(str) {
 
 // Initialisation
 async function init() {
-  await loadConfig();
   populateFilters();
   attachEventListeners();
   
@@ -52,24 +62,6 @@ async function init() {
   renderExistingImages();
   
   addLog('info', '✓ Interface chargée');
-}
-
-// Charger la configuration
-async function loadConfig() {
-  try {
-    const response = await fetch('/images_completes.json');
-    const config = await response.json();
-    
-    ESPECES.length = 0;
-    config.especes.forEach(espece => {
-      ESPECES.push({
-        id: espece.id,
-        nom: espece.nom
-      });
-    });
-  } catch (err) {
-    addLog('error', 'Erreur chargement configuration: ' + err.message);
-  }
 }
 
 // Remplir les filtres

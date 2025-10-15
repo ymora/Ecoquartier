@@ -64,61 +64,6 @@
 
 ---
 
-## ❌ **SCRIPTS OBSOLÈTES (Supprimés)**
-
-Ces scripts ont été supprimés car **remplacés par l'interface admin** :
-
-- ~~`renommer_images.ps1`~~ → Interface admin
-- ~~`copier_images.ps1`~~ → Interface admin
-- ~~`telecharger_images.ps1`~~ → Interface admin
-- ~~`telecharger_depuis_json.ps1`~~ → `telecharger_toutes_images.py`
-- ~~`gerer_images.ps1`~~ → Interface admin
-
-**Raison** : L'interface admin fait **tout** mieux et plus simplement !
-
----
-
-## 📋 **FICHIERS DE DOCUMENTATION**
-
-### 📖 **Guides principaux**
-
-| **Fichier** | **Contenu** | **Utilité** |
-|-------------|-------------|-------------|
-| `README.md` | Vue d'ensemble projet | ⭐⭐⭐ |
-| `GUIDE_ADMIN_INTERFACE.md` | Guide complet admin | ⭐⭐⭐⭐⭐ |
-| `GUIDE_RAPIDE_ADMIN.md` | Fonctionnalités admin | ⭐⭐⭐⭐ |
-| `GUIDE_IMAGES.md` | Gestion images (ancien) | ⭐ (historique) |
-
-### 📊 **Documentation technique**
-
-| **Fichier** | **Contenu** | **Utilité** |
-|-------------|-------------|-------------|
-| `AUDIT_CODE.md` | Rapport sécurité | ⭐⭐⭐ |
-| `AUDIT_RESUME.txt` | Résumé audit | ⭐⭐ |
-| `CHANGELOG_ADMIN.txt` | Historique admin | ⭐⭐ |
-| `docs/DEPLOIEMENT.md` | Guide déploiement | ⭐⭐⭐ |
-| `docs/VALIDATION_SOURCES.md` | Sources botaniques | ⭐⭐ |
-
-### 🗑️ **À supprimer (obsolètes)**
-
-- `PROPOSITION_UPLOAD_IMAGES.md` → Remplacé par l'interface finale
-- `GUIDE_ADMIN.md` → Doublon avec `GUIDE_ADMIN_INTERFACE.md`
-- `GUIDE_IMAGES.md` → Info obsolète (scripts supprimés)
-- `TESTER_ADMIN.md` → Intégré dans guides
-
----
-
-## 📦 **FICHIERS CONFIGURATION**
-
-| **Fichier** | **Usage** | **Modifier ?** |
-|-------------|-----------|----------------|
-| `images_completes.json` | Source URLs ChatGPT | ✅ OUI (pour téléchargement) |
-| `package.json` | Dépendances root | ❌ Rarement |
-| `render.yaml` | Config déploiement | ❌ Rarement |
-| `.gitignore` | Git ignore rules | ❌ Rarement |
-
----
-
 ## 🚀 **WORKFLOW RECOMMANDÉ**
 
 ### 📤 **Ajouter des images au quotidien**
@@ -152,30 +97,14 @@ Ces scripts ont été supprimés car **remplacés par l'interface admin** :
 
 ---
 
-## 🎯 **RECOMMANDATION**
+## 📦 **FICHIERS CONFIGURATION**
 
-### ✅ **À GARDER**
-
-```
-✅ admin/                         (interface admin)
-✅ telecharger_toutes_images.py  (téléchargement masse)
-✅ images_completes.json         (source URLs)
-✅ GUIDE_ADMIN_INTERFACE.md      (doc principale)
-✅ GUIDE_RAPIDE_ADMIN.md         (référence rapide)
-✅ AUDIT_CODE.md                 (sécurité)
-✅ README.md                     (vue d'ensemble)
-✅ docs/                         (documentation technique)
-```
-
-### 🗑️ **À SUPPRIMER (obsolètes)**
-
-```
-❌ PROPOSITION_UPLOAD_IMAGES.md  (remplacé par interface)
-❌ GUIDE_ADMIN.md                (doublon)
-❌ GUIDE_IMAGES.md               (scripts supprimés)
-❌ TESTER_ADMIN.md               (intégré dans guides)
-❌ PROMPT_CHATGPT_TROUVER_URLS.txt (optionnel, info dans GUIDE)
-```
+| **Fichier** | **Usage** | **Modifier ?** |
+|-------------|-----------|----------------|
+| `images_completes.json` | Source URLs ChatGPT | ✅ OUI (pour téléchargement) |
+| `package.json` | Dépendances root | ❌ Rarement |
+| `render.yaml` | Config déploiement | ❌ Rarement |
+| `.gitignore` | Git ignore rules | ❌ Rarement |
 
 ---
 
@@ -195,6 +124,4 @@ Ces scripts ont été supprimés car **remplacés par l'interface admin** :
 ║  🎉 SYSTÈME COMPLET ET PROFESSIONNEL !                    ║
 ╚═══════════════════════════════════════════════════════════╝
 ```
-
-**Voulez-vous que je supprime les fichiers obsolètes ?** 🗑️
 

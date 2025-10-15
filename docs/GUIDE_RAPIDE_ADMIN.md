@@ -1,5 +1,13 @@
 # ⚡ Guide Rapide - Interface Admin
 
+## 🚀 Démarrage
+```bash
+npm run admin
+# Ouvrir http://localhost:3001
+```
+
+---
+
 ## 🎯 **FONCTIONNALITÉS PRINCIPALES**
 
 ### 1️⃣ **Numérotation automatique +1**
