@@ -242,14 +242,9 @@ function Comparateur({ plantes }) {
     <div className="comparateur">
       <div className="comparateur-header">
         <h1>🔍 Mode Comparaison</h1>
-        <div className="visibility-controls">
-          <button onClick={() => toggleAll(true)} className="btn-show-all">
-            <FaEye /> Tout afficher
-          </button>
-          <button onClick={() => toggleAll(false)} className="btn-hide-all">
-            <FaEyeSlash /> Tout masquer
-          </button>
-        </div>
+        <button onClick={() => toggleAll(true)} className="btn-show-all">
+          <FaEye /> Tout afficher
+        </button>
       </div>
 
       {selectedPlantes.length === 0 && (
