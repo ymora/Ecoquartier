@@ -11,9 +11,7 @@ function App() {
   const [selectedPlante, setSelectedPlante] = useState(plantesData[0]);
   const [modeComparaison, setModeComparaison] = useState(false);
   const [menuOpen, setMenuOpen] = useState(true);
-  const [disclaimerClosed, setDisclaimerClosed] = useState(
-    localStorage.getItem('disclaimer-accepted') === 'true'
-  );
+  const [disclaimerClosed, setDisclaimerClosed] = useState(false); // Toujours false au départ
 
   const handleSelectPlante = (planteId) => {
     const plante = plantesData.find(p => p.id === planteId);
