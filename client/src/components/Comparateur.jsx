@@ -34,11 +34,32 @@ function Comparateur({ plantes }) {
   };
 
   const getPlantImages = (plante) => {
-    const types = ['vue_generale', 'fleurs', 'bourgeons', 'fruits', 'automne', 'hiver'];
-    return types.map(type => ({
-      src: `/images/${plante.id}/${plante.id}_${type}.jpg`,
-      legend: type.replace('_', ' ')
-    }));
+    const imageTypes = [
+      { type: 'vue_generale', legend: 'Vue générale' },
+      { type: 'fleurs', legend: 'Fleurs' },
+      { type: 'bourgeons', legend: 'Bourgeons' },
+      { type: 'fruits', legend: 'Fruits' },
+      { type: 'automne', legend: 'Automne' },
+      { type: 'hiver', legend: 'Hiver' }
+    ];
+    
+    const extensions = ['.jpg', '.jpeg', '.png', '.webp'];
+    const images = [];
+    
+    imageTypes.forEach(imageType => {
+      // Essayer d'abord l'image _01 (numérotation)
+      for (const ext of extensions) {
+        const imagePath = `/images/${plante.id}/${plante.id}_${imageType.type}_01${ext}`;
+        images.push({
+          src: imagePath,
+          legend: imageType.legend,
+          alt: `${plante.name} - ${imageType.legend}`
+        });
+        break; // On prend la première extension pour chaque type
+      }
+    });
+    
+    return images;
   };
 
   const criteres = [
@@ -188,11 +209,30 @@ function Comparateur({ plantes }) {
                       </button>
                       <img 
                         src={images[currentIndex].src}
-                        alt={`${plante.name} - ${images[currentIndex].legend}`}
+                        alt={images[currentIndex].alt}
+                        className="comparison-image"
                         onError={(e) => {
-                          if (e.target.src !== '/images/placeholder.jpg') {
+                          // Essayer d'autres extensions si l'image ne charge pas
+                          const currentSrc = e.target.src;
+                          const extensions = ['.jpg', '.jpeg', '.png', '.webp'];
+                          const basePath = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
+                          
+                          // Trouver l'extension actuelle
+                          const currentExt = currentSrc.substring(currentSrc.lastIndexOf('.'));
+                          const currentExtIndex = extensions.indexOf(currentExt);
+                          
+                          // Essayer l'extension suivante
+                          if (currentExtIndex >= 0 && currentExtIndex < extensions.length - 1) {
+                            e.target.src = basePath + extensions[currentExtIndex + 1];
+                          } else {
+                            // Si toutes les extensions ont échoué, afficher un placeholder
                             e.target.onerror = null;
-                            e.target.src = '/images/placeholder.jpg';
+                            e.target.style.display = 'none';
+                            e.target.parentElement.innerHTML = `
+                              <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: rgba(0,0,0,0.05); color: var(--text-secondary); font-size: 0.9rem; padding: 1rem; text-align: center;">
+                                📷<br/>Image non disponible
+                              </div>
+                            `;
                           }
                         }}
                       />
