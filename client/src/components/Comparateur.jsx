@@ -605,6 +605,7 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Distance Fondations */}
             {visibleCriteres['fondations'] && (
