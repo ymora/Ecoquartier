@@ -242,6 +242,7 @@
   background: var(--bg-tertiary);
   border-radius: 0 0 12px 12px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .accept-button {
