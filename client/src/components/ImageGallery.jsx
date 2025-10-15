@@ -28,10 +28,10 @@ function ImageGallery({ arbusteId, arbusteName }) {
         // Pour chaque type, chercher toutes les images numérotées (_01, _02, etc.)
         for (const imageType of imageTypes) {
           let imageNumber = 1;
-          let foundForType = false;
+          let consecutiveNotFound = 0;
           
-          // Chercher jusqu'à 20 images par type (limite raisonnable)
-          while (imageNumber <= 20) {
+          // Chercher jusqu'à 10 images par type (limite raisonnable)
+          while (imageNumber <= 10 && consecutiveNotFound < 2) {
             const paddedNumber = String(imageNumber).padStart(2, '0');
             let foundWithExtension = false;
             
@@ -41,14 +41,16 @@ function ImageGallery({ arbusteId, arbusteName }) {
               
               try {
                 const response = await fetch(imagePath, { method: 'HEAD' });
-                if (response.ok) {
+                // Vérifier que c'est vraiment une image (pas un HTML 404)
+                const contentType = response.headers.get('content-type');
+                if (response.ok && contentType && contentType.startsWith('image/')) {
                   validImages.push({
                     src: imagePath,
                     legend: `${imageType.legend} ${imageNumber > 1 ? `(${imageNumber})` : ''}`,
                     alt: `${arbusteName} - ${imageType.legend} ${imageNumber}`
                   });
-                  foundForType = true;
                   foundWithExtension = true;
+                  consecutiveNotFound = 0; // Reset le compteur
                   break; // On a trouvé avec cette extension, passer au numéro suivant
                 }
               } catch (err) {
@@ -56,9 +58,13 @@ function ImageGallery({ arbusteId, arbusteName }) {
               }
             }
             
-            // Si aucune extension n'a fonctionné pour ce numéro, arrêter pour ce type
+            // Si aucune extension n'a fonctionné pour ce numéro
             if (!foundWithExtension) {
-              break;
+              consecutiveNotFound++;
+              // Si 2 numéros consécutifs manquent, arrêter pour ce type
+              if (consecutiveNotFound >= 2) {
+                break;
+              }
             }
             
             imageNumber++;
