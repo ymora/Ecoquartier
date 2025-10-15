@@ -898,6 +898,14 @@ function renderUploadQueue() {
 
   uploadActions.classList.remove('hidden');
 
+  // Event listeners pour miniatures (zoom plein écran)
+  document.querySelectorAll('.upload-item-thumb').forEach(thumb => {
+    thumb.addEventListener('click', (e) => {
+      openImageModal(e.target.src);
+    });
+    thumb.style.cursor = 'pointer';
+  });
+
   // Event listeners
   document.querySelectorAll('.config-espece').forEach(select => {
     select.addEventListener('change', (e) => {

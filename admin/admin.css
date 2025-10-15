@@ -431,6 +431,15 @@ section h2 {
   height: 60px;
   object-fit: cover;
   border-radius: 4px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-item-thumb:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px var(--shadow);
+  border-color: var(--accent-primary);
 }
 
 .upload-item-config {
