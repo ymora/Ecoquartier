@@ -308,9 +308,10 @@
   font-size: 1.05rem;
   font-weight: 500;
   padding: 1rem;
-  background: rgba(237, 137, 54, 0.1);
+  background: rgba(240, 247, 242, 0.9);
   border-left: 4px solid var(--warning);
   border-radius: 4px;
+  backdrop-filter: blur(5px);
 }
 
 .reglementation-card {
@@ -372,16 +373,20 @@
   color: var(--success);
   font-weight: 600;
   padding: 0.5rem;
-  background: rgba(72, 187, 120, 0.1);
+  background: rgba(240, 247, 242, 0.9);
   border-radius: 4px;
+  border-left: 3px solid var(--success);
+  backdrop-filter: blur(5px);
 }
 
 .danger-text {
   color: var(--danger);
   font-weight: 700;
   padding: 0.5rem;
-  background: rgba(245, 101, 101, 0.1);
+  background: rgba(240, 247, 242, 0.9);
   border-radius: 4px;
+  border-left: 3px solid var(--danger);
+  backdrop-filter: blur(5px);
 }
 
 .animaux-grid {
@@ -433,12 +438,13 @@
 .info-source {
   margin-top: 1.5rem;
   padding: 0.75rem;
-  background: rgba(46, 139, 87, 0.05);
+  background: rgba(240, 247, 242, 0.9);
   border-left: 3px solid var(--accent-primary);
   border-radius: 4px;
   font-size: 0.9rem;
   font-style: italic;
   color: var(--text-secondary);
+  backdrop-filter: blur(5px);
 }
 
 @media (max-width: 768px) {
