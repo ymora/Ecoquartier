@@ -32,6 +32,15 @@
         </div>
         
         <div class="header-selection">
+          <button id="toggleLog" class="btn-icon-outline" title="Afficher le journal des opérations">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </button>
           <button id="saveAll" class="btn-icon-outline btn-success-outline" disabled title="Sauvegarder toutes les modifications">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
@@ -45,19 +54,17 @@
 
     <div class="admin-content">
 
-    <!-- SECTION 1: UPLOAD ET JOURNAL CÔTE À CÔTE -->
-    <div class="upload-log-wrapper">
-      <!-- Cadre Upload -->
-      <section class="upload-section">
-        <div class="section-header">
-          <h2>📤 Ajouter de nouvelles images</h2>
-          <button id="clearQueue" class="btn-icon-outline btn-danger-outline hidden" title="Vider la file d'upload">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="3 6 5 6 21 6"/>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-          </button>
-        </div>
+    <!-- SECTION 1: UPLOAD -->
+    <section class="upload-section">
+      <div class="section-header">
+        <h2>📤 Ajouter de nouvelles images</h2>
+        <button id="clearQueue" class="btn-icon-outline btn-danger-outline hidden" title="Vider la file d'upload">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
       
       <!-- Zone de drop compacte -->
       <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none;">
@@ -73,13 +80,6 @@
       <!-- Liste des images à uploader -->
       <div id="uploadQueue" class="upload-queue"></div>
     </section>
-
-    <!-- Cadre Journal -->
-    <aside id="logContainer" class="log-container-sidebar hidden">
-      <h3>📋 Journal</h3>
-      <div id="log" class="log"></div>
-    </aside>
-    </div> <!-- Fin upload-log-wrapper -->
 
     <!-- SECTION 2: IMAGES EXISTANTES -->
     <section class="existing-section">
@@ -99,6 +99,28 @@
     </section>
 
     </div> <!-- Fin admin-content -->
+  </div>
+
+  <!-- MODAL JOURNAL -->
+  <div id="logModal" class="log-modal hidden">
+    <div class="log-modal-content">
+      <div class="log-modal-header">
+        <h3>📋 Journal des Opérations</h3>
+        <button id="closeLogModal" class="modal-close-btn" title="Fermer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div id="logContainer" class="log-modal-body hidden">
+        <div id="log" class="log"></div>
+      </div>
+      <div class="log-modal-empty">
+        <p>📝 Aucune opération enregistrée</p>
+        <p class="log-modal-hint">Les logs apparaîtront ici lors des uploads et modifications</p>
+      </div>
+    </div>
   </div>
 
   <script src="admin.js"></script>

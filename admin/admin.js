@@ -44,6 +44,9 @@ const clearQueueBtn = document.getElementById('clearQueue');
 const deleteAllFilteredBtn = document.getElementById('deleteAllFiltered');
 const logContainer = document.getElementById('logContainer');
 const log = document.getElementById('log');
+const logModal = document.getElementById('logModal');
+const toggleLogBtn = document.getElementById('toggleLog');
+const closeLogModalBtn = document.getElementById('closeLogModal');
 
 // Fonction d'échappement HTML pour prévenir XSS
 function escapeHTML(str) {
@@ -106,6 +109,25 @@ function attachEventListeners() {
   
   // Actions images existantes
   deleteAllFilteredBtn.addEventListener('click', deleteAllFiltered);
+  
+  // Modal journal
+  toggleLogBtn.addEventListener('click', () => {
+    logModal.classList.add('active');
+    logModal.classList.remove('hidden');
+  });
+  
+  closeLogModalBtn.addEventListener('click', () => {
+    logModal.classList.remove('active');
+    logModal.classList.add('hidden');
+  });
+  
+  // Fermer modal en cliquant sur le fond
+  logModal.addEventListener('click', (e) => {
+    if (e.target === logModal) {
+      logModal.classList.remove('active');
+      logModal.classList.add('hidden');
+    }
+  });
 }
 
 // Gestion des filtres
@@ -965,6 +987,7 @@ function addLog(type, message) {
 
 function showLog() {
   logContainer.classList.remove('hidden');
+  document.querySelector('.log-modal-empty')?.classList.add('hidden');
 }
 
 // Initialiser au chargement
