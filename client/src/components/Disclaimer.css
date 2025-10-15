@@ -173,12 +173,13 @@
 }
 
 .disclaimer-legal {
-  background: rgba(245, 101, 101, 0.08);
+  background: rgba(240, 247, 242, 0.9);
   padding: 1rem;
   border-left: 4px solid var(--danger);
   border-radius: 6px;
   font-size: 0.95rem;
   margin: 1rem 0;
+  backdrop-filter: blur(5px);
 }
 
 .disclaimer-footer {
