@@ -22,21 +22,21 @@ function Disclaimer() {
     setIsVisible(true);
   };
 
-  // Afficher uniquement le bouton si modal fermé
-  if (!isVisible) {
-    return (
-      <button 
-        className="disclaimer-toggle footer-position"
-        onClick={handleToggle}
-        title="Informations légales et avertissements"
-      >
-        <FaInfoCircle /> Informations légales
-      </button>
-    );
-  }
-
   return (
-    <div className="disclaimer-overlay">
+    <>
+      <footer className="footer">
+        <p>&copy; 2025 Les Haies de l'Écocartier de Bessancourt. Tous droits réservés.</p>
+        <button 
+          className="disclaimer-toggle footer-position"
+          onClick={handleToggle}
+          title="Informations légales et avertissements"
+        >
+          <FaInfoCircle /> Informations légales
+        </button>
+      </footer>
+      
+      {isVisible && (
+      <div className="disclaimer-overlay">
       <div className="disclaimer-modal">
         <button className="disclaimer-close" onClick={handleClose}>
           <FaTimes />
@@ -145,6 +145,8 @@ function Disclaimer() {
         </div>
       </div>
     </div>
+      )}
+    </>
   );
 }
 

@@ -73,10 +73,6 @@ function App() {
         </div>
       )}
 
-      <footer className="footer">
-        <p>&copy; 2025 Les Haies de l'Écocartier de Bessancourt. Tous droits réservés.</p>
-      </footer>
-
       <Disclaimer />
     </div>
   );
