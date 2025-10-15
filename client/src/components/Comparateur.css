@@ -351,6 +351,21 @@
   object-fit: cover;
 }
 
+.image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 1rem;
+  text-align: center;
+  gap: 0.5rem;
+}
+
 .image-nav {
   position: absolute;
   top: 50%;
