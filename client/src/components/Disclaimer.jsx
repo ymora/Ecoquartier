@@ -15,6 +15,20 @@ function Disclaimer({ onClose }) {
     }
   }, []); // Une seule fois au montage
 
+  // Bloquer le scroll de la page principale quand le modal est visible
+  useEffect(() => {
+    if (isVisible) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    // Cleanup : restaurer le scroll quand le composant est démonté
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isVisible]);
+
   const handleAccept = () => {
     localStorage.setItem('disclaimer-accepted', 'true');
     setIsAccepted(true);
