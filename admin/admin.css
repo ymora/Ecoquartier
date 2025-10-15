@@ -651,6 +651,35 @@ button:disabled {
   margin-top: 1.5rem;
 }
 
+/* Journal inline dans le header de la section upload */
+.log-container-inline {
+  max-width: 400px;
+  min-width: 300px;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow);
+  backdrop-filter: blur(10px);
+  margin: 0;
+}
+
+.log-container-inline h3 {
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem 0;
+  color: #3498db;
+}
+
+.log-container-inline .log {
+  max-height: 120px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  scrollbar-width: thin;
+  background: var(--bg-primary);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
 .log-container h3 {
   color: #3498db;
   margin-bottom: 1rem;
