@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaExclamationTriangle, FaTimes } from 'react-icons/fa';
 import './Disclaimer.css';
 
@@ -7,6 +7,13 @@ function Disclaimer({ onClose }) {
   const [isAccepted, setIsAccepted] = useState(
     localStorage.getItem('disclaimer-accepted') === 'true'
   );
+
+  // Synchroniser au montage : si déjà accepté, notifier immédiatement
+  useEffect(() => {
+    if (isAccepted && onClose) {
+      onClose();
+    }
+  }, []); // Une seule fois au montage
 
   const handleAccept = () => {
     localStorage.setItem('disclaimer-accepted', 'true');
