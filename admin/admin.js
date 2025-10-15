@@ -719,7 +719,7 @@ function renderUploadQueue() {
       <div class="upload-item-config">
         <div>
           <div class="upload-item-name">${escapeHTML(item.file.name)}</div>
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; align-items: center;">
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
             <select class="config-espece" data-id="${item.id}">
               <option value="">-- Espèce --</option>
               ${ESPECES.map(e => `
@@ -737,15 +737,13 @@ function renderUploadQueue() {
                 </option>
               `).join('')}
             </select>
-            
-            ${nextNumberInfo ? `<div class="next-number-badge">${nextNumberInfo}</div>` : '<div class="next-number-badge placeholder">──</div>'}
           </div>
         </div>
       </div>
       
-      <span class="upload-item-status status-${item.status}">
-        ${getStatusLabel(item.status)}
-      </span>
+      <div class="number-badge-container">
+        ${nextNumberInfo ? `<div class="next-number-badge">${nextNumberInfo}</div>` : ''}
+      </div>
       
       <button class="btn-icon-outline btn-danger-outline" data-id="${item.id}" title="Retirer de la file">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

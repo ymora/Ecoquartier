@@ -333,7 +333,7 @@ section h2 {
 
 .upload-item {
   display: grid;
-  grid-template-columns: 80px 1fr auto auto;
+  grid-template-columns: 80px 1fr 80px auto;
   gap: 1rem;
   padding: 0.75rem;
   background: var(--bg-tertiary);
@@ -382,9 +382,9 @@ section h2 {
 }
 
 .next-number-badge {
-  padding: 0.5rem 0.75rem;
-  background: linear-gradient(135deg, rgba(46, 139, 87, 0.15), rgba(72, 187, 120, 0.25));
-  border-radius: 20px;
+  padding: 0.45rem 0.75rem;
+  background: linear-gradient(135deg, rgba(46, 139, 87, 0.2), rgba(72, 187, 120, 0.3));
+  border-radius: 16px;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--accent-primary);
@@ -392,49 +392,6 @@ section h2 {
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 8px rgba(46, 139, 87, 0.2);
   min-width: 65px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.next-number-badge.placeholder {
-  background: transparent;
-  box-shadow: none;
-  color: var(--border-color);
-}
-
-.upload-item-status {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.status-ready {
-  background: rgba(72, 187, 120, 0.2);
-  color: var(--success);
-}
-
-.status-pending {
-  background: rgba(243, 156, 18, 0.2);
-  color: var(--warning);
-}
-
-.status-uploading {
-  background: rgba(52, 152, 219, 0.2);
-  color: #3498db;
-}
-
-.status-success {
-  background: rgba(46, 204, 113, 0.2);
-  color: #2ecc71;
-}
-
-.status-error {
-  background: rgba(230, 57, 70, 0.2);
-  color: var(--danger);
 }
 
 /* ACTIONS */
