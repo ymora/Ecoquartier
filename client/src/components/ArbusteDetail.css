@@ -60,11 +60,12 @@
 .family {
   font-size: 0.95rem;
   color: var(--text-secondary);
-  background: var(--bg-tertiary);
+  background: rgba(240, 247, 242, 0.9);
   padding: 0.2rem 0.75rem;
   border-radius: 12px;
   font-weight: 600;
   margin: 0;
+  backdrop-filter: blur(5px);
 }
 
 /* Tabs */
@@ -95,7 +96,7 @@
 
 .tab:hover {
   color: var(--accent-primary);
-  background: var(--bg-tertiary);
+  background: rgba(240, 247, 242, 0.9);
 }
 
 .tab:focus-visible {
@@ -283,8 +284,9 @@
 
 /* Anecdote */
 .anecdote {
-  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+  background: linear-gradient(135deg, rgba(240, 247, 242, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
   border-color: var(--accent-secondary);
+  backdrop-filter: blur(5px);
 }
 
 .anecdote h2 {
