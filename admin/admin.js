@@ -201,14 +201,6 @@ function renderExistingImages() {
         </div>
       </div>
       
-      <button class="btn-icon-outline btn-success-outline" data-filename="${escapeHTML(img.filename)}" title="Sauvegarder les modifications">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-          <polyline points="17 21 17 13 7 13 7 21"/>
-          <polyline points="7 3 7 8 15 8"/>
-        </svg>
-      </button>
-      
       <button class="btn-icon-outline btn-danger-outline" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}" title="Supprimer cette image">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="3 6 5 6 21 6"/>
@@ -232,15 +224,6 @@ function attachExistingImageListeners() {
       openImageModal(`http://localhost:3001${fullPath}`);
     });
     img.style.cursor = 'pointer';
-  });
-
-  // Boutons sauver
-  document.querySelectorAll('.existing-item .btn-success-outline').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      const filename = e.currentTarget.dataset.filename;
-      await saveImageChanges(filename);
-    });
   });
 
   // Boutons supprimer individuels
@@ -345,8 +328,6 @@ function attachExistingImageListeners() {
         state.pendingChanges[filename].newType !== state.pendingChanges[filename].originalType ||
         state.pendingChanges[filename].newNumber !== state.pendingChanges[filename].originalNumber;
       
-      const btn = item.querySelector('.btn-success-outline');
-      
       if (hasChanges) {
         // Vérifier les conflits
         const conflict = detectConflict(filename, state.pendingChanges[filename]);
@@ -355,10 +336,6 @@ function attachExistingImageListeners() {
           // CONFLIT détecté
           item.classList.add('has-conflict');
           item.classList.remove('has-changes');
-          btn.classList.add('conflict');
-          btn.classList.remove('modified');
-          btn.disabled = true;
-          btn.setAttribute('title', conflict.message);
           
           // Afficher suggestion
           showConflictSuggestion(item, conflict.suggestion);
@@ -366,20 +343,12 @@ function attachExistingImageListeners() {
           // Marquer comme modifié (pas de conflit)
           item.classList.add('has-changes');
           item.classList.remove('has-conflict');
-          btn.classList.add('modified');
-          btn.classList.remove('conflict');
-          btn.disabled = false;
-          btn.setAttribute('title', 'Sauvegarder tous les changements');
           hideConflictSuggestion(item);
         }
       } else {
         // Retirer l'indicateur si retour à l'état original
         item.classList.remove('has-changes');
         item.classList.remove('has-conflict');
-        btn.classList.remove('modified');
-        btn.classList.remove('conflict');
-        btn.disabled = false;
-        btn.setAttribute('title', 'Sauvegarder les modifications');
         delete state.pendingChanges[filename];
         hideConflictSuggestion(item);
       }
@@ -515,20 +484,14 @@ function restorePendingChanges() {
     
     if (hasChanges) {
       const conflict = detectConflict(filename, changes);
-      const btn = item.querySelector('.btn-success-outline');
       
       if (conflict) {
         item.classList.add('has-conflict');
-        btn.classList.add('conflict');
-        btn.disabled = true;
-        btn.setAttribute('title', conflict.message);
         if (conflict.suggestion) {
           showConflictSuggestion(item, conflict.suggestion);
         }
       } else {
         item.classList.add('has-changes');
-        btn.classList.add('modified');
-        btn.setAttribute('title', 'Sauvegarder tous les changements');
       }
     }
   }
@@ -536,40 +499,63 @@ function restorePendingChanges() {
   updateSaveAllButton();
 }
 
-// Sauvegarder toutes les modifications
+// Sauvegarder toutes les modifications ET uploader nouvelles images
 async function saveAllModifications() {
-  const modifiedItems = document.querySelectorAll('.existing-item .btn-success-outline.modified');
+  const modifiedCount = Object.keys(state.pendingChanges).length;
+  const uploadCount = state.uploadQueue.filter(item => canUpload(item) && item.status === 'pending').length;
   
-  if (modifiedItems.length === 0) {
-    alert('Aucune modification à sauvegarder');
+  if (modifiedCount === 0 && uploadCount === 0) {
+    alert('Aucune modification ou upload à traiter');
+    return;
+  }
+  
+  if (!confirm(`Traiter ${modifiedCount} modification(s) et ${uploadCount} upload(s) ?`)) {
     return;
   }
   
   saveAllBtn.disabled = true;
+  uploadAllBtn.disabled = true;
   showLog();
   
-  for (const btn of modifiedItems) {
-    const filename = btn.dataset.filename;
+  // 1. Sauvegarder les modifications des images existantes
+  for (const filename of Object.keys(state.pendingChanges)) {
     await saveImageChanges(filename);
   }
   
+  // 2. Uploader les nouvelles images
+  const readyItems = state.uploadQueue.filter(item => canUpload(item) && item.status === 'pending');
+  for (const item of readyItems) {
+    await uploadSingle(item.id);
+  }
+  
   saveAllBtn.disabled = false;
+  uploadAllBtn.disabled = false;
   updateSaveAllButton();
+  
+  addLog('success', `✓ ${modifiedCount + uploadCount} opération(s) terminée(s) - Push GitHub effectué`);
 }
 
 // Mettre à jour l'état du bouton "Sauvegarder tout"
 function updateSaveAllButton() {
-  const modifiedCount = document.querySelectorAll('.btn-success-outline.modified').length;
-  saveAllBtn.disabled = modifiedCount === 0;
+  const modifiedCount = Object.keys(state.pendingChanges).length;
+  const uploadCount = state.uploadQueue.filter(item => canUpload(item) && item.status === 'pending').length;
+  const totalCount = modifiedCount + uploadCount;
   
-  if (modifiedCount > 0) {
+  saveAllBtn.disabled = totalCount === 0;
+  
+  if (totalCount > 0) {
     saveAllBtn.classList.add('has-changes');
-    saveAllBtn.setAttribute('data-count', modifiedCount);
-    saveAllBtn.setAttribute('title', `Sauvegarder ${modifiedCount} modification(s)`);
+    saveAllBtn.setAttribute('data-count', totalCount);
+    
+    const parts = [];
+    if (modifiedCount > 0) parts.push(`${modifiedCount} modification(s)`);
+    if (uploadCount > 0) parts.push(`${uploadCount} upload(s)`);
+    
+    saveAllBtn.setAttribute('title', `Traiter: ${parts.join(' + ')}`);
   } else {
     saveAllBtn.classList.remove('has-changes');
     saveAllBtn.removeAttribute('data-count');
-    saveAllBtn.setAttribute('title', 'Sauvegarder toutes les modifications');
+    saveAllBtn.setAttribute('title', 'Sauvegarder et uploader');
   }
 }
 
@@ -685,8 +671,6 @@ async function saveImageChanges(filename) {
     
     // Succès : nettoyer les changements de cette image
     delete state.pendingChanges[filename];
-    btn.classList.remove('modified');
-    btn.classList.remove('conflict');
     item.classList.remove('has-changes');
     item.classList.remove('has-conflict');
     
@@ -975,11 +959,10 @@ async function uploadSingle(id) {
   renderUploadQueue();
   showLog();
   
-  // Recharger les images existantes si on est sur les mêmes filtres
-  if (state.filterEspece === item.espece && state.filterType === item.type) {
-    await loadExistingImages();
-    renderExistingImages();
-  }
+  // Recharger les images existantes
+  await loadExistingImages();
+  renderExistingImages();
+  updateSaveAllButton();
 }
 
 // Upload toutes les images
