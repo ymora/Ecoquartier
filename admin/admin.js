@@ -306,70 +306,19 @@ function attachExistingImageListeners() {
         state.pendingChanges[filename].newNumber !== state.pendingChanges[filename].originalNumber;
       
       if (hasChanges) {
-        // Vérifier les conflits
-        const conflict = detectConflict(filename, state.pendingChanges[filename]);
-        
-        if (conflict) {
-          // CONFLIT détecté
-          item.classList.add('has-conflict');
-          item.classList.remove('has-changes');
-          
-          // Afficher suggestion
-          showConflictSuggestion(item, conflict.suggestion);
-        } else {
-          // Marquer comme modifié (pas de conflit)
-          item.classList.add('has-changes');
-          item.classList.remove('has-conflict');
-          hideConflictSuggestion(item);
-        }
+        // Marquer comme modifié (auto-numérotation évite les conflits)
+        item.classList.add('has-changes');
+        item.classList.remove('has-conflict');
       } else {
         // Retirer l'indicateur si retour à l'état original
         item.classList.remove('has-changes');
         item.classList.remove('has-conflict');
         delete state.pendingChanges[filename];
-        hideConflictSuggestion(item);
       }
       
       updateSaveAllButton();
     });
   });
-}
-
-// Détecter les conflits entre modifications en attente
-function detectConflict(currentFilename, changes) {
-  const targetKey = `${changes.newEspece}_${changes.newType}_${changes.newNumber}`;
-  
-  // Vérifier les modifications en attente
-  for (const [filename, pendingChange] of Object.entries(state.pendingChanges)) {
-    if (filename === currentFilename) continue;
-    
-    const pendingKey = `${pendingChange.newEspece}_${pendingChange.newType}_${pendingChange.newNumber}`;
-    
-    if (pendingKey === targetKey) {
-      return {
-        message: `⚠️ Conflit avec ${filename} (aussi ${changes.newType} #${changes.newNumber})`,
-        suggestion: getSuggestedNumber(changes.newEspece, changes.newType)
-      };
-    }
-  }
-  
-  // Vérifier les images existantes non modifiées
-  const existingConflict = state.existingImages.find(img =>
-    img.filename !== currentFilename &&
-    img.espece === changes.newEspece &&
-    img.type === changes.newType &&
-    img.number === changes.newNumber &&
-    !state.pendingChanges[img.filename] // Pas déjà en cours de modification
-  );
-  
-  if (existingConflict) {
-    return {
-      message: `⚠️ Le numéro #${changes.newNumber} existe déjà (permutation auto lors de la sauvegarde)`,
-      suggestion: null // Permutation OK, pas de suggestion
-    };
-  }
-  
-  return null;
 }
 
 // Trouver le prochain numéro disponible pour une espèce/type (comble les trous)
@@ -398,42 +347,6 @@ function getSuggestedNumber(espece, type) {
   return allNumbers.length + 1;
 }
 
-// Afficher suggestion de numéro
-function showConflictSuggestion(item, suggestion) {
-  if (!suggestion) return;
-  
-  const numberWrapper = item.querySelector('.existing-item-number-wrapper');
-  let suggestionDiv = numberWrapper.querySelector('.conflict-suggestion');
-  
-  if (!suggestionDiv) {
-    suggestionDiv = document.createElement('div');
-    suggestionDiv.className = 'conflict-suggestion';
-    // Insérer AVANT l'input de numéro
-    numberWrapper.insertBefore(suggestionDiv, numberWrapper.firstChild);
-  }
-  
-  suggestionDiv.innerHTML = `
-    <span>Dispo: #${String(suggestion).padStart(2, '0')}</span>
-    <button class="btn-apply-suggestion" data-number="${suggestion}">✓</button>
-  `;
-  
-  // Event listener pour appliquer la suggestion
-  const applyBtn = suggestionDiv.querySelector('.btn-apply-suggestion');
-  applyBtn.addEventListener('click', () => {
-    const numberInput = item.querySelector('.input-number');
-    numberInput.value = suggestion;
-    numberInput.dispatchEvent(new Event('change'));
-  });
-}
-
-// Cacher suggestion de conflit
-function hideConflictSuggestion(item) {
-  const suggestionDiv = item.querySelector('.conflict-suggestion');
-  if (suggestionDiv) {
-    suggestionDiv.remove();
-  }
-}
-
 // Restaurer les modifications en attente après rechargement
 function restorePendingChanges() {
   for (const [filename, changes] of Object.entries(state.pendingChanges)) {
@@ -458,16 +371,7 @@ function restorePendingChanges() {
       changes.newNumber !== changes.originalNumber;
     
     if (hasChanges) {
-      const conflict = detectConflict(filename, changes);
-      
-      if (conflict) {
-        item.classList.add('has-conflict');
-        if (conflict.suggestion) {
-          showConflictSuggestion(item, conflict.suggestion);
-        }
-      } else {
-        item.classList.add('has-changes');
-      }
+      item.classList.add('has-changes');
     }
   }
   
