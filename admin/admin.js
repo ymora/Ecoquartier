@@ -830,15 +830,24 @@ function renderUploadQueue() {
     return;
   }
 
-  uploadQueue.innerHTML = state.uploadQueue.map(item => {
+  uploadQueue.innerHTML = state.uploadQueue.map((item, index) => {
     let nextNumberInfo = '';
     
     // Si espèce et type sont sélectionnés, calculer le prochain numéro
     if (item.espece && item.type) {
+      // Compter les images existantes
       const existingCount = state.existingImages.filter(img => 
         img.espece === item.espece && img.type === item.type
       ).length;
-      const nextNumber = existingCount + 1;
+      
+      // Compter les images AVANT celle-ci dans la file d'upload (même espèce+type)
+      const queueBefore = state.uploadQueue.slice(0, index).filter(queueItem =>
+        queueItem.espece === item.espece && 
+        queueItem.type === item.type
+      ).length;
+      
+      // Numéro = existantes + images avant dans queue + 1
+      const nextNumber = existingCount + queueBefore + 1;
       nextNumberInfo = `→ #${String(nextNumber).padStart(2, '0')}`;
     }
     
