@@ -67,6 +67,12 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
         <FaBars />
       </button>
       <nav className={`navigation ${isOpen ? 'open' : 'closed'}`}>
+        {/* Titre du site */}
+        <div className="nav-title">
+          <h1>Les Haies de l'Écocartier de Bessancourt</h1>
+          <p className="nav-subtitle">Guide des arbustes pour haies champêtres</p>
+        </div>
+
         {/* Section Arbres */}
         <div className="nav-section">
           <button 
