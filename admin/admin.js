@@ -39,7 +39,6 @@ const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
 const uploadQueue = document.getElementById('uploadQueue');
 const uploadActions = document.getElementById('uploadActions');
-const uploadAllBtn = document.getElementById('uploadAll');
 const clearQueueBtn = document.getElementById('clearQueue');
 const logContainer = document.getElementById('logContainer');
 const log = document.getElementById('log');
@@ -90,7 +89,7 @@ function attachEventListeners() {
   filterType.addEventListener('change', handleFilterChange);
   resetFiltersBtn.addEventListener('click', resetFilters);
 
-  // Sauvegarder tout
+  // Sauvegarder tout (modifs + uploads)
   saveAllBtn.addEventListener('click', saveAllModifications);
 
   // Upload
@@ -101,7 +100,6 @@ function attachEventListeners() {
   fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
   // Actions upload
-  uploadAllBtn.addEventListener('click', uploadAll);
   clearQueueBtn.addEventListener('click', clearUploadQueue);
 }
 
@@ -514,7 +512,6 @@ async function saveAllModifications() {
   }
   
   saveAllBtn.disabled = true;
-  uploadAllBtn.disabled = true;
   showLog();
   
   // 1. Sauvegarder les modifications des images existantes
@@ -529,7 +526,6 @@ async function saveAllModifications() {
   }
   
   saveAllBtn.disabled = false;
-  uploadAllBtn.disabled = false;
   updateSaveAllButton();
   
   addLog('success', `✓ ${modifiedCount + uploadCount} opération(s) terminée(s) - Push GitHub effectué`);
@@ -870,8 +866,13 @@ function renderUploadQueue() {
         ${getStatusLabel(item.status)}
       </span>
       
-      <button class="btn-small btn-danger" data-id="${item.id}" title="Retirer de la file">
-        🗑️
+      <button class="btn-icon-outline btn-danger-outline" data-id="${item.id}" title="Retirer de la file">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          <line x1="10" y1="11" x2="10" y2="17"/>
+          <line x1="14" y1="11" x2="14" y2="17"/>
+        </svg>
       </button>
     </div>
   `;
@@ -905,7 +906,7 @@ function renderUploadQueue() {
     });
   });
 
-  document.querySelectorAll('.upload-item .btn-danger').forEach(btn => {
+  document.querySelectorAll('.upload-item .btn-danger-outline').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = Number(e.currentTarget.dataset.id);
       state.uploadQueue = state.uploadQueue.filter(item => item.id !== id);
