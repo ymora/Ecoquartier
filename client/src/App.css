@@ -153,11 +153,34 @@ body {
 
 .footer {
   background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
-  padding: 1.5rem;
-  text-align: center;
+  padding: 1.5rem 2rem;
   color: var(--text-secondary);
   border-top: 2px solid var(--accent-primary);
+  box-shadow: 0 -2px 10px var(--shadow);
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
   font-size: 0.9rem;
+}
+
+.footer p {
+  margin: 0;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .footer p {
+    text-align: center;
+  }
 }
 
 /* Scrollbar personnalisée */
