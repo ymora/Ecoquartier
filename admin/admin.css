@@ -594,6 +594,39 @@ section h2 {
   color: #a02622;
 }
 
+/* Bouton texte danger (suppression multiple) */
+.btn-text-danger {
+  padding: 0.6rem 1.25rem;
+  background: transparent;
+  border: 2px solid var(--danger);
+  border-radius: 8px;
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
+}
+
+.btn-text-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.3));
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+  transform: translateY(-2px);
+  border-color: #c0392b;
+}
+
+.btn-text-danger:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-text-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .btn-icon-outline:disabled {
   opacity: 0.25;
   cursor: not-allowed;
