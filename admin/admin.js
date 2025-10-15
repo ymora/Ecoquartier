@@ -115,12 +115,14 @@ async function handleFilterChange() {
   renderExistingImages();
 }
 
-function resetFilters() {
+async function resetFilters() {
   filterEspece.value = '';
   filterType.value = '';
   state.filterEspece = '';
   state.filterType = '';
-  state.existingImages = [];
+  
+  // Recharger toutes les images (sans filtre)
+  await loadExistingImages();
   renderExistingImages();
 }
 
