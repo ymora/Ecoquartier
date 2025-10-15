@@ -449,45 +449,103 @@
 
 @media (max-width: 768px) {
   .arbuste-detail {
-    padding-top: 110px; /* Espace pour header compact */
+    padding-top: 90px; /* Réduit pour plus d'espace */
   }
 
   .arbuste-header {
-    padding: 0.6rem 1rem;
+    padding: 0.75rem 0.75rem;
   }
 
   .arbuste-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    line-height: 1.3;
   }
 
   .header-info {
-    gap: 0.5rem;
-    font-size: 0.9rem;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
   }
 
   .scientific-name {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
   }
 
   .family {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+  }
+
+  .separator {
+    display: none; /* Masquer le séparateur sur mobile */
   }
 
   .info-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
   .tabs {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 0.25rem;
   }
 
   .tab {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.85rem 1rem;
+    font-size: 0.85rem;
+    min-width: 120px;
+    white-space: nowrap;
   }
 
-  .infrastructure-grid {
+  .infrastructure-grid,
+  .animaux-grid {
     grid-template-columns: 1fr;
+  }
+
+  .reglementation-card,
+  .info-card,
+  .section {
+    padding: 0.75rem;
+  }
+
+  .reglementation-card h3,
+  .section h3 {
+    font-size: 1rem;
+  }
+
+  .reglementation-card p,
+  .section p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Très petits mobiles */
+@media (max-width: 480px) {
+  .arbuste-detail {
+    padding-top: 80px;
+  }
+
+  .arbuste-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .header-info {
+    font-size: 0.75rem;
+  }
+
+  .scientific-name {
+    font-size: 0.75rem;
+  }
+
+  .family {
+    font-size: 0.7rem;
+  }
+
+  .tab {
+    padding: 0.75rem 0.75rem;
+    font-size: 0.8rem;
+    min-width: 100px;
   }
 }
 

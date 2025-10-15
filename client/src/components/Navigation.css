@@ -239,9 +239,84 @@
   }
 
   .navigation {
-    width: 85vw;
-    max-width: 320px;
+    width: 90vw;
+    max-width: 350px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Titre plus compact sur mobile */
+  .nav-title {
+    padding: 1rem 0.75rem;
+  }
+
+  .nav-title h1 {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .nav-subtitle {
+    font-size: 0.75rem;
+    margin-top: 0.3rem;
+  }
+
+  /* Sections plus compactes */
+  .nav-section {
+    padding: 0 0.75rem;
+  }
+
+  .nav-header {
+    padding: 0.75rem 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .nav-header h2 {
+    font-size: 0.95rem;
+  }
+
+  /* Items plus grands pour le tactile */
+  .nav-item {
+    padding: 1rem 0.75rem;
+    min-height: 44px;
+  }
+
+  .nav-item-name {
+    font-size: 0.95rem;
+  }
+
+  .nav-item-scientific {
+    font-size: 0.8rem;
+  }
+
+  /* Bouton toggle plus grand pour le tactile */
+  .nav-toggle {
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.85rem;
+    font-size: 1.3rem;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Très petits mobiles (< 480px) */
+@media (max-width: 480px) {
+  .navigation {
+    width: 95vw;
+    max-width: none;
+  }
+
+  .nav-title h1 {
+    font-size: 0.9rem;
+  }
+
+  .nav-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .nav-toggle {
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.75rem;
   }
 }
 
