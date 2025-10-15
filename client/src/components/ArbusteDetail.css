@@ -400,12 +400,20 @@
 }
 
 @media (max-width: 768px) {
+  .arbuste-detail {
+    padding-top: 140px; /* Plus d'espace sur mobile */
+  }
+
+  .arbuste-header {
+    padding: 0.75rem 1rem;
+  }
+
   .arbuste-header h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   .scientific-name {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .info-grid {
