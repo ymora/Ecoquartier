@@ -58,12 +58,12 @@ function Disclaimer({ onClose }) {
         <div className="disclaimer-content">
           <h3>🌿 À propos de ce site</h3>
           <p>
-            Ce site présente les arbres et arbustes pour haies champêtres de l'écocartier de Bessancourt. 
+            Ce site présente les arbres et arbustes pour haies champêtres de l'écocartier de Bessancourt.  
             Sources : ouvrages botaniques, textes officiels (Code Civil, Code Rural), expérience horticole professionnelle.
           </p>
           <p className="verified" style={{ marginTop: '1rem' }}>
-            <strong>✅ SOURCES OFFICIELLES VÉRIFIÉES</strong> : 
-            <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F614" target="_blank" rel="noopener noreferrer">Service-Public.gouv.fr</a>, 
+            <strong>✅ SOURCES OFFICIELLES VÉRIFIÉES</strong> :  
+            <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F614" target="_blank" rel="noopener noreferrer">Service-Public.gouv.fr</a>,  
             <a href="https://www.lpo.fr/" target="_blank" rel="noopener noreferrer">LPO France</a>
           </p>
 
@@ -75,7 +75,7 @@ function Disclaimer({ onClose }) {
               <li><strong>Arbres/haies de 2 mètres ou moins</strong> : minimum <strong>0,50 mètre (50 cm)</strong> de la limite de propriété</li>
             </ul>
             <p style={{ marginTop: '0.5rem', marginBottom: 0, fontSize: '0.9rem' }}>
-              ⚠️ Ces distances peuvent être modifiées par usages locaux ou règlement de copropriété. 
+              ⚠️ Ces distances peuvent être modifiées par usages locaux ou règlement de copropriété.  
               Consultez votre mairie et le PLU local.
             </p>
           </div>
@@ -83,11 +83,11 @@ function Disclaimer({ onClose }) {
           <h3>⚠️ Limitations et Précautions</h3>
           <ul className="warning-list">
             <li>
-              <strong>Réglementation locale</strong> : Le PLU de Bessancourt peut imposer des règles plus strictes. 
+              <strong>Réglementation locale</strong> : Le PLU de Bessancourt peut imposer des règles plus strictes.  
               <strong>Contactez la mairie (01 30 40 44 47)</strong> avant toute plantation.
             </li>
             <li>
-              <strong>Interdiction de taille</strong> : Protection des oiseaux nicheurs. 
+              <strong>Interdiction de taille</strong> : Protection des oiseaux nicheurs.  
               <strong>Période générale : 15 mars - 31 juillet</strong> (variable selon département, vérifiez l'arrêté préfectoral Val d'Oise).
             </li>
             <li>
@@ -95,7 +95,7 @@ function Disclaimer({ onClose }) {
               sont des moyennes pouvant varier selon climat, sol, exposition et entretien.
             </li>
             <li>
-              <strong>Urgences</strong> : 
+              <strong>Urgences</strong> :  
               Intoxication → <strong>15 (SAMU)</strong> ou <strong>01 40 05 48 48 (Centre Antipoison Paris)</strong>
             </li>
           </ul>
@@ -134,7 +134,7 @@ function Disclaimer({ onClose }) {
 
           <h3>⚠️ Responsabilité</h3>
           <p className="disclaimer-legal">
-            <strong>Site informatif uniquement.</strong> Les auteurs ne peuvent être tenus responsables 
+            <strong>Site informatif uniquement.</strong>  Les auteurs ne peuvent être tenus responsables 
             des variations locales, dégâts, litiges de voisinage ou intoxications.
           </p>
           <p className="disclaimer-legal">
