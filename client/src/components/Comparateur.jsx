@@ -383,7 +383,7 @@ function Comparateur({ plantes }) {
                 <div key={plante.id} className="comparison-cell">
                   {informationsComplementaires[plante.id] ? (
                     <>
-                      <p className="small-text"><strong>Type :</strong> {informationsComplementaires[plante.id].pollinisation.type}</p>
+                      <p className="small-text"><strong>Mode :</strong> {informationsComplementaires[plante.id].pollinisation.type}</p>
                       <p className="small-text highlight-compact">{informationsComplementaires[plante.id].pollinisation.besoin}</p>
                     </>
                   ) : 'N/A'}
@@ -441,7 +441,7 @@ function Comparateur({ plantes }) {
                 <div key={plante.id} className="comparison-cell">
                   {reglementationData[plante.id] ? (
                     <>
-                      <p className="small-text"><strong>Type :</strong> {reglementationData[plante.id].systemeRacinaire.type}</p>
+                      <p className="small-text"><strong>Structure :</strong> {reglementationData[plante.id].systemeRacinaire.type}</p>
                       <p className="small-text"><strong>Profondeur :</strong> {reglementationData[plante.id].systemeRacinaire.profondeur}</p>
                       <p className="small-text"><strong>Agressivité :</strong> {reglementationData[plante.id].systemeRacinaire.agressivite}</p>
                     </>
