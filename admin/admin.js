@@ -822,38 +822,35 @@ function addToUploadQueue(file) {
   const reader = new FileReader();
   
   reader.onload = (e) => {
-    // Détection auto espèce/type
-    const fileName = file.name.toLowerCase();
-    let detectedEspece = '';
-    let detectedType = '';
+    // Détection automatique intelligente de l'espèce et du type
+    const detectedEspece = detectEspeceFromFilename(file.name);
+    const detectedType = detectTypeFromFilename(file.name);
     
-    // Détecter espèce
-    for (const espece of ESPECES) {
-      if (fileName.includes(espece.id) || fileName.includes(espece.nom.toLowerCase())) {
-        detectedEspece = espece.id;
-        break;
-      }
-    }
-    
-    // Détecter type
-    if (fileName.includes('vue') || fileName.includes('general')) detectedType = 'vue_generale';
-    else if (fileName.includes('bourgeon')) detectedType = 'bourgeons';
-    else if (fileName.includes('fleur')) detectedType = 'fleurs';
-    else if (fileName.includes('fruit')) detectedType = 'fruits';
-    else if (fileName.includes('automne')) detectedType = 'automne';
-    else if (fileName.includes('hiver')) detectedType = 'hiver';
-    
-    const uploadItem = {
+    state.uploadQueue.push({
       id,
       file,
       preview: e.target.result,
-      espece: detectedEspece,
-      type: detectedType,
+      espece: detectedEspece, // Auto-détecté
+      type: detectedType,     // Auto-détecté
       status: 'pending'
-    };
+    });
     
-    state.uploadQueue.push(uploadItem);
     renderUploadQueue();
+    updateSaveAllButton(); // Mettre à jour si espèce+type détectés
+    
+    // Log de détection pour debug
+    if (detectedEspece || detectedType) {
+      const parts = [];
+      if (detectedEspece) {
+        const especeNom = ESPECES.find(e => e.id === detectedEspece)?.nom;
+        parts.push(`Espèce: ${especeNom}`);
+      }
+      if (detectedType) {
+        const typeNom = TYPES.find(t => t.id === detectedType)?.nom;
+        parts.push(`Type: ${typeNom}`);
+      }
+      console.log(`🔍 Auto-détection "${file.name}": ${parts.join(', ')}`);
+    }
   };
   
   reader.readAsDataURL(file);
