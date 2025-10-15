@@ -434,7 +434,7 @@ section h2 {
 
 .upload-item {
   display: grid;
-  grid-template-columns: 80px 1fr auto auto auto;
+  grid-template-columns: 80px 1fr auto auto;
   gap: 1rem;
   padding: 0.75rem;
   background: var(--bg-tertiary);

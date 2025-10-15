@@ -886,11 +886,7 @@ function renderUploadQueue() {
         ${getStatusLabel(item.status)}
       </span>
       
-      <button class="btn-small btn-primary" data-id="${item.id}" ${!canUpload(item) ? 'disabled' : ''}>
-        🚀 Envoyer
-      </button>
-      
-      <button class="btn-small btn-danger" data-id="${item.id}">
+      <button class="btn-small btn-danger" data-id="${item.id}" title="Retirer de la file">
         🗑️
       </button>
     </div>
@@ -922,13 +918,6 @@ function renderUploadQueue() {
       const item = state.uploadQueue.find(i => i.id === Number(e.target.dataset.id));
       item.type = e.target.value;
       renderUploadQueue(); // Re-render pour afficher le prochain numéro
-    });
-  });
-
-  document.querySelectorAll('.upload-item .btn-primary').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = Number(e.currentTarget.dataset.id);
-      await uploadSingle(id);
     });
   });
 
