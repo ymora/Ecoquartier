@@ -38,6 +38,11 @@ function ImageGallery({ arbusteId, arbusteName }) {
             let foundWithExtension = false;
             
             // Essayer toutes les extensions possibles
+            // NOTE DEV: Les erreurs 404 dans la console sont NORMALES
+            // Le code teste .jpg, .jpeg, .png, .webp pour chaque numéro
+            // jusqu'à trouver le bon format. Cela permet de supporter
+            // plusieurs formats d'images sans configuration manuelle.
+            // Environ 200-300 erreurs 404 par plante = comportement attendu.
             for (const ext of imageType.extensions) {
               const imagePath = `/images/${arbusteId}/${arbusteId}_${imageType.type}_${paddedNumber}${ext}`;
               
@@ -57,6 +62,7 @@ function ImageGallery({ arbusteId, arbusteName }) {
                 }
               } catch (err) {
                 // Image n'existe pas avec cette extension, essayer la suivante
+                // Les erreurs 404 ici sont normales et attendues
               }
             }
             

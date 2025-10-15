@@ -104,6 +104,10 @@ function Comparateur({ plantes }) {
   }, [selectedPlantes.map(p => p.id).join(',')]);
 
   const loadPlantImages = async (plante) => {
+    // NOTE DEV: Ce chargement génère des erreurs 404 normales dans la console
+    // car il teste toutes les extensions (.jpg, .jpeg, .png, .webp) pour chaque
+    // numéro d'image (01-10) et chaque type (8 types). Cela permet de supporter
+    // plusieurs formats sans configuration. Les 404 sont attendus et ne sont pas un bug.
     const imageTypes = [
       { type: 'vue_generale', legend: 'Vue générale', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
       { type: 'bourgeons', legend: 'Bourgeons', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
