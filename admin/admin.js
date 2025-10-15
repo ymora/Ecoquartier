@@ -864,6 +864,12 @@ function addToUploadQueue(file) {
 
 // Afficher la file d'upload
 function renderUploadQueue() {
+  // Mettre à jour le compteur d'upload
+  const uploadCount = document.getElementById('uploadCount');
+  if (uploadCount) {
+    uploadCount.textContent = `(${state.uploadQueue.length})`;
+  }
+  
   if (state.uploadQueue.length === 0) {
     uploadQueue.innerHTML = '';
     clearQueueBtn.classList.add('hidden');
