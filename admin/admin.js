@@ -40,6 +40,8 @@ const fileInput = document.getElementById('fileInput');
 const uploadQueue = document.getElementById('uploadQueue');
 const uploadActions = document.getElementById('uploadActions');
 const clearQueueBtn = document.getElementById('clearQueue');
+const existingActions = document.getElementById('existingActions');
+const deleteAllFilteredBtn = document.getElementById('deleteAllFiltered');
 const logContainer = document.getElementById('logContainer');
 const log = document.getElementById('log');
 
@@ -101,6 +103,9 @@ function attachEventListeners() {
 
   // Actions upload
   clearQueueBtn.addEventListener('click', clearUploadQueue);
+  
+  // Actions images existantes
+  deleteAllFilteredBtn.addEventListener('click', deleteAllFiltered);
 }
 
 // Gestion des filtres
@@ -148,8 +153,12 @@ async function loadExistingImages() {
 function renderExistingImages() {
   if (state.existingImages.length === 0) {
     existingImagesGrid.innerHTML = '<p class="empty-message">Aucune image trouvée</p>';
+    existingActions.classList.add('hidden');
     return;
   }
+  
+  // Afficher les actions si images présentes
+  existingActions.classList.remove('hidden');
 
   existingImagesGrid.innerHTML = state.existingImages.map(img => `
     <div class="existing-item" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}">
@@ -876,6 +885,55 @@ function clearUploadQueue() {
   if (!confirm('Vider toute la file d\'upload ?')) return;
   state.uploadQueue = [];
   renderUploadQueue();
+}
+
+// Supprimer toutes les images affichées
+async function deleteAllFiltered() {
+  const count = state.existingImages.length;
+  const filterInfo = state.filterEspece || state.filterType 
+    ? ` (filtrées: ${state.filterEspece || 'toutes espèces'} - ${state.filterType || 'tous types'})` 
+    : '';
+  
+  if (!confirm(`⚠️ ATTENTION : Supprimer définitivement ${count} image(s)${filterInfo} ?\n\nCette action est IRRÉVERSIBLE !`)) {
+    return;
+  }
+  
+  deleteAllFilteredBtn.disabled = true;
+  showLog();
+  
+  let successCount = 0;
+  let errorCount = 0;
+  
+  for (const img of state.existingImages) {
+    try {
+      const response = await fetch('/delete-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ espece: img.espece, filename: img.filename })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        successCount++;
+        addLog('success', `✓ ${img.filename} supprimé`);
+      } else {
+        errorCount++;
+        addLog('error', `✗ ${img.filename}: ${result.error}`);
+      }
+    } catch (err) {
+      errorCount++;
+      addLog('error', `✗ ${img.filename}: ${err.message}`);
+    }
+  }
+  
+  deleteAllFilteredBtn.disabled = false;
+  
+  addLog('info', `✓ Suppression terminée: ${successCount} OK, ${errorCount} erreur(s) - Push GitHub effectué`);
+  
+  // Recharger
+  await loadExistingImages();
+  renderExistingImages();
 }
 
 // Utilitaires
