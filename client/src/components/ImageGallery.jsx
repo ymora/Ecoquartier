@@ -18,7 +18,9 @@ function ImageGallery({ arbusteId, arbusteName }) {
           { type: 'vue_generale', legend: 'Vue générale', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
           { type: 'bourgeons', legend: 'Bourgeons au printemps', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
           { type: 'fleurs', legend: 'Floraison', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+          { type: 'feuilles', legend: 'Feuillage', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
           { type: 'fruits', legend: 'Fruits / Fructification', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+          { type: 'tronc', legend: 'Tronc / Écorce', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
           { type: 'automne', legend: 'Couleurs automnales', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
           { type: 'hiver', legend: 'Aspect hivernal', extensions: ['.jpg', '.jpeg', '.png', '.webp'] }
         ];
