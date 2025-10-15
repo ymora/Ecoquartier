@@ -60,7 +60,7 @@ body {
 /* Bouton de bascule Mode */
 .mode-toggle {
   position: fixed;
-  top: 75px;
+  top: 30px;
   right: 2rem;
   z-index: 1001;
   background: var(--accent-primary);
@@ -103,7 +103,7 @@ body {
   }
 
   .mode-toggle {
-    top: 65px;
+    top: 28px;
     right: 0.75rem;
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
