@@ -19,12 +19,12 @@ import { reglementationData, reglesGenerales } from '../data/reglementationData'
 import { informationsComplementaires, reglesGeneralesComplementaires } from '../data/informationsComplementaires';
 import './ArbusteDetail.css';
 
-function ArbusteDetail({ arbuste }) {
+function ArbusteDetail({ arbuste, menuOpen }) {
   const [activeTab, setActiveTab] = useState('general');
 
   return (
     <div className="arbuste-detail">
-      <div className="arbuste-header">
+      <div className={`arbuste-header ${menuOpen ? 'menu-open' : ''}`}>
         <h1>{arbuste.name}</h1>
         <p className="scientific-name">{arbuste.nomScientifique}</p>
         <p className="family">Famille : {arbuste.famille}</p>

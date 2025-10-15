@@ -68,7 +68,7 @@ function App() {
             onMenuToggle={handleMenuToggle}
           />
           <main className={`content ${menuOpen ? 'menu-open' : ''}`}>
-            <ArbusteDetail arbuste={selectedPlante} />
+            <ArbusteDetail arbuste={selectedPlante} menuOpen={menuOpen} />
           </main>
         </div>
       )}
