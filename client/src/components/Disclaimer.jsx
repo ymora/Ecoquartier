@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FaExclamationTriangle, FaTimes } from 'react-icons/fa';
 import './Disclaimer.css';
 
-function Disclaimer() {
+function Disclaimer({ onClose }) {
   const [isVisible, setIsVisible] = useState(true);
   const [isAccepted, setIsAccepted] = useState(
     localStorage.getItem('disclaimer-accepted') === 'true'
@@ -12,10 +12,12 @@ function Disclaimer() {
     localStorage.setItem('disclaimer-accepted', 'true');
     setIsAccepted(true);
     setIsVisible(false);
+    if (onClose) onClose(); // Notifier la fermeture
   };
 
   const handleClose = () => {
     setIsVisible(false);
+    if (onClose) onClose(); // Notifier la fermeture
   };
 
   const handleToggle = () => {

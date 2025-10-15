@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaBars, FaTree, FaLeaf, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import './Navigation.css';
 
-function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
+function Navigation({ plantes, selectedId, onSelect, onMenuToggle, disclaimerClosed }) {
   // Détecter si mobile (pour overlay uniquement)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isOpen, setIsOpen] = useState(!isMobile); // Ouvert au chargement si desktop
@@ -21,9 +21,9 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fermeture automatique après 3 secondes (premier chargement desktop uniquement)
+  // Fermeture automatique après 3 secondes (APRÈS fermeture du disclaimer)
   useEffect(() => {
-    if (!isMobile && !firstLoadComplete) {
+    if (!isMobile && !firstLoadComplete && disclaimerClosed) {
       const timer = setTimeout(() => {
         setIsOpen(false);
         if (onMenuToggle) onMenuToggle(false);
@@ -32,7 +32,7 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
 
       return () => clearTimeout(timer);
     }
-  }, [isMobile, firstLoadComplete, onMenuToggle]);
+  }, [isMobile, firstLoadComplete, onMenuToggle, disclaimerClosed]);
 
   // Auto-ouverture au survol de la zone gauche (desktop uniquement, après premier chargement)
   useEffect(() => {

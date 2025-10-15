@@ -11,6 +11,9 @@ function App() {
   const [selectedPlante, setSelectedPlante] = useState(plantesData[0]);
   const [modeComparaison, setModeComparaison] = useState(false);
   const [menuOpen, setMenuOpen] = useState(true);
+  const [disclaimerClosed, setDisclaimerClosed] = useState(
+    localStorage.getItem('disclaimer-accepted') === 'true'
+  );
 
   const handleSelectPlante = (planteId) => {
     const plante = plantesData.find(p => p.id === planteId);
@@ -25,6 +28,10 @@ function App() {
 
   const handleMenuToggle = (isOpen) => {
     setMenuOpen(isOpen);
+  };
+
+  const handleDisclaimerClose = () => {
+    setDisclaimerClosed(true);
   };
 
   return (
@@ -62,6 +69,7 @@ function App() {
             selectedId={selectedPlante.id}
             onSelect={handleSelectPlante}
             onMenuToggle={handleMenuToggle}
+            disclaimerClosed={disclaimerClosed}
           />
           <main className={`content ${menuOpen ? 'menu-open' : ''}`}>
             <ArbusteDetail arbuste={selectedPlante} menuOpen={menuOpen} />
@@ -69,7 +77,7 @@ function App() {
         </div>
       )}
 
-      <Disclaimer />
+      <Disclaimer onClose={handleDisclaimerClose} />
     </div>
   );
 }
