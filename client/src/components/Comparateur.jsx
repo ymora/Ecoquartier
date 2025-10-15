@@ -125,7 +125,6 @@ function Comparateur({ plantes }) {
   };
 
   const criteres = [
-    { id: 'type', key: 'type', label: 'Type', icon: '🌳', fiabilite: 'haute', defaultVisible: true },
     { id: 'taille', key: 'tailleMaturite', label: 'Taille à maturité', icon: '📏', fiabilite: 'moyenne', defaultVisible: true },
     { id: 'floraison', key: 'floraison.periode', label: 'Floraison', icon: '🌸', fiabilite: 'moyenne', defaultVisible: true },
     { id: 'couleurFleurs', key: 'floraison.couleur', label: 'Couleur fleurs', icon: '🎨', fiabilite: 'haute', defaultVisible: true },
