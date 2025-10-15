@@ -69,25 +69,47 @@ function Comparateur({ plantes }) {
     
     const validImages = [];
     
-    // Pour chaque type, chercher la première image disponible (_01)
+    // Pour chaque type, chercher TOUTES les images numérotées (_01, _02, _03...)
     for (const imageType of imageTypes) {
-      for (const ext of imageType.extensions) {
-        const imagePath = `/images/${plante.id}/${plante.id}_${imageType.type}_01${ext}`;
+      let imageNumber = 1;
+      let consecutiveNotFound = 0;
+      
+      // Chercher jusqu'à 10 images par type
+      while (imageNumber <= 10 && consecutiveNotFound < 2) {
+        const paddedNumber = String(imageNumber).padStart(2, '0');
+        let foundWithExtension = false;
         
-        try {
-          const response = await fetch(imagePath, { method: 'HEAD' });
-          const contentType = response.headers.get('content-type');
-          if (response.ok && contentType && contentType.startsWith('image/')) {
-            validImages.push({
-              src: imagePath,
-              legend: imageType.legend,
-              alt: `${plante.name} - ${imageType.legend}`
-            });
-            break; // Image trouvée, passer au type suivant
+        // Essayer toutes les extensions possibles
+        for (const ext of imageType.extensions) {
+          const imagePath = `/images/${plante.id}/${plante.id}_${imageType.type}_${paddedNumber}${ext}`;
+          
+          try {
+            const response = await fetch(imagePath, { method: 'HEAD' });
+            const contentType = response.headers.get('content-type');
+            if (response.ok && contentType && contentType.startsWith('image/')) {
+              validImages.push({
+                src: imagePath,
+                legend: `${imageType.legend} ${imageNumber > 1 ? `(${imageNumber})` : ''}`,
+                alt: `${plante.name} - ${imageType.legend} ${imageNumber}`
+              });
+              foundWithExtension = true;
+              consecutiveNotFound = 0;
+              break; // Image trouvée avec cette extension
+            }
+          } catch (err) {
+            // Image n'existe pas avec cette extension, essayer la suivante
           }
-        } catch (err) {
-          // Image n'existe pas, essayer l'extension suivante
         }
+        
+        // Si aucune extension n'a fonctionné pour ce numéro
+        if (!foundWithExtension) {
+          consecutiveNotFound++;
+          if (consecutiveNotFound >= 2) {
+            break; // Arrêter pour ce type
+          }
+        }
+        
+        imageNumber++;
       }
     }
     
