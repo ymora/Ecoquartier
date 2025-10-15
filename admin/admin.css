@@ -483,8 +483,7 @@ section h2 {
 }
 
 .next-number-badge {
-  margin-top: 0.5rem;
-  padding: 0.3rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   background: linear-gradient(135deg, rgba(46, 139, 87, 0.15), rgba(72, 187, 120, 0.25));
   border-radius: 20px;
   font-size: 0.8rem;
@@ -493,6 +492,18 @@ section h2 {
   text-align: center;
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 8px rgba(46, 139, 87, 0.2);
+  min-width: 65px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.next-number-badge.placeholder {
+  background: transparent;
+  box-shadow: none;
+  color: var(--border-color);
 }
 
 .upload-item-status {
