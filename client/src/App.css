@@ -43,14 +43,14 @@ body {
 .content {
   flex: 1;
   padding: 2rem;
-  margin-left: 280px;
-  transition: margin-left 0.3s ease, padding 0.3s ease;
+  margin-left: 0; /* Par défaut pleine largeur (menu caché) */
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
   overflow-y: auto;
 }
 
-/* Content quand menu fermé sur PC */
-.content.menu-closed {
-  margin-left: 0;
+/* Content quand menu ouvert */
+.content.menu-open {
+  margin-left: 280px;
 }
 
 .content.full-width {
