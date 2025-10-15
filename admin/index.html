@@ -47,7 +47,15 @@
 
     <!-- SECTION 1: UPLOAD -->
     <section class="upload-section">
-      <h2>📤 Ajouter de nouvelles images</h2>
+      <div class="section-header">
+        <h2>📤 Ajouter de nouvelles images</h2>
+        <button id="clearQueue" class="btn-icon-outline btn-danger-outline hidden" title="Vider la file d'upload">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
       
       <!-- Zone de drop compacte -->
       <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none;">
@@ -62,35 +70,22 @@
 
       <!-- Liste des images à uploader -->
       <div id="uploadQueue" class="upload-queue"></div>
-
-            <!-- Actions globales -->
-            <div id="uploadActions" class="upload-actions hidden">
-              <button id="clearQueue" class="btn-secondary">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3 6 5 6 21 6"/>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                </svg>
-                Vider la file d'upload
-              </button>
-            </div>
     </section>
 
     <!-- SECTION 2: IMAGES EXISTANTES -->
     <section class="existing-section">
-      <h2>📷 Images existantes</h2>
-      <div id="existingImagesGrid" class="images-grid">
-        <p class="empty-message">Chargement...</p>
-      </div>
-      
-      <!-- Actions globales images existantes -->
-      <div id="existingActions" class="existing-actions hidden">
-        <button id="deleteAllFiltered" class="btn-secondary">
+      <div class="section-header">
+        <h2>📷 Images existantes</h2>
+        <button id="deleteAllFiltered" class="btn-icon-outline btn-danger-outline hidden" title="Supprimer les images affichées">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
           </svg>
-          Supprimer les images affichées
         </button>
+      </div>
+      
+      <div id="existingImagesGrid" class="images-grid">
+        <p class="empty-message">Chargement...</p>
       </div>
     </section>
 

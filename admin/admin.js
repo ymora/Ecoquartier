@@ -38,9 +38,7 @@ const saveAllBtn = document.getElementById('saveAll');
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
 const uploadQueue = document.getElementById('uploadQueue');
-const uploadActions = document.getElementById('uploadActions');
 const clearQueueBtn = document.getElementById('clearQueue');
-const existingActions = document.getElementById('existingActions');
 const deleteAllFilteredBtn = document.getElementById('deleteAllFiltered');
 const logContainer = document.getElementById('logContainer');
 const log = document.getElementById('log');
@@ -153,12 +151,12 @@ async function loadExistingImages() {
 function renderExistingImages() {
   if (state.existingImages.length === 0) {
     existingImagesGrid.innerHTML = '<p class="empty-message">Aucune image trouvée</p>';
-    existingActions.classList.add('hidden');
+    deleteAllFilteredBtn.classList.add('hidden');
     return;
   }
   
-  // Afficher les actions si images présentes
-  existingActions.classList.remove('hidden');
+  // Afficher le bouton supprimer si images présentes
+  deleteAllFilteredBtn.classList.remove('hidden');
 
   existingImagesGrid.innerHTML = state.existingImages.map(img => `
     <div class="existing-item" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}">
@@ -696,9 +694,12 @@ function addToUploadQueue(file) {
 function renderUploadQueue() {
   if (state.uploadQueue.length === 0) {
     uploadQueue.innerHTML = '';
-    uploadActions.classList.add('hidden');
+    clearQueueBtn.classList.add('hidden');
     return;
   }
+  
+  // Afficher le bouton vider si file non vide
+  clearQueueBtn.classList.remove('hidden');
 
   uploadQueue.innerHTML = state.uploadQueue.map((item, index) => {
     let nextNumberInfo = '';
@@ -766,8 +767,6 @@ function renderUploadQueue() {
     </div>
   `;
   }).join('');
-
-  uploadActions.classList.remove('hidden');
 
   // Event listeners pour miniatures (zoom plein écran)
   document.querySelectorAll('.upload-item-thumb').forEach(thumb => {

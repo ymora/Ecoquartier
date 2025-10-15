@@ -169,6 +169,24 @@ section {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
+/* Section header avec bouton */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #2e8b57, #48bb78);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  font-weight: 700;
+}
+
 section h2 {
   font-size: 1.2rem;
   background: linear-gradient(135deg, #2e8b57, #48bb78);
@@ -404,14 +422,6 @@ section h2 {
   min-width: 65px;
 }
 
-/* ACTIONS */
-.upload-actions,
-.existing-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  justify-content: center;
-}
 
 /* BOUTONS */
 .btn-primary,
