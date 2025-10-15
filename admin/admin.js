@@ -15,7 +15,9 @@ const TYPES = [
   { id: 'vue_generale', nom: 'Vue générale' },
   { id: 'bourgeons', nom: 'Bourgeons' },
   { id: 'fleurs', nom: 'Fleurs' },
+  { id: 'feuilles', nom: 'Feuilles' },
   { id: 'fruits', nom: 'Fruits' },
+  { id: 'tronc', nom: 'Tronc/Écorce' },
   { id: 'automne', nom: 'Automne' },
   { id: 'hiver', nom: 'Hiver' }
 ];

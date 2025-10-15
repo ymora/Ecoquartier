@@ -652,33 +652,57 @@ button:disabled {
   margin-top: 1.5rem;
 }
 
-/* Journal inline dans le header de la section upload */
-.log-container-inline {
-  max-width: 400px;
-  min-width: 300px;
-  padding: 0.75rem 1rem;
+/* Wrapper pour upload et journal côte à côte */
+.upload-log-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Journal sidebar à droite */
+.log-container-sidebar {
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 8px var(--shadow);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
-  margin: 0;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
 }
 
-.log-container-inline h3 {
-  font-size: 0.9rem;
-  margin: 0 0 0.5rem 0;
+.log-container-sidebar h3 {
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
   color: #3498db;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.log-container-inline .log {
-  max-height: 120px;
+.log-container-sidebar .log {
+  flex: 1;
   overflow-y: auto;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   scrollbar-width: thin;
   background: var(--bg-primary);
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+/* Responsive: empiler sur mobile */
+@media (max-width: 1024px) {
+  .upload-log-wrapper {
+    grid-template-columns: 1fr;
+  }
+  
+  .log-container-sidebar {
+    max-height: 300px;
+  }
 }
 
 .log-container h3 {
