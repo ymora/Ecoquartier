@@ -311,7 +311,33 @@ function attachExistingImageListeners() {
       
       state.pendingChanges[filename].newEspece = especeSelect.value;
       state.pendingChanges[filename].newType = typeSelect.value;
-      state.pendingChanges[filename].newNumber = parseInt(numberInput.value);
+      
+      // AUTO-NUMÉROTATION : Si espèce ou type change, trouver automatiquement le prochain numéro
+      const especeChanged = state.pendingChanges[filename].newEspece !== state.pendingChanges[filename].originalEspece;
+      const typeChanged = state.pendingChanges[filename].newType !== state.pendingChanges[filename].originalType;
+      
+      if (especeChanged || typeChanged) {
+        // Calculer le prochain numéro disponible pour cette nouvelle combinaison
+        const nextNumber = getSuggestedNumber(state.pendingChanges[filename].newEspece, state.pendingChanges[filename].newType);
+        state.pendingChanges[filename].newNumber = nextNumber;
+        numberInput.value = nextNumber;
+        
+        // Afficher un badge informatif
+        let autoBadge = item.querySelector('.auto-number-badge');
+        if (!autoBadge) {
+          autoBadge = document.createElement('div');
+          autoBadge.className = 'auto-number-badge';
+          item.querySelector('.existing-item-number-wrapper').appendChild(autoBadge);
+        }
+        autoBadge.textContent = `✓ Auto: #${String(nextNumber).padStart(2, '0')}`;
+      } else {
+        // Si retour à l'espèce/type d'origine, on peut modifier manuellement le numéro
+        state.pendingChanges[filename].newNumber = parseInt(numberInput.value);
+        
+        // Retirer le badge auto si présent
+        const autoBadge = item.querySelector('.auto-number-badge');
+        if (autoBadge) autoBadge.remove();
+      }
       
       // Vérifier s'il y a vraiment des changements
       const hasChanges = 

@@ -47,7 +47,7 @@ npm run admin
 ✅ 30 secondes par image !
 ```
 
-Voir détails : `GUIDE_ADMIN.md`
+Voir détails : **[docs/GUIDE_ADMIN.md](docs/GUIDE_ADMIN.md)**
 
 ### **Méthode 2 : Script Python** (Téléchargement massif)
 
@@ -56,7 +56,7 @@ Voir détails : `GUIDE_ADMIN.md`
 python telecharger_toutes_images.py
 ```
 
-Voir détails : `GUIDE_IMAGES.md`
+Voir détails : **[docs/OUTILS.md](docs/OUTILS.md)**
 
 ## 🌐 Déploiement sur Render
 
@@ -74,14 +74,20 @@ Voir détails : `GUIDE_IMAGES.md`
 ✅ Site en ligne !
 ```
 
-Voir détails : `docs/DEPLOIEMENT.md`
+Voir détails : **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)**
 
 ## 📚 Documentation
 
-- **[GUIDE_IMAGES.md](GUIDE_IMAGES.md)** - Système d'images complet
+### **Guides d'utilisation**
+- **[docs/GUIDE_ADMIN.md](docs/GUIDE_ADMIN.md)** - Interface admin complète
+- **[docs/GUIDE_RAPIDE_ADMIN.md](docs/GUIDE_RAPIDE_ADMIN.md)** - Référence rapide
+- **[docs/OUTILS.md](docs/OUTILS.md)** - Tous les outils disponibles
+
+### **Documentation technique**
 - **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)** - Déploiement Render
 - **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Historique versions
 - **[docs/VALIDATION_SOURCES.md](docs/VALIDATION_SOURCES.md)** - Fiabilité données
+- **[docs/AUDIT_SECURITE.md](docs/AUDIT_SECURITE.md)** - Audit sécurité
 
 ## 🛠️ Technologies
 
