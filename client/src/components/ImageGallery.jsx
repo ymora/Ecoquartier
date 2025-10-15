@@ -114,12 +114,8 @@ function ImageGallery({ arbusteId, arbusteName }) {
             className="gallery-image"
             loading="lazy"
             onError={(e) => {
-              // Éviter la boucle infinie
-              if (e.target.src !== '/images/placeholder.jpg') {
-                e.target.onerror = null;
-                e.target.src = '/images/placeholder.jpg';
-                e.target.alt = 'Image non disponible';
-              }
+              // En cas d'erreur, cacher l'image
+              e.target.style.display = 'none';
             }}
           />
           <button 

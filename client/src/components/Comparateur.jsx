@@ -139,18 +139,10 @@ function Comparateur({ plantes }) {
         };
       });
       
-      return validImages.length > 0 ? validImages : [{ 
-        src: '/images/placeholder.jpg', 
-        legend: 'Aucune image', 
-        alt: 'Aucune image disponible' 
-      }];
+      return validImages;
     } catch (error) {
       console.error('Erreur chargement images:', error);
-      return [{ 
-        src: '/images/placeholder.jpg', 
-        legend: 'Erreur chargement', 
-        alt: 'Erreur' 
-      }];
+      return [];
     }
   };
 
