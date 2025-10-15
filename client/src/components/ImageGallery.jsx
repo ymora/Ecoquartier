@@ -9,80 +9,48 @@ function ImageGallery({ arbusteId, arbusteName }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Charger les images depuis le dossier images
+    // SYSTÈME OPTIMISÉ : Chargement depuis JSON (1 requête au lieu de 320)
     const loadImages = async () => {
       setLoading(true);
       try {
-        // Types d'images avec leurs légendes
-        const imageTypes = [
-          { type: 'vue_generale', legend: 'Vue générale', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-          { type: 'bourgeons', legend: 'Bourgeons au printemps', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-          { type: 'fleurs', legend: 'Floraison', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-          { type: 'feuilles', legend: 'Feuillage', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-          { type: 'fruits', legend: 'Fruits / Fructification', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-          { type: 'tronc', legend: 'Tronc / Écorce', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-          { type: 'automne', legend: 'Couleurs automnales', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-          { type: 'hiver', legend: 'Aspect hivernal', extensions: ['.jpg', '.jpeg', '.png', '.webp'] }
-        ];
+        // Charger l'inventaire JSON
+        const response = await fetch('/images.json');
+        const imagesInventory = await response.json();
         
-        const validImages = [];
+        // Récupérer les images pour cette espèce
+        const plantImages = imagesInventory[arbusteId] || [];
         
-        // Pour chaque type, chercher toutes les images numérotées (_01, _02, etc.)
-        for (const imageType of imageTypes) {
-          let imageNumber = 1;
-          let consecutiveNotFound = 0;
+        // Mapper les types d'images avec leurs légendes
+        const typeLegends = {
+          'vue_generale': 'Vue générale',
+          'bourgeons': 'Bourgeons au printemps',
+          'fleurs': 'Floraison',
+          'feuilles': 'Feuillage',
+          'fruits': 'Fruits / Fructification',
+          'tronc': 'Tronc / Écorce',
+          'automne': 'Couleurs automnales',
+          'hiver': 'Aspect hivernal'
+        };
+        
+        // Transformer en format gallery
+        const validImages = plantImages.map(filename => {
+          // Extraire le type depuis le nom de fichier
+          // Format: espece_type_numero.ext
+          const match = filename.match(/_([a-z_]+)_(\d+)\./i);
+          const type = match ? match[1] : 'vue_generale';
+          const number = match ? parseInt(match[2]) : 1;
           
-          // Chercher jusqu'à 10 images par type (limite raisonnable)
-          while (imageNumber <= 10 && consecutiveNotFound < 2) {
-            const paddedNumber = String(imageNumber).padStart(2, '0');
-            let foundWithExtension = false;
-            
-            // Essayer toutes les extensions possibles
-            // NOTE DEV: Les erreurs 404 dans la console sont NORMALES
-            // Le code teste .jpg, .jpeg, .png, .webp pour chaque numéro
-            // jusqu'à trouver le bon format. Cela permet de supporter
-            // plusieurs formats d'images sans configuration manuelle.
-            // Environ 200-300 erreurs 404 par plante = comportement attendu.
-            for (const ext of imageType.extensions) {
-              const imagePath = `/images/${arbusteId}/${arbusteId}_${imageType.type}_${paddedNumber}${ext}`;
-              
-              try {
-                const response = await fetch(imagePath, { method: 'HEAD' });
-                // Vérifier que c'est vraiment une image (pas un HTML 404)
-                const contentType = response.headers.get('content-type');
-                if (response.ok && contentType && contentType.startsWith('image/')) {
-                  validImages.push({
-                    src: imagePath,
-                    legend: `${imageType.legend} ${imageNumber > 1 ? `(${imageNumber})` : ''}`,
-                    alt: `${arbusteName} - ${imageType.legend} ${imageNumber}`
-                  });
-                  foundWithExtension = true;
-                  consecutiveNotFound = 0; // Reset le compteur
-                  break; // On a trouvé avec cette extension, passer au numéro suivant
-                }
-              } catch (err) {
-                // Image n'existe pas avec cette extension, essayer la suivante
-                // Les erreurs 404 ici sont normales et attendues
-              }
-            }
-            
-            // Si aucune extension n'a fonctionné pour ce numéro
-            if (!foundWithExtension) {
-              consecutiveNotFound++;
-              // Si 2 numéros consécutifs manquent, arrêter pour ce type
-              if (consecutiveNotFound >= 2) {
-                break;
-              }
-            }
-            
-            imageNumber++;
-          }
-        }
+          return {
+            src: `/images/${arbusteId}/${filename}`,
+            legend: `${typeLegends[type] || type} ${number > 1 ? `(${number})` : ''}`,
+            alt: `${arbusteName} - ${typeLegends[type] || type} ${number}`
+          };
+        });
         
         setImages(validImages);
         setCurrentIndex(0);
       } catch (error) {
-        console.error('Erreur lors du chargement des images:', error);
+        console.error('Erreur chargement images:', error);
         setImages([]);
       }
       setLoading(false);
@@ -148,7 +116,7 @@ function ImageGallery({ arbusteId, arbusteName }) {
             onError={(e) => {
               // Éviter la boucle infinie
               if (e.target.src !== '/images/placeholder.jpg') {
-                e.target.onerror = null; // Désactiver la gestion d'erreur
+                e.target.onerror = null;
                 e.target.src = '/images/placeholder.jpg';
                 e.target.alt = 'Image non disponible';
               }
@@ -200,10 +168,7 @@ function ImageGallery({ arbusteId, arbusteName }) {
           
           <button 
             className="zoom-nav prev"
-            onClick={(e) => {
-              e.stopPropagation();
-              prevImage();
-            }}
+            onClick={(e) => { e.stopPropagation(); prevImage(); }}
             aria-label="Image précédente"
           >
             <FaChevronLeft />
@@ -219,10 +184,7 @@ function ImageGallery({ arbusteId, arbusteName }) {
           
           <button 
             className="zoom-nav next"
-            onClick={(e) => {
-              e.stopPropagation();
-              nextImage();
-            }}
+            onClick={(e) => { e.stopPropagation(); nextImage(); }}
             aria-label="Image suivante"
           >
             <FaChevronRight />
@@ -239,4 +201,3 @@ function ImageGallery({ arbusteId, arbusteName }) {
 }
 
 export default ImageGallery;
-

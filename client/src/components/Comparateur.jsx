@@ -104,72 +104,54 @@ function Comparateur({ plantes }) {
   }, [selectedPlantes.map(p => p.id).join(',')]);
 
   const loadPlantImages = async (plante) => {
-    // NOTE DEV: Ce chargement génère des erreurs 404 normales dans la console
-    // car il teste toutes les extensions (.jpg, .jpeg, .png, .webp) pour chaque
-    // numéro d'image (01-10) et chaque type (8 types). Cela permet de supporter
-    // plusieurs formats sans configuration. Les 404 sont attendus et ne sont pas un bug.
-    const imageTypes = [
-      { type: 'vue_generale', legend: 'Vue générale', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-      { type: 'bourgeons', legend: 'Bourgeons', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-      { type: 'fleurs', legend: 'Fleurs', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-      { type: 'feuilles', legend: 'Feuilles', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-      { type: 'fruits', legend: 'Fruits', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-      { type: 'tronc', legend: 'Tronc/Écorce', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-      { type: 'automne', legend: 'Automne', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
-      { type: 'hiver', legend: 'Hiver', extensions: ['.jpg', '.jpeg', '.png', '.webp'] }
-    ];
-    
-    const validImages = [];
-    
-    // Pour chaque type, chercher TOUTES les images numérotées (_01, _02, _03...)
-    for (const imageType of imageTypes) {
-      let imageNumber = 1;
-      let consecutiveNotFound = 0;
+    // SYSTÈME OPTIMISÉ : Chargement depuis JSON (1 requête au lieu de 320)
+    try {
+      // Charger l'inventaire JSON
+      const response = await fetch('/images.json');
+      const imagesInventory = await response.json();
       
-      // Chercher jusqu'à 10 images par type
-      while (imageNumber <= 10 && consecutiveNotFound < 2) {
-        const paddedNumber = String(imageNumber).padStart(2, '0');
-        let foundWithExtension = false;
+      // Récupérer les images pour cette espèce
+      const plantImages = imagesInventory[plante.id] || [];
+      
+      // Mapper les types d'images avec leurs légendes
+      const typeLegends = {
+        'vue_generale': 'Vue générale',
+        'bourgeons': 'Bourgeons',
+        'fleurs': 'Fleurs',
+        'feuilles': 'Feuilles',
+        'fruits': 'Fruits',
+        'tronc': 'Tronc/Écorce',
+        'automne': 'Automne',
+        'hiver': 'Hiver'
+      };
+      
+      // Transformer en format gallery
+      const validImages = plantImages.map(filename => {
+        // Extraire le type depuis le nom de fichier
+        const match = filename.match(/_([a-z_]+)_(\d+)\./i);
+        const type = match ? match[1] : 'vue_generale';
+        const number = match ? parseInt(match[2]) : 1;
         
-        // Essayer toutes les extensions possibles
-        for (const ext of imageType.extensions) {
-          const imagePath = `/images/${plante.id}/${plante.id}_${imageType.type}_${paddedNumber}${ext}`;
-          
-          try {
-            const response = await fetch(imagePath, { method: 'HEAD' });
-            const contentType = response.headers.get('content-type');
-            if (response.ok && contentType && contentType.startsWith('image/')) {
-              validImages.push({
-                src: imagePath,
-                legend: `${imageType.legend} ${imageNumber > 1 ? `(${imageNumber})` : ''}`,
-                alt: `${plante.name} - ${imageType.legend} ${imageNumber}`
-              });
-              foundWithExtension = true;
-              consecutiveNotFound = 0;
-              break; // Image trouvée avec cette extension
-            }
-          } catch (err) {
-            // Image n'existe pas avec cette extension, essayer la suivante
-          }
-        }
-        
-        // Si aucune extension n'a fonctionné pour ce numéro
-        if (!foundWithExtension) {
-          consecutiveNotFound++;
-          if (consecutiveNotFound >= 2) {
-            break; // Arrêter pour ce type
-          }
-        }
-        
-        imageNumber++;
-      }
+        return {
+          src: `/images/${plante.id}/${filename}`,
+          legend: `${typeLegends[type] || type} ${number > 1 ? `(${number})` : ''}`,
+          alt: `${plante.name} - ${typeLegends[type] || type} ${number}`
+        };
+      });
+      
+      return validImages.length > 0 ? validImages : [{ 
+        src: '/images/placeholder.jpg', 
+        legend: 'Aucune image', 
+        alt: 'Aucune image disponible' 
+      }];
+    } catch (error) {
+      console.error('Erreur chargement images:', error);
+      return [{ 
+        src: '/images/placeholder.jpg', 
+        legend: 'Erreur chargement', 
+        alt: 'Erreur' 
+      }];
     }
-    
-    return validImages.length > 0 ? validImages : [{ 
-      src: '/images/placeholder.jpg', 
-      legend: 'Aucune image', 
-      alt: 'Aucune image disponible' 
-    }];
   };
 
   const getPlantImages = (plante) => {

@@ -108,13 +108,51 @@ function getTypeLabel(type) {
   return labels[type] || type;
 }
 
+// Générer le fichier images.json (inventaire pour le site web)
+async function generateImagesJson() {
+  try {
+    const imagesDir = path.join(__dirname, '..', 'client', 'public', 'images');
+    const result = {};
+    
+    const especes = await fs.readdir(imagesDir, { withFileTypes: true });
+    
+    for (const especeDir of especes) {
+      if (!especeDir.isDirectory() || especeDir.name.includes('background')) continue;
+      
+      const especeId = especeDir.name;
+      const especePath = path.join(imagesDir, especeId);
+      
+      try {
+        const files = await fs.readdir(especePath);
+        result[especeId] = files
+          .filter(f => f.match(/\.(jpg|jpeg|png|webp)$/i))
+          .sort();
+      } catch {
+        result[especeId] = [];
+      }
+    }
+    
+    // Écrire le fichier JSON
+    const jsonPath = path.join(__dirname, '..', 'client', 'public', 'images.json');
+    await fs.writeFile(jsonPath, JSON.stringify(result, null, 2));
+    
+    return true;
+  } catch (err) {
+    console.error('Erreur génération images.json:', err.message);
+    return false;
+  }
+}
+
 // Fonction helper pour Git commit + push
 async function gitCommitAndPush(message) {
   const projectRoot = path.join(__dirname, '..');
   
   try {
-    // Git add
-    await execPromise('git add client/public/images/', { cwd: projectRoot });
+    // Régénérer images.json avant le commit
+    await generateImagesJson();
+    
+    // Git add (images + JSON)
+    await execPromise('git add client/public/images/ client/public/images.json', { cwd: projectRoot });
     
     // Git commit
     const safeMessage = message.replace(/["'`$\\]/g, '\\$&');
