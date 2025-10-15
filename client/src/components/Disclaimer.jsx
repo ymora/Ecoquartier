@@ -3,15 +3,18 @@ import { FaExclamationTriangle } from 'react-icons/fa';
 import './Disclaimer.css';
 
 function Disclaimer({ onClose }) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [isAccepted, setIsAccepted] = useState(
-    localStorage.getItem('disclaimer-accepted') === 'true'
-  );
+  const isAlreadyAccepted = localStorage.getItem('disclaimer-accepted') === 'true';
+  const [isVisible, setIsVisible] = useState(!isAlreadyAccepted); // Pas visible si déjà accepté
+  const [isAccepted, setIsAccepted] = useState(isAlreadyAccepted);
 
-  // Synchroniser au montage : si déjà accepté, notifier immédiatement
+  // Notifier la fermeture APRÈS un délai pour laisser le temps à l'utilisateur de voir le menu
   useEffect(() => {
-    if (isAccepted && onClose) {
-      onClose();
+    if (isAlreadyAccepted && onClose) {
+      // Délai de 100ms pour s'assurer que tout est rendu
+      const timer = setTimeout(() => {
+        onClose();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, []); // Une seule fois au montage
 
