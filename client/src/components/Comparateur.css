@@ -522,3 +522,210 @@
   }
 }
 
+/* Bouton Zoom sur image */
+.zoom-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(46, 139, 87, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.zoom-button:hover {
+  background: var(--accent-primary);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(46, 139, 87, 0.5);
+}
+
+.zoom-button:active {
+  transform: scale(0.95);
+}
+
+/* Modal Zoom (identique à ImageGallery) */
+.zoom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.zoom-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2001;
+}
+
+.zoom-close:hover {
+  background: rgba(231, 76, 60, 0.8);
+  border-color: #e74c3c;
+  transform: rotate(90deg) scale(1.1);
+}
+
+.zoomed-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+  animation: zoomIn 0.3s ease;
+}
+
+.zoom-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2001;
+}
+
+.zoom-nav.prev {
+  left: 30px;
+}
+
+.zoom-nav.next {
+  right: 30px;
+}
+
+.zoom-nav:hover {
+  background: rgba(46, 139, 87, 0.9);
+  border-color: var(--accent-primary);
+  transform: translateY(-50%) scale(1.15);
+}
+
+.zoom-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.zoom-legend {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  max-width: 80%;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 2001;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.zoom-counter {
+  font-size: 0.9rem;
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Zoom Modal */
+@media (max-width: 768px) {
+  .zoom-close {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    top: 10px;
+    right: 10px;
+  }
+
+  .zoom-nav {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+
+  .zoom-nav.prev {
+    left: 10px;
+  }
+
+  .zoom-nav.next {
+    right: 10px;
+  }
+
+  .zoom-legend {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+    bottom: 20px;
+  }
+
+  .zoom-counter {
+    font-size: 0.8rem;
+  }
+
+  .zoom-button {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+    bottom: 8px;
+    right: 8px;
+  }
+}
+

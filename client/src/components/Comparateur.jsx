@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash, FaSearchPlus } from 'react-icons/fa';
 import { reglementationData } from '../data/reglementationData';
 import { informationsComplementaires } from '../data/informationsComplementaires';
 import FiabiliteBadge from './FiabiliteBadge';
@@ -9,6 +9,7 @@ function Comparateur({ plantes }) {
   const [selectedPlantes, setSelectedPlantes] = useState([]);
   const [imageIndices, setImageIndices] = useState({});
   const [visibleCriteres, setVisibleCriteres] = useState({});
+  const [zoomedImage, setZoomedImage] = useState(null);
 
   const togglePlante = (plante) => {
     if (selectedPlantes.find(p => p.id === plante.id)) {
@@ -31,7 +32,54 @@ function Comparateur({ plantes }) {
     const currentIndex = imageIndices[planteId] || 0;
     const newIndex = (currentIndex + direction + images.length) % images.length;
     setImageIndices({ ...imageIndices, [planteId]: newIndex });
+    
+    // Mettre à jour l'image zoomée si le zoom est actif pour cette plante
+    if (zoomedImage && zoomedImage.planteId === planteId) {
+      setZoomedImage({
+        planteId,
+        src: images[newIndex].src,
+        alt: images[newIndex].alt,
+        legend: images[newIndex].legend,
+        currentIndex: newIndex,
+        totalImages: images.length
+      });
+    }
   };
+
+  const openZoom = (planteId, imageSrc, imageAlt, imageLegend, currentIndex, totalImages) => {
+    setZoomedImage({
+      planteId,
+      src: imageSrc,
+      alt: imageAlt,
+      legend: imageLegend,
+      currentIndex,
+      totalImages
+    });
+  };
+
+  const closeZoom = () => {
+    setZoomedImage(null);
+  };
+
+  const navigateZoom = (direction) => {
+    if (zoomedImage) {
+      changeImage(zoomedImage.planteId, direction);
+    }
+  };
+
+  // Navigation au clavier en mode zoom
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (zoomedImage) {
+        if (e.key === 'ArrowLeft') navigateZoom(-1);
+        if (e.key === 'ArrowRight') navigateZoom(1);
+        if (e.key === 'Escape') closeZoom();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [zoomedImage]);
 
   // Charger les images disponibles pour une plante (logique unifiée avec ImageGallery)
   const [plantImages, setPlantImages] = useState({});
@@ -278,14 +326,31 @@ function Comparateur({ plantes }) {
                         <FaChevronLeft />
                       </button>
                       {images.length > 0 ? (
-                        <img 
-                          src={images[currentIndex].src}
-                          alt={images[currentIndex].alt}
-                          className="comparison-image"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
+                        <>
+                          <img 
+                            src={images[currentIndex].src}
+                            alt={images[currentIndex].alt}
+                            className="comparison-image"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                          <button 
+                            className="zoom-button"
+                            onClick={() => openZoom(
+                              plante.id,
+                              images[currentIndex].src,
+                              images[currentIndex].alt,
+                              images[currentIndex].legend,
+                              currentIndex,
+                              images.length
+                            )}
+                            aria-label="Agrandir l'image"
+                            title="Agrandir"
+                          >
+                            <FaSearchPlus />
+                          </button>
+                        </>
                       ) : (
                         <div className="image-placeholder">
                           📷<br/>Chargement...
@@ -665,6 +730,44 @@ function Comparateur({ plantes }) {
       {selectedPlantes.length === 0 && (
         <div className="comparateur-empty">
           <p>👆 Sélectionnez au moins 2 plantes pour commencer la comparaison</p>
+        </div>
+      )}
+
+      {/* Modal Zoom */}
+      {zoomedImage && (
+        <div className="zoom-modal" onClick={closeZoom}>
+          <button className="zoom-close" onClick={closeZoom} aria-label="Fermer">
+            <FaTimes />
+          </button>
+          
+          <button 
+            className="zoom-nav prev"
+            onClick={(e) => { e.stopPropagation(); navigateZoom(-1); }}
+            aria-label="Image précédente"
+          >
+            <FaChevronLeft />
+          </button>
+          
+          <img 
+            src={zoomedImage.src} 
+            alt={zoomedImage.alt}
+            className="zoomed-image"
+            loading="eager"
+            onClick={(e) => e.stopPropagation()}
+          />
+          
+          <button 
+            className="zoom-nav next"
+            onClick={(e) => { e.stopPropagation(); navigateZoom(1); }}
+            aria-label="Image suivante"
+          >
+            <FaChevronRight />
+          </button>
+          
+          <div className="zoom-legend" onClick={(e) => e.stopPropagation()}>
+            {zoomedImage.legend}
+            <span className="zoom-counter">{zoomedImage.currentIndex + 1} / {zoomedImage.totalImages}</span>
+          </div>
         </div>
       )}
     </div>
