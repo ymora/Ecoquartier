@@ -4,9 +4,17 @@
 }
 
 .arbuste-header {
+  position: sticky;
+  top: 20px;
+  background: linear-gradient(to bottom, var(--bg-primary) 90%, transparent);
+  backdrop-filter: blur(10px);
+  z-index: 50;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 .arbuste-header h1 {
