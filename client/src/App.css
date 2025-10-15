@@ -93,7 +93,7 @@ body {
 /* Responsive Mobile & Tablette */
 @media (max-width: 768px) {
   .main-layout {
-    margin-top: 55px;
+    margin-top: 18px;
   }
 
   .content {
