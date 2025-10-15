@@ -447,14 +447,12 @@ function updateSaveAllButton() {
 async function saveImageChanges(filename) {
   const changes = state.pendingChanges[filename];
   if (!changes) {
-    alert('Aucune modification détectée');
     return;
   }
   
   const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
-  const btn = item.querySelector('.btn-success-outline');
+  if (!item) return;
   
-  btn.disabled = true;
   showLog();
   
   try {
@@ -486,7 +484,6 @@ async function saveImageChanges(filename) {
         addLog('success', result.message);
       } else {
         addLog('error', result.error);
-        btn.disabled = false;
         return;
       }
     } else if (hasNumberChange) {
@@ -524,7 +521,6 @@ async function saveImageChanges(filename) {
           addLog('success', result.message);
         } else {
           addLog('error', result.error);
-          btn.disabled = false;
           return;
         }
       } else {
@@ -547,7 +543,6 @@ async function saveImageChanges(filename) {
           addLog('success', result.message);
         } else {
           addLog('error', result.error);
-          btn.disabled = false;
           return;
         }
       }
@@ -555,8 +550,10 @@ async function saveImageChanges(filename) {
     
     // Succès : nettoyer les changements de cette image
     delete state.pendingChanges[filename];
-    item.classList.remove('has-changes');
-    item.classList.remove('has-conflict');
+    if (item) {
+      item.classList.remove('has-changes');
+      item.classList.remove('has-conflict');
+    }
     
     // Recharger et restaurer les autres modifications
     setTimeout(async () => {
@@ -564,11 +561,10 @@ async function saveImageChanges(filename) {
       renderExistingImages();
       restorePendingChanges(); // Restaurer les modifications des autres images
       updateSaveAllButton();
-    }, 1000);
+    }, 500);
     
   } catch (err) {
     addLog('error', 'Erreur: ' + err.message);
-    btn.disabled = false;
   }
 }
 
