@@ -18,12 +18,17 @@ function Disclaimer() {
     setIsVisible(false);
   };
 
-  if (isAccepted || !isVisible) {
+  const handleToggle = () => {
+    setIsVisible(true);
+  };
+
+  // Afficher uniquement le bouton si modal fermé
+  if (!isVisible) {
     return (
       <button 
         className="disclaimer-toggle"
-        onClick={() => setIsVisible(true)}
-        title="Informations légales"
+        onClick={handleToggle}
+        title="Informations légales et avertissements"
       >
         <FaInfoCircle />
       </button>
