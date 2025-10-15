@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { FaExchangeAlt, FaEye } from 'react-icons/fa';
-import Header from './components/Header';
 import Navigation from './components/Navigation';
 import ArbusteDetail from './components/ArbusteDetail';
 import Comparateur from './components/Comparateur';
@@ -30,7 +29,6 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
       
       {/* Bouton de bascule Mode */}
       <button 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaExclamationTriangle, FaTimes, FaInfoCircle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaTimes } from 'react-icons/fa';
 import './Disclaimer.css';
 
 function Disclaimer() {
