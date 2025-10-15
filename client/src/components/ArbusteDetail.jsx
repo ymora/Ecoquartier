@@ -87,10 +87,11 @@ function ArbusteDetail({ arbuste, menuOpen }) {
               <div className="info-card">
                 <FaTree className="icon" />
                 <h3>
-                  Taille à maturité
+                  Dimensions à maturité
                   <FiabiliteBadge niveau="moyenne" info="Estimation moyenne - Varie selon sol, climat et entretien (±20%)" />
                 </h3>
-                <p className="value">{arbuste.tailleMaturite}</p>
+                <p className="value"><strong>Hauteur :</strong> {arbuste.tailleMaturite}</p>
+                <p className="value"><strong>Largeur :</strong> {arbuste.envergure || 'Non spécifié'}</p>
                 <p className="detail">Croissance : {arbuste.croissance}</p>
               </div>
 

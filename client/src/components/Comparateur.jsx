@@ -125,7 +125,8 @@ function Comparateur({ plantes }) {
   };
 
   const criteres = [
-    { id: 'taille', key: 'tailleMaturite', label: 'Taille à maturité', icon: '📏', fiabilite: 'moyenne', defaultVisible: true },
+    { id: 'taille', key: 'tailleMaturite', label: 'Hauteur', icon: '📏', fiabilite: 'moyenne', defaultVisible: true },
+    { id: 'envergure', key: 'envergure', label: 'Largeur (envergure)', icon: '↔️', fiabilite: 'moyenne', defaultVisible: true },
     { id: 'floraison', key: 'floraison.periode', label: 'Floraison', icon: '🌸', fiabilite: 'moyenne', defaultVisible: true },
     { id: 'couleurFleurs', key: 'floraison.couleur', label: 'Couleur fleurs', icon: '🎨', fiabilite: 'haute', defaultVisible: true },
     { id: 'parfum', key: 'floraison.parfum', label: 'Parfum', icon: '👃', fiabilite: 'haute', defaultVisible: false },

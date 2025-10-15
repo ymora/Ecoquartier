@@ -6,6 +6,7 @@ export const arbresData = [
     famille: 'Rosaceae',
     type: 'arbre',
     tailleMaturite: '6-10 m',
+    envergure: '4-6 m',
     floraison: {
       periode: 'Avril à Mai',
       description: 'Fleurs doubles spectaculaires en pompons, très abondantes, couvrant entièrement les branches',
@@ -85,6 +86,7 @@ export const arbresData = [
     famille: 'Rosaceae',
     type: 'arbre',
     tailleMaturite: '6-8 m',
+    envergure: '4-5 m',
     floraison: {
       periode: 'Mars à Avril (précoce)',
       description: 'Fleurs semi-doubles en grappes pendantes, floraison précoce et abondante',
@@ -167,6 +169,7 @@ export const arbresData = [
     famille: 'Rosaceae',
     type: 'arbre',
     tailleMaturite: '5-7 m',
+    envergure: '3-4 m',
     floraison: {
       periode: 'Avril',
       description: 'Fleurs simples à semi-doubles, abondantes, légèrement parfumées',
@@ -252,6 +255,7 @@ export const arbustesData = [
     nomScientifique: 'Corylus avellana',
     famille: 'Betulaceae',
     tailleMaturite: '3-8 m',
+    envergure: '3-5 m',
     floraison: {
       periode: 'Janvier à Mars',
       description: 'Chatons mâles jaunes pendants (5-8 cm) et fleurs femelles discrètes rouges',
@@ -324,6 +328,7 @@ export const arbustesData = [
     nomScientifique: 'Euonymus europaeus',
     famille: 'Celastraceae',
     tailleMaturite: '3-6 m',
+    envergure: '2-4 m',
     floraison: {
       periode: 'Mai à Juin',
       description: 'Petites fleurs discrètes à 4 pétales en cymes',
@@ -395,6 +400,7 @@ export const arbustesData = [
     nomScientifique: 'Ligustrum vulgare',
     famille: 'Oleaceae',
     tailleMaturite: '2-4 m',
+    envergure: '1.5-2.5 m',
     floraison: {
       periode: 'Juin à Juillet',
       description: 'Grappes denses de petites fleurs tubulaires très parfumées',
@@ -469,6 +475,7 @@ export const arbustesData = [
     nomScientifique: 'Osmanthus × burkwoodii',
     famille: 'Oleaceae',
     tailleMaturite: '2-3 m',
+    envergure: '1.5-2 m',
     floraison: {
       periode: 'Avril à Mai',
       description: 'Grappes de petites fleurs tubulaires extrêmement parfumées',
@@ -542,6 +549,7 @@ export const arbustesData = [
     nomScientifique: 'Cornus sanguinea',
     famille: 'Cornaceae',
     tailleMaturite: '3-5 m',
+    envergure: '2.5-4 m',
     floraison: {
       periode: 'Mai à Juin',
       description: 'Corymbes plats de petites fleurs',
@@ -619,6 +627,7 @@ export const arbustesData = [
     nomScientifique: 'Philadelphus coronarius',
     famille: 'Hydrangeaceae',
     tailleMaturite: '2-3 m',
+    envergure: '2-3 m',
     floraison: {
       periode: 'Mai à Juin',
       description: 'Fleurs simples ou doubles à 4 pétales, en grappes',
