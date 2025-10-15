@@ -145,7 +145,7 @@ function Disclaimer() {
             ✅ J'ai compris et j'accepte
           </button>
           <p className="disclaimer-note">
-            Vous pouvez réafficher cet avertissement en cliquant sur l'icône ⓘ en haut à droite.
+            Vous pouvez réafficher cet avertissement en cliquant sur le cercle [!] dans le footer.
           </p>
         </div>
       </div>
