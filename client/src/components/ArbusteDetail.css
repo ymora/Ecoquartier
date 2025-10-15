@@ -1,20 +1,23 @@
 .arbuste-detail {
   max-width: 1200px;
   margin: 0 auto;
+  padding-top: 120px; /* Espace pour le header fixe */
 }
 
 .arbuste-header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  background: linear-gradient(to bottom, var(--bg-primary) 90%, transparent);
+  left: 0;
+  right: 0;
+  background: rgba(250, 251, 252, 0.98);
   backdrop-filter: blur(10px);
-  z-index: 50;
-  margin-bottom: 2rem;
-  padding: 1rem 1.5rem;
-  padding-bottom: 1.5rem;
+  z-index: 100;
+  padding: 1rem 2rem;
+  padding-bottom: 1rem;
   border-bottom: 2px solid var(--accent-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .arbuste-header h1 {
