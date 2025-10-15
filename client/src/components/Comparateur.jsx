@@ -143,6 +143,7 @@ function Comparateur({ plantes }) {
   ];
   
   const sectionsSpeciales = [
+    { id: 'images', label: 'Photos', icon: '📷', defaultVisible: true },
     { id: 'toxicite', label: 'Toxicité', icon: '⚠️', defaultVisible: true },
     { id: 'biodiversite', label: 'Biodiversité', icon: '🦋', defaultVisible: false },
     { id: 'utilisations', label: 'Utilisations', icon: '💡', defaultVisible: false },
@@ -248,8 +249,18 @@ function Comparateur({ plantes }) {
             </div>
 
             {/* Images comparatives */}
+            {visibleCriteres['images'] && (
             <div className="comparison-row image-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('images')}
+                  aria-label="Masquer les photos"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
+                <span className="critere-icon">📷</span>
                 <strong>Photos</strong>
               </div>
               {selectedPlantes.map(plante => {
@@ -294,6 +305,7 @@ function Comparateur({ plantes }) {
                 );
               })}
             </div>
+            )}
 
             {/* Lignes de critères */}
             {criteres.map(critere => (
@@ -339,10 +351,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* Biodiversité */}
+            {visibleCriteres['biodiversite'] && (
             <div className="comparison-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('biodiversite')}
+                  aria-label="Masquer biodiversité"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">🦋</span>
                 <strong>Biodiversité</strong>
               </div>
@@ -352,10 +374,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* Utilisations */}
+            {visibleCriteres['utilisations'] && (
             <div className="comparison-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('utilisations')}
+                  aria-label="Masquer utilisations"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">💡</span>
                 <strong>Utilisations</strong>
               </div>
@@ -369,10 +401,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Pollinisation */}
+            {visibleCriteres['pollinisation'] && (
             <div className="comparison-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('pollinisation')}
+                  aria-label="Masquer pollinisation"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">🐝</span>
                 <strong>Pollinisation</strong>
               </div>
@@ -387,10 +429,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Allergies */}
+            {visibleCriteres['allergies'] && (
             <div className="comparison-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('allergies')}
+                  aria-label="Masquer allergies"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">🤧</span>
                 <strong>Allergies</strong>
               </div>
@@ -402,10 +454,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Animaux Domestiques */}
+            {visibleCriteres['animaux'] && (
             <div className="comparison-row alert-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('animaux')}
+                  aria-label="Masquer animaux"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">🐾</span>
                 <strong>Animaux</strong>
               </div>
@@ -426,10 +488,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Système Racinaire */}
+            {visibleCriteres['racines'] && (
             <div className="comparison-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('racines')}
+                  aria-label="Masquer racines"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">🌱</span>
                 <strong>Racines</strong>
                 <FiabiliteBadge niveau="moyenne" />
@@ -446,10 +518,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Distance Voisinage */}
+            {visibleCriteres['distanceVoisin'] && (
             <div className="comparison-row alert-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('distanceVoisin')}
+                  aria-label="Masquer distance voisinage"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">⚖️</span>
                 <strong>Distance Légale Voisinage</strong>
                 <FiabiliteBadge niveau="haute" />
@@ -484,10 +566,20 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Dangers Taille */}
+            {visibleCriteres['dangersTaille'] && (
             <div className="comparison-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('dangersTaille')}
+                  aria-label="Masquer dangers taille"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">⚠️</span>
                 <strong>Dangers Taille</strong>
               </div>
