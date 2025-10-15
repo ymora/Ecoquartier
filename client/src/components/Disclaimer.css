@@ -113,6 +113,41 @@
   backdrop-filter: blur(5px);
 }
 
+.verified a,
+.warning-list a,
+.disclaimer-content a {
+  color: var(--accent-primary);
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.verified a:hover,
+.warning-list a:hover,
+.disclaimer-content a:hover {
+  color: var(--accent-secondary);
+  text-decoration: none;
+}
+
+.verified ul {
+  list-style-type: none;
+  padding-left: 1rem;
+}
+
+.verified ul li {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.verified ul li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--success);
+  font-weight: bold;
+}
+
 .warning-list {
   list-style: none;
   padding: 0;

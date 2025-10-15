@@ -63,16 +63,36 @@ function Disclaimer() {
 
           <h3>⚖️ Informations Légales</h3>
           <p className="verified">
-            <strong>✅ VÉRIFIÉES</strong> : Les informations réglementaires (Code Civil, distances légales, 
-            interdiction de taille 16 mars - 15 août) sont conformes à la législation française en vigueur 
-            (source : Service-Public.gouv.fr, LPO France, 2025).
+            <strong>✅ VÉRIFIÉES</strong> : Les informations réglementaires (Code Civil articles 671-673, distances légales) 
+            sont conformes à la législation française en vigueur. L'interdiction de taille varie selon les départements 
+            (généralement 15 mars - 31 juillet, mais peut différer selon arrêté préfectoral local).
+            <br />
+            <small>(Sources : <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F614" target="_blank" rel="noopener noreferrer">Service-Public.gouv.fr</a>, <a href="https://www.lpo.fr/la-lpo-en-actions/mobilisation-citoyenne/oiseaux-en-danger/taille-des-haies" target="_blank" rel="noopener noreferrer">LPO France</a>, 2025)</small>
           </p>
+
+          <h3>📏 Code Civil - Distances de Plantation</h3>
+          <div className="verified">
+            <strong>Article 671 du Code Civil (distances obligatoires)</strong> :
+            <ul style={{ marginTop: '0.5rem', marginBottom: 0 }}>
+              <li><strong>Arbres/haies de plus de 2 mètres de hauteur</strong> : minimum <strong>2 mètres</strong> de la limite de propriété</li>
+              <li><strong>Arbres/haies de 2 mètres ou moins</strong> : minimum <strong>0,50 mètre (50 cm)</strong> de la limite de propriété</li>
+            </ul>
+            <p style={{ marginTop: '0.5rem', marginBottom: 0, fontSize: '0.9rem' }}>
+              ⚠️ Ces distances peuvent être modifiées par usages locaux ou règlement de copropriété. 
+              Consultez votre mairie et le PLU local.
+            </p>
+          </div>
 
           <h3>⚠️ Limitations et Précautions</h3>
           <ul className="warning-list">
             <li>
               <strong>PLU Local</strong> : Les règles peuvent être plus strictes selon le Plan Local 
-              d'Urbanisme de Bessancourt. <strong>Consultez votre mairie</strong> avant plantation.
+              d'Urbanisme de Bessancourt. <strong>Consultez votre mairie (01 30 40 44 47)</strong> avant plantation.
+            </li>
+            <li>
+              <strong>Interdiction de Taille</strong> : La période d'interdiction de taille des haies pour 
+              protection des oiseaux nicheurs varie selon les départements. <strong>Période courante : 15 mars au 31 juillet</strong>. 
+              Vérifiez l'arrêté préfectoral de votre département (Val d'Oise 95).
             </li>
             <li>
               <strong>Conditions Locales</strong> : Les hauteurs, rusticités et périodes peuvent varier 
@@ -84,7 +104,8 @@ function Disclaimer() {
             </li>
             <li>
               <strong>Toxicité</strong> : Les informations sur la toxicité sont issues de bases toxicologiques 
-              mais la sensibilité varie. En cas d'intoxication : <strong>Centre Antipoison 15</strong>.
+              mais la sensibilité varie. En cas d'intoxication : <strong>15 (SAMU)</strong> ou 
+              <strong> Centre Antipoison Paris 01 40 05 48 48</strong>.
             </li>
             <li>
               <strong>Système Racinaire</strong> : Estimations basées sur littérature horticole. Variations 
@@ -97,8 +118,8 @@ function Disclaimer() {
             <div className="reliability-item high">
               <strong>✅ Haute Fiabilité</strong>
               <ul>
-                <li>Code Civil (textes officiels)</li>
-                <li>Interdiction taille 16/03-15/08</li>
+                <li>Code Civil articles 671-673 (textes officiels)</li>
+                <li>Distances plantation (2m / 0,50m)</li>
                 <li>Noms botaniques</li>
                 <li>Familles botaniques</li>
               </ul>
@@ -106,6 +127,7 @@ function Disclaimer() {
             <div className="reliability-item medium">
               <strong>🟡 Fiabilité Moyenne</strong>
               <ul>
+                <li>Interdiction taille (variable selon département)</li>
                 <li>Tailles à maturité (±20%)</li>
                 <li>Périodes de floraison (±2 semaines)</li>
                 <li>Rusticité (selon conditions)</li>
@@ -124,11 +146,27 @@ function Disclaimer() {
 
           <h3>📞 Ressources Officielles</h3>
           <ul>
-            <li><strong>PLU Bessancourt</strong> : Mairie de Bessancourt - 01 34 16 17 18</li>
-            <li><strong>Service-Public.gouv.fr</strong> : Fiche F614 (Distances de plantation)</li>
-            <li><strong>Centre Antipoison</strong> : 15 (SAMU) en cas d'intoxication</li>
-            <li><strong>LPO France</strong> : Info protection oiseaux et haies</li>
-            <li><strong>Conseiller horticole</strong> : Pour validation projet spécifique</li>
+            <li>
+              <strong>Mairie de Bessancourt</strong> : <a href="tel:0130404447">01 30 40 44 47</a> (PLU, règles locales)
+            </li>
+            <li>
+              <strong>Service-Public.gouv.fr</strong> : <a href="https://www.service-public.fr/particuliers/vosdroits/F614" target="_blank" rel="noopener noreferrer">Fiche F614 - Plantation et distances</a>
+            </li>
+            <li>
+              <strong>Centre Antipoison Paris (Île-de-France)</strong> : <a href="tel:0140054848">01 40 05 48 48</a>
+            </li>
+            <li>
+              <strong>SAMU (urgence vitale)</strong> : <a href="tel:15">15</a>
+            </li>
+            <li>
+              <strong>LPO France</strong> : <a href="https://www.lpo.fr/" target="_blank" rel="noopener noreferrer">Protection oiseaux et haies</a>
+            </li>
+            <li>
+              <strong>Préfecture Val d'Oise</strong> : Arrêtés préfectoraux sur la taille des haies
+            </li>
+            <li>
+              <strong>Conseiller horticole/pépiniériste</strong> : Pour validation projet spécifique
+            </li>
           </ul>
 
           <h3>⚠️ Responsabilité</h3>
