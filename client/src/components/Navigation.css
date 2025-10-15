@@ -33,11 +33,7 @@
   top: 0;
   width: 280px;
   height: 100vh;
-  background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(240, 247, 242, 0.5) 100%),
-    url('/images/navigation-background.jpg');
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 247, 242, 0.98) 100%);
   border-right: 2px solid var(--border-color);
   padding: 0;
   overflow-y: auto;
