@@ -693,6 +693,7 @@ function renderUploadQueue() {
 
   uploadQueue.innerHTML = state.uploadQueue.map((item, index) => {
     let nextNumberInfo = '';
+    const isReady = item.espece && item.type && item.status === 'pending';
     
     // Si espèce et type sont sélectionnés, calculer le prochain numéro
     if (item.espece && item.type) {
@@ -713,7 +714,7 @@ function renderUploadQueue() {
     }
     
     return `
-    <div class="upload-item" data-id="${item.id}">
+    <div class="upload-item ${isReady ? 'has-changes' : ''}" data-id="${item.id}">
       <img src="${item.preview}" alt="${escapeHTML(item.file.name)}" class="upload-item-thumb">
       
       <div class="upload-item-config">
