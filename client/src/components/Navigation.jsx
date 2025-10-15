@@ -5,9 +5,10 @@ import './Navigation.css';
 function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
   // Détecter si mobile (pour overlay uniquement)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isOpen, setIsOpen] = useState(false); // Fermé par défaut (s'ouvre au survol)
+  const [isOpen, setIsOpen] = useState(!isMobile); // Ouvert au chargement si desktop
   const [arbresExpanded, setArbresExpanded] = useState(true);
   const [arbustesExpanded, setArbustesExpanded] = useState(true);
+  const [firstLoadComplete, setFirstLoadComplete] = useState(false);
 
   // Détecter redimensionnement (pour overlay)
   useEffect(() => {
@@ -20,9 +21,22 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Auto-ouverture au survol de la zone gauche (desktop uniquement)
+  // Fermeture automatique après 3 secondes (premier chargement desktop uniquement)
   useEffect(() => {
-    if (isMobile) return; // Pas d'auto-ouverture sur mobile
+    if (!isMobile && !firstLoadComplete) {
+      const timer = setTimeout(() => {
+        setIsOpen(false);
+        if (onMenuToggle) onMenuToggle(false);
+        setFirstLoadComplete(true);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile, firstLoadComplete, onMenuToggle]);
+
+  // Auto-ouverture au survol de la zone gauche (desktop uniquement, après premier chargement)
+  useEffect(() => {
+    if (isMobile || !firstLoadComplete) return; // Pas d'auto-ouverture sur mobile ou pendant les 3 premières secondes
     
     const handleMouseMove = (e) => {
       // Zone de déclenchement : 50px depuis le bord gauche
@@ -36,7 +50,7 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
     
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [isMobile, isOpen, onMenuToggle]);
+  }, [isMobile, isOpen, onMenuToggle, firstLoadComplete]);
 
   // Fermeture quand la souris sort du menu (desktop uniquement)
   const handleMouseLeave = () => {
