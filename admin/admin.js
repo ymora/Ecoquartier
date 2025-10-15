@@ -1,25 +1,93 @@
-// Configuration
+// Configuration avec mots-clés de recherche
 const ESPECES = [
-  { id: 'prunus-kanzan', nom: 'Cerisier du Japon Kanzan' },
-  { id: 'prunus-accolade', nom: 'Cerisier Accolade' },
-  { id: 'prunus-sunset-boulevard', nom: 'Cerisier Sunset Boulevard' },
-  { id: 'noisetier', nom: 'Noisetier' },
-  { id: 'fusain', nom: "Fusain d'Europe" },
-  { id: 'troene', nom: 'Troène commun' },
-  { id: 'osmanthe', nom: 'Osmanthe de Burkwood' },
-  { id: 'cornouiller', nom: 'Cornouiller sanguin' },
-  { id: 'seringat', nom: 'Seringat' }
+  { 
+    id: 'prunus-kanzan', 
+    nom: 'Cerisier du Japon Kanzan',
+    keywords: ['kanzan', 'cerisier', 'japon', 'prunus', 'serrulata']
+  },
+  { 
+    id: 'prunus-accolade', 
+    nom: 'Cerisier Accolade',
+    keywords: ['accolade', 'cerisier', 'prunus', 'subhirtella']
+  },
+  { 
+    id: 'prunus-sunset-boulevard', 
+    nom: 'Cerisier Sunset Boulevard',
+    keywords: ['sunset', 'boulevard', 'cerisier', 'prunus']
+  },
+  { 
+    id: 'noisetier', 
+    nom: 'Noisetier',
+    keywords: ['noisetier', 'noisette', 'corylus', 'avellana', 'coudrier']
+  },
+  { 
+    id: 'fusain', 
+    nom: "Fusain d'Europe",
+    keywords: ['fusain', 'euonymus', 'europaeus', 'bonnet']
+  },
+  { 
+    id: 'troene', 
+    nom: 'Troène commun',
+    keywords: ['troene', 'ligustrum', 'vulgare', 'haie']
+  },
+  { 
+    id: 'osmanthe', 
+    nom: 'Osmanthe de Burkwood',
+    keywords: ['osmanthe', 'osmanthus', 'burkwood', 'burkwoodii']
+  },
+  { 
+    id: 'cornouiller', 
+    nom: 'Cornouiller sanguin',
+    keywords: ['cornouiller', 'cornus', 'sanguinea', 'sanguin']
+  },
+  { 
+    id: 'seringat', 
+    nom: 'Seringat',
+    keywords: ['seringat', 'philadelphus', 'jasmin', 'oranges']
+  }
 ];
 
 const TYPES = [
-  { id: 'vue_generale', nom: 'Vue générale' },
-  { id: 'bourgeons', nom: 'Bourgeons' },
-  { id: 'fleurs', nom: 'Fleurs' },
-  { id: 'feuilles', nom: 'Feuilles' },
-  { id: 'fruits', nom: 'Fruits' },
-  { id: 'tronc', nom: 'Tronc/Écorce' },
-  { id: 'automne', nom: 'Automne' },
-  { id: 'hiver', nom: 'Hiver' }
+  { 
+    id: 'vue_generale', 
+    nom: 'Vue générale',
+    keywords: ['vue', 'generale', 'general', 'entier', 'arbre', 'arbuste', 'plant', 'ensemble']
+  },
+  { 
+    id: 'bourgeons', 
+    nom: 'Bourgeons',
+    keywords: ['bourgeon', 'bouton', 'gemme', 'debourrement']
+  },
+  { 
+    id: 'fleurs', 
+    nom: 'Fleurs',
+    keywords: ['fleur', 'floraison', 'blossom', 'flower', 'inflorescence']
+  },
+  { 
+    id: 'feuilles', 
+    nom: 'Feuilles',
+    keywords: ['feuille', 'feuillage', 'foliage', 'leaf', 'leaves']
+  },
+  { 
+    id: 'fruits', 
+    nom: 'Fruits',
+    keywords: ['fruit', 'baie', 'drupe', 'berry', 'fructification']
+  },
+  { 
+    id: 'tronc', 
+    nom: 'Tronc/Écorce',
+    keywords: ['tronc', 'ecorce', 'bark', 'trunk', 'tige', 'rameau']
+  },
+  { 
+    id: 'automne', 
+    nom: 'Automne',
+    keywords: ['automne', 'autumn', 'fall', 'octobre', 'novembre']
+  },
+  { 
+    id: 'hiver', 
+    nom: 'Hiver',
+    keywords: ['hiver', 'winter', 'neige', 'janvier', 'fevrier', 'decembre']
+  }
 ];
 
 // État global
@@ -54,6 +122,85 @@ function escapeHTML(str) {
   const div = document.createElement('div');
   div.textContent = String(str);
   return div.innerHTML;
+}
+
+// Normaliser une chaîne pour la recherche (enlever accents, minuscules, enlever séparateurs)
+function normalizeString(str) {
+  return str
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Enlever accents
+    .replace(/[_\-\s\.]/g, '') // Enlever underscores, tirets, espaces, points
+    .replace(/'/g, ''); // Enlever apostrophes
+}
+
+// Détecter l'espèce à partir du nom de fichier
+function detectEspeceFromFilename(filename) {
+  const normalized = normalizeString(filename);
+  
+  let bestMatch = null;
+  let bestScore = 0;
+  
+  ESPECES.forEach(espece => {
+    let score = 0;
+    
+    // Chercher chaque mot-clé dans le nom du fichier
+    espece.keywords.forEach(keyword => {
+      const normalizedKeyword = normalizeString(keyword);
+      if (normalized.includes(normalizedKeyword)) {
+        // Score plus élevé pour correspondances plus longues
+        score += normalizedKeyword.length;
+        
+        // Bonus si le mot-clé est au début du fichier
+        if (normalized.startsWith(normalizedKeyword)) {
+          score += 10;
+        }
+      }
+    });
+    
+    // Bonus si l'ID exact est dans le nom
+    if (normalized.includes(normalizeString(espece.id))) {
+      score += 20;
+    }
+    
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = espece.id;
+    }
+  });
+  
+  return bestScore > 0 ? bestMatch : '';
+}
+
+// Détecter le type d'image à partir du nom de fichier
+function detectTypeFromFilename(filename) {
+  const normalized = normalizeString(filename);
+  
+  let bestMatch = null;
+  let bestScore = 0;
+  
+  TYPES.forEach(type => {
+    let score = 0;
+    
+    type.keywords.forEach(keyword => {
+      const normalizedKeyword = normalizeString(keyword);
+      if (normalized.includes(normalizedKeyword)) {
+        score += normalizedKeyword.length;
+        
+        // Bonus si isolé (pas au milieu d'un autre mot)
+        const parts = filename.toLowerCase().split(/[_\-\s\.]/);
+        if (parts.some(part => normalizeString(part) === normalizedKeyword)) {
+          score += 10;
+        }
+      }
+    });
+    
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = type.id;
+    }
+  });
+  
+  return bestScore > 0 ? bestMatch : '';
 }
 
 // Initialisation
