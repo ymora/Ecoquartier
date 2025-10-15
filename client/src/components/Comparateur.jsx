@@ -38,22 +38,22 @@ function Comparateur({ plantes }) {
 
   useEffect(() => {
     const loadImagesForPlants = async () => {
-      const newPlantImages = { ...plantImages };
-      
       for (const plante of selectedPlantes) {
-        if (!newPlantImages[plante.id]) {
+        // Charger seulement si pas déjà chargé
+        if (!plantImages[plante.id]) {
           const images = await loadPlantImages(plante);
-          newPlantImages[plante.id] = images;
+          setPlantImages(prev => ({
+            ...prev,
+            [plante.id]: images
+          }));
         }
       }
-      
-      setPlantImages(newPlantImages);
     };
     
     if (selectedPlantes.length > 0) {
       loadImagesForPlants();
     }
-  }, [selectedPlantes]);
+  }, [selectedPlantes.map(p => p.id).join(',')]);
 
   const loadPlantImages = async (plante) => {
     const imageTypes = [
