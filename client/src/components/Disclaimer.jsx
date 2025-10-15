@@ -26,11 +26,11 @@ function Disclaimer() {
   if (!isVisible) {
     return (
       <button 
-        className="disclaimer-toggle"
+        className="disclaimer-toggle footer-position"
         onClick={handleToggle}
         title="Informations légales et avertissements"
       >
-        <FaInfoCircle />
+        <FaInfoCircle /> Informations légales
       </button>
     );
   }

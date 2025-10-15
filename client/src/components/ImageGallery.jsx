@@ -188,15 +188,44 @@ function ImageGallery({ arbusteId, arbusteName }) {
       {/* Modal de zoom */}
       {isZoomed && (
         <div className="zoom-modal" onClick={toggleZoom}>
-          <button className="zoom-close" aria-label="Fermer">
+          <button className="zoom-close" onClick={toggleZoom} aria-label="Fermer">
             <FaTimes />
           </button>
+          
+          <button 
+            className="zoom-nav prev"
+            onClick={(e) => {
+              e.stopPropagation();
+              prevImage();
+            }}
+            aria-label="Image précédente"
+          >
+            <FaChevronLeft />
+          </button>
+          
           <img 
             src={images[currentIndex].src} 
             alt={images[currentIndex].alt}
             className="zoomed-image"
             loading="eager"
+            onClick={(e) => e.stopPropagation()}
           />
+          
+          <button 
+            className="zoom-nav next"
+            onClick={(e) => {
+              e.stopPropagation();
+              nextImage();
+            }}
+            aria-label="Image suivante"
+          >
+            <FaChevronRight />
+          </button>
+          
+          <div className="zoom-legend" onClick={(e) => e.stopPropagation()}>
+            {images[currentIndex].legend}
+            <span className="zoom-counter">{currentIndex + 1} / {images.length}</span>
+          </div>
         </div>
       )}
     </div>
