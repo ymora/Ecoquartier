@@ -35,7 +35,7 @@
   height: 100vh;
   background: 
     linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(240, 247, 242, 0.5) 100%),
-    url('/images/wood-background.jpg');
+    url('/images/navigation-background.jpg');
   background-size: cover;
   background-position: center;
   border-right: 2px solid var(--border-color);
