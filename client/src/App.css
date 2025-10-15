@@ -158,15 +158,34 @@ body {
   border-top: 2px solid var(--accent-primary);
   box-shadow: 0 -2px 10px var(--shadow);
   margin-top: 2rem;
-  text-align: center;
   font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-spacer {
+  width: 24px;
+  flex-shrink: 0;
 }
 
 .footer p {
   margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
+  text-align: center;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .footer-spacer {
+    display: none;
+  }
 }
 
 /* Scrollbar personnalisée */
