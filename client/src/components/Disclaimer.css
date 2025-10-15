@@ -72,23 +72,7 @@
   min-height: 0;
 }
 
-.disclaimer-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.disclaimer-content::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-}
-
-.disclaimer-content::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
-  border-radius: 4px;
-}
-
-.disclaimer-content::-webkit-scrollbar-thumb:hover {
-  background: #2e8b57;
-}
+/* Scrollbar masquée (défini globalement dans index.css) */
 
 .disclaimer-content h3 {
   color: var(--accent-primary);
