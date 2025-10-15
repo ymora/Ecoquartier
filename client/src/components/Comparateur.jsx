@@ -548,6 +548,7 @@ function Comparateur({ plantes }) {
                 </div>
               ))}
             </div>
+            )}
 
             {/* NOUVEAU : Interdiction Taille */}
             {visibleCriteres['interdiction'] && (
