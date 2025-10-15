@@ -148,14 +148,14 @@ function Disclaimer({ onClose }) {
           </p>
         </div>
 
-        <div className="disclaimer-footer">
-          <button className="accept-button" onClick={handleAccept}>
-            ✅ J'ai compris et j'accepte
-          </button>
-          <p className="disclaimer-note">
-            Vous pouvez réafficher cet avertissement en cliquant sur le cercle [!] dans le footer.
-          </p>
-        </div>
+                <div className="disclaimer-footer">
+                  <button className="accept-button" onClick={handleAccept}>
+                    ✅ J'ai compris et j'accepte
+                  </button>
+                  <p className="disclaimer-note">
+                    Vous pouvez réafficher cet avertissement en cliquant sur le cercle [!] dans le pied de page.
+                  </p>
+                </div>
       </div>
     </div>
       )}
