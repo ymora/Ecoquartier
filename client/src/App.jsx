@@ -30,8 +30,6 @@ function App() {
 
   return (
     <div className="app">
-      <Disclaimer />
-      
       <Header />
       
       {/* Bouton de bascule Mode */}
