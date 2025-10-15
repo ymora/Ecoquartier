@@ -189,7 +189,7 @@ section h2 {
 /* Images existantes (format liste) */
 .existing-item {
   display: grid;
-  grid-template-columns: 80px 1fr auto auto;
+  grid-template-columns: 80px 1fr auto;
   gap: 1rem;
   padding: 0.75rem 0.75rem 0.75rem 1rem;
   background: var(--bg-secondary);
@@ -281,66 +281,32 @@ section h2 {
   box-shadow: 0 2px 6px rgba(231, 76, 60, 0.5);
 }
 
-.existing-item-number-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+/* Badge numéro actuel (lecture seule) */
+.current-number-badge {
+  padding: 0.4rem 0.7rem;
+  background: linear-gradient(135deg, rgba(46, 139, 87, 0.1), rgba(72, 187, 120, 0.15));
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(46, 139, 87, 0.2);
+  min-width: 50px;
+  text-align: center;
 }
 
+/* Badge auto-numérotation (après changement espèce/type) */
 .auto-number-badge {
-  padding: 0.3rem 0.7rem;
+  padding: 0.4rem 0.7rem;
   background: linear-gradient(135deg, rgba(46, 139, 87, 0.2), rgba(72, 187, 120, 0.3));
   border-radius: 16px;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--accent-primary);
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 8px rgba(46, 139, 87, 0.3);
   animation: fadeIn 0.3s ease;
   white-space: nowrap;
-}
-
-.existing-item-number {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.existing-item-number label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-.input-number {
-  width: 60px;
-  padding: 0.4rem;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  color: var(--text-primary);
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.input-number:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.15);
-  background: white;
-}
-
-.input-number:hover {
-  border-color: var(--accent-primary);
-  cursor: pointer;
-}
-
-.input-number:disabled {
-  opacity: 0.5;
-  cursor: wait;
 }
 
 .existing-item:hover {

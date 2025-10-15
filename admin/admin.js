@@ -163,7 +163,7 @@ function renderExistingImages() {
       <div class="existing-item-config">
         <div>
           <div class="existing-item-name">${escapeHTML(img.filename)}</div>
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; align-items: center;">
             <select class="config-espece-existing" data-filename="${escapeHTML(img.filename)}">
               ${ESPECES.map(e => `
                 <option value="${e.id}" ${img.espece === e.id ? 'selected' : ''}>
@@ -179,23 +179,9 @@ function renderExistingImages() {
                 </option>
               `).join('')}
             </select>
+            
+            <div class="current-number-badge">#${String(img.number).padStart(2, '0')}</div>
           </div>
-        </div>
-      </div>
-      
-      <div class="existing-item-number-wrapper">
-        <div class="existing-item-number">
-          <label>#</label>
-          <input 
-            type="number" 
-            min="1" 
-            max="99" 
-            value="${img.number}" 
-            class="input-number"
-            data-filename="${escapeHTML(img.filename)}"
-            data-current-number="${img.number}"
-            title="Changer le numéro (permute automatiquement)"
-          >
         </div>
       </div>
       
@@ -263,8 +249,8 @@ function attachExistingImageListeners() {
     });
   });
 
-  // Changements de selects et numéro (tracking sans sauvegarde)
-  document.querySelectorAll('.config-espece-existing, .config-type-existing, .input-number').forEach(element => {
+  // Changements de selects (tracking sans sauvegarde)
+  document.querySelectorAll('.config-espece-existing, .config-type-existing').forEach(element => {
     element.addEventListener('change', (e) => {
       const filename = e.target.dataset.filename;
       const item = document.querySelector(`.existing-item[data-filename="${filename}"]`);
@@ -288,7 +274,6 @@ function attachExistingImageListeners() {
       // Mettre à jour les changements
       const especeSelect = item.querySelector('.config-espece-existing');
       const typeSelect = item.querySelector('.config-type-existing');
-      const numberInput = item.querySelector('.input-number');
       
       state.pendingChanges[filename].newEspece = especeSelect.value;
       state.pendingChanges[filename].newType = typeSelect.value;
@@ -301,19 +286,19 @@ function attachExistingImageListeners() {
         // Calculer le prochain numéro disponible pour cette nouvelle combinaison
         const nextNumber = getSuggestedNumber(state.pendingChanges[filename].newEspece, state.pendingChanges[filename].newType);
         state.pendingChanges[filename].newNumber = nextNumber;
-        numberInput.value = nextNumber;
         
         // Afficher un badge informatif
         let autoBadge = item.querySelector('.auto-number-badge');
         if (!autoBadge) {
           autoBadge = document.createElement('div');
           autoBadge.className = 'auto-number-badge';
-          item.querySelector('.existing-item-number-wrapper').appendChild(autoBadge);
+          const configDiv = item.querySelector('.existing-item-config > div > div:last-child');
+          configDiv.appendChild(autoBadge);
         }
-        autoBadge.textContent = `✓ Auto: #${String(nextNumber).padStart(2, '0')}`;
+        autoBadge.textContent = `→ #${String(nextNumber).padStart(2, '0')}`;
       } else {
-        // Si retour à l'espèce/type d'origine, on peut modifier manuellement le numéro
-        state.pendingChanges[filename].newNumber = parseInt(numberInput.value);
+        // Si retour à l'espèce/type d'origine
+        state.pendingChanges[filename].newNumber = state.pendingChanges[filename].originalNumber;
         
         // Retirer le badge auto si présent
         const autoBadge = item.querySelector('.auto-number-badge');
@@ -468,11 +453,9 @@ function restorePendingChanges() {
     // Appliquer les valeurs modifiées
     const especeSelect = item.querySelector('.config-espece-existing');
     const typeSelect = item.querySelector('.config-type-existing');
-    const numberInput = item.querySelector('.input-number');
     
     if (especeSelect) especeSelect.value = changes.newEspece;
     if (typeSelect) typeSelect.value = changes.newType;
-    if (numberInput) numberInput.value = changes.newNumber;
     
     // Vérifier les conflits et appliquer les styles
     const hasChanges = 
