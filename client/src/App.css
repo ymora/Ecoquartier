@@ -37,7 +37,7 @@ body {
   display: flex;
   flex: 1;
   position: relative;
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .content {
@@ -60,7 +60,7 @@ body {
 /* Bouton de bascule Mode */
 .mode-toggle {
   position: fixed;
-  top: 30px;
+  top: 1rem;
   right: 2rem;
   z-index: 1001;
   background: var(--accent-primary);
@@ -93,7 +93,7 @@ body {
 /* Responsive Mobile & Tablette */
 @media (max-width: 768px) {
   .main-layout {
-    margin-top: 18px;
+    margin-top: 0;
   }
 
   .content {
@@ -103,7 +103,7 @@ body {
   }
 
   .mode-toggle {
-    top: 28px;
+    top: 0.75rem;
     right: 0.75rem;
     padding: 0.5rem 1rem;
     font-size: 0.85rem;

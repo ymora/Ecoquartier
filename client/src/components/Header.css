@@ -1,13 +1,5 @@
 .header {
-  background: linear-gradient(135deg, rgba(46, 139, 87, 0.95) 0%, rgba(61, 153, 112, 0.95) 100%);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 20px;
-  z-index: 1000;
+  display: none; /* Barre verte supprimée - titre dans menu + header fixe fiche */
 }
 
 @media (max-width: 768px) {
