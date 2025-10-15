@@ -325,10 +325,7 @@ function renderExistingImages() {
   // Mettre à jour le compteur d'images
   const imageCount = document.getElementById('imageCount');
   if (imageCount) {
-    const filterInfo = state.filterEspece || state.filterType 
-      ? ` filtrées` 
-      : '';
-    imageCount.textContent = `(${state.existingImages.length}${filterInfo})`;
+    imageCount.textContent = `(${state.existingImages.length})`;
   }
   
   if (state.existingImages.length === 0) {
