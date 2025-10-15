@@ -1,5 +1,11 @@
 {
-  "cornouiller": [],
+  "cornouiller": [
+    "cornouiller_bourgeons_01.jpg",
+    "cornouiller_fruits_01.jpg",
+    "cornouiller_tronc_01.jpg",
+    "cornouiller_tronc_02.jpg",
+    "cornouiller_vue_generale_01.jpg"
+  ],
   "fusain": [
     "fusain_bourgeons_01.jpg",
     "fusain_fleurs_01.jpg",
@@ -57,4 +63,3 @@
   ],
   "troene": []
 }
-
