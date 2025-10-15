@@ -136,12 +136,13 @@
 }
 
 .info-card {
-  background: var(--bg-tertiary);
+  background: rgba(240, 247, 242, 0.9);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
   transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
 }
 
 .info-card:hover {
@@ -178,10 +179,11 @@
 /* Sections */
 .section {
   margin-bottom: 2rem;
-  background: var(--bg-tertiary);
+  background: rgba(240, 247, 242, 0.9);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.5rem;
+  backdrop-filter: blur(5px);
 }
 
 .section h2 {
@@ -262,10 +264,11 @@
 .disease-list li {
   padding: 0.75rem;
   margin-bottom: 0.5rem;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.9);
   border-left: 3px solid var(--accent-secondary);
   border-radius: 4px;
   transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
 }
 
 .usage-list li:hover,
@@ -306,11 +309,12 @@
 }
 
 .reglementation-card {
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  backdrop-filter: blur(5px);
 }
 
 .reglementation-card h3 {
@@ -405,10 +409,11 @@
 .forum-list li {
   padding: 1rem;
   margin-bottom: 0.75rem;
-  background: var(--bg-tertiary);
+  background: rgba(240, 247, 242, 0.9);
   border-left: 4px solid var(--accent-secondary);
   border-radius: 6px;
   font-style: italic;
+  backdrop-filter: blur(5px);
 }
 
 .forum-list li::before {
