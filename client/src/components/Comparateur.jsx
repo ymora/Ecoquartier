@@ -395,8 +395,17 @@ function Comparateur({ plantes }) {
             ))}
 
             {/* Toxicité */}
+            {visibleCriteres['toxicite'] && (
             <div className="comparison-row alert-row">
               <div className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('toxicite')}
+                  aria-label="Masquer toxicité"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
                 <span className="critere-icon">⚠️</span>
                 <strong>Toxicité</strong>
               </div>
