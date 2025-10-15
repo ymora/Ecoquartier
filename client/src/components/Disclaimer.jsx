@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { FaExclamationTriangle, FaTimes } from 'react-icons/fa';
 import './Disclaimer.css';
 
 function Disclaimer({ onClose }) {
@@ -52,7 +51,6 @@ function Disclaimer({ onClose }) {
       <div className="disclaimer-overlay">
         <div className="disclaimer-modal">
           <div className="disclaimer-header">
-            <FaExclamationTriangle className="disclaimer-icon" />
             <h2>⚠️ Informations Légales et Avertissements</h2>
             <p className="disclaimer-subtitle">Veuillez prendre connaissance des informations ci-dessous avant d'utiliser ce site</p>
           </div>

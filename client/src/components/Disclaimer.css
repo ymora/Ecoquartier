@@ -34,13 +34,7 @@
   border-bottom: 3px solid rgba(231, 76, 60, 0.3);
 }
 
-.disclaimer-icon {
-  font-size: 3.5rem;
-  color: #e74c3c;
-  margin-bottom: 1rem;
-  animation: pulse 2s ease-in-out infinite;
-  filter: drop-shadow(0 4px 8px rgba(231, 76, 60, 0.3));
-}
+/* Icône supprimée - emoji ⚠️ dans le titre suffit */
 
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
