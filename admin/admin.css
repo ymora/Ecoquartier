@@ -208,12 +208,8 @@ section h2 {
   min-width: 80px;
 }
 
-.existing-item.has-changes,
-.existing-item.has-conflict {
-  padding-left: 0.5rem;
-}
-
 .existing-item.has-changes {
+  padding-left: 0.5rem;
   border-left: 4px solid var(--warning);
   background: linear-gradient(90deg, rgba(237, 137, 54, 0.08), var(--bg-secondary));
   animation: border-pulse 2s infinite;
