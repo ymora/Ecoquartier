@@ -781,6 +781,7 @@ function renderUploadQueue() {
       item.espece = e.target.value;
       item.type = '';
       renderUploadQueue(); // Re-render pour mettre à jour le badge numéro
+      updateSaveAllButton(); // Mettre à jour le bouton de sauvegarde
     });
   });
 
@@ -789,6 +790,7 @@ function renderUploadQueue() {
       const item = state.uploadQueue.find(i => i.id === Number(e.target.dataset.id));
       item.type = e.target.value;
       renderUploadQueue(); // Re-render pour afficher le prochain numéro
+      updateSaveAllButton(); // Mettre à jour le bouton de sauvegarde
     });
   });
 
@@ -797,6 +799,7 @@ function renderUploadQueue() {
       const id = Number(e.currentTarget.dataset.id);
       state.uploadQueue = state.uploadQueue.filter(item => item.id !== id);
       renderUploadQueue();
+      updateSaveAllButton(); // Mettre à jour le bouton après suppression
     });
   });
 }
