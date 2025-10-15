@@ -12,12 +12,19 @@
   font-size: 1.2rem;
   box-shadow: 0 4px 10px var(--shadow);
   transition: all 0.3s ease;
-  display: block; /* Toujours visible, même sur PC */
+  display: none; /* Caché par défaut sur desktop */
 }
 
 .nav-toggle:hover {
-  background: #3a8eef;
+  background: var(--accent-secondary);
   transform: scale(1.05);
+}
+
+/* Afficher le bouton uniquement sur mobile */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: block;
+  }
 }
 
 .navigation {
@@ -34,9 +41,19 @@
   border-right: 2px solid var(--border-color);
   padding: 0;
   overflow-y: auto;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 99;
   box-shadow: 4px 0 10px var(--shadow);
+}
+
+/* État fermé : menu caché à gauche */
+.navigation.closed {
+  transform: translateX(-280px);
+}
+
+/* État ouvert : menu visible */
+.navigation.open {
+  transform: translateX(0);
 }
 
 /* Titre dans le menu */

@@ -5,7 +5,7 @@ import './Navigation.css';
 function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
   // Détecter si mobile (pour overlay uniquement)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isOpen, setIsOpen] = useState(true); // Ouvert par défaut (pliable sur tous les appareils)
+  const [isOpen, setIsOpen] = useState(false); // Fermé par défaut (s'ouvre au survol)
   const [arbresExpanded, setArbresExpanded] = useState(true);
   const [arbustesExpanded, setArbustesExpanded] = useState(true);
 
@@ -19,6 +19,32 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Auto-ouverture au survol de la zone gauche (desktop uniquement)
+  useEffect(() => {
+    if (isMobile) return; // Pas d'auto-ouverture sur mobile
+    
+    const handleMouseMove = (e) => {
+      // Zone de déclenchement : 50px depuis le bord gauche
+      const triggerZone = 50;
+      
+      if (e.clientX <= triggerZone && !isOpen) {
+        setIsOpen(true);
+        if (onMenuToggle) onMenuToggle(true);
+      }
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isMobile, isOpen, onMenuToggle]);
+
+  // Fermeture quand la souris sort du menu (desktop uniquement)
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      setIsOpen(false);
+      if (onMenuToggle) onMenuToggle(false);
+    }
+  };
 
   const toggleNav = () => {
     const newState = !isOpen;
@@ -59,14 +85,21 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle }) {
         />
       )}
 
-      <button 
-        className="nav-toggle"
-        onClick={toggleNav}
-        aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
+      {/* Bouton toggle uniquement sur mobile */}
+      {isMobile && (
+        <button 
+          className="nav-toggle"
+          onClick={toggleNav}
+          aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
+        >
+          <FaBars />
+        </button>
+      )}
+      
+      <nav 
+        className={`navigation ${isOpen ? 'open' : 'closed'}`}
+        onMouseLeave={handleMouseLeave}
       >
-        <FaBars />
-      </button>
-      <nav className={`navigation ${isOpen ? 'open' : 'closed'}`}>
         {/* Titre du site */}
         <div className="nav-title">
           <h1>Les Haies de l'Écocartier de Bessancourt</h1>
