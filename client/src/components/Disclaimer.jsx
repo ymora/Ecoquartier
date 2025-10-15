@@ -25,14 +25,19 @@ function Disclaimer() {
   return (
     <>
       <footer className="footer">
-        <p>&copy; 2025 Les Haies de l'Écocartier de Bessancourt. Tous droits réservés.</p>
-        <button 
-          className="disclaimer-toggle footer-position"
-          onClick={handleToggle}
-          title="Informations légales et avertissements"
-        >
-          <FaInfoCircle /> Informations légales
-        </button>
+        <p>
+          &copy; 2025 Les Haies de l'Écocartier de Bessancourt. Tous droits réservés.
+          {!isVisible && (
+            <button 
+              className="disclaimer-toggle-inline"
+              onClick={handleToggle}
+              title="Informations légales et avertissements"
+              aria-label="Ouvrir les informations légales"
+            >
+              !
+            </button>
+          )}
+        </p>
       </footer>
       
       {isVisible && (
