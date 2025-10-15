@@ -50,15 +50,12 @@ function Disclaimer({ onClose }) {
       
       {isVisible && (
       <div className="disclaimer-overlay">
-      <div className="disclaimer-modal">
-        <button className="disclaimer-close" onClick={handleClose}>
-          <FaTimes />
-        </button>
-
-        <div className="disclaimer-header">
-          <FaExclamationTriangle className="disclaimer-icon" />
-          <h2>Avertissement Important</h2>
-        </div>
+        <div className="disclaimer-modal">
+          <div className="disclaimer-header">
+            <FaExclamationTriangle className="disclaimer-icon" />
+            <h2>⚠️ Informations Légales et Avertissements</h2>
+            <p className="disclaimer-subtitle">Veuillez prendre connaissance des informations ci-dessous avant d'utiliser ce site</p>
+          </div>
 
         <div className="disclaimer-content">
           <h3>🌿 À propos de ce site</h3>
