@@ -241,9 +241,6 @@ function Comparateur({ plantes }) {
                   >
                     <FaTimes />
                   </button>
-                  <div className="plante-type-badge">
-                    {plante.type === 'arbre' ? '🌳 Arbre' : '🌿 Arbuste'}
-                  </div>
                   <h3>{plante.name}</h3>
                   <p className="scientific">{plante.nomScientifique}</p>
                 </div>
