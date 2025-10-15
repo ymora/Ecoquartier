@@ -18,9 +18,11 @@
   border-radius: 12px;
   max-width: 900px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Bouton close supprimé - acceptation obligatoire */
@@ -62,7 +64,7 @@
 }
 
 .disclaimer-content {
-  max-height: 55vh;
+  flex: 1;
   overflow-y: auto;
   padding: 0 2rem;
   margin-bottom: 2rem;
