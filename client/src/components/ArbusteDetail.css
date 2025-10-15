@@ -1,7 +1,7 @@
 .arbuste-detail {
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 120px; /* Espace pour le header fixe */
+  padding-top: 90px; /* Espace réduit pour header compact */
 }
 
 .arbuste-header {
@@ -12,8 +12,7 @@
   background: rgba(250, 251, 252, 0.98);
   backdrop-filter: blur(10px);
   z-index: 100;
-  padding: 1rem 2rem;
-  padding-bottom: 1rem;
+  padding: 0.75rem 2rem;
   border-bottom: 2px solid var(--accent-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -25,22 +24,41 @@
 }
 
 .arbuste-header h1 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--accent-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .scientific-name {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: var(--text-secondary);
   font-style: italic;
-  margin-bottom: 0.3rem;
+  margin: 0;
+}
+
+.separator {
+  color: var(--accent-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .family {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  padding: 0.2rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  margin: 0;
 }
 
 /* Tabs */
@@ -405,19 +423,28 @@
 
 @media (max-width: 768px) {
   .arbuste-detail {
-    padding-top: 140px; /* Plus d'espace sur mobile */
+    padding-top: 110px; /* Espace pour header compact */
   }
 
   .arbuste-header {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 1rem;
   }
 
   .arbuste-header h1 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+  }
+
+  .header-info {
+    gap: 0.5rem;
+    font-size: 0.9rem;
   }
 
   .scientific-name {
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .family {
+    font-size: 0.85rem;
   }
 
   .info-grid {

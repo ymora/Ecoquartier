@@ -26,8 +26,11 @@ function ArbusteDetail({ arbuste, menuOpen }) {
     <div className="arbuste-detail">
       <div className={`arbuste-header ${menuOpen ? 'menu-open' : ''}`}>
         <h1>{arbuste.name}</h1>
-        <p className="scientific-name">{arbuste.nomScientifique}</p>
-        <p className="family">Famille : {arbuste.famille}</p>
+        <div className="header-info">
+          <p className="scientific-name">{arbuste.nomScientifique}</p>
+          <span className="separator">•</span>
+          <p className="family">{arbuste.famille}</p>
+        </div>
       </div>
 
       <ImageGallery arbusteId={arbuste.id} arbusteName={arbuste.name} />
