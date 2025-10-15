@@ -266,7 +266,7 @@ function ArbusteDetail({ arbuste, menuOpen }) {
                 <FiabiliteBadge niveau="moyenne" info="Estimations basées sur littérature horticole - Peut varier selon sol et conditions" />
               </h2>
               <div className="detail-box">
-                <p><strong>Type :</strong> {reglementationData[arbuste.id].systemeRacinaire.type}</p>
+                <p><strong>Structure :</strong> {reglementationData[arbuste.id].systemeRacinaire.type}</p>
                 <p><strong>Profondeur :</strong> {reglementationData[arbuste.id].systemeRacinaire.profondeur}</p>
                 <p><strong>Étalement :</strong> {reglementationData[arbuste.id].systemeRacinaire.etalement}</p>
                 <p><strong>Agressivité :</strong> {reglementationData[arbuste.id].systemeRacinaire.agressivite}</p>
@@ -342,7 +342,7 @@ function ArbusteDetail({ arbuste, menuOpen }) {
             <div className="section">
               <h2>🐝 Pollinisation & Fructification</h2>
               <div className="detail-box">
-                <p><strong>Type :</strong> {informationsComplementaires[arbuste.id].pollinisation.type}</p>
+                <p><strong>Mode :</strong> {informationsComplementaires[arbuste.id].pollinisation.type}</p>
                 <p><strong>Besoin :</strong> {informationsComplementaires[arbuste.id].pollinisation.besoin}</p>
                 <p><strong>Production :</strong> {informationsComplementaires[arbuste.id].pollinisation.production}</p>
                 <p className="highlight"><strong>Conseil :</strong> {informationsComplementaires[arbuste.id].pollinisation.conseil}</p>
@@ -488,7 +488,7 @@ function ArbusteDetail({ arbuste, menuOpen }) {
               <div className="detail-box">
                 <p><strong>Besoins :</strong> {informationsComplementaires[arbuste.id].fertilisation.besoins}</p>
                 <p><strong>Période :</strong> {informationsComplementaires[arbuste.id].fertilisation.periode}</p>
-                <p><strong>Type :</strong> {informationsComplementaires[arbuste.id].fertilisation.type}</p>
+                <p><strong>Fertilisant :</strong> {informationsComplementaires[arbuste.id].fertilisation.type}</p>
                 <p><strong>Quantité :</strong> {informationsComplementaires[arbuste.id].fertilisation.quantite}</p>
                 <p><strong>Fréquence :</strong> {informationsComplementaires[arbuste.id].fertilisation.frequence}</p>
                 <p className="highlight"><strong>Conseil :</strong> {informationsComplementaires[arbuste.id].fertilisation.conseil}</p>
