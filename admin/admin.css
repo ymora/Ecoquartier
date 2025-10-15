@@ -189,7 +189,7 @@ section h2 {
 /* Images existantes (format liste) */
 .existing-item {
   display: grid;
-  grid-template-columns: 80px 1fr auto;
+  grid-template-columns: 80px 1fr 80px auto;
   gap: 1rem;
   padding: 0.75rem 0.75rem 0.75rem 1rem;
   background: var(--bg-secondary);
@@ -199,6 +199,13 @@ section h2 {
   transition: all 0.3s ease;
   box-shadow: 0 1px 3px var(--shadow);
   position: relative;
+}
+
+.number-badge-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 80px;
 }
 
 .existing-item.has-changes,
@@ -281,23 +288,9 @@ section h2 {
   box-shadow: 0 2px 6px rgba(231, 76, 60, 0.5);
 }
 
-/* Badge numéro actuel (lecture seule) */
-.current-number-badge {
-  padding: 0.4rem 0.7rem;
-  background: linear-gradient(135deg, rgba(46, 139, 87, 0.1), rgba(72, 187, 120, 0.15));
-  border-radius: 16px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(46, 139, 87, 0.2);
-  min-width: 50px;
-  text-align: center;
-}
-
-/* Badge auto-numérotation (après changement espèce/type) */
+/* Badge auto-numérotation (images existantes + upload) */
 .auto-number-badge {
-  padding: 0.4rem 0.7rem;
+  padding: 0.45rem 0.75rem;
   background: linear-gradient(135deg, rgba(46, 139, 87, 0.2), rgba(72, 187, 120, 0.3));
   border-radius: 16px;
   font-size: 0.8rem;
@@ -307,6 +300,8 @@ section h2 {
   box-shadow: 0 2px 8px rgba(46, 139, 87, 0.3);
   animation: fadeIn 0.3s ease;
   white-space: nowrap;
+  min-width: 65px;
+  text-align: center;
 }
 
 .existing-item:hover {

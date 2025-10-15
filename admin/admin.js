@@ -163,7 +163,7 @@ function renderExistingImages() {
       <div class="existing-item-config">
         <div>
           <div class="existing-item-name">${escapeHTML(img.filename)}</div>
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; align-items: center;">
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
             <select class="config-espece-existing" data-filename="${escapeHTML(img.filename)}">
               ${ESPECES.map(e => `
                 <option value="${e.id}" ${img.espece === e.id ? 'selected' : ''}>
@@ -179,11 +179,11 @@ function renderExistingImages() {
                 </option>
               `).join('')}
             </select>
-            
-            <div class="current-number-badge">#${String(img.number).padStart(2, '0')}</div>
           </div>
         </div>
       </div>
+      
+      <div class="number-badge-container"></div>
       
       <button class="btn-icon-outline btn-danger-outline" data-filename="${escapeHTML(img.filename)}" data-espece="${escapeHTML(img.espece)}" title="Supprimer cette image">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -287,22 +287,16 @@ function attachExistingImageListeners() {
         const nextNumber = getSuggestedNumber(state.pendingChanges[filename].newEspece, state.pendingChanges[filename].newType);
         state.pendingChanges[filename].newNumber = nextNumber;
         
-        // Afficher un badge informatif
-        let autoBadge = item.querySelector('.auto-number-badge');
-        if (!autoBadge) {
-          autoBadge = document.createElement('div');
-          autoBadge.className = 'auto-number-badge';
-          const configDiv = item.querySelector('.existing-item-config > div > div:last-child');
-          configDiv.appendChild(autoBadge);
-        }
-        autoBadge.textContent = `→ #${String(nextNumber).padStart(2, '0')}`;
+        // Afficher un badge informatif à droite
+        const container = item.querySelector('.number-badge-container');
+        container.innerHTML = `<div class="auto-number-badge">→ #${String(nextNumber).padStart(2, '0')}</div>`;
       } else {
         // Si retour à l'espèce/type d'origine
         state.pendingChanges[filename].newNumber = state.pendingChanges[filename].originalNumber;
         
-        // Retirer le badge auto si présent
-        const autoBadge = item.querySelector('.auto-number-badge');
-        if (autoBadge) autoBadge.remove();
+        // Vider le badge auto
+        const container = item.querySelector('.number-badge-container');
+        if (container) container.innerHTML = '';
       }
       
       // Vérifier s'il y a vraiment des changements
