@@ -188,6 +188,19 @@ section {
   font-weight: 700;
 }
 
+.image-count {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #48bb78;
+  margin-left: 0.5rem;
+  background: rgba(72, 187, 120, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+}
+
 section h2 {
   font-size: 1.2rem;
   background: linear-gradient(135deg, #2e8b57, #48bb78);

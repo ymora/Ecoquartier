@@ -322,6 +322,15 @@ async function loadExistingImages() {
 
 // Afficher les images existantes (format liste unifié)
 function renderExistingImages() {
+  // Mettre à jour le compteur d'images
+  const imageCount = document.getElementById('imageCount');
+  if (imageCount) {
+    const filterInfo = state.filterEspece || state.filterType 
+      ? ` filtrées` 
+      : '';
+    imageCount.textContent = `(${state.existingImages.length}${filterInfo})`;
+  }
+  
   if (state.existingImages.length === 0) {
     existingImagesGrid.innerHTML = '<p class="empty-message">Aucune image trouvée</p>';
     deleteAllFilteredBtn.classList.add('hidden');
