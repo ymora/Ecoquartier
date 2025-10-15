@@ -5,7 +5,7 @@
 
 .arbuste-header {
   position: sticky;
-  top: 20px;
+  top: 0;
   background: linear-gradient(to bottom, var(--bg-primary) 90%, transparent);
   backdrop-filter: blur(10px);
   z-index: 50;
