@@ -406,30 +406,104 @@
 /* Responsive */
 @media (max-width: 768px) {
   .comparateur {
-    padding: 1rem;
+    padding: 0.75rem;
+  }
+
+  .comparateur-intro {
+    padding: 0.75rem;
+    font-size: 0.9rem;
   }
 
   .comparateur-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 
   .selector-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .selector-item {
+    padding: 0.75rem;
+  }
+
+  .selector-item h3 {
+    font-size: 0.95rem;
   }
 
   .comparison-grid {
+    font-size: 0.8rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .comparateur-table {
+    min-width: 600px; /* Force scroll horizontal si nécessaire */
+  }
+
+  .comparison-label-cell,
+  .comparison-header-cell,
+  .comparison-cell {
+    padding: 0.6rem;
+    font-size: 0.8rem;
+    min-width: 150px;
+  }
+
+  .comparison-header-cell {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .comparison-image-container {
+    height: 120px;
+  }
+
+  .image-nav-btn {
+    padding: 0.5rem;
+    font-size: 1.2rem;
+  }
+
+  .toggle-buttons {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .toggle-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Très petits mobiles */
+@media (max-width: 480px) {
+  .comparateur {
+    padding: 0.5rem;
+  }
+
+  .comparateur-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .comparateur-intro {
     font-size: 0.85rem;
   }
 
   .comparison-label-cell,
   .comparison-header-cell,
   .comparison-cell {
-    padding: 0.75rem;
-    min-width: 200px;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    min-width: 120px;
   }
 
   .comparison-image-container {
-    height: 180px;
+    height: 100px;
+  }
+
+  .toggle-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.7rem;
   }
 }
 
