@@ -253,17 +253,11 @@ function Comparateur({ plantes }) {
                           alt={images[currentIndex].alt}
                           className="comparison-image"
                           onError={(e) => {
-                            e.target.onerror = null;
                             e.target.style.display = 'none';
-                            e.target.parentElement.innerHTML = `
-                              <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: rgba(0,0,0,0.05); color: var(--text-secondary); font-size: 0.9rem; padding: 1rem; text-align: center;">
-                                📷<br/>Image non disponible
-                              </div>
-                            `;
                           }}
                         />
                       ) : (
-                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: rgba(0,0,0,0.05); color: var(--text-secondary); font-size: 0.9rem; padding: 1rem; text-align: center;">
+                        <div className="image-placeholder">
                           📷<br/>Chargement...
                         </div>
                       )}
