@@ -33,33 +33,73 @@ function Comparateur({ plantes }) {
     setImageIndices({ ...imageIndices, [planteId]: newIndex });
   };
 
-  const getPlantImages = (plante) => {
+  // Charger les images disponibles pour une plante (logique unifiée avec ImageGallery)
+  const [plantImages, setPlantImages] = useState({});
+
+  useEffect(() => {
+    const loadImagesForPlants = async () => {
+      const newPlantImages = { ...plantImages };
+      
+      for (const plante of selectedPlantes) {
+        if (!newPlantImages[plante.id]) {
+          const images = await loadPlantImages(plante);
+          newPlantImages[plante.id] = images;
+        }
+      }
+      
+      setPlantImages(newPlantImages);
+    };
+    
+    if (selectedPlantes.length > 0) {
+      loadImagesForPlants();
+    }
+  }, [selectedPlantes]);
+
+  const loadPlantImages = async (plante) => {
     const imageTypes = [
-      { type: 'vue_generale', legend: 'Vue générale' },
-      { type: 'fleurs', legend: 'Fleurs' },
-      { type: 'bourgeons', legend: 'Bourgeons' },
-      { type: 'fruits', legend: 'Fruits' },
-      { type: 'automne', legend: 'Automne' },
-      { type: 'hiver', legend: 'Hiver' }
+      { type: 'vue_generale', legend: 'Vue générale', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+      { type: 'bourgeons', legend: 'Bourgeons', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+      { type: 'fleurs', legend: 'Fleurs', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+      { type: 'feuilles', legend: 'Feuilles', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+      { type: 'fruits', legend: 'Fruits', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+      { type: 'tronc', legend: 'Tronc/Écorce', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+      { type: 'automne', legend: 'Automne', extensions: ['.jpg', '.jpeg', '.png', '.webp'] },
+      { type: 'hiver', legend: 'Hiver', extensions: ['.jpg', '.jpeg', '.png', '.webp'] }
     ];
     
-    const extensions = ['.jpg', '.jpeg', '.png', '.webp'];
-    const images = [];
+    const validImages = [];
     
-    imageTypes.forEach(imageType => {
-      // Essayer d'abord l'image _01 (numérotation)
-      for (const ext of extensions) {
+    // Pour chaque type, chercher la première image disponible (_01)
+    for (const imageType of imageTypes) {
+      for (const ext of imageType.extensions) {
         const imagePath = `/images/${plante.id}/${plante.id}_${imageType.type}_01${ext}`;
-        images.push({
-          src: imagePath,
-          legend: imageType.legend,
-          alt: `${plante.name} - ${imageType.legend}`
-        });
-        break; // On prend la première extension pour chaque type
+        
+        try {
+          const response = await fetch(imagePath, { method: 'HEAD' });
+          const contentType = response.headers.get('content-type');
+          if (response.ok && contentType && contentType.startsWith('image/')) {
+            validImages.push({
+              src: imagePath,
+              legend: imageType.legend,
+              alt: `${plante.name} - ${imageType.legend}`
+            });
+            break; // Image trouvée, passer au type suivant
+          }
+        } catch (err) {
+          // Image n'existe pas, essayer l'extension suivante
+        }
       }
-    });
+    }
     
-    return images;
+    return validImages.length > 0 ? validImages : [{ 
+      src: '/images/placeholder.jpg', 
+      legend: 'Aucune image', 
+      alt: 'Aucune image disponible' 
+    }];
+  };
+
+  const getPlantImages = (plante) => {
+    return plantImages[plante.id] || [];
   };
 
   const criteres = [
@@ -207,25 +247,12 @@ function Comparateur({ plantes }) {
                       >
                         <FaChevronLeft />
                       </button>
-                      <img 
-                        src={images[currentIndex].src}
-                        alt={images[currentIndex].alt}
-                        className="comparison-image"
-                        onError={(e) => {
-                          // Essayer d'autres extensions si l'image ne charge pas
-                          const currentSrc = e.target.src;
-                          const extensions = ['.jpg', '.jpeg', '.png', '.webp'];
-                          const basePath = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
-                          
-                          // Trouver l'extension actuelle
-                          const currentExt = currentSrc.substring(currentSrc.lastIndexOf('.'));
-                          const currentExtIndex = extensions.indexOf(currentExt);
-                          
-                          // Essayer l'extension suivante
-                          if (currentExtIndex >= 0 && currentExtIndex < extensions.length - 1) {
-                            e.target.src = basePath + extensions[currentExtIndex + 1];
-                          } else {
-                            // Si toutes les extensions ont échoué, afficher un placeholder
+                      {images.length > 0 ? (
+                        <img 
+                          src={images[currentIndex].src}
+                          alt={images[currentIndex].alt}
+                          className="comparison-image"
+                          onError={(e) => {
                             e.target.onerror = null;
                             e.target.style.display = 'none';
                             e.target.parentElement.innerHTML = `
@@ -233,9 +260,13 @@ function Comparateur({ plantes }) {
                                 📷<br/>Image non disponible
                               </div>
                             `;
-                          }
-                        }}
-                      />
+                          }}
+                        />
+                      ) : (
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: rgba(0,0,0,0.05); color: var(--text-secondary); font-size: 0.9rem; padding: 1rem; text-align: center;">
+                          📷<br/>Chargement...
+                        </div>
+                      )}
                       <button 
                         className="image-nav next"
                         onClick={() => changeImage(plante.id, 1)}
