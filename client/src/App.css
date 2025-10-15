@@ -37,7 +37,7 @@ body {
   display: flex;
   flex: 1;
   position: relative;
-  margin-top: 65px;
+  margin-top: 20px;
 }
 
 .content {
