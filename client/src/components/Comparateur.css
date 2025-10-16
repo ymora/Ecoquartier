@@ -779,18 +779,19 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 2rem;
+  padding: 0;
 }
 
 /* Wrapper tableau avec scroll horizontal */
 .comparateur-table-wrapper {
   background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 0;
+  padding: 0;
+  margin: 0 2rem;
   overflow-x: auto;
   overflow-y: visible;
   backdrop-filter: blur(5px);
-  max-width: 100%;
+  width: calc(100% - 4rem);
   position: relative;
 }
 
@@ -873,6 +874,7 @@
   text-align: center;
   position: relative;
   backdrop-filter: blur(5px);
+  padding: 1.5rem 2rem;
 }
 
 .comparison-header-cell h3 {
@@ -931,8 +933,7 @@
   position: sticky;
   left: 0;
   z-index: 10;
-  padding: 1rem;
-  padding-right: 1.5rem;
+  padding: 1.5rem 2rem;
   border-right: 2px solid rgba(46, 139, 87, 0.4);
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
 }
@@ -994,6 +995,7 @@
   background: rgba(255, 255, 255, 0.9);
   color: var(--text-primary);
   backdrop-filter: blur(5px);
+  padding: 1.5rem 2rem;
 }
 
 .comparison-cell.danger {
