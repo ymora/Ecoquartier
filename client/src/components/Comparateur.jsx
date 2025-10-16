@@ -229,13 +229,6 @@ function Comparateur({ plantes }) {
 
   return (
     <div className="comparateur">
-      {selectedPlantes.length === 0 && (
-        <div className="comparateur-intro">
-          <h2>Sélectionnez des plantes à comparer</h2>
-          <p>Cliquez sur les plantes ci-dessous pour les ajouter à la comparaison (sans limite)</p>
-        </div>
-      )}
-
       <div className="comparateur-selector">
         <div className="selector-grid">
           {plantes.map(plante => (
