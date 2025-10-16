@@ -16,7 +16,14 @@
     "fusain_fleurs_06.jpg",
     "fusain_vue_generale_01.jpg"
   ],
-  "noisetier": [],
+  "noisetier": [
+    "noisetier_feuilles_01.jpg",
+    "noisetier_fruits_01.jpg",
+    "noisetier_fruits_02.jpg",
+    "noisetier_tronc_01.jpg",
+    "noisetier_vue_generale_01.jpg",
+    "noisetier_vue_generale_02.jpg"
+  ],
   "osmanthe": [
     "osmanthe_feuilles_01.jpg",
     "osmanthe_fleurs_01.jpg",
@@ -61,5 +68,12 @@
     "seringat_vue_generale_02.jpg",
     "seringat_vue_generale_03.jpg"
   ],
-  "troene": []
+  "troene": [
+    "troene_feuilles_01.jpg",
+    "troene_fleurs_01.jpg",
+    "troene_fleurs_02.jpg",
+    "troene_fleurs_03.jpg",
+    "troene_fruits_01.jpg",
+    "troene_vue_generale_01.jpg"
+  ]
 }
