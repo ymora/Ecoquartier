@@ -758,6 +758,7 @@ function Comparateur({ plantes }) {
             )}
           </div>
         </div>
+          </div>
       )}
 
       {selectedPlantes.length === 0 && (
