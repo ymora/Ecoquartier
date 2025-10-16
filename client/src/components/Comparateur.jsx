@@ -16,11 +16,9 @@ function Comparateur({ plantes }) {
       // Retirer si déjà sélectionné
       setSelectedPlantes(selectedPlantes.filter(p => p.id !== plante.id));
     } else {
-      // Ajouter si moins de 3
-      if (selectedPlantes.length < 3) {
-        setSelectedPlantes([...selectedPlantes, plante]);
-        setImageIndices({ ...imageIndices, [plante.id]: 0 });
-      }
+      // Ajouter sans limite
+      setSelectedPlantes([...selectedPlantes, plante]);
+      setImageIndices({ ...imageIndices, [plante.id]: 0 });
     }
   };
 
@@ -227,20 +225,19 @@ function Comparateur({ plantes }) {
 
       {selectedPlantes.length === 0 && (
         <div className="comparateur-intro">
-          <h2>Sélectionnez 2 ou 3 plantes à comparer</h2>
-          <p>Cliquez sur les plantes ci-dessous pour les ajouter à la comparaison</p>
+          <h2>Sélectionnez des plantes à comparer</h2>
+          <p>Cliquez sur les plantes ci-dessous pour les ajouter à la comparaison (sans limite)</p>
         </div>
       )}
 
       <div className="comparateur-selector">
-        <h3>Plantes disponibles ({selectedPlantes.length}/3 sélectionnées)</h3>
+        <h3>Plantes disponibles ({selectedPlantes.length} sélectionnée{selectedPlantes.length > 1 ? 's' : ''})</h3>
         <div className="selector-grid">
           {plantes.map(plante => (
             <button
               key={plante.id}
               className={`selector-item ${selectedPlantes.find(p => p.id === plante.id) ? 'selected' : ''}`}
               onClick={() => togglePlante(plante)}
-              disabled={selectedPlantes.length >= 3 && !selectedPlantes.find(p => p.id === plante.id)}
             >
               <span className="selector-type">{plante.type === 'arbre' ? '🌳' : '🌿'}</span>
               <span className="selector-name">{plante.name}</span>
