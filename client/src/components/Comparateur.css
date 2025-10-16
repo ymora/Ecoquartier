@@ -689,20 +689,16 @@
 
 /* Sélecteur de plantes */
 .comparateur-selector {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 1000;
   background: url('/images/header-background.png') bottom center / cover no-repeat, var(--bg-green-transparent);
   background-blend-mode: overlay;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   padding: 1.5rem 2rem;
-  margin-left: -2rem;
-  margin-right: -2rem;
-  margin-bottom: 2rem;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   border-bottom: 3px solid var(--accent-primary);
+  flex-shrink: 0;
 }
 
 .selector-categories {
