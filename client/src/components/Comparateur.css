@@ -839,8 +839,8 @@
 }
 
 .comparison-table {
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
 }
@@ -869,7 +869,6 @@
   background: var(--bg-green-transparent);
   text-align: center;
   position: relative;
-  min-width: 250px;
   backdrop-filter: blur(5px);
 }
 
@@ -926,8 +925,6 @@
   font-weight: 600;
   color: var(--text-primary);
   width: 200px;
-  min-width: 200px;
-  max-width: 200px;
   position: sticky;
   left: 0;
   z-index: 10;
@@ -993,7 +990,6 @@
 .comparison-cell {
   background: rgba(255, 255, 255, 0.9);
   color: var(--text-primary);
-  min-width: 250px;
   backdrop-filter: blur(5px);
 }
 
