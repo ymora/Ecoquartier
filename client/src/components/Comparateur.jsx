@@ -573,11 +573,7 @@ function Comparateur({ plantes }) {
                 <strong>Animaux</strong>
               </td>
               {selectedPlantes.map(plante => (
-                <td key={plante.id} className={`comparison-cell ${
-                  informationsComplementaires[plante.id]?.animaux.chiens?.includes('Toxique') ? 'danger' : 
-                  informationsComplementaires[plante.id]?.animaux.chats?.includes('Toxique') ? 'danger' : 
-                  'safe'
-                }`}>
+                <td key={plante.id} className="comparison-cell">
                   {informationsComplementaires[plante.id] ? (
                     <>
                       <p className="small-text"><strong>Chiens :</strong> {informationsComplementaires[plante.id].animaux.chiens}</p>
