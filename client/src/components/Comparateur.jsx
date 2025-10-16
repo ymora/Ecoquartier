@@ -294,40 +294,42 @@ function Comparateur({ plantes }) {
             {visibleCriteres['images'] && (
             <div className="comparison-row image-row">
               <div className="comparison-label-cell image-label-cell">
-                <div className="label-row">
-                  <button 
-                    className="toggle-critere-btn"
-                    onClick={() => toggleCritere('images')}
-                    aria-label="Masquer les photos"
-                    title="Masquer"
+                <div className="label-content">
+                  <div className="label-row">
+                    <button 
+                      className="toggle-critere-btn"
+                      onClick={() => toggleCritere('images')}
+                      aria-label="Masquer les photos"
+                      title="Masquer"
+                    >
+                      <FaEyeSlash />
+                    </button>
+                    <span className="critere-icon">📷</span>
+                    <strong>Photos</strong>
+                  </div>
+                  <select 
+                    className="type-image-filter"
+                    value={selectedImageType}
+                    onChange={(e) => {
+                      setSelectedImageType(e.target.value);
+                      // Réinitialiser les indices d'images
+                      const newIndices = {};
+                      selectedPlantes.forEach(p => newIndices[p.id] = 0);
+                      setImageIndices(newIndices);
+                    }}
+                    title="Filtrer par type d'image"
                   >
-                    <FaEyeSlash />
-                  </button>
-                  <span className="critere-icon">📷</span>
-                  <strong>Photos</strong>
+                    <option value="tous">Tous types</option>
+                    <option value="vue_generale">Vue générale</option>
+                    <option value="bourgeons">Bourgeons</option>
+                    <option value="fleurs">Fleurs</option>
+                    <option value="feuilles">Feuilles</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="tronc">Tronc/Écorce</option>
+                    <option value="automne">Automne</option>
+                    <option value="hiver">Hiver</option>
+                  </select>
                 </div>
-                <select 
-                  className="type-image-filter"
-                  value={selectedImageType}
-                  onChange={(e) => {
-                    setSelectedImageType(e.target.value);
-                    // Réinitialiser les indices d'images
-                    const newIndices = {};
-                    selectedPlantes.forEach(p => newIndices[p.id] = 0);
-                    setImageIndices(newIndices);
-                  }}
-                  title="Filtrer par type d'image"
-                >
-                  <option value="tous">Tous types</option>
-                  <option value="vue_generale">Vue générale</option>
-                  <option value="bourgeons">Bourgeons</option>
-                  <option value="fleurs">Fleurs</option>
-                  <option value="feuilles">Feuilles</option>
-                  <option value="fruits">Fruits</option>
-                  <option value="tronc">Tronc/Écorce</option>
-                  <option value="automne">Automne</option>
-                  <option value="hiver">Hiver</option>
-                </select>
               </div>
               {selectedPlantes.map(plante => {
                 const images = getPlantImages(plante);
