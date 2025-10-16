@@ -852,6 +852,7 @@
 
 .comparison-table tr {
   background: transparent;
+  height: 1px;
 }
 
 .comparison-label-cell,
@@ -862,6 +863,8 @@
   border-top: 1px solid var(--border-color);
   vertical-align: middle;
   text-align: left;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 /* En-tête des colonnes */
