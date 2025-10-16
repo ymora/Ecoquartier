@@ -159,19 +159,6 @@
   text-overflow: ellipsis;
 }
 
-.selector-item:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.selector-type {
-  font-size: 1.5rem;
-}
-
-.selector-name {
-  font-weight: 600;
-  color: var(--text-primary);
-}
 
 /* Tableau de comparaison */
 .comparateur-table {
