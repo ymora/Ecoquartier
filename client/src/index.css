@@ -7,14 +7,29 @@
   box-sizing: border-box;
 }
 
-/* Masquer toutes les scrollbars tout en gardant la fonctionnalité */
+/* Masquer les scrollbars VERTICALES uniquement */
 * {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE et Edge */
+  scrollbar-width: thin; /* Firefox: fine scrollbar */
+  scrollbar-color: transparent transparent; /* Firefox: invisible */
 }
 
+/* Masquer scrollbar verticale Chrome/Safari */
 *::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  width: 0px; /* Verticale invisible */
+  height: 8px; /* Horizontale visible (8px) */
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(46, 139, 87, 0.5);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(46, 139, 87, 0.8);
 }
 
 html {
