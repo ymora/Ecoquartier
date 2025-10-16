@@ -264,7 +264,7 @@ function Comparateur({ plantes }) {
           <div className="comparison-grid">
             {/* En-tête avec noms */}
             <div className="comparison-header-row">
-              <div className="comparison-label-cell header-spacer">Critères</div>
+              <div className="comparison-label-cell header-spacer"></div>
               {selectedPlantes.map(plante => (
                 <div key={plante.id} className="comparison-header-cell">
                   <button 
