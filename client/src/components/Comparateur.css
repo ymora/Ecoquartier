@@ -794,6 +794,21 @@
   position: relative;
 }
 
+/* Fond opaque continu derrière colonne critères - DEFINITIF */
+.comparateur-table::before {
+  content: '';
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  bottom: 1.5rem;
+  width: 200px;
+  background: rgb(240, 247, 242);
+  z-index: 1;
+  pointer-events: none;
+  border-right: 2px solid rgba(46, 139, 87, 0.4);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+}
+
 /* Scrollbar horizontale VISIBLE pour le tableau */
 .comparateur-table::-webkit-scrollbar {
   height: 12px !important; /* Force hauteur scrollbar horizontale */
@@ -844,22 +859,6 @@
   min-width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-  position: relative;
-}
-
-/* Fond opaque continu derrière colonne critères */
-.comparison-grid::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 200px;
-  background: rgb(240, 247, 242);
-  z-index: 99;
-  pointer-events: none;
-  border-right: 2px solid rgba(46, 139, 87, 0.4);
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
 }
 
 .comparison-header-row,
@@ -950,8 +949,8 @@
   min-width: 200px;
   width: 200px;
   position: sticky;
-  left: 0;
-  z-index: 100;
+  left: 1.5rem;
+  z-index: 10;
   display: table-cell;
   align-items: center;
   gap: 0.5rem;
