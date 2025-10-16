@@ -272,17 +272,19 @@ function Comparateur({ plantes }) {
             {/* Images comparatives */}
             {visibleCriteres['images'] && (
             <div className="comparison-row image-row">
-              <div className="comparison-label-cell">
-                <button 
-                  className="toggle-critere-btn"
-                  onClick={() => toggleCritere('images')}
-                  aria-label="Masquer les photos"
-                  title="Masquer"
-                >
-                  <FaEyeSlash />
-                </button>
-                <span className="critere-icon">📷</span>
-                <strong>Photos</strong>
+              <div className="comparison-label-cell image-label-cell">
+                <div className="label-row">
+                  <button 
+                    className="toggle-critere-btn"
+                    onClick={() => toggleCritere('images')}
+                    aria-label="Masquer les photos"
+                    title="Masquer"
+                  >
+                    <FaEyeSlash />
+                  </button>
+                  <span className="critere-icon">📷</span>
+                  <strong>Photos</strong>
+                </div>
                 <select 
                   className="type-image-filter"
                   value={selectedImageType}
