@@ -377,11 +377,11 @@ function ArbusteDetail({ arbuste, menuOpen }) {
               </div>
             </div>
 
-            {/* INTERDICTION LÉGALE TAILLE */}
+            {/* RÉGLEMENTATION TAILLE */}
             <div className="section alert warning">
               <h2>
-                ⚖️ INTERDICTION LÉGALE DE TAILLE
-                <FiabiliteBadge niveau="haute" info="Code Rural + BCAE (PAC) - Loi vérifiée (LPO France, 2025)" />
+                ⚖️ RÉGLEMENTATION TAILLE (Agriculteurs & Particuliers)
+                <FiabiliteBadge niveau="haute" info="Code Rural (agriculteurs) + Recommandations LPO (particuliers)" />
               </h2>
               <div className="detail-box">
                 <p className="warning-large">

@@ -190,7 +190,7 @@ function Comparateur({ plantes }) {
     { id: 'animaux', label: 'Animaux', icon: '🐾', defaultVisible: true },
     { id: 'racines', label: 'Racines', icon: '🌱', defaultVisible: true },
     { id: 'distanceVoisin', label: 'Distance Voisinage', icon: '⚖️', defaultVisible: true },
-    { id: 'interdiction', label: 'Interdiction Taille', icon: '🔴', defaultVisible: true },
+    { id: 'interdiction', label: 'Réglementation Taille', icon: '🔴', defaultVisible: true },
     { id: 'dangersTaille', label: 'Dangers Taille', icon: '⚠️', defaultVisible: false },
     { id: 'fondations', label: 'Distance Fondations', icon: '🏗️', defaultVisible: false },
     { id: 'canalisations', label: 'Distance Canalisations', icon: '🚰', defaultVisible: false }
@@ -642,15 +642,15 @@ function Comparateur({ plantes }) {
                   <FaEyeSlash />
                 </button>
                 <span className="critere-icon">🔴</span>
-                <strong>Interdiction Taille</strong>
+                <strong>Réglementation Taille</strong>
                 <FiabiliteBadge niveau="haute" />
               </div>
               {selectedPlantes.map(plante => (
                 <div key={plante.id} className="comparison-cell danger">
                   {informationsComplementaires[plante.id] ? (
                     <>
-                      <p className="small-text"><strong>16 mars - 15 août</strong></p>
-                      <p className="small-text">Amende : 3 750€</p>
+                      <p className="small-text"><strong>Agriculteurs</strong> : Interdiction 16 mars - 15 août (arrêté préfectoral)</p>
+                      <p className="small-text"><strong>Particuliers</strong> : Recommandation LPO (printemps - août)</p>
                     </>
                   ) : 'N/A'}
                 </div>

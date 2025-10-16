@@ -32,10 +32,10 @@ export const informationsComplementaires = {
         conseil: 'Minimiser la taille. Laisser port naturel. Un cerisier bien placé ne nécessite quasi aucune taille.'
       },
       reglementationTaille: {
-        loi: '⚠️ INTERDICTION LÉGALE de tailler 16 mars - 15 août',
-        raison: 'Protection nidification oiseaux (Code Rural)',
-        sanction: 'Réduction 3% aides PAC (agriculteurs) + amende possible',
-        exception: 'Travaux urgents sécurité avec autorisation préfet',
+        loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août, arrêté préfectoral). PARTICULIERS : Recommandation forte LPO (début printemps - fin août)',
+        raison: 'Protection nidification oiseaux nicheurs',
+        sanction: 'Agriculteurs : Réduction 3% aides PAC + amende. Particuliers : Responsabilité civile si dégâts',
+        exception: 'Travaux urgents de sécurité avec autorisation préfet (tous)',
         application: 'S\'applique aux haies ET arbres isolés en zone rurale/périurbaine'
       }
     },

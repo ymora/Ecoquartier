@@ -106,8 +106,10 @@ function Disclaimer({ onClose }) {
               <strong>Contactez la mairie (01 30 40 44 47)</strong> avant toute plantation.
             </li>
             <li>
-              <strong>Interdiction de taille</strong> : Protection des oiseaux nicheurs.  
-              <strong>Période générale : 15 mars - 31 juillet</strong> (variable selon département, vérifiez l'arrêté préfectoral Val d'Oise).
+              <strong>Taille des haies et élagage</strong> : Pour protéger les oiseaux nicheurs.  
+              <strong>Agriculteurs</strong> : Interdiction légale (arrêté préfectoral, généralement 15 mars - 31 juillet, variable selon département).  
+              <strong>Particuliers</strong> : Recommandation forte de la LPO (début printemps - fin août).  
+              Consultez l'arrêté préfectoral du Val d'Oise pour les dates exactes.
             </li>
             <li>
               <strong>Variations locales</strong> : Toutes les données botaniques (taille, floraison, rusticité, système racinaire) 
