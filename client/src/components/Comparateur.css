@@ -861,8 +861,8 @@
   border-right: 1px solid rgba(46, 139, 87, 0.15);
   display: flex;
   align-items: center;
-  min-height: 60px;
   border-top: 1px solid var(--border-color);
+  align-self: stretch;
 }
 
 /* En-tête des colonnes */
@@ -943,6 +943,8 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+  align-self: stretch;
+  min-height: 0;
 }
 
 .comparison-label-cell.image-label-cell {
