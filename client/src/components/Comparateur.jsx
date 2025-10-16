@@ -571,19 +571,17 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">🐾</span>
                 <strong>Animaux</strong>
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className={`comparison-cell ${
-                  informationsComplementaires[plante.id]?.animauxDomestiques.chiens?.includes('🔴') ? 'danger' : 
-                  informationsComplementaires[plante.id]?.animauxDomestiques.chiens?.includes('⚠️') ? 'warning' : 'safe'
+                <td key={plante.id} className={`comparison-cell ${
+                  informationsComplementaires[plante.id]?.animaux.chiens?.includes('Toxique') ? 'danger' : 
+                  informationsComplementaires[plante.id]?.animaux.chats?.includes('Toxique') ? 'danger' : 
+                  'safe'
                 }`}>
                   {informationsComplementaires[plante.id] ? (
                     <>
-                      <p className="small-text"><strong>🐕</strong> {informationsComplementaires[plante.id].animauxDomestiques.chiens}</p>
-                      <p className="small-text"><strong>🐈</strong> {informationsComplementaires[plante.id].animauxDomestiques.chats}</p>
-                      {informationsComplementaires[plante.id].animauxDomestiques.chevaux && (
-                        <p className="small-text"><strong>🐴</strong> {informationsComplementaires[plante.id].animauxDomestiques.chevaux}</p>
-                      )}
+                      <p className="small-text"><strong>Chiens :</strong> {informationsComplementaires[plante.id].animaux.chiens}</p>
+                      <p className="small-text"><strong>Chats :</strong> {informationsComplementaires[plante.id].animaux.chats}</p>
                     </>
                   ) : 'N/A'}
                 </td>
