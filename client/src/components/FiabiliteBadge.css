@@ -9,6 +9,13 @@
   border: 1px solid;
 }
 
+.fiabilite-badge.compact {
+  padding: 0.15rem 0.3rem;
+  font-size: 0.9rem;
+  margin-left: 0.25rem;
+  border-radius: 8px;
+}
+
 .fiabilite-badge.success {
   background: rgba(240, 247, 242, 0.9);
   border-color: var(--success);

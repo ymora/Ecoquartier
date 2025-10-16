@@ -384,7 +384,7 @@ function Comparateur({ plantes }) {
                     </button>
                     <span className="critere-icon">{critere.icon}</span>
                     <strong>{critere.label}</strong>
-                    {critere.fiabilite && <FiabiliteBadge niveau={critere.fiabilite} />}
+                    {critere.fiabilite && <FiabiliteBadge niveau={critere.fiabilite} compact />}
                   </div>
                   {selectedPlantes.map(plante => (
                     <div key={plante.id} className="comparison-cell">
@@ -575,7 +575,7 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">🌱</span>
                 <strong>Racines</strong>
-                <FiabiliteBadge niveau="moyenne" />
+                <FiabiliteBadge niveau="moyenne" compact />
               </div>
               {selectedPlantes.map(plante => (
                 <div key={plante.id} className="comparison-cell">
@@ -605,7 +605,7 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">⚖️</span>
                 <strong>Distance Légale Voisinage</strong>
-                <FiabiliteBadge niveau="haute" />
+                <FiabiliteBadge niveau="haute" compact />
               </div>
               {selectedPlantes.map(plante => (
                 <div key={plante.id} className="comparison-cell warning">
@@ -634,7 +634,7 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">🔴</span>
                 <strong>Réglementation Taille</strong>
-                <FiabiliteBadge niveau="haute" />
+                <FiabiliteBadge niveau="haute" compact />
               </div>
               {selectedPlantes.map(plante => (
                 <div key={plante.id} className="comparison-cell danger">
@@ -691,7 +691,7 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">🏗️</span>
                 <strong>Distance Fondations</strong>
-                <FiabiliteBadge niveau="moyenne" />
+                <FiabiliteBadge niveau="moyenne" compact />
               </div>
               {selectedPlantes.map(plante => (
                 <div key={plante.id} className="comparison-cell">
@@ -717,7 +717,7 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">🚰</span>
                 <strong>Distance Canalisations</strong>
-                <FiabiliteBadge niveau="moyenne" />
+                <FiabiliteBadge niveau="moyenne" compact />
               </div>
               {selectedPlantes.map(plante => (
                 <div key={plante.id} className="comparison-cell">

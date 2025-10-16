@@ -1,6 +1,6 @@
 import './FiabiliteBadge.css';
 
-function FiabiliteBadge({ niveau, info }) {
+function FiabiliteBadge({ niveau, info, compact }) {
   const configs = {
     haute: {
       icon: '✅',
@@ -25,8 +25,8 @@ function FiabiliteBadge({ niveau, info }) {
   const config = configs[niveau] || configs.moyenne;
 
   return (
-    <span className={`fiabilite-badge ${config.color}`} title={info || config.tooltip}>
-      {config.icon} {config.label}
+    <span className={`fiabilite-badge ${config.color} ${compact ? 'compact' : ''}`} title={info || config.tooltip}>
+      {compact ? config.icon : `${config.icon} ${config.label}`}
     </span>
   );
 }
