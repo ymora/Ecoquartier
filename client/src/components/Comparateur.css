@@ -610,9 +610,10 @@
 
 
 .comparateur {
-  min-height: 100vh;
-  padding: 2rem;
-  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
   position: relative;
 }
 
@@ -777,13 +778,21 @@
 }
 
 
+/* Conteneur scrollable du tableau */
+.comparateur-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2rem;
+}
+
 /* Tableau de comparaison */
 .comparateur-table {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   padding: 1.5rem;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   backdrop-filter: blur(5px);
   max-width: 100%;
   position: relative;
@@ -1156,19 +1165,24 @@
   padding: 3rem;
   color: var(--text-secondary);
   font-size: 1.1rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .comparateur {
+    height: 100vh;
+  }
+
+  .comparateur-content {
     padding: 0.5rem;
-    padding-top: 0;
   }
 
   .comparateur-selector {
     padding: 1rem;
-    margin-left: -0.5rem;
-    margin-right: -0.5rem;
   }
 
   .selector-categories {
@@ -1246,14 +1260,12 @@
 
 /* Très petits mobiles */
 @media (max-width: 480px) {
-  .comparateur {
+  .comparateur-content {
     padding: 0.25rem;
   }
 
   .comparateur-selector {
     padding: 0.75rem 0.5rem;
-    margin-left: -0.25rem;
-    margin-right: -0.25rem;
   }
 
   .selector-categories {

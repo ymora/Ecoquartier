@@ -266,8 +266,9 @@ function Comparateur({ plantes }) {
       </div>
 
       {selectedPlantes.length > 0 && (
-        <div className="comparateur-table">
-          <div className="comparison-grid">
+        <div className="comparateur-content">
+          <div className="comparateur-table">
+            <div className="comparison-grid">
             {/* En-tête avec noms */}
             <div className="comparison-header-row">
               <div className="comparison-label-cell header-spacer">
@@ -760,8 +761,10 @@ function Comparateur({ plantes }) {
       )}
 
       {selectedPlantes.length === 0 && (
-        <div className="comparateur-empty">
-          <p>👆 Sélectionnez au moins 2 plantes pour commencer la comparaison</p>
+        <div className="comparateur-content">
+          <div className="comparateur-empty">
+            <p>👆 Sélectionnez au moins 2 plantes pour commencer la comparaison</p>
+          </div>
         </div>
       )}
 
