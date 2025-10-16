@@ -267,34 +267,36 @@ function Comparateur({ plantes }) {
 
       {selectedPlantes.length > 0 && (
         <div className="comparateur-content">
-          <div className="comparateur-table">
-            <div className="comparison-grid" style={{ '--nb-plantes': selectedPlantes.length }}>
-            {/* En-tête avec noms */}
-            <div className="comparison-header-row">
-              <div className="comparison-label-cell header-spacer">
-                <button onClick={() => toggleAll(true)} className="btn-show-all-table">
-                  <FaEye /> Tout afficher
-                </button>
-              </div>
-              {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-header-cell">
-                  <button 
-                    className="remove-plante"
-                    onClick={() => togglePlante(plante)}
-                    aria-label="Retirer"
-                  >
-                    <FaTimes />
-                  </button>
-                  <h3>{plante.name}</h3>
-                  <p className="scientific">{plante.nomScientifique}</p>
-                </div>
-              ))}
-            </div>
+          <div className="comparateur-table-wrapper">
+            <table className="comparison-table">
+              <thead>
+                <tr className="comparison-header-row">
+                  <th className="comparison-label-cell header-spacer">
+                    <button onClick={() => toggleAll(true)} className="btn-show-all-table">
+                      <FaEye /> Tout afficher
+                    </button>
+                  </th>
+                  {selectedPlantes.map(plante => (
+                    <th key={plante.id} className="comparison-header-cell">
+                      <button 
+                        className="remove-plante"
+                        onClick={() => togglePlante(plante)}
+                        aria-label="Retirer"
+                      >
+                        <FaTimes />
+                      </button>
+                      <h3>{plante.name}</h3>
+                      <p className="scientific">{plante.nomScientifique}</p>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
 
             {/* Images comparatives */}
             {visibleCriteres['images'] && (
-            <div className="comparison-row image-row">
-              <div className="comparison-label-cell image-label-cell">
+            <tr className="comparison-row image-row">
+              <td className="comparison-label-cell image-label-cell">
                 <div className="label-content">
                   <div className="label-row">
                     <button 
@@ -331,12 +333,12 @@ function Comparateur({ plantes }) {
                     <option value="hiver">Hiver</option>
                   </select>
                 </div>
-              </div>
+              </td>
               {selectedPlantes.map(plante => {
                 const images = getPlantImages(plante);
                 const currentIndex = imageIndices[plante.id] || 0;
                 return (
-                  <div key={plante.id} className="comparison-cell image-cell">
+                  <td key={plante.id} className="comparison-cell image-cell">
                     <div className="comparison-image-container">
                       {images.length > 0 && (
                         <button 
@@ -391,17 +393,17 @@ function Comparateur({ plantes }) {
                         </button>
                       )}
                     </div>
-                  </div>
+                  </td>
                 );
               })}
-            </div>
+            </tr>
             )}
 
             {/* Lignes de critères */}
             {criteres.map(critere => (
               visibleCriteres[critere.id] && (
-                <div key={critere.key} className="comparison-row">
-                  <div className="comparison-label-cell">
+                <tr key={critere.key} className="comparison-row">
+                  <td className="comparison-label-cell">
                     <button 
                       className="toggle-critere-btn"
                       onClick={() => toggleCritere(critere.id)}
@@ -413,20 +415,20 @@ function Comparateur({ plantes }) {
                     <span className="critere-icon">{critere.icon}</span>
                     <strong>{critere.label}</strong>
                     {critere.fiabilite && <FiabiliteBadge niveau={critere.fiabilite} compact />}
-                  </div>
+                  </td>
                   {selectedPlantes.map(plante => (
-                    <div key={plante.id} className="comparison-cell">
+                    <td key={plante.id} className="comparison-cell">
                       {getValue(plante, critere.key)}
-                    </div>
+                    </td>
                   ))}
-                </div>
+                </tr>
               )
             ))}
 
             {/* Toxicité */}
             {visibleCriteres['toxicite'] && (
-            <div className="comparison-row alert-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row alert-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('toxicite')}
@@ -437,9 +439,9 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">⚠️</span>
                 <strong>Toxicité</strong>
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div 
+                <td 
                   key={plante.id} 
                   className={`comparison-cell ${plante.toxicite?.niveau?.includes('TOXIQUE') ? 'danger' : 'safe'}`}
                 >
@@ -447,15 +449,15 @@ function Comparateur({ plantes }) {
                   {plante.toxicite?.danger && (
                     <p className="small-text">{plante.toxicite.danger}</p>
                   )}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* Biodiversité */}
             {visibleCriteres['biodiversite'] && (
-            <div className="comparison-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('biodiversite')}
@@ -466,19 +468,19 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">🦋</span>
                 <strong>Biodiversité</strong>
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell">
+                <td key={plante.id} className="comparison-cell">
                   <p className="small-text">{plante.biodiveriste?.faune}</p>
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* Utilisations */}
             {visibleCriteres['utilisations'] && (
-            <div className="comparison-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('utilisations')}
@@ -489,23 +491,23 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">💡</span>
                 <strong>Utilisations</strong>
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell">
+                <td key={plante.id} className="comparison-cell">
                   <ul className="compact-list">
                     {plante.utilisations?.slice(0, 3).map((util, idx) => (
                       <li key={idx}>{util}</li>
                     ))}
                   </ul>
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Pollinisation */}
             {visibleCriteres['pollinisation'] && (
-            <div className="comparison-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('pollinisation')}
@@ -516,24 +518,24 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">🐝</span>
                 <strong>Pollinisation</strong>
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell">
+                <td key={plante.id} className="comparison-cell">
                   {informationsComplementaires[plante.id] ? (
                     <>
                       <p className="small-text"><strong>Mode :</strong> {informationsComplementaires[plante.id].pollinisation.type}</p>
                       <p className="small-text highlight-compact">{informationsComplementaires[plante.id].pollinisation.besoin}</p>
                     </>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Allergies */}
             {visibleCriteres['allergies'] && (
-            <div className="comparison-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('allergies')}
@@ -544,21 +546,21 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">🤧</span>
                 <strong>Allergies</strong>
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell">
+                <td key={plante.id} className="comparison-cell">
                   {informationsComplementaires[plante.id] ? (
                     <p className="small-text">{informationsComplementaires[plante.id].allergies.pollen}</p>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Animaux Domestiques */}
             {visibleCriteres['animaux'] && (
-            <div className="comparison-row alert-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row alert-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('animaux')}
@@ -584,15 +586,15 @@ function Comparateur({ plantes }) {
                       )}
                     </>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Système Racinaire */}
             {visibleCriteres['racines'] && (
-            <div className="comparison-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('racines')}
@@ -604,9 +606,9 @@ function Comparateur({ plantes }) {
                 <span className="critere-icon">🌱</span>
                 <strong>Racines</strong>
                 <FiabiliteBadge niveau="moyenne" compact />
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell">
+                <td key={plante.id} className="comparison-cell">
                   {reglementationData[plante.id] ? (
                     <>
                       <p className="small-text"><strong>Structure :</strong> {reglementationData[plante.id].systemeRacinaire.type}</p>
@@ -614,15 +616,15 @@ function Comparateur({ plantes }) {
                       <p className="small-text"><strong>Agressivité :</strong> {reglementationData[plante.id].systemeRacinaire.agressivite}</p>
                     </>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Distance Voisinage */}
             {visibleCriteres['distanceVoisin'] && (
-            <div className="comparison-row alert-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row alert-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('distanceVoisin')}
@@ -643,15 +645,15 @@ function Comparateur({ plantes }) {
                       <p className="small-text">{reglementationData[plante.id].distancesLegales.voisinage.justification}</p>
                     </>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Interdiction Taille */}
             {visibleCriteres['interdiction'] && (
-            <div className="comparison-row alert-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row alert-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('interdiction')}
@@ -672,15 +674,15 @@ function Comparateur({ plantes }) {
                       <p className="small-text"><strong>Particuliers</strong> : Recommandation LPO (printemps - août)</p>
                     </>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Dangers Taille */}
             {visibleCriteres['dangersTaille'] && (
-            <div className="comparison-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('dangersTaille')}
@@ -691,24 +693,24 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">⚠️</span>
                 <strong>Dangers Taille</strong>
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell">
+                <td key={plante.id} className="comparison-cell">
                   {informationsComplementaires[plante.id] ? (
                     <>
                       <p className="small-text"><strong>{informationsComplementaires[plante.id].dangersEtPrecautions.taille.danger}</strong></p>
                       <p className="small-text success-compact">✅ {informationsComplementaires[plante.id].dangersEtPrecautions.taille.periodeSecuritaire}</p>
                     </>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Distance Fondations */}
             {visibleCriteres['fondations'] && (
-            <div className="comparison-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('fondations')}
@@ -720,21 +722,21 @@ function Comparateur({ plantes }) {
                 <span className="critere-icon">🏗️</span>
                 <strong>Distance Fondations</strong>
                 <FiabiliteBadge niveau="moyenne" compact />
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell">
+                <td key={plante.id} className="comparison-cell">
                   {reglementationData[plante.id] ? (
                     <p className="small-text warning-text"><strong>{reglementationData[plante.id].distancesLegales.infrastructures.fondations}</strong></p>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
 
             {/* NOUVEAU : Distance Canalisations */}
             {visibleCriteres['canalisations'] && (
-            <div className="comparison-row">
-              <div className="comparison-label-cell">
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
                 <button 
                   className="toggle-critere-btn"
                   onClick={() => toggleCritere('canalisations')}
@@ -746,19 +748,20 @@ function Comparateur({ plantes }) {
                 <span className="critere-icon">🚰</span>
                 <strong>Distance Canalisations</strong>
                 <FiabiliteBadge niveau="moyenne" compact />
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell">
+                <td key={plante.id} className="comparison-cell">
                   {reglementationData[plante.id] ? (
                     <p className="small-text warning-text"><strong>{reglementationData[plante.id].distancesLegales.infrastructures.canalisations}</strong></p>
                   ) : 'N/A'}
-                </div>
+                </td>
               ))}
-            </div>
+            </tr>
             )}
+              </tbody>
+            </table>
           </div>
         </div>
-          </div>
       )}
 
       {selectedPlantes.length === 0 && (
