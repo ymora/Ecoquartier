@@ -499,33 +499,36 @@
 /* Responsive */
 @media (max-width: 768px) {
   .comparateur {
-    padding: 0.75rem;
+    padding: 0.5rem;
+    padding-top: 0;
   }
 
-  .comparateur-intro {
-    padding: 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .comparateur-header h1 {
-    font-size: 1.3rem;
+  .comparateur-selector {
+    padding: 1rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
   }
 
   .selector-grid {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .selector-item {
     padding: 0.75rem;
+    font-size: 0.9rem;
   }
 
-  .selector-item h3 {
-    font-size: 0.95rem;
+  .selector-type {
+    font-size: 1.2rem;
   }
 
-  .comparison-grid {
-    font-size: 0.8rem;
+  .selector-name {
+    font-size: 0.9rem;
+  }
+
+  .comparateur-table {
+    padding: 0.75rem;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -571,31 +574,84 @@
 /* Très petits mobiles */
 @media (max-width: 480px) {
   .comparateur {
-    padding: 0.5rem;
+    padding: 0.25rem;
   }
 
-  .comparateur-header h1 {
-    font-size: 1.1rem;
+  .comparateur-selector {
+    padding: 0.75rem 0.5rem;
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
   }
 
-  .comparateur-intro {
+  .selector-grid {
+    gap: 0.4rem;
+  }
+
+  .selector-item {
+    padding: 0.6rem;
     font-size: 0.85rem;
   }
 
-  .comparison-label-cell,
+  .selector-type {
+    font-size: 1.1rem;
+  }
+
+  .selector-name {
+    font-size: 0.85rem;
+  }
+
+  .comparateur-table {
+    padding: 0.5rem;
+  }
+
+  .comparison-label-cell {
+    min-width: 120px;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .comparison-label-cell strong {
+    font-size: 0.75rem;
+  }
+
+  .type-image-filter {
+    font-size: 0.7rem;
+    max-width: 110px;
+  }
+
+  .btn-show-all-table {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+  }
+
   .comparison-header-cell,
   .comparison-cell {
-    padding: 0.5rem;
-    font-size: 0.75rem;
     min-width: 120px;
+    padding: 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .comparison-header-cell h3 {
+    font-size: 0.8rem;
+  }
+
+  .comparison-header-cell .scientific {
+    font-size: 0.65rem;
   }
 
   .comparison-image-container {
     height: 100px;
   }
 
-  .toggle-btn {
-    padding: 0.4rem 0.6rem;
+  .image-nav {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+  }
+
+  .remove-plante {
+    width: 20px;
+    height: 20px;
     font-size: 0.7rem;
   }
 }
