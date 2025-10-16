@@ -267,8 +267,7 @@ function Comparateur({ plantes }) {
 
       {selectedPlantes.length > 0 && (
         <div className="comparateur-content">
-          <div className="comparateur-table-wrapper">
-            <table className="comparison-table">
+          <table className="comparison-table">
               <thead>
                 <tr className="comparison-header-row">
                   <th className="comparison-label-cell header-spacer">
@@ -754,7 +753,6 @@ function Comparateur({ plantes }) {
             )}
               </tbody>
             </table>
-          </div>
         </div>
       )}
 
