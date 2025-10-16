@@ -231,9 +231,6 @@ function Comparateur({ plantes }) {
     <div className="comparateur">
       <div className="comparateur-header">
         <h1>🔍 Mode Comparaison</h1>
-        <button onClick={() => toggleAll(true)} className="btn-show-all">
-          <FaEye /> Tout afficher
-        </button>
       </div>
 
       {selectedPlantes.length === 0 && (
@@ -264,7 +261,11 @@ function Comparateur({ plantes }) {
           <div className="comparison-grid">
             {/* En-tête avec noms */}
             <div className="comparison-header-row">
-              <div className="comparison-label-cell header-spacer"></div>
+              <div className="comparison-label-cell header-spacer">
+                <button onClick={() => toggleAll(true)} className="btn-show-all-table">
+                  <FaEye /> Tout afficher
+                </button>
+              </div>
               {selectedPlantes.map(plante => (
                 <div key={plante.id} className="comparison-header-cell">
                   <button 
