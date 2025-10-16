@@ -10,6 +10,7 @@ function Comparateur({ plantes }) {
   const [imageIndices, setImageIndices] = useState({});
   const [visibleCriteres, setVisibleCriteres] = useState({});
   const [zoomedImage, setZoomedImage] = useState(null);
+  const [selectedImageType, setSelectedImageType] = useState('tous'); // Type d'image à afficher
 
   const togglePlante = (plante) => {
     if (selectedPlantes.find(p => p.id === plante.id)) {
@@ -145,7 +146,19 @@ function Comparateur({ plantes }) {
   };
 
   const getPlantImages = (plante) => {
-    return plantImages[plante.id] || [];
+    const allImages = plantImages[plante.id] || [];
+    
+    // Filtrer par type si un type spécifique est sélectionné
+    if (selectedImageType === 'tous') {
+      return allImages;
+    }
+    
+    // Filtrer les images par type
+    return allImages.filter(img => {
+      const match = img.src.match(/_([a-z_]+)_\d+\./i);
+      const imageType = match ? match[1] : '';
+      return imageType === selectedImageType;
+    });
   };
 
   const criteres = [
@@ -281,6 +294,28 @@ function Comparateur({ plantes }) {
                 </button>
                 <span className="critere-icon">📷</span>
                 <strong>Photos</strong>
+                <select 
+                  className="type-image-filter"
+                  value={selectedImageType}
+                  onChange={(e) => {
+                    setSelectedImageType(e.target.value);
+                    // Réinitialiser les indices d'images
+                    const newIndices = {};
+                    selectedPlantes.forEach(p => newIndices[p.id] = 0);
+                    setImageIndices(newIndices);
+                  }}
+                  title="Filtrer par type d'image"
+                >
+                  <option value="tous">Tous types</option>
+                  <option value="vue_generale">Vue générale</option>
+                  <option value="bourgeons">Bourgeons</option>
+                  <option value="fleurs">Fleurs</option>
+                  <option value="feuilles">Feuilles</option>
+                  <option value="fruits">Fruits</option>
+                  <option value="tronc">Tronc/Écorce</option>
+                  <option value="automne">Automne</option>
+                  <option value="hiver">Hiver</option>
+                </select>
               </div>
               {selectedPlantes.map(plante => {
                 const images = getPlantImages(plante);
