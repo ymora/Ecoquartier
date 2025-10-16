@@ -235,6 +235,7 @@
   display: table-cell;
   padding: 1rem;
   border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid rgba(46, 139, 87, 0.15);
   vertical-align: top;
 }
 
@@ -310,6 +311,7 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   padding: 1rem;
+  border-right: 1px solid rgba(46, 139, 87, 0.25);
 }
 
 .image-label-cell {
