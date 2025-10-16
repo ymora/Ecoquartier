@@ -634,9 +634,9 @@ function Comparateur({ plantes }) {
                 <span className="critere-icon">⚖️</span>
                 <strong>Distance Légale Voisinage</strong>
                 <FiabiliteBadge niveau="haute" compact />
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell warning">
+                <td key={plante.id} className="comparison-cell warning">
                   {reglementationData[plante.id] ? (
                     <>
                       <p className="small-text warning-text"><strong>{reglementationData[plante.id].distancesLegales.voisinage.distance}</strong></p>
@@ -663,9 +663,9 @@ function Comparateur({ plantes }) {
                 <span className="critere-icon">🔴</span>
                 <strong>Réglementation Taille</strong>
                 <FiabiliteBadge niveau="haute" compact />
-              </div>
+              </td>
               {selectedPlantes.map(plante => (
-                <div key={plante.id} className="comparison-cell danger">
+                <td key={plante.id} className="comparison-cell danger">
                   {informationsComplementaires[plante.id] ? (
                     <>
                       <p className="small-text"><strong>Agriculteurs</strong> : Interdiction 16 mars - 15 août (arrêté préfectoral)</p>
