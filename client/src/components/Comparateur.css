@@ -844,6 +844,22 @@
   min-width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
+  position: relative;
+}
+
+/* Fond opaque continu derrière colonne critères */
+.comparison-grid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 200px;
+  background: rgb(240, 247, 242);
+  z-index: 99;
+  pointer-events: none;
+  border-right: 2px solid rgba(46, 139, 87, 0.4);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
 }
 
 .comparison-header-row,
@@ -928,7 +944,7 @@
 
 /* Colonne des labels */
 .comparison-label-cell {
-  background: rgb(240, 247, 242);
+  background: transparent;
   font-weight: 600;
   color: var(--text-primary);
   min-width: 200px;
@@ -940,11 +956,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem;
-  border-right: 2px solid rgba(46, 139, 87, 0.4);
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  border-right: none;
   vertical-align: middle;
-  border-top: 1px solid rgba(46, 139, 87, 0.2);
-  border-bottom: 1px solid rgba(46, 139, 87, 0.2);
+  border-top: 1px solid rgba(46, 139, 87, 0.15);
+  border-bottom: 0;
 }
 
 .comparison-label-cell.image-label-cell {
