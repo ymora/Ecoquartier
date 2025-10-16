@@ -75,13 +75,15 @@
 
 /* Sélecteur de plantes */
 .comparateur-selector {
-  margin-bottom: 2rem;
-}
-
-.comparateur-selector h3 {
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  margin: 0 -2rem 2rem -2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid var(--accent-primary);
 }
 
 .selector-grid {
