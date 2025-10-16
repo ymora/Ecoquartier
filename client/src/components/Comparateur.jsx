@@ -268,7 +268,7 @@ function Comparateur({ plantes }) {
       {selectedPlantes.length > 0 && (
         <div className="comparateur-content">
           <div className="comparateur-table">
-            <div className="comparison-grid">
+            <div className="comparison-grid" style={{ '--nb-plantes': selectedPlantes.length }}>
             {/* En-tête avec noms */}
             <div className="comparison-header-row">
               <div className="comparison-label-cell header-spacer">
