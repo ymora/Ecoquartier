@@ -230,17 +230,38 @@ function Comparateur({ plantes }) {
   return (
     <div className="comparateur">
       <div className="comparateur-selector">
-        <div className="selector-grid">
-          {plantes.map(plante => (
-            <button
-              key={plante.id}
-              className={`selector-item ${selectedPlantes.find(p => p.id === plante.id) ? 'selected' : ''}`}
-              onClick={() => togglePlante(plante)}
-            >
-              <span className="selector-type">{plante.type === 'arbre' ? '🌳' : '🌿'}</span>
-              <span className="selector-name">{plante.name}</span>
-            </button>
-          ))}
+        <div className="selector-categories">
+          {/* Arbres */}
+          <div className="selector-category">
+            <h3 className="category-label">🌳 Arbres</h3>
+            <div className="selector-grid">
+              {plantes.filter(p => p.type === 'arbre').map(plante => (
+                <button
+                  key={plante.id}
+                  className={`selector-item ${selectedPlantes.find(p => p.id === plante.id) ? 'selected' : ''}`}
+                  onClick={() => togglePlante(plante)}
+                >
+                  <span className="selector-name">{plante.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Arbustes */}
+          <div className="selector-category">
+            <h3 className="category-label">🌿 Arbustes</h3>
+            <div className="selector-grid">
+              {plantes.filter(p => p.type === 'arbuste').map(plante => (
+                <button
+                  key={plante.id}
+                  className={`selector-item ${selectedPlantes.find(p => p.id === plante.id) ? 'selected' : ''}`}
+                  onClick={() => togglePlante(plante)}
+                >
+                  <span className="selector-name">{plante.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

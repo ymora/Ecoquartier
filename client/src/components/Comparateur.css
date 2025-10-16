@@ -509,22 +509,26 @@
     margin-right: -0.5rem;
   }
 
+  .selector-categories {
+    gap: 1rem;
+  }
+
+  .category-label {
+    font-size: 1rem;
+  }
+
   .selector-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
   }
 
   .selector-item {
-    padding: 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .selector-type {
-    font-size: 1.2rem;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
   }
 
   .selector-name {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 
   .comparateur-table {
@@ -583,21 +587,27 @@
     margin-right: -0.25rem;
   }
 
+  .selector-categories {
+    gap: 0.75rem;
+  }
+
+  .category-label {
+    font-size: 0.9rem;
+  }
+
   .selector-grid {
+    grid-template-columns: 1fr;
     gap: 0.4rem;
   }
 
   .selector-item {
-    padding: 0.6rem;
-    font-size: 0.85rem;
-  }
-
-  .selector-type {
-    font-size: 1.1rem;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    min-height: 36px;
   }
 
   .selector-name {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .comparateur-table {
