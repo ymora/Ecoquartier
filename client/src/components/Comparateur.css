@@ -869,9 +869,7 @@
   background: var(--bg-green-transparent);
   text-align: center;
   position: relative;
-  width: 280px;
-  min-width: 280px;
-  max-width: 350px;
+  min-width: 250px;
   backdrop-filter: blur(5px);
 }
 
@@ -995,9 +993,7 @@
 .comparison-cell {
   background: rgba(255, 255, 255, 0.9);
   color: var(--text-primary);
-  width: 280px;
-  min-width: 280px;
-  max-width: 350px;
+  min-width: 250px;
   backdrop-filter: blur(5px);
 }
 
