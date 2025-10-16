@@ -850,8 +850,8 @@
 .comparison-row {
   display: grid;
   grid-template-columns: 200px repeat(var(--nb-plantes, 3), 280px);
-  min-height: 60px;
-  height: auto;
+  grid-auto-rows: 1fr;
+  align-items: stretch;
 }
 
 .comparison-label-cell,
@@ -862,7 +862,6 @@
   display: flex;
   align-items: center;
   min-height: 60px;
-  height: 100%;
   border-top: 1px solid var(--border-color);
 }
 
