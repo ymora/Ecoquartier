@@ -839,16 +839,17 @@
 }
 
 .comparison-grid {
-  display: table;
+  display: grid;
+  grid-auto-flow: row;
   width: max-content;
   min-width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
+  gap: 0;
 }
 
 .comparison-header-row,
 .comparison-row {
-  display: table-row;
+  display: grid;
+  grid-template-columns: 200px repeat(var(--nb-plantes, 3), 280px);
   min-height: 60px;
   height: auto;
 }
@@ -856,13 +857,12 @@
 .comparison-label-cell,
 .comparison-header-cell,
 .comparison-cell {
-  display: table-cell;
   padding: 1rem;
-  border-bottom: 0;
   border-right: 1px solid rgba(46, 139, 87, 0.15);
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
   min-height: 60px;
-  height: auto;
+  height: 100%;
   border-top: 1px solid var(--border-color);
 }
 
@@ -871,12 +871,13 @@
   background: var(--bg-green-transparent);
   text-align: center;
   position: relative;
-  min-width: 280px;
   width: 280px;
   backdrop-filter: blur(5px);
-  max-width: 350px;
-  vertical-align: middle;
   height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .comparison-header-cell h3 {
@@ -926,27 +927,29 @@
   transform: scale(1.1);
 }
 
-/* Colonne des labels - SOLUTION SIMPLE */
+/* Colonne des labels - GRID STICKY */
 .comparison-label-cell {
   background: rgb(240, 247, 242);
   font-weight: 600;
   color: var(--text-primary);
-  min-width: 200px;
   width: 200px;
   position: sticky;
   left: 0;
   z-index: 10;
-  display: table-cell;
   padding: 1rem;
   padding-right: 1.5rem;
   border-right: 2px solid rgba(46, 139, 87, 0.4);
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .comparison-label-cell.image-label-cell {
-  display: table-cell;
-  vertical-align: middle;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .image-label-cell .label-content {
@@ -1001,12 +1004,12 @@
 .comparison-cell {
   background: rgba(255, 255, 255, 0.9);
   color: var(--text-primary);
-  min-width: 280px;
   width: 280px;
-  max-width: 350px;
   backdrop-filter: blur(5px);
-  vertical-align: middle;
   height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .comparison-cell.danger {
