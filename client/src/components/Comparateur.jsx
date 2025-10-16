@@ -576,8 +576,8 @@ function Comparateur({ plantes }) {
                 <td key={plante.id} className="comparison-cell">
                   {informationsComplementaires[plante.id] ? (
                     <>
-                      <p className="small-text"><strong>Chiens :</strong> {informationsComplementaires[plante.id].animaux.chiens}</p>
-                      <p className="small-text"><strong>Chats :</strong> {informationsComplementaires[plante.id].animaux.chats}</p>
+                      <p className="small-text"><strong>Chiens :</strong> {informationsComplementaires[plante.id].animauxDomestiques.chiens}</p>
+                      <p className="small-text"><strong>Chats :</strong> {informationsComplementaires[plante.id].animauxDomestiques.chats}</p>
                     </>
                   ) : 'N/A'}
                 </td>
