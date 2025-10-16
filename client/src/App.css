@@ -17,14 +17,18 @@
   margin-left: 0;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
+  width: 100%;
 }
 
 .content.menu-open {
   margin-left: 280px;
+  width: calc(100% - 280px);
 }
 
 .content.full-width {
   margin-left: 0;
+  padding: 0;
+  width: 100%;
 }
 
 /* === BOUTON MODE TOGGLE === */

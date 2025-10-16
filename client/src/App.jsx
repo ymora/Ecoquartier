@@ -54,11 +54,9 @@ function App() {
 
       {modeComparaison ? (
         // Mode Comparaison
-        <div className="main-layout">
-          <main className="content full-width">
-            <Comparateur plantes={plantesData} />
-          </main>
-        </div>
+        <main className="content full-width">
+          <Comparateur plantes={plantesData} />
+        </main>
       ) : (
         // Mode Normal
         <div className="main-layout">
