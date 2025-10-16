@@ -314,13 +314,15 @@ function Comparateur({ plantes }) {
                 return (
                   <div key={plante.id} className="comparison-cell image-cell">
                     <div className="comparison-image-container">
-                      <button 
-                        className="image-nav prev"
-                        onClick={() => changeImage(plante.id, -1)}
-                        aria-label="Image précédente"
-                      >
-                        <FaChevronLeft />
-                      </button>
+                      {images.length > 0 && (
+                        <button 
+                          className="image-nav prev"
+                          onClick={() => changeImage(plante.id, -1)}
+                          aria-label="Image précédente"
+                        >
+                          <FaChevronLeft />
+                        </button>
+                      )}
                       {images.length > 0 ? (
                         <>
                           <img 
@@ -346,22 +348,24 @@ function Comparateur({ plantes }) {
                           >
                             <FaSearchPlus />
                           </button>
+                          <div className="image-counter">
+                            {currentIndex + 1} / {images.length}
+                          </div>
                         </>
                       ) : (
                         <div className="image-placeholder">
-                          📷<br/>Chargement...
+                          📷<br/>Aucune image
                         </div>
                       )}
-                      <button 
-                        className="image-nav next"
-                        onClick={() => changeImage(plante.id, 1)}
-                        aria-label="Image suivante"
-                      >
-                        <FaChevronRight />
-                      </button>
-                      <div className="image-counter">
-                        {currentIndex + 1} / {images.length}
-                      </div>
+                      {images.length > 0 && (
+                        <button 
+                          className="image-nav next"
+                          onClick={() => changeImage(plante.id, 1)}
+                          aria-label="Image suivante"
+                        >
+                          <FaChevronRight />
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
