@@ -77,11 +77,13 @@
 
 /* Sélecteur de plantes */
 .comparateur-selector {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(240, 247, 242, 0.9);
+  background: rgba(240, 247, 242, 0.95);
   backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   padding: 1.5rem 2rem;
   margin-left: -2rem;
   margin-right: -2rem;
@@ -90,38 +92,71 @@
   border-bottom: 3px solid var(--accent-primary);
 }
 
+.selector-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.selector-category {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.category-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .selector-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
 }
 
 .selector-item {
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  cursor: pointer;
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  padding: 0.6rem 0.75rem;
+  background: white;
+  border: 2px solid var(--accent-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  min-height: 40px;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-.selector-item:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px var(--shadow);
+.selector-item:hover:not(.selected) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
 }
 
 .selector-item.selected {
-  background: rgba(240, 247, 242, 0.9);
+  background: var(--accent-primary);
+  color: white;
   border-color: var(--accent-primary);
-  border-width: 3px;
-  box-shadow: 0 0 15px rgba(46, 139, 87, 0.3);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
+}
+
+.selector-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .selector-item:disabled {
