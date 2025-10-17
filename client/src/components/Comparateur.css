@@ -798,7 +798,7 @@
 }
 
 
-/* Conteneur scrollable du tableau */
+/* Conteneur scrollable du tableau - UNIQUEMENT LUI SCROLL */
 .comparateur-content {
   flex: 1;
   overflow-y: auto;
@@ -806,7 +806,7 @@
   padding: 0;
   width: 100%;
   position: relative;
-  max-height: calc(65vh - 20px);
+  min-height: 0;
 }
 
 /* Scrollbars VISIBLES (vertical ET horizontal) */
@@ -1153,11 +1153,10 @@
   padding: 3rem;
   color: var(--text-secondary);
   font-size: 1.1rem;
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  height: 100%;
 }
 
 /* Responsive */
