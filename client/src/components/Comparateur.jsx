@@ -3,12 +3,20 @@ import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash, FaSearchPlus
 import FiabiliteBadge from './FiabiliteBadge';
 import './Comparateur.css';
 
-function Comparateur({ plantes }) {
-  const [selectedPlantes, setSelectedPlantes] = useState([]);
-  const [imageIndices, setImageIndices] = useState({});
+function Comparateur({ plantes, preselectedPlante }) {
+  const [selectedPlantes, setSelectedPlantes] = useState(preselectedPlante ? [preselectedPlante] : []);
+  const [imageIndices, setImageIndices] = useState(preselectedPlante ? { [preselectedPlante.id]: 0 } : {});
   const [visibleCriteres, setVisibleCriteres] = useState({});
   const [zoomedImage, setZoomedImage] = useState(null);
   const [selectedImageType, setSelectedImageType] = useState('tous'); // Type d'image à afficher
+
+  // Mettre à jour la présélection quand elle change
+  useEffect(() => {
+    if (preselectedPlante && !selectedPlantes.find(p => p.id === preselectedPlante.id)) {
+      setSelectedPlantes([preselectedPlante]);
+      setImageIndices({ [preselectedPlante.id]: 0 });
+    }
+  }, [preselectedPlante]);
 
   const togglePlante = (plante) => {
     if (selectedPlantes.find(p => p.id === plante.id)) {

@@ -55,7 +55,7 @@ function App() {
       {modeComparaison ? (
         // Mode Comparaison
         <main className="content full-width">
-          <Comparateur plantes={plantesData} />
+          <Comparateur plantes={plantesData} preselectedPlante={selectedPlante} />
         </main>
       ) : (
         // Mode Normal

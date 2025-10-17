@@ -853,11 +853,17 @@
   opacity: 1;
 }
 
-.comparison-table {
+ .comparison-table {
   width: 100%;
   table-layout: auto;
   border-collapse: collapse;
   border-spacing: 0;
+}
+
+.comparison-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
 
 .comparison-table tr {
@@ -874,12 +880,13 @@
   box-sizing: border-box;
 }
 
-/* En-têtes colonnes plantes */
+/* En-têtes colonnes plantes - STICKY */
 .comparison-header-cell {
-  background: var(--bg-green-transparent);
+  background: rgb(240, 247, 242);
   text-align: center;
-  position: relative;
-  backdrop-filter: blur(5px);
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
 
 .comparison-header-cell h3 {
@@ -937,11 +944,17 @@
   width: auto;
   position: sticky;
   left: 0;
-  z-index: 100;
+  z-index: 150;
   border-right: 2px solid rgba(46, 139, 87, 0.4);
   box-shadow: 8px 0 16px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
   font-size: 0.85rem;
+}
+
+/* En-tête de la colonne critères - z-index encore plus élevé */
+.comparison-label-cell.header-spacer {
+  z-index: 250;
+  background: rgb(240, 247, 242);
 }
 
 .comparison-label-cell.image-label-cell {
