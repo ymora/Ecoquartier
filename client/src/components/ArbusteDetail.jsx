@@ -15,8 +15,6 @@ import {
 import ImageGallery from './ImageGallery';
 import CalendrierAnnuel from './CalendrierAnnuel';
 import FiabiliteBadge from './FiabiliteBadge';
-import { reglementationData, reglesGenerales } from '../data/reglementationData';
-import { informationsComplementaires, reglesGeneralesComplementaires } from '../data/informationsComplementaires';
 import './ArbusteDetail.css';
 
 function ArbusteDetail({ arbuste, menuOpen }) {
@@ -248,7 +246,7 @@ function ArbusteDetail({ arbuste, menuOpen }) {
           </div>
         )}
 
-        {activeTab === 'reglementation' && reglementationData[arbuste.id] && (
+        {activeTab === 'reglementation' && arbuste.reglementation && (
           <div className="tab-panel">
             <div className="section alert info">
               <h2>
@@ -267,18 +265,18 @@ function ArbusteDetail({ arbuste, menuOpen }) {
                 <FiabiliteBadge niveau="moyenne" info="Estimations basées sur littérature horticole - Peut varier selon sol et conditions" />
               </h2>
               <div className="detail-box">
-                <p><strong>Structure :</strong> {reglementationData[arbuste.id].systemeRacinaire.type}</p>
-                <p><strong>Profondeur :</strong> {reglementationData[arbuste.id].systemeRacinaire.profondeur}</p>
-                <p><strong>Étalement :</strong> {reglementationData[arbuste.id].systemeRacinaire.etalement}</p>
-                <p><strong>Agressivité :</strong> {reglementationData[arbuste.id].systemeRacinaire.agressivite}</p>
-                <p className="highlight">{reglementationData[arbuste.id].systemeRacinaire.description}</p>
+                <p><strong>Structure :</strong> {arbuste.reglementation.systemeRacinaire.type}</p>
+                <p><strong>Profondeur :</strong> {arbuste.reglementation.systemeRacinaire.profondeur}</p>
+                <p><strong>Étalement :</strong> {arbuste.reglementation.systemeRacinaire.etalement}</p>
+                <p><strong>Agressivité :</strong> {arbuste.reglementation.systemeRacinaire.agressivite}</p>
+                <p className="highlight">{arbuste.reglementation.systemeRacinaire.description}</p>
               </div>
             </div>
 
             <div className="section alert danger">
               <h2><FaExclamationTriangle /> Risques Potentiels</h2>
               <ul className="disease-list">
-                {reglementationData[arbuste.id].risques.map((risque, index) => (
+                {arbuste.reglementation.risques.map((risque, index) => (
                   <li key={index}>{risque}</li>
                 ))}
               </ul>
@@ -290,21 +288,21 @@ function ArbusteDetail({ arbuste, menuOpen }) {
               <div className="reglementation-card">
                 <h3>🏡 Voisinage</h3>
                 <div className="detail-box">
-                  <p><strong>Distance minimale :</strong> {reglementationData[arbuste.id].distancesLegales.voisinage.distance}</p>
-                  <p><strong>Règle :</strong> {reglementationData[arbuste.id].distancesLegales.voisinage.regle}</p>
-                  <p><strong>Justification :</strong> {reglementationData[arbuste.id].distancesLegales.voisinage.justification}</p>
-                  {reglementationData[arbuste.id].distancesLegales.voisinage.option && (
-                    <p className="highlight"><strong>Option :</strong> {reglementationData[arbuste.id].distancesLegales.voisinage.option}</p>
+                  <p><strong>Distance minimale :</strong> {arbuste.reglementation.distancesLegales.voisinage.distance}</p>
+                  <p><strong>Règle :</strong> {arbuste.reglementation.distancesLegales.voisinage.regle}</p>
+                  <p><strong>Justification :</strong> {arbuste.reglementation.distancesLegales.voisinage.justification}</p>
+                  {arbuste.reglementation.distancesLegales.voisinage.option && (
+                    <p className="highlight"><strong>Option :</strong> {arbuste.reglementation.distancesLegales.voisinage.option}</p>
                   )}
-                  <p className="warning"><strong>⚠️ Sanction :</strong> {reglementationData[arbuste.id].distancesLegales.voisinage.sanction}</p>
+                  <p className="warning"><strong>⚠️ Sanction :</strong> {arbuste.reglementation.distancesLegales.voisinage.sanction}</p>
                 </div>
               </div>
 
               <div className="reglementation-card">
                 <h3>🛣️ Espaces Publics</h3>
                 <div className="detail-box">
-                  <p><strong>Distance :</strong> {reglementationData[arbuste.id].distancesLegales.espacesPublics.distance}</p>
-                  <p><strong>Règle :</strong> {reglementationData[arbuste.id].distancesLegales.espacesPublics.regle}</p>
+                  <p><strong>Distance :</strong> {arbuste.reglementation.distancesLegales.espacesPublics.distance}</p>
+                  <p><strong>Règle :</strong> {arbuste.reglementation.distancesLegales.espacesPublics.regle}</p>
                   <p className="highlight">Consulter le PLU de Bessancourt en mairie ou sur le site de la ville</p>
                 </div>
               </div>
@@ -312,15 +310,15 @@ function ArbusteDetail({ arbuste, menuOpen }) {
               <div className="reglementation-card">
                 <h3>🌳 Entre Arbres/Arbustes</h3>
                 <div className="detail-box">
-                  <p><strong>Distance :</strong> {reglementationData[arbuste.id].distancesLegales.entreArbres?.distance || reglementationData[arbuste.id].distancesLegales.entreArbustes?.distance}</p>
-                  <p><strong>Justification :</strong> {reglementationData[arbuste.id].distancesLegales.entreArbres?.justification || reglementationData[arbuste.id].distancesLegales.entreArbustes?.justification}</p>
+                  <p><strong>Distance :</strong> {arbuste.reglementation.distancesLegales.entreArbres?.distance || arbuste.reglementation.distancesLegales.entreArbustes?.distance}</p>
+                  <p><strong>Justification :</strong> {arbuste.reglementation.distancesLegales.entreArbres?.justification || arbuste.reglementation.distancesLegales.entreArbustes?.justification}</p>
                 </div>
               </div>
 
               <div className="reglementation-card">
                 <h3>🏗️ Infrastructures</h3>
                 <div className="detail-box infrastructure-grid">
-                  {Object.entries(reglementationData[arbuste.id].distancesLegales.infrastructures).map(([key, value]) => (
+                  {Object.entries(arbuste.reglementation.distancesLegales.infrastructures).map(([key, value]) => (
                     <div key={key} className="infrastructure-item">
                       <strong>{key.replace(/([A-Z])/g, ' $1').trim()} :</strong>
                       <span className="value">{value}</span>
@@ -332,21 +330,21 @@ function ArbusteDetail({ arbuste, menuOpen }) {
 
             <div className="section alert warning">
               <h2>💡 Conseils Pratiques</h2>
-              <p className="highlight">{reglementationData[arbuste.id].conseils}</p>
+              <p className="highlight">{arbuste.reglementation.conseils}</p>
             </div>
           </div>
         )}
 
-        {activeTab === 'precautions' && informationsComplementaires[arbuste.id] && (
+        {activeTab === 'precautions' && arbuste.informationsComplementaires && (
           <div className="tab-panel">
             {/* Pollinisation */}
             <div className="section">
               <h2>🐝 Pollinisation & Fructification</h2>
               <div className="detail-box">
-                <p><strong>Mode :</strong> {informationsComplementaires[arbuste.id].pollinisation.type}</p>
-                <p><strong>Besoin :</strong> {informationsComplementaires[arbuste.id].pollinisation.besoin}</p>
-                <p><strong>Production :</strong> {informationsComplementaires[arbuste.id].pollinisation.production}</p>
-                <p className="highlight"><strong>Conseil :</strong> {informationsComplementaires[arbuste.id].pollinisation.conseil}</p>
+                <p><strong>Mode :</strong> {arbuste.informationsComplementaires.pollinisation.type}</p>
+                <p><strong>Besoin :</strong> {arbuste.informationsComplementaires.pollinisation.besoin}</p>
+                <p><strong>Production :</strong> {arbuste.informationsComplementaires.pollinisation.production}</p>
+                <p className="highlight"><strong>Conseil :</strong> {arbuste.informationsComplementaires.pollinisation.conseil}</p>
               </div>
             </div>
 
@@ -354,26 +352,26 @@ function ArbusteDetail({ arbuste, menuOpen }) {
             <div className="section alert danger">
               <h2><FaExclamationTriangle /> Dangers de la Taille</h2>
               <div className="detail-box">
-                <p><strong>Niveau de danger :</strong> {informationsComplementaires[arbuste.id].dangersEtPrecautions.taille.danger}</p>
+                <p><strong>Niveau de danger :</strong> {arbuste.informationsComplementaires.dangersEtPrecautions.taille.danger}</p>
                 
                 <h3>Risques :</h3>
                 <ul className="disease-list">
-                  {informationsComplementaires[arbuste.id].dangersEtPrecautions.taille.risques.map((risque, index) => (
+                  {arbuste.informationsComplementaires.dangersEtPrecautions.taille.risques.map((risque, index) => (
                     <li key={index}>{risque}</li>
                   ))}
                 </ul>
                 
                 <h3>⛔ Périodes DANGEREUSES :</h3>
-                <p className="warning">{informationsComplementaires[arbuste.id].dangersEtPrecautions.taille.periodeDanger}</p>
+                <p className="warning">{arbuste.informationsComplementaires.dangersEtPrecautions.taille.periodeDanger}</p>
                 
                 <h3>✅ Période SÉCURITAIRE :</h3>
-                <p className="success-text">{informationsComplementaires[arbuste.id].dangersEtPrecautions.taille.periodeSecuritaire}</p>
+                <p className="success-text">{arbuste.informationsComplementaires.dangersEtPrecautions.taille.periodeSecuritaire}</p>
                 
-                {informationsComplementaires[arbuste.id].dangersEtPrecautions.taille.protection && (
-                  <p><strong>Protection :</strong> {informationsComplementaires[arbuste.id].dangersEtPrecautions.taille.protection}</p>
+                {arbuste.informationsComplementaires.dangersEtPrecautions.taille.protection && (
+                  <p><strong>Protection :</strong> {arbuste.informationsComplementaires.dangersEtPrecautions.taille.protection}</p>
                 )}
                 
-                <p className="highlight"><strong>⚠️ Conseil :</strong> {informationsComplementaires[arbuste.id].dangersEtPrecautions.taille.conseil}</p>
+                <p className="highlight"><strong>⚠️ Conseil :</strong> {arbuste.informationsComplementaires.dangersEtPrecautions.taille.conseil}</p>
               </div>
             </div>
 
@@ -385,16 +383,16 @@ function ArbusteDetail({ arbuste, menuOpen }) {
               </h2>
               <div className="detail-box">
                 <p className="warning-large">
-                  <strong>🔴 {informationsComplementaires[arbuste.id].dangersEtPrecautions.reglementationTaille.loi}</strong>
+                  <strong>🔴 {arbuste.informationsComplementaires.dangersEtPrecautions.reglementationTaille.loi}</strong>
                 </p>
-                <p><strong>Raison :</strong> {informationsComplementaires[arbuste.id].dangersEtPrecautions.reglementationTaille.raison}</p>
-                <p className="warning"><strong>Sanction :</strong> {informationsComplementaires[arbuste.id].dangersEtPrecautions.reglementationTaille.sanction}</p>
-                <p><strong>Application :</strong> {informationsComplementaires[arbuste.id].dangersEtPrecautions.reglementationTaille.application}</p>
-                {informationsComplementaires[arbuste.id].dangersEtPrecautions.reglementationTaille.conflit && (
-                  <p className="warning"><strong>⚠️ Attention :</strong> {informationsComplementaires[arbuste.id].dangersEtPrecautions.reglementationTaille.conflit}</p>
+                <p><strong>Raison :</strong> {arbuste.informationsComplementaires.dangersEtPrecautions.reglementationTaille.raison}</p>
+                <p className="warning"><strong>Sanction :</strong> {arbuste.informationsComplementaires.dangersEtPrecautions.reglementationTaille.sanction}</p>
+                <p><strong>Application :</strong> {arbuste.informationsComplementaires.dangersEtPrecautions.reglementationTaille.application}</p>
+                {arbuste.informationsComplementaires.dangersEtPrecautions.reglementationTaille.conflit && (
+                  <p className="warning"><strong>⚠️ Attention :</strong> {arbuste.informationsComplementaires.dangersEtPrecautions.reglementationTaille.conflit}</p>
                 )}
-                {informationsComplementaires[arbuste.id].dangersEtPrecautions.reglementationTaille.solution && (
-                  <p className="highlight"><strong>Solution :</strong> {informationsComplementaires[arbuste.id].dangersEtPrecautions.reglementationTaille.solution}</p>
+                {arbuste.informationsComplementaires.dangersEtPrecautions.reglementationTaille.solution && (
+                  <p className="highlight"><strong>Solution :</strong> {arbuste.informationsComplementaires.dangersEtPrecautions.reglementationTaille.solution}</p>
                 )}
                 <p className="info-source">
                   <strong>Sources :</strong> Code Rural français, BCAE (PAC), LPO France
@@ -406,23 +404,23 @@ function ArbusteDetail({ arbuste, menuOpen }) {
             <div className="section">
               <h2>🤧 Allergies</h2>
               <div className="detail-box">
-                <p><strong>Pollen :</strong> {informationsComplementaires[arbuste.id].allergies.pollen}</p>
-                {informationsComplementaires[arbuste.id].allergies.niveau && (
-                  <p className="warning"><strong>Niveau :</strong> {informationsComplementaires[arbuste.id].allergies.niveau}</p>
+                <p><strong>Pollen :</strong> {arbuste.informationsComplementaires.allergies.pollen}</p>
+                {arbuste.informationsComplementaires.allergies.niveau && (
+                  <p className="warning"><strong>Niveau :</strong> {arbuste.informationsComplementaires.allergies.niveau}</p>
                 )}
-                {informationsComplementaires[arbuste.id].allergies.symptomes && (
-                  <p><strong>Symptômes :</strong> {informationsComplementaires[arbuste.id].allergies.symptomes}</p>
+                {arbuste.informationsComplementaires.allergies.symptomes && (
+                  <p><strong>Symptômes :</strong> {arbuste.informationsComplementaires.allergies.symptomes}</p>
                 )}
-                {informationsComplementaires[arbuste.id].allergies.periode && (
-                  <p><strong>Période :</strong> {informationsComplementaires[arbuste.id].allergies.periode}</p>
+                {arbuste.informationsComplementaires.allergies.periode && (
+                  <p><strong>Période :</strong> {arbuste.informationsComplementaires.allergies.periode}</p>
                 )}
-                {informationsComplementaires[arbuste.id].allergies.parfum && (
-                  <p><strong>Parfum :</strong> {informationsComplementaires[arbuste.id].allergies.parfum}</p>
+                {arbuste.informationsComplementaires.allergies.parfum && (
+                  <p><strong>Parfum :</strong> {arbuste.informationsComplementaires.allergies.parfum}</p>
                 )}
-                {informationsComplementaires[arbuste.id].allergies.contact && (
-                  <p><strong>Contact :</strong> {informationsComplementaires[arbuste.id].allergies.contact}</p>
+                {arbuste.informationsComplementaires.allergies.contact && (
+                  <p><strong>Contact :</strong> {arbuste.informationsComplementaires.allergies.contact}</p>
                 )}
-                <p className="highlight"><strong>Conseil :</strong> {informationsComplementaires[arbuste.id].allergies.conseil}</p>
+                <p className="highlight"><strong>Conseil :</strong> {arbuste.informationsComplementaires.allergies.conseil}</p>
               </div>
             </div>
 
@@ -433,32 +431,32 @@ function ArbusteDetail({ arbuste, menuOpen }) {
                 <div className="animaux-grid">
                   <div className="animal-item">
                     <strong>🐕 Chiens :</strong>
-                    <span>{informationsComplementaires[arbuste.id].animauxDomestiques.chiens}</span>
+                    <span>{arbuste.informationsComplementaires.animauxDomestiques.chiens}</span>
                   </div>
                   <div className="animal-item">
                     <strong>🐈 Chats :</strong>
-                    <span>{informationsComplementaires[arbuste.id].animauxDomestiques.chats}</span>
+                    <span>{arbuste.informationsComplementaires.animauxDomestiques.chats}</span>
                   </div>
-                  {informationsComplementaires[arbuste.id].animauxDomestiques.chevaux && (
+                  {arbuste.informationsComplementaires.animauxDomestiques.chevaux && (
                     <div className="animal-item">
                       <strong>🐴 Chevaux :</strong>
-                      <span>{informationsComplementaires[arbuste.id].animauxDomestiques.chevaux}</span>
+                      <span>{arbuste.informationsComplementaires.animauxDomestiques.chevaux}</span>
                     </div>
                   )}
-                  {informationsComplementaires[arbuste.id].animauxDomestiques.oiseaux && (
+                  {arbuste.informationsComplementaires.animauxDomestiques.oiseaux && (
                     <div className="animal-item">
                       <strong>🐦 Oiseaux :</strong>
-                      <span>{informationsComplementaires[arbuste.id].animauxDomestiques.oiseaux}</span>
+                      <span>{arbuste.informationsComplementaires.animauxDomestiques.oiseaux}</span>
                     </div>
                   )}
                 </div>
-                {informationsComplementaires[arbuste.id].animauxDomestiques.symptomes && (
-                  <p className="warning"><strong>Symptômes intoxication :</strong> {informationsComplementaires[arbuste.id].animauxDomestiques.symptomes}</p>
+                {arbuste.informationsComplementaires.animauxDomestiques.symptomes && (
+                  <p className="warning"><strong>Symptômes intoxication :</strong> {arbuste.informationsComplementaires.animauxDomestiques.symptomes}</p>
                 )}
-                {informationsComplementaires[arbuste.id].animauxDomestiques.urgence && (
-                  <p className="danger-text"><strong>🚨 Urgence :</strong> {informationsComplementaires[arbuste.id].animauxDomestiques.urgence}</p>
+                {arbuste.informationsComplementaires.animauxDomestiques.urgence && (
+                  <p className="danger-text"><strong>🚨 Urgence :</strong> {arbuste.informationsComplementaires.animauxDomestiques.urgence}</p>
                 )}
-                <p className="highlight"><strong>Conseil :</strong> {informationsComplementaires[arbuste.id].animauxDomestiques.conseil}</p>
+                <p className="highlight"><strong>Conseil :</strong> {arbuste.informationsComplementaires.animauxDomestiques.conseil}</p>
               </div>
             </div>
 
@@ -466,19 +464,19 @@ function ArbusteDetail({ arbuste, menuOpen }) {
             <div className="section">
               <h2>❄️ Protection Hivernale</h2>
               <div className="detail-box">
-                <p><strong>Adulte :</strong> {informationsComplementaires[arbuste.id].protectionHivernale.adulte}</p>
-                {informationsComplementaires[arbuste.id].protectionHivernale.jeunesPlants && (
+                <p><strong>Adulte :</strong> {arbuste.informationsComplementaires.protectionHivernale.adulte}</p>
+                {arbuste.informationsComplementaires.protectionHivernale.jeunesPlants && (
                   <>
                     <h3>Jeunes Plants (1-3 ans) :</h3>
                     <ul>
-                      {informationsComplementaires[arbuste.id].protectionHivernale.jeunesPlants.map((protection, index) => (
+                      {arbuste.informationsComplementaires.protectionHivernale.jeunesPlants.map((protection, index) => (
                         <li key={index}>{protection}</li>
                       ))}
                     </ul>
                   </>
                 )}
-                {informationsComplementaires[arbuste.id].protectionHivernale.gelPrintanier && (
-                  <p className="warning"><strong>⚠️ Gel printanier :</strong> {informationsComplementaires[arbuste.id].protectionHivernale.gelPrintanier}</p>
+                {arbuste.informationsComplementaires.protectionHivernale.gelPrintanier && (
+                  <p className="warning"><strong>⚠️ Gel printanier :</strong> {arbuste.informationsComplementaires.protectionHivernale.gelPrintanier}</p>
                 )}
               </div>
             </div>
@@ -487,12 +485,12 @@ function ArbusteDetail({ arbuste, menuOpen }) {
             <div className="section">
               <h2>🌱 Fertilisation</h2>
               <div className="detail-box">
-                <p><strong>Besoins :</strong> {informationsComplementaires[arbuste.id].fertilisation.besoins}</p>
-                <p><strong>Période :</strong> {informationsComplementaires[arbuste.id].fertilisation.periode}</p>
-                <p><strong>Fertilisant :</strong> {informationsComplementaires[arbuste.id].fertilisation.type}</p>
-                <p><strong>Quantité :</strong> {informationsComplementaires[arbuste.id].fertilisation.quantite}</p>
-                <p><strong>Fréquence :</strong> {informationsComplementaires[arbuste.id].fertilisation.frequence}</p>
-                <p className="highlight"><strong>Conseil :</strong> {informationsComplementaires[arbuste.id].fertilisation.conseil}</p>
+                <p><strong>Besoins :</strong> {arbuste.informationsComplementaires.fertilisation.besoins}</p>
+                <p><strong>Période :</strong> {arbuste.informationsComplementaires.fertilisation.periode}</p>
+                <p><strong>Fertilisant :</strong> {arbuste.informationsComplementaires.fertilisation.type}</p>
+                <p><strong>Quantité :</strong> {arbuste.informationsComplementaires.fertilisation.quantite}</p>
+                <p><strong>Fréquence :</strong> {arbuste.informationsComplementaires.fertilisation.frequence}</p>
+                <p className="highlight"><strong>Conseil :</strong> {arbuste.informationsComplementaires.fertilisation.conseil}</p>
               </div>
             </div>
 
@@ -500,7 +498,7 @@ function ArbusteDetail({ arbuste, menuOpen }) {
             <div className="section anecdote">
               <h2>💬 Questions Fréquentes (Forums)</h2>
               <ul className="forum-list">
-                {informationsComplementaires[arbuste.id].sujetsForums.map((sujet, index) => (
+                {arbuste.informationsComplementaires.sujetsForums.map((sujet, index) => (
                   <li key={index}>{sujet}</li>
                 ))}
               </ul>

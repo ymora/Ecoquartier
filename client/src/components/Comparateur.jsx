@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash, FaSearchPlus } from 'react-icons/fa';
-import { reglementationData } from '../data/reglementationData';
-import { informationsComplementaires } from '../data/informationsComplementaires';
 import FiabiliteBadge from './FiabiliteBadge';
 import './Comparateur.css';
 
@@ -190,10 +188,17 @@ function Comparateur({ plantes }) {
     { id: 'animaux', label: 'Animaux', icon: '🐾', defaultVisible: true },
     { id: 'racines', label: 'Racines', icon: '🌱', defaultVisible: true },
     { id: 'distanceVoisin', label: 'Distance Voisinage', icon: '⚖️', defaultVisible: true },
+    { id: 'entreArbres', label: 'Distance Entre Arbres', icon: '🌳', defaultVisible: false },
     { id: 'interdiction', label: 'Réglementation Taille', icon: '🔴', defaultVisible: true },
     { id: 'dangersTaille', label: 'Dangers Taille', icon: '⚠️', defaultVisible: false },
     { id: 'fondations', label: 'Distance Fondations', icon: '🏗️', defaultVisible: false },
-    { id: 'canalisations', label: 'Distance Canalisations', icon: '🚰', defaultVisible: false }
+    { id: 'canalisations', label: 'Distance Canalisations', icon: '🚰', defaultVisible: false },
+    { id: 'piscine', label: 'Distance Piscine', icon: '🏊', defaultVisible: false },
+    { id: 'terrasse', label: 'Distance Terrasse', icon: '🏡', defaultVisible: false },
+    { id: 'risques', label: 'Risques Racines', icon: '⚠️', defaultVisible: false },
+    { id: 'fertilisation', label: 'Fertilisation', icon: '🌱', defaultVisible: false },
+    { id: 'protectionHiver', label: 'Protection Hiver', icon: '❄️', defaultVisible: false },
+    { id: 'specificites', label: 'Spécificités', icon: '⭐', defaultVisible: false }
   ];
 
   // Initialiser la visibilité par défaut
@@ -520,10 +525,10 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell">
-                  {informationsComplementaires[plante.id] ? (
+                  {plante.informationsComplementaires ? (
                     <>
-                      <p className="small-text"><strong>Mode :</strong> {informationsComplementaires[plante.id].pollinisation.type}</p>
-                      <p className="small-text highlight-compact">{informationsComplementaires[plante.id].pollinisation.besoin}</p>
+                      <p className="small-text"><strong>Mode :</strong> {plante.informationsComplementaires.pollinisation.type}</p>
+                      <p className="small-text highlight-compact">{plante.informationsComplementaires.pollinisation.besoin}</p>
                     </>
                   ) : 'N/A'}
                 </td>
@@ -548,8 +553,8 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell">
-                  {informationsComplementaires[plante.id] ? (
-                    <p className="small-text">{informationsComplementaires[plante.id].allergies.pollen}</p>
+                  {plante.informationsComplementaires ? (
+                    <p className="small-text">{plante.informationsComplementaires.allergies.pollen}</p>
                   ) : 'N/A'}
                 </td>
               ))}
@@ -573,10 +578,10 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell">
-                  {informationsComplementaires[plante.id] ? (
+                  {plante.informationsComplementaires ? (
                     <>
-                      <p className="small-text"><strong>Chiens :</strong> {informationsComplementaires[plante.id].animauxDomestiques.chiens}</p>
-                      <p className="small-text"><strong>Chats :</strong> {informationsComplementaires[plante.id].animauxDomestiques.chats}</p>
+                      <p className="small-text"><strong>Chiens :</strong> {plante.informationsComplementaires.animauxDomestiques.chiens}</p>
+                      <p className="small-text"><strong>Chats :</strong> {plante.informationsComplementaires.animauxDomestiques.chats}</p>
                     </>
                   ) : 'N/A'}
                 </td>
@@ -602,11 +607,11 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell">
-                  {reglementationData[plante.id] ? (
+                  {plante.reglementation ? (
                     <>
-                      <p className="small-text"><strong>Structure :</strong> {reglementationData[plante.id].systemeRacinaire.type}</p>
-                      <p className="small-text"><strong>Profondeur :</strong> {reglementationData[plante.id].systemeRacinaire.profondeur}</p>
-                      <p className="small-text"><strong>Agressivité :</strong> {reglementationData[plante.id].systemeRacinaire.agressivite}</p>
+                      <p className="small-text"><strong>Structure :</strong> {plante.reglementation.systemeRacinaire.type}</p>
+                      <p className="small-text"><strong>Profondeur :</strong> {plante.reglementation.systemeRacinaire.profondeur}</p>
+                      <p className="small-text"><strong>Agressivité :</strong> {plante.reglementation.systemeRacinaire.agressivite}</p>
                     </>
                   ) : 'N/A'}
                 </td>
@@ -632,10 +637,10 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell warning">
-                  {reglementationData[plante.id] ? (
+                  {plante.reglementation ? (
                     <>
-                      <p className="small-text warning-text"><strong>{reglementationData[plante.id].distancesLegales.voisinage.distance}</strong></p>
-                      <p className="small-text">{reglementationData[plante.id].distancesLegales.voisinage.justification}</p>
+                      <p className="small-text warning-text"><strong>{plante.reglementation.distancesLegales.voisinage.distance}</strong></p>
+                      <p className="small-text">{plante.reglementation.distancesLegales.voisinage.justification}</p>
                     </>
                   ) : 'N/A'}
                 </td>
@@ -661,7 +666,7 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell danger">
-                  {informationsComplementaires[plante.id] ? (
+                  {plante.informationsComplementaires ? (
                     <>
                       <p className="small-text"><strong>Agriculteurs</strong> : Interdiction 16 mars - 15 août (arrêté préfectoral)</p>
                       <p className="small-text"><strong>Particuliers</strong> : Recommandation LPO (printemps - août)</p>
@@ -689,10 +694,10 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell">
-                  {informationsComplementaires[plante.id] ? (
+                  {plante.informationsComplementaires ? (
                     <>
-                      <p className="small-text"><strong>{informationsComplementaires[plante.id].dangersEtPrecautions.taille.danger}</strong></p>
-                      <p className="small-text success-compact">✅ {informationsComplementaires[plante.id].dangersEtPrecautions.taille.periodeSecuritaire}</p>
+                      <p className="small-text"><strong>{plante.informationsComplementaires.dangersEtPrecautions.taille.danger}</strong></p>
+                      <p className="small-text success-compact">✅ {plante.informationsComplementaires.dangersEtPrecautions.taille.periodeSecuritaire}</p>
                     </>
                   ) : 'N/A'}
                 </td>
@@ -718,8 +723,8 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell">
-                  {reglementationData[plante.id] ? (
-                    <p className="small-text warning-text"><strong>{reglementationData[plante.id].distancesLegales.infrastructures.fondations}</strong></p>
+                  {plante.reglementation ? (
+                    <p className="small-text warning-text"><strong>{plante.reglementation.distancesLegales.infrastructures.fondations}</strong></p>
                   ) : 'N/A'}
                 </td>
               ))}
@@ -744,8 +749,201 @@ function Comparateur({ plantes }) {
               </td>
               {selectedPlantes.map(plante => (
                 <td key={plante.id} className="comparison-cell">
-                  {reglementationData[plante.id] ? (
-                    <p className="small-text warning-text"><strong>{reglementationData[plante.id].distancesLegales.infrastructures.canalisations}</strong></p>
+                  {plante.reglementation ? (
+                    <p className="small-text warning-text"><strong>{plante.reglementation.distancesLegales.infrastructures.canalisations}</strong></p>
+                  ) : 'N/A'}
+                </td>
+              ))}
+            </tr>
+            )}
+
+            {/* NOUVEAU : Entre Arbres */}
+            {visibleCriteres['entreArbres'] && (
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('entreArbres')}
+                  aria-label="Masquer distance entre arbres"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
+                <span className="critere-icon">🌳</span>
+                <strong>Distance Entre Arbres</strong>
+                <FiabiliteBadge niveau="moyenne" compact />
+              </td>
+              {selectedPlantes.map(plante => (
+                <td key={plante.id} className="comparison-cell">
+                  {plante.reglementation ? (
+                    <p className="small-text"><strong>{plante.reglementation.distancesLegales.entreArbres?.distance || plante.reglementation.distancesLegales.entreArbustes?.distance || 'N/A'}</strong></p>
+                  ) : 'N/A'}
+                </td>
+              ))}
+            </tr>
+            )}
+
+            {/* NOUVEAU : Distance Piscine */}
+            {visibleCriteres['piscine'] && (
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('piscine')}
+                  aria-label="Masquer distance piscine"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
+                <span className="critere-icon">🏊</span>
+                <strong>Distance Piscine</strong>
+              </td>
+              {selectedPlantes.map(plante => (
+                <td key={plante.id} className="comparison-cell">
+                  {plante.reglementation?.distancesLegales?.infrastructures?.piscine ? (
+                    <p className="small-text warning-text"><strong>{plante.reglementation.distancesLegales.infrastructures.piscine}</strong></p>
+                  ) : 'N/A'}
+                </td>
+              ))}
+            </tr>
+            )}
+
+            {/* NOUVEAU : Distance Terrasse */}
+            {visibleCriteres['terrasse'] && (
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('terrasse')}
+                  aria-label="Masquer distance terrasse"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
+                <span className="critere-icon">🏡</span>
+                <strong>Distance Terrasse</strong>
+              </td>
+              {selectedPlantes.map(plante => (
+                <td key={plante.id} className="comparison-cell">
+                  {plante.reglementation?.distancesLegales?.infrastructures?.terrasse ? (
+                    <p className="small-text warning-text"><strong>{plante.reglementation.distancesLegales.infrastructures.terrasse}</strong></p>
+                  ) : 'N/A'}
+                </td>
+              ))}
+            </tr>
+            )}
+
+            {/* NOUVEAU : Risques Racines */}
+            {visibleCriteres['risques'] && (
+            <tr className="comparison-row alert-row">
+              <td className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('risques')}
+                  aria-label="Masquer risques"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
+                <span className="critere-icon">⚠️</span>
+                <strong>Risques Racines</strong>
+              </td>
+              {selectedPlantes.map(plante => (
+                <td key={plante.id} className="comparison-cell">
+                  {plante.reglementation?.risques ? (
+                    <ul className="compact-list">
+                      {plante.reglementation.risques.slice(0, 3).map((risque, idx) => (
+                        <li key={idx}>{risque}</li>
+                      ))}
+                    </ul>
+                  ) : 'N/A'}
+                </td>
+              ))}
+            </tr>
+            )}
+
+            {/* NOUVEAU : Fertilisation */}
+            {visibleCriteres['fertilisation'] && (
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('fertilisation')}
+                  aria-label="Masquer fertilisation"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
+                <span className="critere-icon">🌱</span>
+                <strong>Fertilisation</strong>
+              </td>
+              {selectedPlantes.map(plante => (
+                <td key={plante.id} className="comparison-cell">
+                  {plante.informationsComplementaires?.fertilisation ? (
+                    <>
+                      <p className="small-text"><strong>Besoins :</strong> {plante.informationsComplementaires.fertilisation.besoins}</p>
+                      <p className="small-text"><strong>Période :</strong> {plante.informationsComplementaires.fertilisation.periode}</p>
+                      <p className="small-text"><strong>Fréquence :</strong> {plante.informationsComplementaires.fertilisation.frequence}</p>
+                    </>
+                  ) : 'N/A'}
+                </td>
+              ))}
+            </tr>
+            )}
+
+            {/* NOUVEAU : Protection Hivernale */}
+            {visibleCriteres['protectionHiver'] && (
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('protectionHiver')}
+                  aria-label="Masquer protection hiver"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
+                <span className="critere-icon">❄️</span>
+                <strong>Protection Hiver</strong>
+              </td>
+              {selectedPlantes.map(plante => (
+                <td key={plante.id} className="comparison-cell">
+                  {plante.informationsComplementaires?.protectionHivernale ? (
+                    <>
+                      <p className="small-text"><strong>Adulte :</strong> {plante.informationsComplementaires.protectionHivernale.adulte}</p>
+                      {plante.informationsComplementaires.protectionHivernale.jeunesPlants && Array.isArray(plante.informationsComplementaires.protectionHivernale.jeunesPlants) && (
+                        <p className="small-text"><strong>Jeunes :</strong> {plante.informationsComplementaires.protectionHivernale.jeunesPlants[0]}</p>
+                      )}
+                    </>
+                  ) : 'N/A'}
+                </td>
+              ))}
+            </tr>
+            )}
+
+            {/* NOUVEAU : Spécificités */}
+            {visibleCriteres['specificites'] && (
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
+                <button 
+                  className="toggle-critere-btn"
+                  onClick={() => toggleCritere('specificites')}
+                  aria-label="Masquer spécificités"
+                  title="Masquer"
+                >
+                  <FaEyeSlash />
+                </button>
+                <span className="critere-icon">⭐</span>
+                <strong>Spécificités</strong>
+              </td>
+              {selectedPlantes.map(plante => (
+                <td key={plante.id} className="comparison-cell">
+                  {plante.informationsComplementaires?.specificites ? (
+                    <ul className="compact-list">
+                      {Object.entries(plante.informationsComplementaires.specificites).slice(0, 3).map(([key, value], idx) => (
+                        <li key={idx}><strong>{key} :</strong> {value}</li>
+                      ))}
+                    </ul>
                   ) : 'N/A'}
                 </td>
               ))}
