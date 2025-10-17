@@ -688,7 +688,7 @@
   margin-bottom: 0.5rem;
 }
 
-/* Sélecteur de plantes - STICKY */
+/* Sélecteur de plantes - STICKY avec hauteur max */
 .comparateur-selector {
   position: sticky;
   top: 0;
@@ -701,10 +701,28 @@
   padding: 1.5rem 2rem;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   border-bottom: 3px solid var(--accent-primary);
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  max-height: 35vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Scrollbar du sélecteur */
+.comparateur-selector::-webkit-scrollbar {
+  width: 8px;
+}
+
+.comparateur-selector::-webkit-scrollbar-track {
+  background: rgba(46, 139, 87, 0.1);
+  border-radius: 4px;
+}
+
+.comparateur-selector::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+
+.comparateur-selector::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
 }
 
 .selector-categories {
@@ -788,7 +806,7 @@
   padding: 0;
   width: 100%;
   position: relative;
-  max-height: calc(100vh - 220px);
+  max-height: calc(65vh - 20px);
 }
 
 /* Scrollbars VISIBLES (vertical ET horizontal) */
