@@ -770,259 +770,476 @@ export const arbresData = [
     }
   },
   {
-    id: 'erable-rouge',
-    name: 'Érable rouge',
-    nomScientifique: 'Acer rubrum',
+    id: 'erable-champetre',
+    name: 'Érable champêtre',
+    nomScientifique: 'Acer campestre',
     famille: 'Sapindaceae (anciennement Aceraceae)',
     type: 'arbre',
-    tailleMaturite: '12-20 m en culture (jusqu\'à 30m en milieu naturel)',
-    envergure: '10-15 m (couronne arrondie à ovale)',
+    tailleMaturite: '10-15 m (taille moyenne, bien adapté jardins)',
+    envergure: '8-12 m (couronne arrondie dense)',
     floraison: {
-      periode: 'Mars à Avril (très précoce, avant les feuilles)',
-      description: 'Petites fleurs (5-8 mm) en glomérules denses sur rameaux nus, apparaissant avant le feuillage',
-      couleur: 'Rouge vif à rouge orangé (parfois jaune)',
-      parfum: 'Discret'
+      periode: 'Avril à Mai (avec ou juste après les feuilles)',
+      description: 'Petites fleurs (5 mm) jaune-vert en corymbes dressés, discrètes mais mellifères',
+      couleur: 'Jaune-vert',
+      parfum: 'Discret, légèrement sucré'
     },
     fructification: {
-      periode: 'Mai à Juin (mature rapidement)',
-      description: 'Samares doubles (disamares) ailées en V (2-2.5 cm), en grappes pendantes, dispersées par le vent',
-      couleur: 'Rouge vif à rose devenant brun à maturité'
+      periode: 'Septembre à Octobre',
+      description: 'Samares doubles horizontales (disamares) avec ailes opposées à 180° (2-3 cm), très caractéristiques',
+      couleur: 'Brun-roux à maturité'
     },
     feuillage: {
       type: 'Caduc',
-      couleurAutomne: 'Rouge écarlate à orange flamboyant (spectaculaire, un des premiers à colorer)',
-      description: 'Feuilles opposées à 3-5 lobes dentés (6-10 cm), vert foncé brillant dessus, glauque blanchâtre dessous'
+      couleurAutomne: 'Jaune doré à orange (parfois rouge-orangé)',
+      description: 'Feuilles opposées à 3-5 lobes arrondis (4-10 cm), vert foncé mat dessus, pubescentes dessous. Lobes moins pointus que autres érables.'
     },
     rameaux: {
-      couleur: 'Rougeâtre à rouge-brun',
-      particularite: 'Jeunes rameaux fins rouge vif. Bourgeons rouges groupés en hiver, très décoratifs. Écorce gris-argenté se fissurant avec l\'âge.'
+      couleur: 'Brun-gris',
+      particularite: 'Jeunes rameaux parfois avec crêtes liégeuses (ailées) caractéristiques. Écorce gris-brun fissurée en plaques. Bourgeons petits bruns.'
     },
     plantation: {
       periode: 'Octobre à Mars (hors gel)',
-      conseil: 'Automne IDÉAL (octobre-novembre) pour enracinement avant hiver. Sol ACIDE impératif (chlorose en sol calcaire). Prévoir 10-15m d\'espace minimum. Éviter zones très ventées et polluées. Excellent pour zones humides, berges, jardins pluviaux. Motte ou conteneur (éviter racines nues). Tuteurage 2-3 ans.'
+      conseil: 'Automne IDÉAL (octobre-novembre). TOLÈRE CALCAIRE (contrairement Acer rubrum) - Parfait Bessancourt ! Prévoir 8-10m d\'espace. Très adaptable. Excellent haies champêtres, alignements, isolé. Motte ou racines nues acceptées. Tuteurage 2 ans.'
     },
     sol: {
-      type: 'Profond (min 80cm), frais à humide, riche en humus, ACIDE',
-      ph: '4.5-6.5 (acide à légèrement acide - ÉVITER ABSOLUMENT CALCAIRE)',
-      humidite: 'Frais à humide, voire détrempé. Tolère inondations temporaires et sols lourds argileux. Excellent pour zones humides. Craint sécheresse prolongée (feuillage brûle).'
+      type: 'Tous types, très tolérant, préfère frais et profond',
+      ph: '6.0-8.0 (neutre à calcaire - TOLÈRE BIEN CALCAIRE) - Excellent Île-de-France !',
+      humidite: 'Frais à sec. Excellente résistance sécheresse une fois établi (3-4 ans). Tolère sols argileux lourds et calcaires.'
     },
-    exposition: 'Soleil (6h minimum) à mi-ombre. Couleurs automnales exceptionnelles en plein soleil. Tolère ombre légère.',
-    arrosage: 'Régulier et abondant, surtout 3-5 premières années. Maintenir sol frais été. Arrosage hebdomadaire si sec. Supporte mal sécheresse (stress hydrique = brunissement feuillage). Paillage organique épais recommandé.',
-    rusticite: '-30 à -35°C (zone 3-9, très rustique). Un des érables les plus rustiques. Tolère gel tardif.',
-    croissance: 'Rapide (40-60 cm/an dans bonnes conditions, jusqu\'à 80 cm si sol optimal). Plus rapide en sol frais et acide.',
+    exposition: 'Soleil à mi-ombre (très tolérant). Supporte ombre légère mieux que autres érables.',
+    arrosage: 'Régulier les 2-3 premières années. Ensuite résistant à la sécheresse. Peu exigeant une fois établi. Paillage recommandé jeunes plants.',
+    rusticite: '-25 à -30°C (zone 5-8, très rustique). Parfaitement adapté climat Île-de-France.',
+    croissance: 'Lente à moyenne (20-40 cm/an). Plus lente que Acer rubrum mais adapté petits jardins.',
     taille: {
-      periode: 'Fin d\'été (août-septembre) à automne (novembre) - JAMAIS au printemps',
-      frequence: 'Minimale',
-      methode: 'Taille de formation 3-5 premières années (port central dominant). Ensuite, taille minimale : bois mort, branches croisées/cassées uniquement. Port naturel arrondi à préserver. Éviter taille sévère. Désinfecter outils.',
-      conseil: '⚠️ CRUCIAL : Ne JAMAIS tailler fin hiver/printemps (février-mai) ! Montée de sève très abondante = écoulement massif ("pleurs") affaiblissant gravement l\'arbre. Tailler UNIQUEMENT fin été/automne (août-novembre) ou plein hiver par grand froid (décembre-janvier). Cicatrisant recommandé.'
+      periode: 'Novembre à mars (hors gel) OU août-septembre',
+      frequence: 'Tous les 3-5 ans (peu exigeant)',
+      methode: 'EXCELLENT pour taille ! Supporte taille sévère (haies). Formation jeunes plants si souhaité. Taille de structure si besoin. Supporte recépage. Désinfecter outils.',
+      conseil: 'Un des érables les plus tolérants à la taille. Peut être conduit en haie haute champêtre (taille régulière). Moins de "pleurs" que autres érables. Éviter quand même taille printemps (mars-avril) si possible.'
     },
     calendrierAnnuel: [
-      { mois: 'Janvier-Février', action: 'Repos - Bourgeons rouges décoratifs - Taille hiver possible', icone: '❄️' },
-      { mois: 'Mars-Avril', action: '🌸 FLORAISON précoce rouge vif avant feuilles', icone: '🌸' },
-      { mois: 'Mai', action: 'Débourrement feuillage - Samares rouges décoratives - Fertilisation', icone: '🌱' },
-      { mois: 'Juin-Juillet', action: 'Croissance active - Arrosage régulier si sec', icone: '💧' },
-      { mois: 'Août', action: 'Croissance ralentit - Taille possible si nécessaire', icone: '✂️' },
-      { mois: 'Septembre-Octobre', action: '🍂 COULEURS AUTOMNALES spectaculaires (un des premiers)', icone: '🍂' },
-      { mois: 'Novembre', action: 'Chute des feuilles - Taille possible - Paillage', icone: '🍁' },
-      { mois: 'Décembre', action: 'Repos - Rameaux rouges visibles', icone: '❄️' }
+      { mois: 'Janvier-Février', action: 'Repos végétatif - Taille possible (hors gel)', icone: '❄️' },
+      { mois: 'Mars-Avril', action: 'Débourrement - Fertilisation organique', icone: '🌱' },
+      { mois: 'Avril-Mai', action: 'Floraison discrète jaune-vert mellifère', icone: '🌸' },
+      { mois: 'Juin-Juillet', action: 'Croissance - Arrosage si sec (jeunes plants)', icone: '💧' },
+      { mois: 'Août-Septembre', action: 'Taille possible - Formation samares horizontales', icone: '✂️' },
+      { mois: 'Septembre-Octobre', action: 'Couleurs automnales dorées + samares brunes', icone: '🍂' },
+      { mois: 'Novembre-Décembre', action: 'Chute feuilles - Taille haie possible - Paillage', icone: '🍁' }
     ],
     maladies: [
-      'Verticilliose (Verticillium) - flétrissement vasculaire grave (surveiller)',
       'Taches foliaires fongiques "goudron de l\'érable" (Rhytisma) - inesthétique mais bénin',
-      'Chlorose ferrique en sol calcaire (jaunissement feuilles - GRAVE)',
+      'Oïdium possible (esthétique uniquement)',
       'Pucerons (printemps - miellat)',
-      'Cochenilles (rares)',
-      'Anthracnose (Discula/Kabatiella) - taches foliaires',
-      'Brûlure des feuilles en cas sécheresse',
-      'Sensible sel de déneigement (éviter bordures routes salées)',
-      'Résistant globalement si sol acide et frais'
+      'Verticilliose (rare)',
+      'Anthracnose (rare)',
+      'TRÈS RÉSISTANT globalement - Un des érables les plus robustes !',
+      'Tolère pollution urbaine, calcaire, sécheresse',
+      'Pratiquement aucune maladie grave'
     ],
     biodiveriste: {
-      faune: 'Fleurs mellifères précoces ESSENTIELLES pour abeilles, bourdons sortant hibernation (mars-avril = période critique). Samares consommées écureuils, tamias, oiseaux (pics, gros-becs, chardonnerets). Excellent arbre faune.',
-      insectes: 'Très bon pour pollinisateurs précoces (nectar/pollen abondants). Chenilles de nombreux papillons (Papilio, Nymphalidae). Abrite insectes xylophages (bois mort). Pucerons = proies auxiliaires.',
-      oiseaux: 'Excellent site nidification (branches solides, feuillage dense). Graines/samares très appréciées. Pics recherchent larves. Perchoir et abri hiver.'
+      faune: 'Arbre INDIGÈNE européen - Excellent biodiversité locale ! Fleurs mellifères (avril-mai) pour abeilles, bourdons. Samares consommées oiseaux granivores, rongeurs. Feuillage dense abrite faune.',
+      insectes: 'Très mellifère (nectar abondant). Chenilles de nombreux papillons locaux. Pucerons = nourriture auxiliaires (coccinelles, syrphes). Abrite insectes saproxyliques (bois mort).',
+      oiseaux: 'Excellent site nidification (feuillage dense, branches fournies). Samares appréciées mésanges, pinsons, verdiers. Perchoir. Espèce LOCALE favorisant faune indigène.'
     },
     toxicite: {
-      niveau: 'Non toxique pour l\'homme',
-      danger: '⚠️ Feuilles fanées/flétries peuvent être TOXIQUES pour CHEVAUX (rare mais documenté : anémie hémolytique). Feuilles fraîches et sève inoffensives. Aucun danger humain.',
-      prevention: 'Éviter accès chevaux aux feuilles tombées/flétries. Aucun danger pour autres animaux domestiques ni humains. Sève comestible (sirop, moins productif qu\'Acer saccharum).'
+      niveau: 'Non toxique',
+      danger: 'Aucun danger pour humains ni animaux domestiques.',
+      prevention: 'Pas de précaution particulière. Sève non toxique.'
     },
     utilisations: [
-      'Arbre d\'ornement pour couleurs automnales EXCEPTIONNELLES',
-      'Isolé sur pelouse (mise en valeur spectacle automnal)',
-      'Alignement urbain (tolère pollution modérée)',
-      'Grands jardins et parcs',
-      'Arbre d\'ombrage (couronne dense)',
-      'Zones humides, berges, jardins pluviaux (tolérance inondations)',
-      'Stabilisation berges et zones argileuses',
-      'Emblème du Canada (feuille sur drapeau)',
-      'Sirop d\'érable (moins productif qu\'Acer saccharum, possible)',
-      'Bois : menuiserie, ébénisterie, pâte à papier',
-      'Biodiversité et faune (nidification, nourriture)'
+      'Haie champêtre haute (taille régulière)',
+      'Arbre d\'alignement urbain (résiste pollution)',
+      'Isolé ornement (petits à moyens jardins)',
+      'Brise-vent champêtre',
+      'Arbre mellifère (haies bocagères)',
+      'Bois dur : tournerie, lutherie, manches outils',
+      'Biodiversité (espèce indigène européenne)',
+      'Arbre fruitier ornement (samares horizontales caractéristiques)',
+      'Stabilisation talus',
+      'Excellent substitut érable rouge pour sol calcaire !',
+      'Haies libres mixtes'
     ],
-    anecdote: 'L\'érable rouge est surnommé "le messager de l\'automne" : il est souvent le PREMIER arbre à se colorer en septembre, virant au rouge écarlate flamboyant spectaculaire ! C\'est l\'emblème du Canada (feuille sur drapeau national). En Amérique du Nord, il annonce aussi le printemps avec sa floraison rouge précoce avant même les feuilles. Son nom scientifique "rubrum" (rouge en latin) fait référence à TOUT : fleurs rouges, samares rouges, rameaux rouges, bourgeons rouges ET couleurs automnales rouges ! Un arbre "rouge toute l\'année" !',
+    anecdote: 'L\'érable champêtre est le SEUL érable INDIGÈNE de France ! Arbre des campagnes et bocages depuis des millénaires, il était autrefois taillé en têtard dans les haies. Ses samares horizontales (ailes à 180°) sont uniques parmi les érables. Son bois très dur était utilisé pour fabriquer des manches d\'outils et des instruments de musique. Parfaitement adapté au climat et sols d\'Île-de-France (tolère calcaire !), c\'est l\'alternative IDÉALE à l\'érable rouge pour Bessancourt !',
     
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
-        type: 'Superficiel dense et étendu',
-        profondeur: '0.5-1 m (TRÈS superficiel)',
-        etalement: '12-18 m (1.5-2x la couronne !)',
-        agressivite: 'ÉLEVÉE',
-        description: 'Système racinaire TRÈS superficiel et TRÈS étendu (un des plus agressifs). Racines denses en surface. Soulève facilement pavages, dallages, trottoirs. Excellent pour berges mais PROBLÉMATIQUE près infrastructures. Cherche activement l\'eau et l\'humidité.'
+        type: 'Mixte : pivotant + traçant modéré',
+        profondeur: '1-1.5 m (pivot central + latérales)',
+        etalement: '8-12 m (proportionnel à couronne)',
+        agressivite: 'MODÉRÉE (bien moindre qu\'Acer rubrum)',
+        description: 'Système racinaire équilibré avec pivot central + racines traçantes modérées. Moins agressif que la plupart des érables. Adapté zones urbaines. Racines tolèrent bien sols compactés et calcaires.'
       },
       risques: [
-        '⚠️ RACINES TRÈS SUPERFICIELLES et TRÈS ÉTENDUES (rayon 10-15m)',
-        'SOULÈVEMENT pavages, dallages, trottoirs quasi-systématique si < 5m',
-        'COLMATAGE canalisations/égouts si < 6m (racines cherchent eau)',
-        'Endommagement fondations possibles si fissures présentes et < 8m',
-        'Compétition racinaire INTENSE : pelouse/plantation impossible sous couronne',
-        'Racines peuvent fissurer fosses septiques si < 8m',
-        'Aspire beaucoup d\'eau : assèchement sol rayon 5-8m',
-        'Branches lourdes : risque chute en cas tempête (grand arbre)',
-        'Peut endommager terrasses, allées, bordures si < 4m'
+        'Racines superficielles modérées (rayon 5-8m)',
+        'Soulèvement pavages possible si < 3m (mais rare)',
+        'Compétition racinaire normale (pelouse possible sous couronne)',
+        'Risque canalisations faible si > 3m',
+        'Adapté alignements urbains (racines tolérantes)',
+        'Beaucoup moins problématique qu\'Acer rubrum',
+        'Peut être planté en haie (supporte taille racines)'
       ],
       distancesLegales: {
         voisinage: {
           regle: 'Code Civil Article 671',
-          distance: '2 m minimum LÉGAL - MAIS 8-10m FORTEMENT RECOMMANDÉ',
-          justification: 'Hauteur > 2 m (12-20 m). MAIS racines superficielles s\'étendent jusqu\'à 15m',
-          sanction: 'Arrachage ou taille exigible. MAIS dégâts racines = responsabilité civile propriétaire (coûts énormes)',
-          option: '⚠️ Distance légale ≠ distance sécuritaire. Racines ne respectent pas les limites de propriété !'
+          distance: '2 m minimum de la limite de propriété',
+          justification: 'Hauteur > 2 m à maturité (10-15 m)',
+          sanction: 'Le voisin peut exiger l\'arrachage ou la taille à 2m de haut',
+          option: 'Peut être conduit en haie haute taillée régulièrement'
         },
         espacesPublics: {
-          distance: '5-8 m minimum',
-          regle: 'PLU + règlements voirie (souvent interdit en milieu urbain dense)',
-          justification: 'Racines superficielles soulèvent trottoirs/chaussées. Coûts réparation municipaux élevés.'
+          distance: '3-4 m minimum',
+          regle: 'PLU de Bessancourt',
+          justification: 'Excellent alignement urbain - Racines tolérantes - Taille adaptable'
         },
         entreArbres: {
-          distance: '12-15 m minimum',
-          justification: 'Grand arbre + système racinaire étendu. Compétition racinaire très intense.'
+          distance: '6-8 m (haie libre) ou 3-5 m (haie taillée)',
+          justification: 'Couronne moyenne. Supporte proximité autres arbres. Peut être planté en haie champêtre dense.'
         },
         infrastructures: {
-          fondations: '8-10 m minimum (12m idéal)',
-          canalisations: '6-8 m minimum (racines très agressives vers eau)',
-          fossesSeptiques: '8-10 m MINIMUM (risque colmatage majeur)',
-          piscine: '8 m minimum',
-          terrasse: '5-6 m minimum',
-          allees_pavees: '5 m minimum',
-          trottoirs: '6 m minimum',
-          parking_bitume: '6 m minimum',
-          murs: '5 m minimum',
-          reseaux_enterres: '5 m minimum'
+          fondations: '4-5 m minimum',
+          canalisations: '3-4 m minimum',
+          fossesSeptiques: '5 m minimum',
+          piscine: '4 m minimum',
+          terrasse: '3 m minimum',
+          allees_pavees: '3 m minimum',
+          trottoirs: '3 m minimum',
+          murs: '3 m minimum'
         }
       },
-      conseils: '🚨 ARBRE MAGNIFIQUE mais RACINES TRÈS PROBLÉMATIQUES. Réservé aux GRANDS jardins/parcs avec ESPACE SUFFISANT. PARFAIT pour : isolé sur grande pelouse, berges de cours d\'eau, zones humides, grands parcs publics. À ÉVITER : jardins < 400m², proximité maisons, zones urbaines denses, près infrastructures. ⚠️ Coûts réparation dégâts racines : 10 000€-50 000€. Sol ACIDE impératif (chlorose si calcaire). Un des plus beaux arbres pour couleurs automnales mais EXIGE ESPACE !'
+      conseils: '✅ EXCELLENT CHOIX pour Bessancourt ! Tolère calcaire, pollution, sécheresse. Adapté petits/moyens jardins (10-15m). Racines modérées (beaucoup moins problématiques qu\'Acer rubrum). Parfait : haies champêtres, alignements, isolé, brise-vent. Arbre INDIGÈNE favorisant biodiversité locale. Distances raisonnables vs autres érables.'
     },
     
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
-        type: 'Monoïque (fleurs mâles et femelles séparées sur même arbre)',
-        besoin: 'Pollinisation croisée améliore production (planter plusieurs sujets espacés)',
-        production: 'Samares ailées rouges abondantes (mai-juin), dispersées par vent',
-        conseil: 'Floraison précoce (mars-avril) = nourriture CRUCIALE pour abeilles sortant hibernation. Samares rouges très décoratives printemps.'
+        type: 'Monoïque (fleurs mâles et femelles sur même arbre)',
+        besoin: 'Autofertile - Aucun pollinisateur nécessaire',
+        production: 'Samares horizontales abondantes (septembre-octobre), caractéristiques et décoratives',
+        conseil: 'Floraison mellifère (avril-mai) excellente pour abeilles domestiques et sauvages. Samares restent longtemps sur l\'arbre (décoratives automne/hiver).'
       },
       dangersEtPrecautions: {
         taille: {
-          danger: 'ÉLEVÉ - "PLEURS" DE SÈVE ABONDANTS',
+          danger: 'FAIBLE À MODÉRÉ - Supporte bien la taille',
           risques: [
-            '🔴 ÉCOULEMENT DE SÈVE MASSIF si taille fin hiver/printemps (février-mai)',
-            'Affaiblissement grave de l\'arbre par perte sève',
-            'Plaies attirent insectes xylophages',
-            'Chancre possible',
-            'Entrée champignons par plaies',
-            'Grands arbres : branches lourdes (risque chute si mal taillé)'
+            'Écoulement sève modéré (moins qu\'Acer rubrum)',
+            'Chancre possible sur plaies (rare)',
+            'Entrée champignons si plaies importantes'
           ],
-          periodeDanger: '⛔ INTERDIT FÉVRIER-MAI (montée sève = "pleurs" massifs)',
-          periodeSecuritaire: '✅ Août-septembre (fin été) OU décembre-janvier (plein hiver par grand froid sec)',
-          protection: 'Cicatrisant recommandé sur plaies > 3cm. Désinfecter outils.',
-          conseil: 'Taille de formation 3-5 premières années (élagage professionnel recommandé). Ensuite MINIMAL : bois mort uniquement. Port naturel arrondi magnifique à préserver.'
+          periodeDanger: '⛔ Éviter février-avril (montée sève, mais moins grave que Acer rubrum)',
+          periodeSecuritaire: '✅ Août-septembre (idéal) OU novembre-février (hors gel)',
+          protection: 'Cicatrisant recommandé sur plaies > 5cm',
+          conseil: 'EXCELLENT pour taille ! Supporte taille sévère et régulière (haies champêtres). Peut être taillé en têtard (tradition ancestrale). Moins de problèmes de sève que autres érables.'
         },
         reglementationTaille: {
           loi: '⚠️ INTERDICTION LÉGALE 16 mars - 15 août (protection oiseaux nicheurs)',
-          raison: 'Code Rural + arrêtés préfectoraux + directive LPO (Ligue Protection Oiseaux)',
-          sanction: 'Agriculteurs : amende 3 750€ + réduction 3% aides PAC. Particuliers : responsabilité civile destruction nids/oisillons.',
+          raison: 'Code Rural + arrêtés préfectoraux + directive LPO',
+          sanction: 'Agriculteurs : amende 3 750€ + réduction 3% aides PAC. Particuliers : responsabilité civile.',
           application: 'TOUS arbres zones rurales/périurbaines (Bessancourt inclus)',
-          exception: 'Travaux urgents sécurité (branche menaçant tomber) avec autorisation préfectorale. Élagage lignes électriques autorisé.'
-        },
-        racinesProblematiques: {
-          alerte: '🚨 SYSTÈME RACINAIRE TRÈS AGRESSIF ET SUPERFICIEL',
-          etendue: 'Racines s\'étendent 12-18m (rayon 10-15m depuis tronc)',
-          profondeur: 'TRÈS superficielles (30-80cm) - quasi-totalement en surface',
-          degats: [
-            'SOULÈVEMENT pavages/dallages/trottoirs QUASI-SYSTÉMATIQUE si < 5m',
-            'FISSURATION terrasses, allées, bordures si < 4m',
-            'COLMATAGE canalisations/égouts si < 6m (racines cherchent eau activement)',
-            'ENDOMMAGEMENT fondations si fissures pré-existantes et < 8m',
-            'ASPIRATION eau importante = pelouse/plantes impossibles sous couronne',
-            'Compétition racinaire INTENSE rayon 8m'
-          ],
-          couts: '💰 Réparation dégâts : 10 000€ - 50 000€ selon ampleur',
-          responsabilite: 'Propriétaire arbre RESPONSABLE CIVILEMENT de tous dégâts causés par racines',
-          prevention: '⚠️ RESPECTER DISTANCES MINIMALES INFRASTRUCTURES (voir réglementation). Barrière anti-racines inefficace (racines trop étendues).',
-          conseil: 'Réservé GRANDS jardins/parcs > 400m². NE PAS PLANTER près habitations/infrastructures.'
+          exception: 'Travaux urgents sécurité avec autorisation préfectorale. Haies champêtres : tolérance parfois locale (vérifier mairie).'
         }
       },
       allergies: {
-        pollen: 'MODÉRÉ (pollen anémophile - transporté par vent)',
-        niveau: 'Allergénicité moyenne - Floraison précoce mars-avril',
-        symptomes: 'Rhinite allergique possible chez personnes sensibles',
+        pollen: 'FAIBLE (pollen peu allergisant)',
+        niveau: 'Allergénicité faible - Floraison avril-mai',
+        symptomes: 'Rarement problématique',
         contact: 'Aucun risque cutané',
-        sensibles: 'Personnes allergiques pollens d\'arbres printemps'
+        sensibles: 'Très rarement allergies (moins qu\'autres érables)'
       },
       animauxDomestiques: {
         chiens: '✅ Non toxique',
         chats: '✅ Non toxique',
-        chevaux: '🔴 TRÈS TOXIQUE - Feuilles fanées/flétries provoquent anémie hémolytique',
-        detail_chevaux: '⚠️ DANGER SPÉCIFIQUE CHEVAUX : Feuilles fraîches = OK. Feuilles FANÉES/FLÉTRIES (tombées au sol, flétrissant sur branches) = TOXIQUES. Provoque anémie hémolytique pouvant être MORTELLE. Symptômes : léthargie, muqueuses pâles, urine foncée. APPELER VÉTÉRINAIRE d\'urgence.',
-        oiseaux: '✅ Excellent - Samares consommées, nidification appréciée',
-        ecureuils: '✅ Samares appréciées',
-        conseil: 'NE PAS planter dans paddocks/pâtures chevaux. Clôturer pour empêcher accès feuilles tombées. Autres animaux domestiques : aucun danger.'
+        chevaux: '✅ Non toxique',
+        oiseaux: '✅ Excellent - Nidification + samares consommées',
+        ecureuils: '✅ Sans danger',
+        conseil: 'Totalement sans danger pour tous animaux domestiques et sauvages. Aucune toxicité connue (contrairement Acer rubrum pour chevaux).'
       },
       protectionHivernale: {
-        adulte: 'AUCUNE protection nécessaire (rustique -30°C à -35°C)',
+        adulte: 'AUCUNE protection nécessaire (très rustique -25°C à -30°C)',
         jeunesPlants: [
-          'Paillage organique épais (15 cm) base tronc recommandé',
-          'Protection inutile même jeune (très rustique)',
-          'Arrosage régulier automne pour bonne préparation hiver'
+          'Paillage organique recommandé première année',
+          'Protection inutile (très rustique)',
+          'Résiste bien gel et vent'
         ],
-        gelPrintanier: '✅ RÉSISTE BIEN gel tardif (bourgeons tardifs, tolérance gel)',
-        gelAutomnal: '✅ Couleurs automnales AMÉLIORÉES par premières gelées (septembre-octobre)'
+        gelPrintanier: '✅ RÉSISTE BIEN gel tardif (débourrement tardif)',
+        gelAutomnal: 'Tolère premières gelées sans problème'
       },
       fertilisation: {
-        besoins: 'MODÉRÉS à ÉLEVÉS (grand arbre croissance rapide)',
-        periode: 'Mars-avril (avant débourrement) + Juin (croissance active)',
-        type: 'Compost bien décomposé OU engrais organique NPK équilibré (10-10-10)',
-        quantite: '5-10 kg compost mûr par m² couronne (arbre établi)',
-        frequence: 'Annuelle 5-10 premières années, puis tous les 2 ans',
-        specificite: '⚠️ SOL ACIDE OBLIGATOIRE : apport soufre/tourbe si sol neutre. Engrais acidifiant recommandé.',
-        chlorose: '🔴 CHLOROSE FERRIQUE si sol calcaire (pH > 6.5) = feuilles jaunes, croissance ralentie. TRAITEMENT : chélate de fer + acidification sol.',
-        conseil: 'Mulching feuilles mortes excellent (acidification naturelle sol + apport matière organique).'
+        besoins: 'FAIBLES à MODÉRÉS (peu exigeant)',
+        periode: 'Mars-avril (avant débourrement)',
+        type: 'Compost bien décomposé',
+        quantite: '2-3 kg compost par m² couronne (jeunes plants)',
+        frequence: 'Annuelle 3 premières années, puis tous les 2-3 ans',
+        specificite: '✅ TOLÈRE SOLS CALCAIRES - Aucun apport acidifiant nécessaire (contrairement Acer rubrum)',
+        conseil: 'Très peu exigeant. Pousse bien en sols pauvres calcaires. Compost suffit largement.'
       },
       specificites: {
-        solAcide: '🔴 SOL ACIDE IMPÉRATIF (pH 4.5-6.5) - ÉCHEC GARANTI en sol calcaire',
-        chloroseCalcaire: 'Chlorose ferrique sévère en sol calcaire (feuilles jaunes, arbre dépérit)',
-        testSol: '⚠️ TESTER pH SOL avant achat ! Bessancourt : sols souvent calcaires (pH 7-8) = INADAPTÉ érable rouge',
-        alternative: 'Si sol calcaire Bessancourt : préférer Acer pseudoplatanus (érable sycomore) ou Acer campestre (érable champêtre) - tolèrent calcaire',
-        zonesHumides: '✅ EXCELLENT pour zones humides, berges, jardins pluviaux (tolère inondations temporaires)',
-        grandsEspaces: 'Réservé GRANDS jardins/parcs > 400m² - Arbre IMPOSANT (12-20m)',
-        couleurs: '🍂 "Messager de l\'automne" : PREMIER arbre à colorer (septembre) - Rouge écarlate spectaculaire',
-        siropErable: '🍁 Production sirop d\'érable POSSIBLE mais moins productif qu\'Acer saccharum. Nécessite 40L sève pour 1L sirop.'
+        indigene: '🇫🇷 ARBRE INDIGÈNE FRANÇAIS - Seul érable natif de France !',
+        calcaire: '✅ TOLÈRE PARFAITEMENT CALCAIRE - Idéal sols Bessancourt (pH 6-8)',
+        haie: 'Excellent en haie champêtre haute (taille régulière supportée)',
+        samares: 'Samares HORIZONTALES (180°) uniques - Différencie facilement des autres érables',
+        liege: 'Rameaux parfois avec crêtes liégeuses ailées (caractéristique botanique intéressante)',
+        tetard: 'Tradition : taillé en têtard dans haies bocagères (repousse vigoureuse)',
+        urbain: 'Excellente tolérance pollution urbaine + sols compactés',
+        biodiversite: 'Espèce locale = favorise insectes et oiseaux indigènes (co-évolution)',
+        adaptable: 'Un des érables les plus ADAPTABLES (sol, taille, climat, pollution)'
       },
       sujetsForums: [
-        'Sol calcaire Bessancourt - puis-je planter érable rouge ? NON (chlorose garantie)',
-        'Test pH sol - comment faire ? (kit jardinerie, laboratoire analyse)',
-        'Feuilles jaunes entre nervures vertes : chlorose ferrique (sol trop alcalin)',
-        'Racines soulèvent terrasse - que faire ? (coûts réparation + arrachage souvent obligatoire)',
-        'Érable rouge adapté petit jardin ? NON (racines + taille - minimum 400m²)',
-        'Alternatives érable rouge sol calcaire ? Acer pseudoplatanus, A. campestre, A. platanoides',
-        'Pourquoi feuilles brûlent en été ? (sécheresse - arrosage insuffisant)',
-        'Production sirop érable maison : possible ? Oui mais 40L sève → 1L sirop',
-        'Quand couleurs automnales apparaissent ? Septembre (premier arbre à colorer)',
-        'Feuilles flétries toxiques chevaux : VRAI - danger mortel équidés',
-        'Distance minimum maison ? 8-10m (racines superficielles très étendues)',
-        'Tailler en mars - sève coule abondamment : NORMAL (ne jamais tailler février-mai !)'
+        'Érable champêtre vs érable rouge ? Champêtre MEILLEUR pour Bessancourt (calcaire OK)',
+        'Sol calcaire - quel érable ? Champêtre ou sycomore (PAS rouge !)',
+        'Peut-on le tailler en haie ? OUI excellent (supporte taille sévère)',
+        'Croissance lente - inconvénient ? NON avantage (adapté petits jardins)',
+        'Arbre indigène France ? OUI seul érable natif',
+        'Samares horizontales - pourquoi ? Caractéristique botanique Acer campestre',
+        'Résiste pollution ? OUI très bien (alignements urbains)',
+        'Biodiversité locale ? EXCELLENTE (espèce indigène)',
+        'Distance maison ? 4-5m suffisant (racines modérées)',
+        'Taille en têtard possible ? OUI tradition bocagère',
+        'Feuilles plus petites que autres érables ? Normal (4-10cm vs 15cm)',
+        'Adapté haie champêtre mixte ? PARFAIT !'
+      ]
+    }
+  },
+  {
+    id: 'erable-japonais',
+    name: 'Érable du Japon',
+    nomScientifique: 'Acer palmatum',
+    famille: 'Sapindaceae (anciennement Aceraceae)',
+    type: 'arbre',
+    tailleMaturite: '4-8 m (petit arbre/grand arbuste selon variété)',
+    envergure: '4-6 m (port étalé élégant)',
+    floraison: {
+      periode: 'Avril à Mai (discrète)',
+      description: 'Petites fleurs (5-6 mm) pourpre-rouge en petites grappes pendantes, discrètes mais élégantes',
+      couleur: 'Pourpre-rouge à rose',
+      parfum: 'Absent'
+    },
+    fructification: {
+      periode: 'Septembre à Octobre',
+      description: 'Samares doubles rougeâtres (disamares) à ailes formant angle aigu, en grappes',
+      couleur: 'Rouge à brun'
+    },
+    feuillage: {
+      type: 'Caduc',
+      couleurAutomne: 'Rouge écarlate à pourpre flamboyant (SPECTACULAIRE selon variétés)',
+      description: 'Feuilles palmées finement découpées à 5-9 lobes profondément dentés (5-10 cm), élégantes. Variétés : vertes, pourpres, panachées.'
+    },
+    rameaux: {
+      couleur: 'Vert à pourpre selon variétés',
+      particularite: 'Ramification dense et fine. Port naturel élégant en cépée. Écorce lisse gris-brun. Silhouette hivernale sculpturale très décorative.'
+    },
+    plantation: {
+      periode: 'Septembre à Novembre (automne impératif) OU Mars-Avril (printemps)',
+      conseil: 'Automne PRÉFÉRABLE. Sol ACIDE À NEUTRE (pH 5.5-7) - Éviter calcaire fort. Situation ABRITÉE des vents froids et desséchants IMPÉRATIVE. Mi-ombre idéale. Prévoir 4-5m espace. Excellent petits jardins, patios, bacs. Motte ou conteneur uniquement. Paillage obligatoire.'
+    },
+    sol: {
+      type: 'Frais, bien drainé, riche en humus, léger, ACIDE à NEUTRE',
+      ph: '5.5-7.0 (légèrement acide à neutre - Éviter calcaire > 7.5)',
+      humidite: 'Frais IMPÉRATIF. Redoute sécheresse ET excès d\'eau. Drainage parfait essentiel. Arrosage régulier crucial.'
+    },
+    exposition: 'Mi-ombre à ombre légère (IDÉAL). Éviter soleil direct après-midi et vents froids. Situation abritée obligatoire.',
+    arrosage: 'Régulier et constant TOUTE LA VIE. Maintenir sol frais en permanence. Arrosage 2-3x/semaine été. Paillage épais OBLIGATOIRE (10-15cm). Redoute sécheresse (brûlure feuilles).',
+    rusticite: '-15 à -20°C selon variétés (zone 6-8). Rustique Île-de-France MAIS sensible vents froids, soleil hivernal, gel tardif. PROTECTION NÉCESSAIRE.',
+    croissance: 'Très lente (10-25 cm/an). Patience nécessaire mais beauté exceptionnelle.',
+    taille: {
+      periode: 'Novembre à février (hors gel) - Repos végétatif',
+      frequence: 'Minimale - Laisser port naturel',
+      methode: 'Taille MINIMALE : bois mort, branches croisées uniquement. Port naturel = beauté. Éviter taille sévère. Cicatrisant obligatoire. Désinfecter outils (verticilliose).',
+      conseil: '⚠️ Port naturel sculpté = charme de l\'arbre. Taille légère structure si nécessaire jeunes plants. Ensuite : quasi AUCUNE taille. Laisser développer librement. Éviter taille printemps (montée sève). Variétés naines : 0 taille.'
+    },
+    calendrierAnnuel: [
+      { mois: 'Janvier-Février', action: 'Repos - Protection si grand froid - Silhouette sculpturale', icone: '❄️' },
+      { mois: 'Mars', action: 'Débourrement délicat - Fertilisation organique légère', icone: '🌱' },
+      { mois: 'Avril-Mai', action: 'Floraison discrète pourpre + Jeunes feuilles colorées', icone: '🌸' },
+      { mois: 'Juin-Juillet', action: 'Arrosage RÉGULIER - Ombrage si soleil fort', icone: '💧' },
+      { mois: 'Août', action: 'Maintenir fraîcheur sol - Paillage épais', icone: '💧' },
+      { mois: 'Septembre-Octobre', action: '🍂 COULEURS AUTOMNALES SPECTACULAIRES (rouge/pourpre/orange)', icone: '🍂' },
+      { mois: 'Novembre', action: 'Chute feuilles - Taille minimale si besoin - Paillage hiver', icone: '🍁' },
+      { mois: 'Décembre', action: 'Protection hiver (voile, paillage) - Beauté hivernale', icone: '❄️' }
+    ],
+    maladies: [
+      'Verticilliose (Verticillium) - GRAVE flétrissement vasculaire (surveiller)',
+      'Anthracnose - taches foliaires (humidité)',
+      'Brûlure feuilles (soleil direct, sécheresse) - FRÉQUENT',
+      'Pucerons (printemps)',
+      'Cochenilles farineuses',
+      'Acariens (temps chaud sec)',
+      'Oïdium (humidité stagnante)',
+      'Chlorose en sol calcaire (pH > 7.5)',
+      'Sensible stress hydrique et thermique'
+    ],
+    biodiveriste: {
+      faune: 'Fleurs mellifères discrètes pour abeilles et petits pollinisateurs. Feuillage dense abrite petits oiseaux. Samares consommées oiseaux granivores. Bon support biodiversité jardins.',
+      insectes: 'Fleurs mellifères (avril-mai). Feuillage abrite pucerons → nourriture coccinelles, syrphes. Moins d\'insectes que érables indigènes (espèce asiatique).',
+      oiseaux: 'Nidification petits passereaux (branches fines denses). Samares appréciées mésanges. Perchoir élégant.'
+    },
+    toxicite: {
+      niveau: 'Non toxique',
+      danger: 'Aucun danger connu pour humains ni animaux domestiques.',
+      prevention: 'Pas de précaution particulière.'
+    },
+    utilisations: [
+      'Arbre d\'ornement EXCEPTIONNEL (feuillage découpé spectaculaire)',
+      'Petits jardins et patios (taille modérée)',
+      'Jardins japonais et zen',
+      'Isolé sur pelouse (mise en valeur)',
+      'Massif arbustes',
+      'Culture en BAC/POT (excellent - variétés naines)',
+      'Bonsaï (espèce privilégiée)',
+      'Jardins d\'ombre (tolère mi-ombre)',
+      'Couleurs automnales exceptionnelles',
+      'Collections érables (nombreuses variétés)',
+      'Jardins contemporains et design'
+    ],
+    anecdote: 'L\'érable du Japon est LE roi des petits jardins ! Avec plus de 1000 variétés (feuillage vert, pourpre, panaché, lacinié), il offre une diversité incroyable. Au Japon, la contemplation des érables en automne (Momijigari) est une tradition aussi importante que celle des cerisiers ! Ses feuilles finement découpées et ses couleurs flamboyantes en font un arbre de collection. Parfait pour Bessancourt car taille modeste (4-8m) et adapté petits espaces urbains. Symbole de l\'élégance japonaise !',
+    
+    // ========== RÉGLEMENTATION ==========
+    reglementation: {
+      systemeRacinaire: {
+        type: 'Superficiel dense mais COMPACT',
+        profondeur: '0.4-0.8 m (très superficiel)',
+        etalement: '4-6 m (proportionnel taille arbre - COMPACT)',
+        agressivite: 'TRÈS FAIBLE (excellent petits jardins)',
+        description: 'Système racinaire superficiel MAIS compact et peu étendu (petit arbre). Racines fines nombreuses. NON invasif. Excellent proximité terrasses, patios. Parfait culture en bac. Tolère bien sols limités.'
+      },
+      risques: [
+        'Risques TRÈS FAIBLES (petit arbre)',
+        'Racines superficielles compactes (rayon 3-4m)',
+        'Aucun soulèvement pavages (racines fines)',
+        'Aucun risque canalisations (taille modeste)',
+        'Peut être planté près maisons (3m suffit)',
+        'Parfait petits jardins urbains',
+        'Culture en bac possible (racines contenues)'
+      ],
+      distancesLegales: {
+        voisinage: {
+          regle: 'Code Civil Article 671',
+          distance: '2 m minimum de la limite de propriété',
+          justification: 'Hauteur > 2 m à maturité (4-8 m)',
+          sanction: 'Le voisin peut exiger l\'arrachage ou la taille à 2m de haut',
+          option: 'Variétés naines (< 2m) : distance 0.5m possible'
+        },
+        espacesPublics: {
+          distance: '2-3 m minimum',
+          regle: 'PLU de Bessancourt',
+          justification: 'Petit arbre, racines compactes - Bien adapté espaces restreints'
+        },
+        entreArbres: {
+          distance: '4-5 m',
+          justification: 'Petit arbre. Tolère proximité. Couronne compacte.'
+        },
+        infrastructures: {
+          fondations: '3 m minimum',
+          canalisations: '2.5 m minimum',
+          fossesSeptiques: '3 m minimum',
+          piscine: '2.5 m minimum',
+          terrasse: '2 m minimum',
+          murs: '2 m minimum',
+          bac_terrasse: 'Excellent en pot (80-150cm diamètre)'
+        }
+      },
+      conseils: '⭐ PARFAIT PETITS JARDINS ! Racines compactes non invasives. Taille modeste (4-8m). Adapté jardins urbains, patios, terrasses. Culture en bac excellente. Distances raisonnables. MAIS exigeant : mi-ombre, sol frais, arrosage régulier, protection vents. Arbre de collection et prestige.'
+    },
+    
+    // ========== INFORMATIONS COMPLÉMENTAIRES ==========
+    informationsComplementaires: {
+      pollinisation: {
+        type: 'Monoïque (fleurs mâles et femelles sur même arbre)',
+        besoin: 'Autofertile - Aucun pollinisateur nécessaire',
+        production: 'Samares rougeâtres discrètes (automne)',
+        conseil: 'Planté pour beauté feuillage (pas pour fruits). Floraison discrète mellifère.'
+      },
+      dangersEtPrecautions: {
+        taille: {
+          danger: 'MODÉRÉ - Sensible stress',
+          risques: [
+            'Écoulement sève modéré si taille printemps',
+            'Verticilliose par outils contaminés',
+            'Port naturel = beauté (taille gâche esthétique)',
+            'Repousse lente si taille sévère'
+          ],
+          periodeDanger: '⛔ Éviter mars-mai (montée sève) ET été (stress chaleur)',
+          periodeSecuritaire: '✅ Novembre-février (repos végétatif, hors gel)',
+          protection: 'Cicatrisant recommandé. DÉSINFECTER outils (alcool/javel - verticilliose)',
+          conseil: '🌿 Taille MINIMALE recommandée. Port naturel sculpté = essence même de l\'érable japonais. Uniquement bois mort ou branches gênantes. Laisser silhouette naturelle. Variétés naines : 0 taille.'
+        },
+        reglementationTaille: {
+          loi: '⚠️ INTERDICTION LÉGALE 16 mars - 15 août',
+          raison: 'Protection oiseaux nicheurs',
+          sanction: 'Amende 3 750€ (agriculteurs) + responsabilité civile',
+          application: 'Tous arbres zones rurales/périurbaines',
+          exception: 'Travaux urgents sécurité'
+        },
+        sensibilites: {
+          alerte: '⚠️ ARBRE DÉLICAT - Exigeant en soins',
+          soleil: '☀️ Soleil direct après-midi = BRÛLURE feuilles (fréquent)',
+          vent: '💨 Vents froids/secs = DESSÈCHEMENT feuillage',
+          secheresse: '🔴 Sécheresse = BRÛLURE feuilles (bords bruns)',
+          gel: '❄️ Gel printanier tardif = dégâts jeunes pousses',
+          stress: 'Sensible tous stress (eau, chaleur, vent, gel)',
+          conseil: '⚠️ Emplacement CRUCIAL : mi-ombre, abrité vent, sol toujours frais. Pas un arbre facile ! Demande attention régulière.'
+        }
+      },
+      allergies: {
+        pollen: 'FAIBLE (floraison discrète)',
+        contact: 'Aucun',
+        sensibles: 'Rarement problématique',
+        conseil: 'Aucun problème allergique connu'
+      },
+      animauxDomestiques: {
+        chiens: '✅ Non toxique',
+        chats: '✅ Non toxique',
+        chevaux: '✅ Non toxique',
+        oiseaux: '✅ Sans danger - Nidification appréciée',
+        conseil: 'Aucune toxicité connue. Sans danger tous animaux.'
+      },
+      protectionHivernale: {
+        adulte: 'Protection RECOMMANDÉE même adulte si variété sensible',
+        jeunesPlants: [
+          '🔴 PROTECTION OBLIGATOIRE 3-5 premières années',
+          'Paillage ÉPAIS (20 cm) base tronc',
+          'Voile hivernage P17 si températures < -10°C',
+          'Protection tronc contre soleil hivernal (alternance gel-dégel)',
+          'Brise-vent si zone exposée vents froids',
+          'Arrosage modéré hiver si absence pluie prolongée'
+        ],
+        gelPrintanier: '⚠️ TRÈS SENSIBLE gel tardif (avril-mai). Jeunes pousses fragiles. Peut détruire jeunes feuilles. Voile si annonce gel.',
+        gelAutomnal: 'Premières gelées améliorent couleurs automnales (septembre-octobre)'
+      },
+      fertilisation: {
+        besoins: 'MODÉRÉS (petit arbre croissance lente)',
+        periode: 'Mars-avril (printemps) - UNE SEULE fois',
+        type: 'Engrais arbres terre bruyère OU compost acide (éviter azote excessif)',
+        quantite: '50-100g engrais spécial érables japonais',
+        frequence: 'Annuelle (printemps uniquement)',
+        specificite: 'Préfère engrais à libération lente. Éviter engrais chimique fort (brûlure racines fines). Sol acide à neutre.',
+        exces: '⚠️ EXCÈS AZOTE = croissance molle = sensibilité gel/vent. PAS d\'engrais fort !',
+        conseil: 'Peu exigeant. Compost acide léger suffit. Mulch feuilles mortes excellent (acidification naturelle).'
+      },
+      specificites: {
+        varietes: '🌈 1000+ VARIÉTÉS : feuillage vert, pourpre, panaché, lacinié (finement découpé). Naines (1-2m) à grandes (6-8m).',
+        feuillage: '🍁 Feuillage EXCEPTIONNEL : finement découpé, palmé, élégant. Variétés pourpres très recherchées.',
+        couleurs: '🎨 Couleurs automnales SPECTACULAIRES : rouge écarlate, orange, pourpre (septembre-novembre)',
+        taille: 'Petit arbre (4-8m) = IDÉAL petits jardins urbains et patios',
+        bac: '✅ EXCELLENT en pot/bac (terrasses, balcons) - Variétés naines parfaites',
+        bonsai: 'Espèce privilégiée bonsaï (repousse, ramification fine)',
+        ombre: 'Tolère mi-ombre (rare chez arbres ornementaux couleurs)',
+        delicat: '⚠️ Arbre DÉLICAT exigeant (eau, ombre, vent, sol) - Pas débutants',
+        prestige: 'Arbre de PRESTIGE et collection - Beauté exceptionnelle',
+        japonais: '🇯🇵 Symbole jardins japonais - Tradition Momijigari (contemplation automne)'
+      },
+      sujetsForums: [
+        'Feuilles brûlées bords bruns ? Soleil direct + sécheresse (déplacer ou ombrager)',
+        'Quel emplacement ? Mi-ombre, abrité vents, sol frais constant',
+        'Culture en pot possible ? OUI excellent (variétés naines)',
+        'Sol calcaire Bessancourt - OK ? Éviter si pH > 7.5 (chlorose). Terre bruyère en fosse.',
+        'Arrosage fréquence ? 2-3x/semaine été + paillage épais',
+        'Quelle variété choisir ? Pourpre : Atropurpureum, Bloodgood. Vert : Osakazuki, Sango-kaku',
+        'Croissance lente normal ? OUI (10-25cm/an) - Patience récompensée !',
+        'Protection hiver nécessaire ? OUI 3-5 ans + voile si < -12°C',
+        'Peut-on tailler ? Quasi JAMAIS - Port naturel = beauté',
+        'Feuilles tombent été - pourquoi ? Stress hydrique OU sol trop sec',
+        'Variété naine pour petit jardin ? Dissectum (1.5m), Shaina (2m)',
+        'Momijigari - c\'est quoi ? Tradition japonaise contemplation érables automne'
       ]
     }
   }

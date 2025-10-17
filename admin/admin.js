@@ -21,9 +21,14 @@ const ESPECES = [
     keywords: ['judee', 'judas', 'cercis', 'siliquastrum', 'gainier']
   },
   { 
-    id: 'erable-rouge', 
-    nom: 'Érable rouge',
-    keywords: ['erable', 'rouge', 'acer', 'rubrum', 'maple', 'red']
+    id: 'erable-champetre', 
+    nom: 'Érable champêtre',
+    keywords: ['erable', 'champetre', 'acer', 'campestre', 'field', 'maple', 'indigene']
+  },
+  { 
+    id: 'erable-japonais', 
+    nom: 'Érable du Japon',
+    keywords: ['erable', 'japon', 'japonais', 'acer', 'palmatum', 'maple', 'momiji']
   },
   { 
     id: 'noisetier', 
