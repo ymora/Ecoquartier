@@ -1,5 +1,60 @@
 # 📝 Changelog
 
+## [1.1.1] - 2025-10-17 🌳 REMPLACEMENT ÉRABLE + AJOUT
+
+### 🔄 Remplacement : Érable rouge → Érable champêtre
+
+**Pourquoi ce changement ?**
+- ❌ **Érable rouge** (Acer rubrum) : SOL ACIDE impératif (pH 4.5-6.5)
+- ❌ Bessancourt : Sols calcaires (pH 7-8) = **INADAPTÉ** → Chlorose garantie
+- ❌ Racines TRÈS problématiques (superficielles 12-18m)
+- ❌ Réservé GRANDS jardins >400m²
+
+**Solution :**
+- ✅ **Érable champêtre** (Acer campestre) : **TOLÈRE CALCAIRE** (pH 6-8)
+- ✅ **INDIGÈNE France** (seul érable natif) → Biodiversité locale
+- ✅ Racines MODÉRÉES (vs très agressives)
+- ✅ Adapté petits/moyens jardins (10-15m vs 12-20m)
+- ✅ Samares horizontales caractéristiques (180°)
+- ✅ **PARFAIT pour Bessancourt !**
+
+### 🌸 Ajout : Érable du Japon
+
+**Érable du Japon** (Acer palmatum)
+- 🍁 Feuillage palmé **finement découpé** (spectaculaire)
+- 🎨 Couleurs automnales **EXCEPTIONNELLES** (rouge écarlate/pourpre)
+- 🌈 **1000+ variétés** (vert, pourpre, panaché, lacinié, nain)
+- 🏡 **Parfait petits jardins** (4-8m seulement !)
+- 🪴 Excellent en **pot/bac** (terrasses, balcons)
+- 🇯🇵 Symbole jardins japonais - Tradition **Momijigari**
+- ⚠️ Exigeant : mi-ombre, sol frais, arrosage régulier, abrité vents
+- ⭐ Arbre de **prestige** et collection
+
+**Total : 12 espèces** (6 arbres + 6 arbustes)
+
+---
+
+### 🛠️ Modifications techniques
+
+**Données** :
+- ✅ `arbustesData.js` : Remplacement complet erable-rouge (~250 lignes)
+- ✅ `arbustesData.js` : Ajout erable-japonais (~250 lignes)
+- ✅ `admin.js` : Mise à jour liste espèces
+- ✅ `images.json` : Remplacement + ajout
+- ✅ `sitemap.xml` : Mise à jour (2 fichiers)
+- ✅ `README.md` : 11 → 12 espèces
+
+**Images** :
+- ✅ Dossiers renommés : `erable-rouge/` → `erable-champetre/`
+- ✅ Dossiers créés : `erable-japonais/`
+- ✅ README.txt guides photos dans chaque dossier
+
+**Comparateur** :
+- ✅ Fix menu stabilisé (min-height: 200px)
+- ✅ Ne bouge plus quand aucun arbre sélectionné
+
+---
+
 ## [1.1.0] - 2025-10-17 🎉 REFACTORING MAJEUR
 
 ### 🌳 Ajout de 2 nouveaux arbres
