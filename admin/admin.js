@@ -16,6 +16,16 @@ const ESPECES = [
     keywords: ['sunset', 'boulevard', 'cerisier', 'prunus']
   },
   { 
+    id: 'arbre-judee', 
+    nom: 'Arbre de Judée',
+    keywords: ['judee', 'judas', 'cercis', 'siliquastrum', 'gainier']
+  },
+  { 
+    id: 'erable-rouge', 
+    nom: 'Érable rouge',
+    keywords: ['erable', 'rouge', 'acer', 'rubrum', 'maple', 'red']
+  },
+  { 
     id: 'noisetier', 
     nom: 'Noisetier',
     keywords: ['noisetier', 'noisette', 'corylus', 'avellana', 'coudrier']

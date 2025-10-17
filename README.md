@@ -4,12 +4,13 @@ Application web interactive pour découvrir les arbres et arbustes de l'écocart
 
 ## 🎯 Fonctionnalités
 
-- ✅ **9 espèces documentées** (Prunus, Noisetier, Fusain, Troène, Osmanthe, Cornouiller, Seringat)
-- ✅ **Mode classique** : Fiches détaillées avec 7 onglets
-- ✅ **Mode comparaison** : Comparer 2-3 plantes côte à côte
-- ✅ **Galerie photos** : 6 types par espèce (vue, bourgeons, fleurs, fruits, automne, hiver)
-- ✅ **Réglementation** : Distances légales, système racinaire, risques
-- ✅ **Badges fiabilité** : Niveau de confiance des données
+- ✅ **11 espèces documentées** - **5 arbres** (Prunus Kanzan, Accolade, Sunset Boulevard, Arbre de Judée, Érable rouge) + **6 arbustes** (Noisetier, Fusain, Troène, Osmanthe, Cornouiller, Seringat)
+- ✅ **Mode classique** : Fiches détaillées avec 7 onglets complets
+- ✅ **Mode comparaison** : Comparer 2+ plantes avec **20 critères** (distances, racines, fertilisation, allergies, etc.)
+- ✅ **Galerie photos** : 6-8 types par espèce (vue, bourgeons, fleurs, fruits, feuilles, tronc, automne, hiver)
+- ✅ **Réglementation complète** : Distances légales (Code Civil), système racinaire, risques infrastructures
+- ✅ **Données centralisées** : Architecture professionnelle (1 seul fichier de données)
+- ✅ **Badges fiabilité** : Niveau de confiance des données affiché
 - ✅ **Responsive** : Adapté mobile/tablette/desktop
 
 ## 🚀 Installation Locale
