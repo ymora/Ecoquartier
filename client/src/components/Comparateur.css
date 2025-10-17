@@ -788,24 +788,18 @@
   padding: 0;
   width: 100%;
   position: relative;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  max-height: calc(100vh - 220px);
 }
 
-.comparateur-content::-webkit-scrollbar-vertical {
-  display: none;
-  width: 0px;
-}
-
-/* Scrollbar horizontale VISIBLE */
+/* Scrollbars VISIBLES (vertical ET horizontal) */
 .comparateur-content::-webkit-scrollbar {
-  height: 12px !important;
+  width: 12px;
+  height: 12px;
 }
 
 .comparateur-content::-webkit-scrollbar-track {
   background: rgba(46, 139, 87, 0.1);
   border-radius: 6px;
-  margin: 0 1rem;
 }
 
 .comparateur-content::-webkit-scrollbar-thumb {
@@ -820,8 +814,8 @@
 
 /* Firefox */
 .comparateur-content {
-  scrollbar-width: auto !important;
-  scrollbar-color: var(--accent-primary) rgba(46, 139, 87, 0.1) !important;
+  scrollbar-width: auto;
+  scrollbar-color: var(--accent-primary) rgba(46, 139, 87, 0.1);
 }
 
 .comparateur-content::after {
