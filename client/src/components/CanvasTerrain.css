@@ -106,7 +106,7 @@
 /* Palette flottante déplaçable */
 .palette-outils {
   position: absolute;
-  left: 20px;
+  right: 20px;
   top: 80px;
   width: 220px;
   background: white;

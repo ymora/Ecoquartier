@@ -341,44 +341,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     afficherZonesContraintes(canvas);
   }, [anneeProjection]);
 
-  // Rendre le modal sol déplaçable
-  useEffect(() => {
-    const modal = document.getElementById('modal-sol');
-    const header = modal?.querySelector('.modal-sol-header');
-    if (!modal || !header) return;
-    
-    let isDragging = false;
-    let currentX, currentY, initialX, initialY;
-    
-    const dragStart = (e) => {
-      initialX = e.clientX - modal.offsetLeft;
-      initialY = e.clientY - modal.offsetTop;
-      isDragging = true;
-    };
-    
-    const drag = (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      currentX = e.clientX - initialX;
-      currentY = e.clientY - initialY;
-      modal.style.left = `${currentX}px`;
-      modal.style.top = `${currentY}px`;
-    };
-    
-    const dragEnd = () => {
-      isDragging = false;
-    };
-    
-    header.addEventListener('mousedown', dragStart);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', dragEnd);
-    
-    return () => {
-      header.removeEventListener('mousedown', dragStart);
-      document.removeEventListener('mousemove', drag);
-      document.removeEventListener('mouseup', dragEnd);
-    };
-  }, []);
+  // Note: Modal sol déplacé dans Dashboard (plus pratique)
 
   // Rendre la palette déplaçable
   useEffect(() => {
@@ -3097,40 +3060,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         </div>
       </div>
 
-      {/* Modal composition du sol - déplaçable */}
-      <div className="modal-sol" id="modal-sol">
-        <div className="modal-sol-header">
-          <span className="modal-handle">⋮⋮</span>
-          <h4>📊 Composition du sol</h4>
-          <button className="btn-edit-sol" onClick={() => {
-            const canvas = fabricCanvasRef.current;
-            if (canvas) editerCouchesSol(canvas);
-          }} title="Modifier">
-            ✏️
-          </button>
-        </div>
-        
-        <div className="modal-sol-content">
-          {couchesSol.map((couche, index) => (
-            <div key={index} className="couche-sol" style={{ 
-              background: couche.couleur,
-              height: `${couche.profondeur * 0.5}px`,
-              border: '1px solid #5d4037'
-            }}>
-              <div className="couche-label">
-                <strong>{couche.nom}</strong>
-                <span>{couche.profondeur}cm</span>
-              </div>
-            </div>
-          ))}
-          <div className="modal-sol-info">
-            💡 Cliquez ✏️ pour modifier
-          </div>
-        </div>
-      </div>
-
-      {/* Dashboard statistiques */}
-      <DashboardTerrain canvas={fabricCanvasRef.current} arbres={arbresAPlanter} />
+      {/* Dashboard statistiques (inclut maintenant composition du sol) */}
+      <DashboardTerrain 
+        canvas={fabricCanvasRef.current} 
+        arbres={arbresAPlanter}
+        couchesSol={couchesSol}
+        onCouchesSolChange={setCouchesSol}
+      />
 
       {/* Timeline de croissance (slider temporel) */}
       <div className="timeline-croissance">

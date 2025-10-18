@@ -1,15 +1,15 @@
 /* Dashboard terrain - panneau latéral gauche */
 .dashboard-terrain {
   position: fixed;
-  left: 260px; /* Après la palette */
+  left: 20px;
   top: 180px;
-  width: 280px;
+  width: 300px;
   background: white;
   border: 2px solid var(--accent-primary);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 400px);
   overflow-y: auto;
 }
 
@@ -160,5 +160,54 @@
 
 .dot.dot-libre {
   background: #c8e6c9;
+}
+
+/* Section composition du sol */
+.sol-couche {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  margin: 0.5rem 0;
+}
+
+.sol-couche-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.sol-couleur {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.sol-details {
+  font-size: 0.75rem;
+  color: #666;
+  margin-left: 28px;
+}
+
+.btn-edit-sol {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-sol:hover {
+  background: #1b5e20;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 

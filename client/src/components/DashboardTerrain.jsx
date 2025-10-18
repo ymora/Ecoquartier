@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './DashboardTerrain.css';
 
-function DashboardTerrain({ canvas, arbres }) {
+function DashboardTerrain({ canvas, arbres, couchesSol, onCouchesSolChange }) {
   const [stats, setStats] = useState(null);
   const echelle = 30;
 
@@ -215,12 +215,60 @@ function DashboardTerrain({ canvas, arbres }) {
           {stats.nbProblemes > 0 && (
             <div className="stat-alert">❌ {stats.nbProblemes} problème(s)</div>
           )}
-          {stats.nbAvertissements > 0 && (
-            <div className="stat-warning">⚠️ {stats.nbAvertissements} avertissement(s)</div>
-          )}
-        </div>
+        {stats.nbAvertissements > 0 && (
+          <div className="stat-warning">⚠️ {stats.nbAvertissements} avertissement(s)</div>
+        )}
+      </div>
+      
+      {/* Section composition du sol */}
+      <div className="stat-section highlight">
+        <div className="stat-label">🌍 Composition du sol</div>
+        {couchesSol && couchesSol.map((couche, index) => (
+          <div key={index} className="sol-couche">
+            <div className="sol-couche-header">
+              <div 
+                className="sol-couleur" 
+                style={{ backgroundColor: couche.couleur }}
+              ></div>
+              <strong>{couche.nom}</strong>
+            </div>
+            <div className="sol-details">
+              {couche.profondeur}cm - {couche.type}
+            </div>
+          </div>
+        ))}
+        <button 
+          className="btn-edit-sol"
+          onClick={() => {
+            if (onCouchesSolChange) {
+              const nouvelleCouche1Nom = prompt('Nom couche 1:', couchesSol[0]?.nom || 'Terre végétale');
+              if (!nouvelleCouche1Nom) return;
+              
+              const nouvelleCouche1Prof = parseInt(prompt('Profondeur couche 1 (cm):', couchesSol[0]?.profondeur || 30));
+              if (isNaN(nouvelleCouche1Prof)) return;
+              
+              const nouvelleCouche1Type = prompt('Type (fertile/argileux/sableux/calcaire/rocheux):', couchesSol[0]?.type || 'fertile');
+              
+              const nouvelleCouche2Nom = prompt('Nom couche 2:', couchesSol[1]?.nom || 'Marne');
+              if (!nouvelleCouche2Nom) return;
+              
+              const nouvelleCouche2Prof = parseInt(prompt('Profondeur couche 2 (cm):', couchesSol[1]?.profondeur || 70));
+              if (isNaN(nouvelleCouche2Prof)) return;
+              
+              const nouvelleCouche2Type = prompt('Type:', couchesSol[1]?.type || 'argileux');
+              
+              onCouchesSolChange([
+                { nom: nouvelleCouche1Nom, profondeur: nouvelleCouche1Prof, couleur: '#8d6e63', type: nouvelleCouche1Type },
+                { nom: nouvelleCouche2Nom, profondeur: nouvelleCouche2Prof, couleur: '#a1887f', type: nouvelleCouche2Type }
+              ]);
+            }
+          }}
+        >
+          ✏️ Modifier
+        </button>
       </div>
     </div>
+  </div>
   );
 }
 
