@@ -258,6 +258,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.on('selection:cleared', () => {
       cacherMenuContextuel();
     });
+    
+    // Double-clic sur une ligne (canalisation/clôture) pour ajouter un point intermédiaire
+    canvas.on('mouse:dblclick', (e) => {
+      if (e.target && (e.target.customType === 'cloture' || e.target.customType === 'canalisation')) {
+        ajouterPointIntermediaire(canvas, e.target, e.pointer);
+      }
+    });
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
@@ -444,6 +451,74 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       canvas.remove(cercleTronc);
       canvas.renderAll();
     }
+  };
+
+  // Ajouter un point intermédiaire à une ligne pour créer un angle
+  const ajouterPointIntermediaire = (canvas, ligne, pointer) => {
+    // Récupérer les coordonnées de la ligne
+    const x1 = ligne.x1 + ligne.left;
+    const y1 = ligne.y1 + ligne.top;
+    const x2 = ligne.x2 + ligne.left;
+    const y2 = ligne.y2 + ligne.top;
+    
+    // Point de clic (approximatif au milieu)
+    const pointX = pointer.x;
+    const pointY = pointer.y;
+    
+    // Propriétés de la ligne originale
+    const props = {
+      stroke: ligne.stroke,
+      strokeWidth: ligne.strokeWidth,
+      strokeDashArray: ligne.strokeDashArray,
+      strokeLineCap: ligne.strokeLineCap,
+      customType: ligne.customType,
+      strokeUniform: ligne.strokeUniform,
+      hasBorders: true,
+      hasControls: true,
+      cornerSize: 12,
+      cornerColor: ligne.stroke,
+      cornerStyle: 'circle',
+      transparentCorners: false
+    };
+    
+    // Créer deux nouvelles lignes
+    const ligne1 = new fabric.Line([x1, y1, pointX, pointY], props);
+    const ligne2 = new fabric.Line([pointX, pointY, x2, y2], props);
+    
+    // Créer un point de contrôle déplaçable au milieu
+    const point = new fabric.Circle({
+      left: pointX,
+      top: pointY,
+      radius: 6,
+      fill: ligne.stroke,
+      stroke: 'white',
+      strokeWidth: 2,
+      originX: 'center',
+      originY: 'center',
+      hasControls: false,
+      hasBorders: false,
+      hoverCursor: 'move',
+      customType: 'point-controle',
+      linkedLines: [ligne1, ligne2] // Référence aux lignes connectées
+    });
+    
+    // Quand le point bouge, mettre à jour les lignes
+    point.on('moving', () => {
+      ligne1.set({ x2: point.left, y2: point.top });
+      ligne2.set({ x1: point.left, y1: point.top });
+      canvas.renderAll();
+    });
+    
+    // Supprimer l'ancienne ligne
+    canvas.remove(ligne);
+    
+    // Ajouter les nouvelles
+    canvas.add(ligne1);
+    canvas.add(ligne2);
+    canvas.add(point);
+    
+    canvas.renderAll();
+    exporterPlan(canvas);
   };
   
   const cacherTooltipValidation = () => {
