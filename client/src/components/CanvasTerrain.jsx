@@ -33,15 +33,18 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     logger.info('CanvasTerrain', 'Initialisation du canvas');
 
-    // Calculer la hauteur et largeur disponibles (viewport - header - footer - marges)
+    // Calculer la hauteur et largeur disponibles (viewport - header - marges minimales)
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
-    const headerHeight = 150; // Hauteur approximative du header avec arbres
-    const footerHeight = 0;  // Pas de footer maintenant
-    const sidebarWidth = 250; // Largeur de la palette d'outils
+    const headerHeight = 90; // Header compact (titre + badges arbres)
+    const footerHeight = 0;  // Pas de footer
+    const dashboardWidth = 340; // Dashboard gauche (statistiques + sol)
+    const paletteWidth = 200;   // Palette droite (outils)
+    const timelineHeight = 120; // Timeline en bas
     
-    const availableHeight = viewportHeight - headerHeight - footerHeight - 40; // -40 pour marges
-    const availableWidth = viewportWidth - sidebarWidth - 40; // -40 pour marges
+    // MAXIMISER l'espace : marges minimales
+    const availableHeight = viewportHeight - headerHeight - timelineHeight - 20; // -20px marge totale
+    const availableWidth = viewportWidth - dashboardWidth - paletteWidth - 40; // -40px marges latérales
     
     const canvas = new fabric.Canvas('canvas-terrain', {
       width: availableWidth, // Utiliser toute la largeur disponible

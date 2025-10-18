@@ -27,12 +27,13 @@
 
 /* En-tête compact - TOUT sur une ligne */
 .planificateur-header-compact {
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   border-bottom: 2px solid var(--accent-primary);
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  min-height: 60px;
 }
 
 .planificateur-header-compact h2 {
