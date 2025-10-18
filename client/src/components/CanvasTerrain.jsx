@@ -350,26 +350,31 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   const afficherMessagesValidation = (arbreGroup) => {
     const messages = arbreGroup.validationMessages || [];
+    const conseils = arbreGroup.validationConseils || [];
     const status = arbreGroup.validationStatus || 'ok';
+    const arbre = arbreGroup.arbreData;
     
     let titre = '';
-    let couleur = '';
     
     if (status === 'error') {
-      titre = '❌ Problèmes détectés';
-      couleur = '#c62828';
+      titre = '❌ PROBLÈMES DÉTECTÉS';
     } else if (status === 'warning') {
-      titre = '⚠️ Avertissements';
-      couleur = '#e65100';
+      titre = '⚠️ AVERTISSEMENTS';
     } else {
-      titre = '✅ Position valide';
-      couleur = '#2e7d32';
+      titre = '✅ POSITION VALIDE';
     }
     
-    const messageText = messages.join('\n');
+    let messageText = `${arbre?.name || 'Arbre'}\n`;
+    messageText += `${arbre?.envergure || '?'}m (envergure) × ${arbre?.tailleMaturite || '?'} (hauteur)\n\n`;
+    messageText += `${titre}\n`;
+    messageText += messages.join('\n');
+    
+    if (conseils.length > 0) {
+      messageText += '\n\n💡 CONSEILS :\n' + conseils.join('\n');
+    }
     
     // Afficher dans un alert pour le moment (on pourrait faire mieux plus tard)
-    alert(`${titre}\n\n${messageText}`);
+    alert(messageText);
   };
 
   const supprimerObjetActif = () => {
@@ -578,15 +583,22 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const arbre = arbreGroup.arbreData;
     if (!arbre) return;
     
-    // Extraire les distances minimales
+    // Extraire les distances minimales depuis les données réglementaires
     const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
     const distanceCanalisations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.canalisations?.split('m')[0] || '4');
     const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
     const distanceEntreArbres = parseFloat(arbre.reglementation?.distancesLegales?.entreArbres?.distance?.split('m')[0] || '5');
     const distanceTerrasse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.terrasse?.split('m')[0] || '3');
+    const distancePiscine = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.piscine?.split('m')[0] || '4');
+    
+    // Données supplémentaires pour validation
+    const systemeRacinaire = arbre.reglementation?.systemeRacinaire?.agressivite || 'Modérée';
+    const exposition = arbre.exposition || '';
+    const solType = arbre.sol?.type || '';
     
     const problemes = [];
     const avertissements = [];
+    const conseils = [];
     
     const x = arbreGroup.left;
     const y = arbreGroup.top;
@@ -646,6 +658,23 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
     }
     
+    // Ajouter des conseils basés sur les caractéristiques de l'arbre
+    if (systemeRacinaire === 'Élevée' || systemeRacinaire === 'Forte') {
+      conseils.push(`⚠️ Système racinaire ${systemeRacinaire.toLowerCase()} : privilégier éloignement maximal des infrastructures`);
+    }
+    
+    if (exposition.includes('Soleil') && orientation === 'nord-bas') {
+      conseils.push(`☀️ Cet arbre aime le soleil : le placer au sud du terrain pour exposition maximale`);
+    }
+    
+    if (arbre.arrosage?.includes('Régulier') || arbre.arrosage?.includes('Abondant')) {
+      conseils.push(`💧 Arrosage ${arbre.arrosage.split('.')[0].toLowerCase()} : éviter trop loin du point d'eau`);
+    }
+    
+    if (arbre.sol?.humidite?.includes('Frais') || arbre.sol?.humidite?.includes('Humide')) {
+      conseils.push(`💧 Préfère sol frais : éviter zones sèches ou en hauteur`);
+    }
+    
     // Changer la couleur de l'ellipse
     const ellipse = arbreGroup.item(0); // Premier élément = ellipse
     if (problemes.length > 0) {
@@ -655,6 +684,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
       arbreGroup.validationStatus = 'error';
       arbreGroup.validationMessages = problemes;
+      arbreGroup.validationConseils = conseils;
     } else if (avertissements.length > 0) {
       ellipse.set({
         fill: 'rgba(255, 152, 0, 0.4)', // Orange
@@ -662,6 +692,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
       arbreGroup.validationStatus = 'warning';
       arbreGroup.validationMessages = avertissements;
+      arbreGroup.validationConseils = conseils;
     } else {
       ellipse.set({
         fill: 'rgba(129, 199, 132, 0.4)', // Vert
@@ -669,6 +700,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
       arbreGroup.validationStatus = 'ok';
       arbreGroup.validationMessages = ['✅ Position conforme à toutes les règles'];
+      arbreGroup.validationConseils = conseils;
     }
     
     canvas.renderAll();
