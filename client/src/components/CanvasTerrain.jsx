@@ -565,13 +565,15 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
     }
     
-    // Vérifier clôtures
+    // Vérifier clôtures (LIMITE DE PROPRIÉTÉ = VOISINAGE)
     const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
     for (const cloture of clotures) {
       const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
       if (distCloture < distanceCloture || distCloture < 0.15) {
         const pointProche = trouverPointPlusProcheLigne(x, y, cloture);
-        ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCloture, distanceCloture, '🚧');
+        // Message spécifique pour la distance légale voisinage
+        const iconeLegal = distCloture < distanceCloture ? '⚖️' : '🚧';
+        ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCloture, distanceCloture, iconeLegal);
       }
     }
     
@@ -1146,7 +1148,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
     }
     
-    // Vérifier clôtures/limites
+    // Vérifier clôtures/limites (DISTANCE LÉGALE VOISINAGE - Code Civil Art. 671)
     const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
     
     // Extraire le diamètre du tronc (si disponible, sinon estimation à 30cm)
@@ -1156,15 +1158,17 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     for (const cloture of clotures) {
       const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
       
-      // Le TRONC ne doit pas dépasser la clôture (limite interne)
+      // Le TRONC ne doit pas dépasser la clôture (limite interne propriété)
       if (distCloture < rayonTronc) {
-        problemes.push(`🚧 TRONC dépasse la limite propriété (${distCloture.toFixed(1)}m < ${rayonTronc.toFixed(1)}m rayon tronc) - INTERDIT`);
+        problemes.push(`⚖️ ILLÉGAL: Tronc dépasse votre limite de propriété (${distCloture.toFixed(1)}m < ${rayonTronc.toFixed(1)}m) - Voisin peut exiger arrachage`);
       }
-      // L'arbre entier (branches) doit respecter la distance légale
+      // L'arbre entier (branches) doit respecter la distance légale voisinage
       else if (distCloture < distanceCloture) {
-        problemes.push(`🚧 Trop près de la limite (${distCloture.toFixed(1)}m < ${distanceCloture}m légal)`);
+        const articleLoi = arbre.reglementation?.distancesLegales?.voisinage?.regle || 'Code Civil Art. 671';
+        const sanction = arbre.reglementation?.distancesLegales?.voisinage?.sanction || 'Voisin peut exiger arrachage';
+        problemes.push(`⚖️ DISTANCE LÉGALE NON RESPECTÉE: ${distCloture.toFixed(1)}m < ${distanceCloture}m requis (${articleLoi}) - ${sanction}`);
       } else if (distCloture < distanceCloture + 0.5) {
-        avertissements.push(`🚧 Proche de la limite (${distCloture.toFixed(1)}m, ${distanceCloture}m minimum)`);
+        avertissements.push(`⚠️ Proche limite voisinage (${distCloture.toFixed(1)}m, ${distanceCloture}m légal minimum)`);
       }
     }
     
