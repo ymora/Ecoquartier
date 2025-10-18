@@ -117,7 +117,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         
         if (activeObjects.length > 0) {
           activeObjects.forEach(obj => {
-            if (!obj.isGridLine) {
+            if (!obj.isGridLine && !obj.isImageFond) {
               canvas.remove(obj);
             }
           });
@@ -338,7 +338,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // Afficher le menu contextuel au-dessus de l'objet sélectionné
   const afficherMenuContextuel = (obj, canvas) => {
-    if (!obj || obj.isGridLine || obj.isBoussole || obj.measureLabel) {
+    if (!obj || obj.isGridLine || obj.isBoussole || obj.measureLabel || obj.isImageFond) {
       cacherMenuContextuel();
       return;
     }
@@ -416,6 +416,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     // Afficher un cercle rouge pour le tronc pendant le déplacement
     afficherCercleTronc(canvas, arbreGroup);
+    
+    // Afficher les lignes de mesure pour les distances problématiques
+    afficherLignesMesure(canvas, arbreGroup);
   };
   
   const afficherCercleTronc = (canvas, arbreGroup) => {
@@ -445,12 +448,143 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.renderAll();
   };
   
+  // Afficher les lignes de mesure pour les distances problématiques
+  const afficherLignesMesure = (canvas, arbreGroup) => {
+    // Supprimer les anciennes lignes de mesure
+    canvas.getObjects().filter(obj => obj.isLigneMesure).forEach(obj => canvas.remove(obj));
+    
+    const arbre = arbreGroup.arbreData;
+    if (!arbre) return;
+    
+    const x = arbreGroup.left;
+    const y = arbreGroup.top;
+    
+    // Extraire les distances minimales
+    const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
+    const distanceCanalisations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.canalisations?.split('m')[0] || '4');
+    const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
+    
+    // Vérifier maison
+    const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
+    if (maison) {
+      const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
+      if (distMaison < distanceFondations) {
+        // Trouver le point le plus proche sur la maison
+        const pointProche = trouverPointPlusProcheMaison(x, y, maison);
+        ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distMaison, distanceFondations, '🏠');
+      }
+    }
+    
+    // Vérifier canalisations
+    const canalisations = canvas.getObjects().filter(obj => obj.customType === 'canalisation');
+    for (const canal of canalisations) {
+      const distCanal = calculerDistanceLigne(x, y, canal) / echelle;
+      if (distCanal < distanceCanalisations) {
+        const pointProche = trouverPointPlusProcheLigne(x, y, canal);
+        ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCanal, distanceCanalisations, '🚰');
+      }
+    }
+    
+    // Vérifier clôtures
+    const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
+    for (const cloture of clotures) {
+      const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
+      if (distCloture < distanceCloture || distCloture < 0.15) {
+        const pointProche = trouverPointPlusProcheLigne(x, y, cloture);
+        ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCloture, distanceCloture, '🚧');
+      }
+    }
+    
+    canvas.renderAll();
+  };
+  
+  const ajouterLigneMesureProbleme = (canvas, x1, y1, x2, y2, distActuelle, distMin, icone) => {
+    // Ligne pointillée rouge
+    const ligne = new fabric.Line([x1, y1, x2, y2], {
+      stroke: '#d32f2f',
+      strokeWidth: 2,
+      strokeDashArray: [8, 4],
+      selectable: false,
+      evented: false,
+      isLigneMesure: true
+    });
+    canvas.add(ligne);
+    
+    // Label de distance au milieu
+    const midX = (x1 + x2) / 2;
+    const midY = (y1 + y2) / 2;
+    
+    const label = new fabric.Text(`${icone} ${distActuelle.toFixed(1)}m < ${distMin}m`, {
+      left: midX,
+      top: midY - 15,
+      fontSize: 11,
+      fontWeight: 'bold',
+      fill: 'white',
+      backgroundColor: '#d32f2f',
+      padding: 4,
+      borderRadius: 4,
+      originX: 'center',
+      originY: 'center',
+      selectable: false,
+      evented: false,
+      isLigneMesure: true
+    });
+    canvas.add(label);
+  };
+  
+  const trouverPointPlusProcheMaison = (px, py, rect) => {
+    const rx = rect.left;
+    const ry = rect.top;
+    const rw = rect.getScaledWidth();
+    const rh = rect.getScaledHeight();
+    
+    const closestX = Math.max(rx, Math.min(px, rx + rw));
+    const closestY = Math.max(ry, Math.min(py, ry + rh));
+    
+    return { x: closestX, y: closestY };
+  };
+  
+  const trouverPointPlusProcheLigne = (px, py, ligne) => {
+    const x1 = ligne.x1 + ligne.left;
+    const y1 = ligne.y1 + ligne.top;
+    const x2 = ligne.x2 + ligne.left;
+    const y2 = ligne.y2 + ligne.top;
+    
+    const A = px - x1;
+    const B = py - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+    
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    const param = lenSq !== 0 ? dot / lenSq : -1;
+    
+    let xx, yy;
+    
+    if (param < 0) {
+      xx = x1;
+      yy = y1;
+    } else if (param > 1) {
+      xx = x2;
+      yy = y2;
+    } else {
+      xx = x1 + param * C;
+      yy = y1 + param * D;
+    }
+    
+    return { x: xx, y: yy };
+  };
+  
   const cacherCercleTronc = (canvas) => {
     const cercleTronc = canvas.getObjects().find(obj => obj.isTroncIndicator);
     if (cercleTronc) {
       canvas.remove(cercleTronc);
       canvas.renderAll();
     }
+    
+    // Aussi cacher les lignes de mesure
+    canvas.getObjects().filter(obj => obj.isLigneMesure).forEach(obj => canvas.remove(obj));
+    canvas.renderAll();
   };
 
   // Ajouter un point intermédiaire à une ligne pour créer un angle
@@ -1701,7 +1835,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     };
 
     objets.forEach(obj => {
-      if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton) return;
+      if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
 
       if (obj.customType === 'maison') {
         planData.maison = {
@@ -1770,7 +1904,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     // Ajouter nouvelles mesures
     canvas.getObjects().forEach(obj => {
-      if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton) return;
+      if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
 
       if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves') {
         const w = Math.round(obj.getScaledWidth() / echelle);
@@ -2166,7 +2300,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     }
     
     actifs.forEach(obj => {
-      if (!obj.isGridLine) canvas.remove(obj);
+      if (!obj.isGridLine && !obj.isImageFond) canvas.remove(obj);
     });
     canvas.discardActiveObject();
     canvas.renderAll();
@@ -2258,7 +2392,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
     
-    const objets = canvas.getObjects().filter(obj => !obj.isGridLine && !obj.isBoussole);
+    if (!confirm('⚠️ Effacer TOUT le plan et la sauvegarde ?\n(L\'image de fond sera conservée)')) {
+      return;
+    }
+    
+    const objets = canvas.getObjects().filter(obj => !obj.isGridLine && !obj.isBoussole && !obj.isImageFond);
     objets.forEach(obj => canvas.remove(obj));
     canvas.renderAll();
     
@@ -2279,14 +2417,15 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     try {
       const planData = JSON.parse(saved);
       
-      // Effacer seulement les objets du plan (pas grille, boussole, dimensions, aide)
+      // Effacer seulement les objets du plan (pas grille, boussole, dimensions, aide, image de fond)
       const objets = canvas.getObjects().filter(obj => 
         !obj.isGridLine && 
         !obj.isBoussole && 
         !obj.isDimensionBox && 
         !obj.isAideButton &&
         !obj.measureLabel &&
-        !obj.alignmentGuide
+        !obj.alignmentGuide &&
+        !obj.isImageFond
       );
       objets.forEach(obj => canvas.remove(obj));
       
@@ -2526,18 +2665,18 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
               📷 Charger Image
             </button>
             
-            {imageFondRef.current && (
+            {imageFondChargee && (
               <>
                 <div style={{ padding: '0.5rem', background: '#e3f2fd', borderRadius: '6px' }}>
                   <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', color: '#1976d2', fontWeight: 'bold' }}>
-                    Opacité: {Math.round(opaciteImageRef.current * 100)}%
+                    Opacité: {Math.round(opaciteImage * 100)}%
                   </label>
                   <input 
                     type="range" 
                     min="0" 
                     max="1" 
                     step="0.05"
-                    defaultValue={opaciteImageRef.current}
+                    value={opaciteImage}
                     onChange={(e) => ajusterOpaciteImage(parseFloat(e.target.value))}
                     style={{ width: '100%' }}
                   />
