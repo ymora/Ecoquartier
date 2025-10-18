@@ -22,6 +22,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [opaciteImage, setOpaciteImage] = useState(0.5); // Opacité de l'image de fond (50% par défaut)
   const [zonesContraintesVisibles, setZonesContraintesVisibles] = useState(true); // Afficher les zones de contraintes par défaut
   const [anneeProjection, setAnneeProjection] = useState(20); // Projection temporelle (20 ans par défaut = maturité)
+  const [ombreVisible, setOmbreVisible] = useState(false); // Afficher l'ombre de la maison
+  const [saison, setSaison] = useState('ete'); // Saison pour calcul ombre (hiver, printemps, ete, automne)
 
   // Initialiser le canvas UNE SEULE FOIS
   useEffect(() => {
@@ -231,8 +233,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         });
       }
       
-      // Recalculer les zones de contraintes
+      // Recalculer les zones de contraintes et l'ombre
       afficherZonesContraintes(canvas);
+      afficherOmbreMaison(canvas);
     });
 
     // Afficher menu contextuel lors de la sélection
@@ -283,6 +286,14 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       afficherZonesContraintes(canvas);
     }
   }, [zonesContraintesVisibles]);
+
+  // Recalculer l'ombre quand la saison ou la visibilité change
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      afficherOmbreMaison(canvas);
+    }
+  }, [ombreVisible, saison]);
 
   // Redimensionner les arbres quand l'année de projection change
   useEffect(() => {
@@ -677,6 +688,107 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     // Aussi cacher les lignes de mesure
     canvas.getObjects().filter(obj => obj.isLigneMesure).forEach(obj => canvas.remove(obj));
+    canvas.renderAll();
+  };
+
+  // Calculer et afficher l'ombre portée de la maison selon la saison
+  const afficherOmbreMaison = (canvas) => {
+    // Supprimer les anciennes ombres
+    canvas.getObjects().filter(obj => obj.isOmbre).forEach(obj => canvas.remove(obj));
+    
+    if (!ombreVisible) return;
+    
+    const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
+    if (!maison) return;
+    
+    // Hauteur de la maison (éditable, par défaut 7m pour R+1)
+    const hauteurMaison = maison.hauteurBatiment || 7; // 7m = rez-de-chaussée + 1 étage
+    
+    // Angles solaires selon la saison (France métropolitaine, ~48°N)
+    // Angle = élévation solaire à midi solaire (sud)
+    const anglesSolaires = {
+      'hiver': 18,      // 21 décembre : soleil très bas (18° à midi)
+      'printemps': 45,  // 21 mars/sept : équinoxe
+      'ete': 65,        // 21 juin : soleil haut (65° à midi)
+      'automne': 45     // 21 septembre : équinoxe
+    };
+    
+    const angleSoleil = anglesSolaires[saison];
+    const angleRad = (angleSoleil * Math.PI) / 180;
+    
+    // Longueur de l'ombre = hauteur / tan(angle)
+    const longueurOmbre = hauteurMaison / Math.tan(angleRad);
+    const longueurOmbrePx = longueurOmbre * echelle;
+    
+    // Direction de l'ombre : TOUJOURS VERS LE NORD (opposé au sud)
+    // Le soleil est au sud à midi en France
+    // L'indicateur ☀️ SUD nous donne la direction du sud
+    const indicateurSud = canvas.getObjects().find(obj => obj.isBoussole);
+    let angleSud = 0; // Par défaut : sud vers le bas
+    if (indicateurSud) {
+      angleSud = (indicateurSud.angle || 0) * Math.PI / 180;
+    }
+    
+    // Ombre vers le nord = opposé du sud (+ 180°)
+    const angleOmbre = angleSud + Math.PI;
+    
+    // Calculer les points de l'ombre (projection du rectangle maison)
+    const mWidth = maison.getScaledWidth();
+    const mHeight = maison.getScaledHeight();
+    const mLeft = maison.left;
+    const mTop = maison.top;
+    
+    // 4 coins de la maison
+    const coins = [
+      { x: mLeft, y: mTop },                          // Haut gauche
+      { x: mLeft + mWidth, y: mTop },                 // Haut droit
+      { x: mLeft + mWidth, y: mTop + mHeight },       // Bas droit
+      { x: mLeft, y: mTop + mHeight }                 // Bas gauche
+    ];
+    
+    // Projeter chaque coin selon l'angle de l'ombre
+    const coinsOmbre = coins.map(coin => ({
+      x: coin.x + Math.cos(angleOmbre) * longueurOmbrePx,
+      y: coin.y + Math.sin(angleOmbre) * longueurOmbrePx
+    }));
+    
+    // Créer le polygone de l'ombre (maison + projection)
+    const pointsOmbre = [
+      ...coins,
+      ...coinsOmbre.reverse() // Inverser pour fermer le polygone correctement
+    ];
+    
+    const ombre = new fabric.Polygon(pointsOmbre, {
+      fill: 'rgba(0, 0, 0, 0.25)',
+      stroke: 'rgba(0, 0, 0, 0.4)',
+      strokeWidth: 1,
+      strokeDashArray: [5, 5],
+      selectable: false,
+      evented: false,
+      isOmbre: true
+    });
+    
+    // Insérer l'ombre juste après les lignes de grille
+    const gridCount = canvas.getObjects().filter(obj => obj.isGridLine).length;
+    canvas.insertAt(ombre, gridCount + 1);
+    
+    // Ajouter un label informatif
+    const labelOmbre = new fabric.Text(
+      `☀️ Ombre ${saison} (${angleSoleil}° soleil, ${longueurOmbre.toFixed(1)}m)`,
+      {
+        left: mLeft + mWidth / 2,
+        top: mTop + mHeight + longueurOmbrePx / 2,
+        fontSize: 12,
+        fill: '#424242',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        padding: 4,
+        selectable: false,
+        evented: false,
+        isOmbre: true
+      }
+    );
+    canvas.add(labelOmbre);
+    
     canvas.renderAll();
   };
 
@@ -2292,6 +2404,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       // Données structurelles éditables
       profondeurFondations: 1.2, // 1.2m par défaut (fondations standard)
       typeFondations: 'semelles', // semelles, pieux, radier
+      hauteurBatiment: 7, // 7m de haut (R+1)
       surfaceSol: 100 // 10m × 10m = 100m²
     });
 
@@ -2849,6 +2962,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           >
             👁️
           </button>
+          <button 
+            className={`btn-outil ${ombreVisible ? 'btn-active' : ''}`}
+            onClick={() => setOmbreVisible(!ombreVisible)} 
+            title="Ombre maison"
+          >
+            ☀️
+          </button>
           
           {/* ACTIONS */}
           <div className="section-title">⚡ Actions</div>
@@ -2974,25 +3094,74 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
       {/* Timeline de croissance (slider temporel) */}
       <div className="timeline-croissance">
-        <label>
-          <span className="timeline-icon">📅</span>
-          <strong>Projection temporelle</strong>
-        </label>
-        <div className="timeline-slider-container">
-          <span className="timeline-label">Aujourd'hui</span>
-          <input 
-            type="range" 
-            min="0" 
-            max="20" 
-            step="1"
-            value={anneeProjection}
-            onChange={(e) => setAnneeProjection(parseInt(e.target.value))}
-            className="timeline-slider"
-          />
-          <span className="timeline-label">Maturité</span>
-        </div>
-        <div className="timeline-value">
-          {anneeProjection === 0 ? 'Plantation' : anneeProjection >= 20 ? '20+ ans (Maturité)' : `Dans ${anneeProjection} an${anneeProjection > 1 ? 's' : ''}`}
+        <div className="timeline-row">
+          <div className="timeline-section">
+            <label>
+              <span className="timeline-icon">📅</span>
+              <strong>Projection temporelle</strong>
+            </label>
+            <div className="timeline-slider-container">
+              <span className="timeline-label">Aujourd'hui</span>
+              <input 
+                type="range" 
+                min="0" 
+                max="20" 
+                step="1"
+                value={anneeProjection}
+                onChange={(e) => setAnneeProjection(parseInt(e.target.value))}
+                className="timeline-slider"
+              />
+              <span className="timeline-label">Maturité</span>
+            </div>
+            <div className="timeline-value">
+              {anneeProjection === 0 ? 'Plantation' : anneeProjection >= 20 ? '20+ ans (Maturité)' : `Dans ${anneeProjection} an${anneeProjection > 1 ? 's' : ''}`}
+            </div>
+          </div>
+          
+          {ombreVisible && (
+            <div className="timeline-section saison-section">
+              <label>
+                <span className="timeline-icon">☀️</span>
+                <strong>Saison (ombre)</strong>
+              </label>
+              <div className="saison-buttons">
+                <button 
+                  className={`btn-saison ${saison === 'hiver' ? 'active' : ''}`}
+                  onClick={() => setSaison('hiver')}
+                  title="Hiver (21 déc) - Soleil bas 18°"
+                >
+                  ❄️
+                </button>
+                <button 
+                  className={`btn-saison ${saison === 'printemps' ? 'active' : ''}`}
+                  onClick={() => setSaison('printemps')}
+                  title="Printemps (21 mars) - Équinoxe 45°"
+                >
+                  🌸
+                </button>
+                <button 
+                  className={`btn-saison ${saison === 'ete' ? 'active' : ''}`}
+                  onClick={() => setSaison('ete')}
+                  title="Été (21 juin) - Soleil haut 65°"
+                >
+                  ☀️
+                </button>
+                <button 
+                  className={`btn-saison ${saison === 'automne' ? 'active' : ''}`}
+                  onClick={() => setSaison('automne')}
+                  title="Automne (21 sept) - Équinoxe 45°"
+                >
+                  🍂
+                </button>
+              </div>
+              <div className="saison-info">
+                {saison === 'hiver' && '❄️ Hiver : ombre longue (18°)'}
+                {saison === 'printemps' && '🌸 Printemps : ombre moyenne (45°)'}
+                {saison === 'ete' && '☀️ Été : ombre courte (65°)'}
+                {saison === 'automne' && '🍂 Automne : ombre moyenne (45°)'}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
