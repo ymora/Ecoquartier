@@ -79,12 +79,16 @@ Voir détails : **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)**
 
 ## 📚 Documentation
 
+**📖 [Index complet de la documentation](docs/INDEX.md)** - Toute la documentation est centralisée dans le dossier `docs/`
+
 ### **Guides d'utilisation**
 - **[docs/GUIDE_ADMIN.md](docs/GUIDE_ADMIN.md)** - Interface admin complète
 - **[docs/GUIDE_RAPIDE_ADMIN.md](docs/GUIDE_RAPIDE_ADMIN.md)** - Référence rapide
+- **[docs/GUIDE_UTILISATION_COMPLET.md](docs/GUIDE_UTILISATION_COMPLET.md)** - Guide utilisateur
 - **[docs/OUTILS.md](docs/OUTILS.md)** - Tous les outils disponibles
 
 ### **Documentation technique**
+- **[docs/ARCHITECTURE_CODE.md](docs/ARCHITECTURE_CODE.md)** - Architecture du code
 - **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)** - Déploiement Render
 - **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Historique versions
 - **[docs/VALIDATION_SOURCES.md](docs/VALIDATION_SOURCES.md)** - Fiabilité données
