@@ -2328,8 +2328,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       padding: 3
     });
 
-    // Calculer l'orientation quand le soleil bouge
-    soleil.on('moving', () => {
+    // Fonction pour calculer et mettre à jour l'orientation
+    const updateOrientation = () => {
       // Mettre à jour la position du label
       label.set({
         left: soleil.left,
@@ -2360,6 +2360,19 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onOrientationChange(newOrientation);
       }
       
+      canvas.renderAll();
+    };
+    
+    // Événement pendant le déplacement (feedback visuel)
+    soleil.on('moving', updateOrientation);
+    
+    // Événement à la fin du déplacement (important pour "déposer")
+    soleil.on('modified', updateOrientation);
+    
+    // Événement mouseup pour s'assurer que l'objet se dépose
+    soleil.on('mouseup', () => {
+      canvas.setActiveObject(null); // Désélectionner pour "déposer"
+      updateOrientation();
       canvas.renderAll();
     });
 
