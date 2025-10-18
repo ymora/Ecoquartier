@@ -2806,60 +2806,56 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         </div>
         
         <div className="outils-dessin">
-          <button className="btn-outil" onClick={ajouterMaison} title="Ajouter une maison">
+          {/* STRUCTURES */}
+          <div className="section-title">🏗️ Structures</div>
+          <button className="btn-outil" onClick={ajouterMaison} title="Maison">
             🏠
           </button>
-          <button className="btn-outil" onClick={ajouterCanalisation} title="Ajouter une canalisation (gris)">
-            🚰
-          </button>
-          <button className="btn-outil" onClick={ajouterCloture} title="Ajouter une clôture (jaune pointillés)">
-            🚧
-          </button>
-          <button className="btn-outil" onClick={ajouterArbreExistant} title="Ajouter un arbre existant">
-            🌳
-          </button>
-          <button className="btn-outil" onClick={ajouterTerrasse} title="Ajouter une terrasse">
+          <button className="btn-outil" onClick={ajouterTerrasse} title="Terrasse">
             🏡
           </button>
-          <button className="btn-outil" onClick={ajouterCiterne} title="Ajouter une citerne/fosse septique (2.5m prof.)">
-            💧
-          </button>
-          <button className="btn-outil" onClick={ajouterPaves} title="Ajouter des pavés enherbés">
+          <button className="btn-outil" onClick={ajouterPaves} title="Pavés enherbés">
             🟩
           </button>
-          <button className="btn-outil btn-success" onClick={chargerPlanSauvegarde} title="Charger le plan sauvegardé">
-            📥
+          
+          {/* RÉSEAUX */}
+          <div className="section-title">🔧 Réseaux</div>
+          <button className="btn-outil" onClick={ajouterCanalisation} title="Canalisation">
+            🚰
           </button>
-          <button className="btn-outil btn-lock" onClick={verrouillerSelection} title="Verrouiller la sélection">
-            🔒
+          <button className="btn-outil" onClick={ajouterCiterne} title="Citerne/Fosse">
+            💧
           </button>
-          <button className="btn-outil btn-unlock" onClick={deverrouillerTout} title="Tout déverrouiller">
-            🔓
+          <button className="btn-outil" onClick={ajouterCloture} title="Clôture">
+            🚧
           </button>
-          <button className="btn-outil btn-danger" onClick={supprimerSelection} title="Supprimer la sélection (ou Suppr)">
-            🗑️
+          
+          {/* VÉGÉTATION */}
+          <div className="section-title">🌳 Végétation</div>
+          <button className="btn-outil" onClick={ajouterArbreExistant} title="Arbre existant">
+            🌳
           </button>
-          <button className="btn-outil btn-danger" onClick={effacerTout} title="Effacer tout le plan + sauvegarde">
-            ⚠️
-          </button>
+          
+          {/* AFFICHAGE */}
+          <div className="section-title">👁️ Affichage</div>
           <button 
             className={`btn-outil ${zonesContraintesVisibles ? 'btn-active' : ''}`}
             onClick={() => setZonesContraintesVisibles(!zonesContraintesVisibles)} 
-            title={zonesContraintesVisibles ? "Masquer zones de contraintes" : "Afficher zones de contraintes"}
+            title="Zones contraintes"
           >
-            {zonesContraintesVisibles ? '👁️' : '👁️‍🗨️'}
+            👁️
           </button>
-          <button className="btn-outil" onClick={() => {
-            const saved = localStorage.getItem('planTerrain');
-            if (saved) {
-              const planData = JSON.parse(saved);
-              const date = new Date(planData.timestamp || Date.now()).toLocaleString('fr-FR');
-              alert(`💾 Plan sauvegardé le ${date}\n✅ Sera rechargé automatiquement`);
-            } else {
-              alert('Aucune sauvegarde trouvée');
-            }
-          }} title="Vérifier la sauvegarde">
-            💾
+          
+          {/* ACTIONS */}
+          <div className="section-title">⚡ Actions</div>
+          <button className="btn-outil btn-lock" onClick={verrouillerSelection} title="Verrouiller">
+            🔒
+          </button>
+          <button className="btn-outil btn-danger" onClick={supprimerSelection} title="Supprimer">
+            🗑️
+          </button>
+          <button className="btn-outil btn-danger" onClick={effacerTout} title="Tout effacer">
+            ⚠️
           </button>
         </div>
         
