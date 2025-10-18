@@ -45,9 +45,9 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
           </div>
 
                 <div className="validation-legend">
-                   <span className="legend-item"><span className="dot green"></span> ✅ Conforme</span>
-                   <span className="legend-item"><span className="dot orange"></span> ⚠️ Attention</span>
-                   <span className="legend-item"><span className="dot red"></span> ⚖️ Illégal (voisinage/Code Civil)</span>
+                   <span className="legend-item">✅ Conforme</span>
+                   <span className="legend-item">⚠️ Attention</span>
+                   <span className="legend-item">⚖️ Illégal (voisinage/Code Civil)</span>
                  </div>
 
                 <button 

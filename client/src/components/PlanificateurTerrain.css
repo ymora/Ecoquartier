@@ -121,31 +121,13 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #333;
-}
-
-.legend-item .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid;
-}
-
-.legend-item .dot.green {
-  background: rgba(129, 199, 132, 0.6);
-  border-color: #2e7d32;
-}
-
-.legend-item .dot.orange {
-  background: rgba(255, 152, 0, 0.6);
-  border-color: #e65100;
-}
-
-.legend-item .dot.red {
-  background: rgba(244, 67, 54, 0.6);
-  border-color: #c62828;
+  padding: 0.3rem 0.6rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid rgba(46, 139, 87, 0.2);
 }
 
 .help-btn {
