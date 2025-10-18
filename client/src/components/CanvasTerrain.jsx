@@ -979,44 +979,27 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
     };
     
-    // Pavés enherbés 5m x 5m à droite
-    const paveSize1 = 5 * echelle;
-    const paveX1 = marginX + terrainLargeur * 0.7;
-    const paveY1 = marginY + terrainHauteur / 2 - paveSize1 / 2;
-    
-    const paves1 = new fabric.Rect({
-      left: paveX1,
-      top: paveY1,
-      width: paveSize1,
-      height: paveSize1,
-      fill: creerMotifPaves(),
-      stroke: '#7cb342',
-      strokeWidth: 2,
-      customType: 'paves'
-    });
-    canvas.add(paves1);
-    
     // Pavés enherbés 5m x 5m en bas de la maison (qui la touchent)
-    const paveSize2 = 5 * echelle;
-    const paveX2 = maisonX + maisonSize / 2 - paveSize2 / 2; // Centré sous la maison
-    const paveY2 = maisonY + maisonSize; // Juste en dessous de la maison
+    const paveSize = 5 * echelle;
+    const paveX = maisonX + maisonSize / 2 - paveSize / 2; // Centré sous la maison
+    const paveY = maisonY + maisonSize; // Juste en dessous de la maison
     
-    const paves2 = new fabric.Rect({
-      left: paveX2,
-      top: paveY2,
-      width: paveSize2,
-      height: paveSize2,
+    const paves = new fabric.Rect({
+      left: paveX,
+      top: paveY,
+      width: paveSize,
+      height: paveSize,
       fill: creerMotifPaves(),
       stroke: '#7cb342',
       strokeWidth: 2,
       customType: 'paves'
     });
-    canvas.add(paves2);
+    canvas.add(paves);
     
     canvas.renderAll();
     const largeurM = (terrainLargeur / echelle).toFixed(0);
     const hauteurM = (terrainHauteur / echelle).toFixed(0);
-    console.log(`✅ Plan par défaut créé : clôture ${largeurM}×${hauteurM}m, maison 10×10m, 2 pavés 5×5m (utilise tout l'espace disponible)`);
+    console.log(`✅ Plan par défaut créé : clôture ${largeurM}×${hauteurM}m, maison 10×10m, pavés 5×5m sous la maison (utilise tout l'espace disponible)`);
   };
 
   // Charger automatiquement le plan au démarrage
