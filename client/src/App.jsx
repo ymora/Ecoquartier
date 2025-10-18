@@ -41,16 +41,6 @@ function App() {
         onModeChange={setMode}
       />
 
-      {/* Bouton Logs (debug) */}
-      <button 
-        className="mode-toggle logs-toggle"
-        onClick={() => setLogViewerOpen(true)}
-        aria-label="Voir les logs (debug)"
-        title="Journal des logs (debug)"
-      >
-        <FaBug />
-      </button>
-
       {mode === 'normal' ? (
         // Mode Normal - Fiches détaillées
         <div className="main-layout">
@@ -77,7 +67,10 @@ function App() {
         </main>
       )}
 
-      <Disclaimer onClose={handleDisclaimerClose} />
+      <Disclaimer 
+        onClose={handleDisclaimerClose} 
+        onOpenLogs={() => setLogViewerOpen(true)}
+      />
 
       {/* Log Viewer (debug) */}
       <LogViewer 

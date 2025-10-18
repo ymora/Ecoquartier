@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaBug } from 'react-icons/fa';
 import './Disclaimer.css';
 
-function Disclaimer({ onClose }) {
+function Disclaimer({ onClose, onOpenLogs }) {
   const isAlreadyAccepted = localStorage.getItem('disclaimer-accepted') === 'true';
   const [isVisible, setIsVisible] = useState(!isAlreadyAccepted); // Pas visible si déjà accepté
   const [isAccepted, setIsAccepted] = useState(isAlreadyAccepted);
@@ -53,16 +53,28 @@ function Disclaimer({ onClose }) {
       <footer className="footer">
         <div className="footer-spacer"></div>
         <p>&copy; 2025 Les Haies de l'Écocartier de Bessancourt. Tous droits réservés.</p>
-        {!isVisible && (
-          <button 
-            className="disclaimer-toggle-inline"
-            onClick={handleToggle}
-            title="Informations légales et avertissements"
-            aria-label="Ouvrir les informations légales"
-          >
-            !
-          </button>
-        )}
+        <div className="footer-buttons">
+          {!isVisible && (
+            <button 
+              className="disclaimer-toggle-inline"
+              onClick={handleToggle}
+              title="Informations légales et avertissements"
+              aria-label="Ouvrir les informations légales"
+            >
+              !
+            </button>
+          )}
+          {onOpenLogs && (
+            <button 
+              className="disclaimer-toggle-inline logs-btn"
+              onClick={onOpenLogs}
+              title="Journal des logs (debug)"
+              aria-label="Ouvrir le journal des logs"
+            >
+              <FaBug />
+            </button>
+          )}
+        </div>
       </footer>
       
       {isVisible && (
