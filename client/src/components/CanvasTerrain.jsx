@@ -21,6 +21,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [imageFondChargee, setImageFondChargee] = useState(false); // État pour afficher/cacher les contrôles
   const [opaciteImage, setOpaciteImage] = useState(0.5); // Opacité de l'image de fond (50% par défaut)
   const [zonesContraintesVisibles, setZonesContraintesVisibles] = useState(true); // Afficher les zones de contraintes par défaut
+  const [anneeProjection, setAnneeProjection] = useState(20); // Projection temporelle (20 ans par défaut = maturité)
 
   // Initialiser le canvas UNE SEULE FOIS
   useEffect(() => {
@@ -282,6 +283,44 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       afficherZonesContraintes(canvas);
     }
   }, [zonesContraintesVisibles]);
+
+  // Redimensionner les arbres quand l'année de projection change
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    
+    const arbresPlantes = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
+    
+    arbresPlantes.forEach(arbreGroup => {
+      const arbre = arbreGroup.arbreData;
+      if (!arbre) return;
+      
+      const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
+      const ellipse = arbreGroup.item(0); // Premier élément = ellipse
+      
+      // Redimensionner l'ellipse
+      ellipse.set({
+        rx: tailles.largeur / 2,
+        ry: tailles.hauteur / 2
+      });
+      
+      // Mettre à jour le label des dimensions
+      const dimensionsLabel = arbreGroup.item(3); // Quatrième élément = dimensions
+      if (dimensionsLabel) {
+        const texte = anneeProjection >= 20 
+          ? `${tailles.envergureMax}m × ${tailles.hauteurMax}m (Maturité)` 
+          : `${(tailles.envergureMax * tailles.pourcentage).toFixed(1)}m × ${(tailles.hauteurMax * tailles.pourcentage).toFixed(1)}m (${anneeProjection} ans)`;
+        
+        dimensionsLabel.set({ text: texte });
+      }
+      
+      // Revalider
+      validerPositionArbre(canvas, arbreGroup);
+    });
+    
+    canvas.renderAll();
+    afficherZonesContraintes(canvas);
+  }, [anneeProjection]);
 
   // Rendre le modal sol déplaçable
   useEffect(() => {
@@ -1236,6 +1275,38 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.renderAll();
   };
 
+  // Calculer la taille d'un arbre selon l'année de projection
+  const calculerTailleSelonAnnee = (arbre, annee) => {
+    // Extraire taille à maturité
+    const envergureStr = arbre.envergure || '5';
+    const envergureMax = parseFloat(envergureStr.split('-').pop());
+    const hauteurStr = arbre.tailleMaturite || '5';
+    const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
+    
+    // Extraire vitesse de croissance (cm/an)
+    const croissanceStr = arbre.croissance || 'Moyenne (30-40 cm/an)';
+    const match = croissanceStr.match(/(\d+)-?(\d*)\s*cm/);
+    let vitesseCroissance = 30; // Par défaut
+    if (match) {
+      vitesseCroissance = match[2] ? (parseInt(match[1]) + parseInt(match[2])) / 2 : parseInt(match[1]);
+    }
+    
+    // Années pour atteindre maturité (estimation)
+    const anneesMaturite = (hauteurMax / (vitesseCroissance / 100)) || 20;
+    
+    // Calculer le pourcentage de croissance
+    let pourcentage = 1.0; // 100% par défaut (maturité)
+    if (annee < anneesMaturite) {
+      pourcentage = annee / anneesMaturite;
+    }
+    
+    // Taille actuelle selon l'année
+    const largeur = (envergureMax * pourcentage) * echelle;
+    const hauteur = (hauteurMax * pourcentage) * echelle;
+    
+    return { largeur, hauteur, pourcentage, envergureMax, hauteurMax };
+  };
+
   // Ajouter les arbres à planter automatiquement au démarrage
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
@@ -1249,17 +1320,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
       // Ajouter chaque arbre avec sa taille réelle (ellipse : largeur = envergure, hauteur = hauteur)
     arbresAPlanter.forEach((arbre, index) => {
-      // Extraire l'envergure (largeur) - prendre la valeur max si plage
-      const envergureStr = arbre.envergure || '5';
-      const envergureMax = parseFloat(envergureStr.split('-').pop());
-      
-      // Extraire la hauteur - prendre la valeur max si plage
-      const hauteurStr = arbre.tailleMaturite || '5';
-      const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
-      
-      // Convertir en pixels
-      const largeur = envergureMax * echelle;
-      const hauteur = hauteurMax * echelle;
+      // Calculer taille selon année de projection
+      const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
+      const largeur = tailles.largeur;
+      const hauteur = tailles.hauteur;
       
       // Trouver une position valide qui respecte toutes les contraintes
       const position = trouverPositionValide(canvas, arbre, largeur, hauteur, index);
@@ -2907,6 +2971,30 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
       {/* Dashboard statistiques */}
       <DashboardTerrain canvas={fabricCanvasRef.current} arbres={arbresAPlanter} />
+
+      {/* Timeline de croissance (slider temporel) */}
+      <div className="timeline-croissance">
+        <label>
+          <span className="timeline-icon">📅</span>
+          <strong>Projection temporelle</strong>
+        </label>
+        <div className="timeline-slider-container">
+          <span className="timeline-label">Aujourd'hui</span>
+          <input 
+            type="range" 
+            min="0" 
+            max="20" 
+            step="1"
+            value={anneeProjection}
+            onChange={(e) => setAnneeProjection(parseInt(e.target.value))}
+            className="timeline-slider"
+          />
+          <span className="timeline-label">Maturité</span>
+        </div>
+        <div className="timeline-value">
+          {anneeProjection === 0 ? 'Plantation' : anneeProjection >= 20 ? '20+ ans (Maturité)' : `Dans ${anneeProjection} an${anneeProjection > 1 ? 's' : ''}`}
+        </div>
+      </div>
 
       {/* Panneau de validation latéral fixe */}
       <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
