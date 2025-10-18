@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
+import DashboardTerrain from './DashboardTerrain';
 import './CanvasTerrain.css';
 
 function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete, arbresAPlanter = [] }) {
@@ -19,6 +20,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const imageFondRef = useRef(null); // Image de fond du plan
   const [imageFondChargee, setImageFondChargee] = useState(false); // État pour afficher/cacher les contrôles
   const [opaciteImage, setOpaciteImage] = useState(0.5); // Opacité de l'image de fond (50% par défaut)
+  const [zonesContraintesVisibles, setZonesContraintesVisibles] = useState(true); // Afficher les zones de contraintes par défaut
 
   // Initialiser le canvas UNE SEULE FOIS
   useEffect(() => {
@@ -227,6 +229,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           validerPositionArbre(canvas, arbre);
         });
       }
+      
+      // Recalculer les zones de contraintes
+      afficherZonesContraintes(canvas);
     });
 
     // Afficher menu contextuel lors de la sélection
@@ -269,6 +274,14 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       fabricCanvasRef.current = null;
     };
   }, []); // Dépendances vides = s'exécute UNE SEULE FOIS
+
+  // Afficher/masquer les zones de contraintes quand le toggle change
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      afficherZonesContraintes(canvas);
+    }
+  }, [zonesContraintesVisibles]);
 
   // Rendre le modal sol déplaçable
   useEffect(() => {
@@ -623,6 +636,112 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     // Aussi cacher les lignes de mesure
     canvas.getObjects().filter(obj => obj.isLigneMesure).forEach(obj => canvas.remove(obj));
+    canvas.renderAll();
+  };
+
+  // Afficher les zones de contraintes visuelles (halos colorés)
+  const afficherZonesContraintes = (canvas) => {
+    // Supprimer les anciennes zones
+    canvas.getObjects().filter(obj => obj.isZoneContrainte).forEach(obj => canvas.remove(obj));
+    
+    if (!zonesContraintesVisibles) return;
+    
+    const arbres = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
+    if (arbres.length === 0) return;
+    
+    // Pour chaque arbre, récupérer ses contraintes
+    arbres.forEach(arbreGroup => {
+      const arbre = arbreGroup.arbreData;
+      if (!arbre) return;
+      
+      const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
+      const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
+      
+      // Zones autour de la maison
+      const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
+      if (maison) {
+        // Zone interdite (rouge)
+        const zoneRouge = new fabric.Rect({
+          left: maison.left - distanceFondations * echelle,
+          top: maison.top - distanceFondations * echelle,
+          width: maison.getScaledWidth() + (distanceFondations * 2 * echelle),
+          height: maison.getScaledHeight() + (distanceFondations * 2 * echelle),
+          fill: 'rgba(244, 67, 54, 0.08)',
+          stroke: '#c62828',
+          strokeWidth: 1,
+          strokeDashArray: [8, 4],
+          selectable: false,
+          evented: false,
+          isZoneContrainte: true
+        });
+        canvas.insertAt(zoneRouge, canvas.getObjects().filter(obj => obj.isGridLine).length + 1);
+        
+        // Zone attention (orange)
+        const zoneOrange = new fabric.Rect({
+          left: maison.left - (distanceFondations + 1) * echelle,
+          top: maison.top - (distanceFondations + 1) * echelle,
+          width: maison.getScaledWidth() + ((distanceFondations + 1) * 2 * echelle),
+          height: maison.getScaledHeight() + ((distanceFondations + 1) * 2 * echelle),
+          fill: 'rgba(255, 152, 0, 0.05)',
+          stroke: '#e65100',
+          strokeWidth: 1,
+          strokeDashArray: [5, 5],
+          selectable: false,
+          evented: false,
+          isZoneContrainte: true
+        });
+        canvas.insertAt(zoneOrange, canvas.getObjects().filter(obj => obj.isGridLine).length + 1);
+      }
+      
+      // Zones autour des citernes
+      const citernes = canvas.getObjects().filter(obj => obj.customType === 'citerne');
+      const distanceFosse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fossesSeptiques?.split('m')[0] || '6');
+      citernes.forEach(citerne => {
+        const zoneRouge = new fabric.Rect({
+          left: citerne.left - distanceFosse * echelle,
+          top: citerne.top - distanceFosse * echelle,
+          width: citerne.getScaledWidth() + (distanceFosse * 2 * echelle),
+          height: citerne.getScaledHeight() + (distanceFosse * 2 * echelle),
+          fill: 'rgba(33, 150, 243, 0.08)',
+          stroke: '#1976d2',
+          strokeWidth: 1,
+          strokeDashArray: [8, 4],
+          selectable: false,
+          evented: false,
+          isZoneContrainte: true
+        });
+        canvas.insertAt(zoneRouge, canvas.getObjects().filter(obj => obj.isGridLine).length + 1);
+      });
+    });
+    
+    // Zones le long des clôtures
+    const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
+    clotures.forEach(cloture => {
+      // Créer une zone tampon de 2m le long de la clôture
+      const angle = Math.atan2(cloture.y2 - cloture.y1, cloture.x2 - cloture.x1);
+      const perpAngle = angle + Math.PI / 2;
+      const offset = 2 * echelle;
+      
+      // Points pour créer un polygone le long de la ligne
+      const points = [
+        { x: cloture.x1 + cloture.left + Math.cos(perpAngle) * offset, y: cloture.y1 + cloture.top + Math.sin(perpAngle) * offset },
+        { x: cloture.x2 + cloture.left + Math.cos(perpAngle) * offset, y: cloture.y2 + cloture.top + Math.sin(perpAngle) * offset },
+        { x: cloture.x2 + cloture.left - Math.cos(perpAngle) * offset, y: cloture.y2 + cloture.top - Math.sin(perpAngle) * offset },
+        { x: cloture.x1 + cloture.left - Math.cos(perpAngle) * offset, y: cloture.y1 + cloture.top - Math.sin(perpAngle) * offset }
+      ];
+      
+      const zoneClot = new fabric.Polygon(points, {
+        fill: 'rgba(255, 193, 7, 0.08)',
+        stroke: '#ffa726',
+        strokeWidth: 1,
+        strokeDashArray: [5, 5],
+        selectable: false,
+        evented: false,
+        isZoneContrainte: true
+      });
+      canvas.insertAt(zoneClot, canvas.getObjects().filter(obj => obj.isGridLine).length + 1);
+    });
+    
     canvas.renderAll();
   };
 
@@ -1380,6 +1499,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const largeurM = (terrainLargeur / echelle).toFixed(0);
     const hauteurM = (terrainHauteur / echelle).toFixed(0);
     console.log(`✅ Plan par défaut créé : clôture ${largeurM}×${hauteurM}m, maison 10×10m, pavés 5×5m sous la maison (utilise tout l'espace disponible)`);
+    
+    // Afficher les zones de contraintes initiales
+    setTimeout(() => afficherZonesContraintes(canvas), 100);
   };
 
   // Charger automatiquement le plan au démarrage
@@ -2656,6 +2778,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           <button className="btn-outil btn-danger" onClick={effacerTout} title="Effacer tout le plan + sauvegarde">
             ⚠️
           </button>
+          <button 
+            className={`btn-outil ${zonesContraintesVisibles ? 'btn-active' : ''}`}
+            onClick={() => setZonesContraintesVisibles(!zonesContraintesVisibles)} 
+            title={zonesContraintesVisibles ? "Masquer zones de contraintes" : "Afficher zones de contraintes"}
+          >
+            {zonesContraintesVisibles ? '👁️' : '👁️‍🗨️'}
+          </button>
           <button className="btn-outil" onClick={() => {
             const saved = localStorage.getItem('planTerrain');
             if (saved) {
@@ -2775,6 +2904,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           </div>
         </div>
       </div>
+
+      {/* Dashboard statistiques */}
+      <DashboardTerrain canvas={fabricCanvasRef.current} arbres={arbresAPlanter} />
 
       {/* Panneau de validation latéral fixe */}
       <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
