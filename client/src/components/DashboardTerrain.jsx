@@ -244,7 +244,7 @@ function DashboardTerrain({ canvas, arbres, couchesSol, onCouchesSolChange }) {
               const nouvelleCouche1Nom = prompt('Nom couche 1:', couchesSol[0]?.nom || 'Terre végétale');
               if (!nouvelleCouche1Nom) return;
               
-              const nouvelleCouche1Prof = parseInt(prompt('Profondeur couche 1 (cm):', couchesSol[0]?.profondeur || 30));
+              const nouvelleCouche1Prof = parseFloat(prompt('Profondeur couche 1 (cm, ex: 35.5):', couchesSol[0]?.profondeur || 30));
               if (isNaN(nouvelleCouche1Prof)) return;
               
               const nouvelleCouche1Type = prompt('Type (fertile/argileux/sableux/calcaire/rocheux):', couchesSol[0]?.type || 'fertile');
@@ -252,7 +252,7 @@ function DashboardTerrain({ canvas, arbres, couchesSol, onCouchesSolChange }) {
               const nouvelleCouche2Nom = prompt('Nom couche 2:', couchesSol[1]?.nom || 'Marne');
               if (!nouvelleCouche2Nom) return;
               
-              const nouvelleCouche2Prof = parseInt(prompt('Profondeur couche 2 (cm):', couchesSol[1]?.profondeur || 70));
+              const nouvelleCouche2Prof = parseFloat(prompt('Profondeur couche 2 (cm, ex: 75.5):', couchesSol[1]?.profondeur || 70));
               if (isNaN(nouvelleCouche2Prof)) return;
               
               const nouvelleCouche2Type = prompt('Type:', couchesSol[1]?.type || 'argileux');
