@@ -67,12 +67,19 @@ function DashboardTerrain({ canvas, arbres, couchesSol, onCouchesSolChange }) {
         const arbre = arbreGroup.arbreData;
         if (!arbre) return;
         
-        if (arbre.biodiversite?.faune?.includes('Mellifère') || 
-            arbre.biodiversite?.faune?.includes('abeilles')) {
+        // Vérifier si mellifère (array ou string)
+        const fauneStr = Array.isArray(arbre.biodiversite?.faune) 
+          ? arbre.biodiversite.faune.join(' ') 
+          : (arbre.biodiversite?.faune || '');
+        
+        if (fauneStr.includes('Mellifère') || 
+            fauneStr.includes('mellifère') ||
+            fauneStr.includes('abeilles')) {
           melliferes++;
           scoreBiodiversite += 30;
         }
         
+        // Vérifier fructification
         if (arbre.fructification?.periode && 
             !arbre.fructification.periode.includes('Rare') &&
             !arbre.fructification.periode.includes('N/A')) {
@@ -80,14 +87,16 @@ function DashboardTerrain({ canvas, arbres, couchesSol, onCouchesSolChange }) {
           scoreBiodiversite += 25;
         }
         
-        // Bonus diversité (>3 espèces différentes)
-        if (totalArbres >= 3) scoreBiodiversite += 20;
-        
         // Bonus plantes locales
         if (arbre.famille === 'Rosaceae' || arbre.famille === 'Betulaceae') {
           scoreBiodiversite += 15;
         }
       });
+      
+      // Bonus diversité (>3 espèces différentes) - UNE SEULE FOIS
+      if (totalArbres >= 3) {
+        scoreBiodiversite += 20;
+      }
       
       scoreBiodiversite = Math.min(100, scoreBiodiversite); // Max 100
       
