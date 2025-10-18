@@ -1030,7 +1030,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           evented: false,
           isZoneContrainte: true
         });
-        canvas.insertAt(zoneRouge, canvas.getObjects().filter(obj => obj.isGridLine).length + 1);
+        canvas.add(zoneRouge);
+        canvas.sendToBack(zoneRouge);
         
         // Zone attention (orange)
         const zoneOrange = new fabric.Rect({
@@ -1046,7 +1047,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           evented: false,
           isZoneContrainte: true
         });
-        canvas.insertAt(zoneOrange, canvas.getObjects().filter(obj => obj.isGridLine).length + 1);
+        canvas.add(zoneOrange);
+        canvas.sendToBack(zoneOrange);
       }
       
       // Zones autour des citernes
@@ -1066,7 +1068,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           evented: false,
           isZoneContrainte: true
         });
-        canvas.insertAt(zoneRouge, canvas.getObjects().filter(obj => obj.isGridLine).length + 1);
+        canvas.add(zoneRouge);
+        canvas.sendToBack(zoneRouge);
       });
     });
     
@@ -1095,7 +1098,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         evented: false,
         isZoneContrainte: true
       });
-      canvas.insertAt(zoneClot, canvas.getObjects().filter(obj => obj.isGridLine).length + 1);
+      canvas.add(zoneClot);
+      canvas.sendToBack(zoneClot);
     });
     
     canvas.renderAll();
