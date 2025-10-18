@@ -8,7 +8,7 @@ import './CanvasTerrain.css';
 function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete, arbresAPlanter = [] }) {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null); // Stocker le canvas dans un ref, pas un state
-  const echelle = 30; // 30 pixels = 1 mètre
+  const echelle = 40; // 40 pixels = 1 mètre (augmenté pour terrain plus grand visuellement)
   const outilActifRef = useRef(null);
   const validationTooltipRef = useRef(null);
   const pointsClotureRef = useRef([]);
