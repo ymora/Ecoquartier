@@ -12,6 +12,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const arbresAjoutesRef = useRef(false); // Pour ajouter les arbres une seule fois
   const contextMenuRef = useRef(null); // Référence au menu contextuel HTML
   const aideVisibleRef = useRef(false); // État de visibilité de l'aide
+  const couchesSolRef = useRef([
+    { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'fertile' },
+    { nom: 'Marne', profondeur: 70, couleur: '#a1887f', type: 'argileux' }
+  ]); // Composition du sol par défaut
 
   // Initialiser le canvas UNE SEULE FOIS
   useEffect(() => {
@@ -46,6 +50,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     // Boussole interactive sur le canvas
     ajouterIndicateurSud(canvas);
+
+    // Indicateur de composition du sol (en bas à gauche)
+    ajouterIndicateurSol(canvas);
 
     // Dimensions du terrain sur le canvas (en haut à gauche)
     ajouterDimensionsSurPlan(canvas);
@@ -717,6 +724,22 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
     }
     
+    // Vérifier la compatibilité avec le sol
+    const profondeurRacines = parseFloat(arbre.reglementation?.systemeRacinaire?.profondeur?.split('-')[0] || '1');
+    const profondeurTerreVegetale = couchesSolRef.current[0].profondeur / 100; // Convertir cm en m
+    const typeSolProfondeur = couchesSolRef.current[1].type;
+    
+    if (profondeurRacines > profondeurTerreVegetale) {
+      const profondeurManquante = profondeurRacines - profondeurTerreVegetale;
+      if (typeSolProfondeur === 'calcaire' && arbre.sol?.ph?.includes('acide')) {
+        avertissements.push(`🌍 Sol calcaire en profondeur (${couchesSolRef.current[1].profondeur}cm) : cet arbre préfère sol acide (pH ${arbre.sol.ph})`);
+      } else if (typeSolProfondeur === 'rocheux' && profondeurRacines > 1) {
+        problemes.push(`⛰️ Sol rocheux à ${profondeurTerreVegetale}m : racines atteignent ${profondeurRacines}m (croissance limitée)`);
+      } else if (typeSolProfondeur === 'argileux' && arbre.sol?.type?.includes('drainé')) {
+        avertissements.push(`🌍 Sol argileux en profondeur : drainage peut être insuffisant pour cet arbre`);
+      }
+    }
+    
     // Ajouter des conseils basés sur les caractéristiques de l'arbre
     if (systemeRacinaire === 'Élevée' || systemeRacinaire === 'Forte') {
       conseils.push(`⚠️ Système racinaire ${systemeRacinaire.toLowerCase()} : privilégier éloignement maximal des infrastructures`);
@@ -733,6 +756,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     if (arbre.sol?.humidite?.includes('Frais') || arbre.sol?.humidite?.includes('Humide')) {
       conseils.push(`💧 Préfère sol frais : éviter zones sèches ou en hauteur`);
     }
+    
+    // Conseil sur la composition du sol
+    conseils.push(`🌍 Sol actuel : ${profondeurTerreVegetale}m de terre végétale, puis ${couchesSolRef.current[1].nom.toLowerCase()}`);
     
     // Changer la couleur de l'ellipse
     const ellipse = arbreGroup.item(0); // Premier élément = ellipse
@@ -874,12 +900,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.setWidth(Math.min(dimensions.largeur * echelle, 800));
     canvas.setHeight(Math.min(dimensions.hauteur * echelle, 600));
     
-    // Supprimer et recréer la grille, boussole, dimensions et bouton aide
+    // Supprimer et recréer la grille, boussole, sol, dimensions et bouton aide
     canvas.getObjects().forEach(obj => {
-      if (obj.isGridLine || obj.isBoussole || obj.isDimensionBox || obj.isAideButton) canvas.remove(obj);
+      if (obj.isGridLine || obj.isBoussole || obj.isSolIndicator || obj.isDimensionBox || obj.isAideButton) canvas.remove(obj);
     });
     ajouterGrille(canvas);
     ajouterIndicateurSud(canvas);
+    ajouterIndicateurSol(canvas);
     ajouterDimensionsSurPlan(canvas);
     ajouterBoutonAide(canvas);
     canvas.renderAll();
@@ -1322,6 +1349,132 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.add(label);
   };
 
+  const ajouterIndicateurSol = (canvas) => {
+    const startX = 20;
+    const startY = canvas.height - 150;
+    const width = 150;
+    let currentY = startY;
+    
+    // Titre
+    const titre = new fabric.Text('📊 Composition du sol', {
+      left: startX,
+      top: startY - 25,
+      fontSize: 12,
+      fontWeight: 'bold',
+      fill: '#424242',
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      padding: 5,
+      selectable: false,
+      evented: false,
+      isSolIndicator: true
+    });
+    canvas.add(titre);
+    
+    // Dessiner chaque couche
+    couchesSolRef.current.forEach((couche, index) => {
+      const hauteurCouche = couche.profondeur * 0.5; // 0.5px par cm
+      
+      // Rectangle de la couche
+      const rect = new fabric.Rect({
+        left: startX,
+        top: currentY,
+        width: width,
+        height: hauteurCouche,
+        fill: couche.couleur,
+        stroke: '#5d4037',
+        strokeWidth: 1,
+        selectable: false,
+        evented: false,
+        isSolIndicator: true
+      });
+      canvas.add(rect);
+      
+      // Label de la couche
+      const label = new fabric.Text(`${couche.nom}\n${couche.profondeur}cm`, {
+        left: startX + width / 2,
+        top: currentY + hauteurCouche / 2,
+        fontSize: 10,
+        fill: 'white',
+        textAlign: 'center',
+        originX: 'center',
+        originY: 'center',
+        selectable: false,
+        evented: false,
+        isSolIndicator: true,
+        shadow: 'rgba(0, 0, 0, 0.5) 1px 1px 2px'
+      });
+      canvas.add(label);
+      
+      currentY += hauteurCouche;
+    });
+    
+    // Bouton pour éditer
+    const btnEdit = new fabric.Text('✏️', {
+      left: startX + width + 10,
+      top: startY,
+      fontSize: 24,
+      hoverCursor: 'pointer',
+      selectable: true,
+      hasControls: false,
+      hasBorders: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      isSolIndicator: true,
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      padding: 5,
+      borderRadius: 5
+    });
+    
+    btnEdit.on('mousedown', () => {
+      editerCouchesSol(canvas);
+    });
+    
+    canvas.add(btnEdit);
+  };
+  
+  const editerCouchesSol = (canvas) => {
+    const couche1Prof = prompt('Profondeur de terre végétale (en cm) :', couchesSolRef.current[0].profondeur);
+    if (!couche1Prof || isNaN(couche1Prof)) return;
+    
+    const couche2Prof = prompt('Profondeur de la couche suivante (ex: marne, argile) en cm :', couchesSolRef.current[1].profondeur);
+    if (!couche2Prof || isNaN(couche2Prof)) return;
+    
+    const couche2Type = prompt('Type de sol en profondeur :\n1 = Marne (argileux)\n2 = Calcaire\n3 = Sableux\n4 = Rocheux', '1');
+    
+    let nom2 = 'Marne';
+    let type2 = 'argileux';
+    let couleur2 = '#a1887f';
+    
+    if (couche2Type === '2') {
+      nom2 = 'Calcaire';
+      type2 = 'calcaire';
+      couleur2 = '#d7ccc8';
+    } else if (couche2Type === '3') {
+      nom2 = 'Sable';
+      type2 = 'sableux';
+      couleur2 = '#ffecb3';
+    } else if (couche2Type === '4') {
+      nom2 = 'Roche';
+      type2 = 'rocheux';
+      couleur2 = '#78909c';
+    }
+    
+    couchesSolRef.current = [
+      { nom: 'Terre végétale', profondeur: parseInt(couche1Prof), couleur: '#8d6e63', type: 'fertile' },
+      { nom: nom2, profondeur: parseInt(couche2Prof), couleur: couleur2, type: type2 }
+    ];
+    
+    // Supprimer l'ancien indicateur et recréer
+    canvas.getObjects().filter(obj => obj.isSolIndicator).forEach(obj => canvas.remove(obj));
+    ajouterIndicateurSol(canvas);
+    canvas.renderAll();
+    
+    // Revalider tous les arbres avec la nouvelle composition
+    canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter').forEach(arbre => {
+      validerPositionArbre(canvas, arbre);
+    });
+  };
+
   const ajouterIndicateurSud = (canvas) => {
     // Position initiale du soleil selon l'orientation (le soleil à midi indique le SUD)
     let soleilX, soleilY;
@@ -1488,7 +1641,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     };
 
     objets.forEach(obj => {
-      if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton) return;
+      if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton) return;
 
       if (obj.customType === 'maison') {
         planData.maison = {
@@ -1557,7 +1710,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     // Ajouter nouvelles mesures
     canvas.getObjects().forEach(obj => {
-      if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton) return;
+      if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton) return;
 
       if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves') {
         const w = Math.round(obj.getScaledWidth() / echelle);
