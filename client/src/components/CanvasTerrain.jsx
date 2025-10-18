@@ -13,7 +13,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const pointsClotureRef = useRef([]);
   const arbresAjoutesRef = useRef(false); // Pour ajouter les arbres une seule fois
   const contextMenuRef = useRef(null); // Référence au menu contextuel HTML
-  const aideVisibleRef = useRef(false); // État de visibilité de l'aide
   const [couchesSol, setCouchesSol] = useState([
     { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'fertile' },
     { nom: 'Marne', profondeur: 70, couleur: '#a1887f', type: 'argileux' }
@@ -61,9 +60,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     // Boussole interactive sur le canvas
     ajouterIndicateurSud(canvas);
-
-    // Bouton d'aide sur le canvas (en bas à droite)
-    ajouterBoutonAide(canvas);
 
     // SNAP TO GRID - Aligner automatiquement sur la grille
     canvas.on('object:moving', (e) => {
@@ -1536,7 +1532,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     });
     ajouterGrille(canvas);
     ajouterIndicateurSud(canvas);
-    ajouterBoutonAide(canvas);
     canvas.renderAll();
   }, [dimensions.largeur, dimensions.hauteur]);
 
@@ -1707,67 +1702,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     }, 300); // Réduit à 300ms pour être avant les arbres
   }, []);
 
-  const ajouterBoutonAide = (canvas) => {
-    const size = 40; // Réduit de 50 à 40
-    const btnX = canvas.width - size - 15;
-    const btnY = canvas.height - size - 15;
-
-    // Cercle orange
-    const cercle = new fabric.Circle({
-      left: btnX,
-      top: btnY,
-      radius: size / 2,
-      fill: '#ff9800',
-      stroke: '#f57c00',
-      strokeWidth: 2,
-      originX: 'center',
-      originY: 'center',
-      selectable: false, // Ne pas être sélectionnable
-      hasControls: false,
-      hasBorders: false,
-      lockMovementX: true,
-      lockMovementY: true,
-      hoverCursor: 'pointer',
-      evented: true,
-      isAideButton: true, // Ignoré lors de l'export
-      excludeFromExport: true // Exclu de l'export
-    });
-
-    // Point d'interrogation
-    const icon = new fabric.Text('?', {
-      left: btnX,
-      top: btnY,
-      fontSize: 24, // Réduit de 28 à 24
-      fontWeight: 'bold',
-      fill: 'white',
-      originX: 'center',
-      originY: 'center',
-      selectable: false,
-      evented: false,
-      isAideButton: true,
-      excludeFromExport: true
-    });
-
-    cercle.on('mousedown', () => {
-      toggleAide();
-    });
-
-    canvas.add(cercle);
-    canvas.add(icon);
-  };
-
-  const toggleAide = () => {
-    const aidePanel = document.querySelector('.canvas-aide');
-    if (aidePanel) {
-      if (aideVisibleRef.current) {
-        aidePanel.style.display = 'none';
-        aideVisibleRef.current = false;
-      } else {
-        aidePanel.style.display = 'block';
-        aideVisibleRef.current = true;
-      }
-    }
-  };
+  // Note: Bouton aide supprimé - Remplacé par Onboarding (bouton ❓ dans header)
 
   const ajouterBoussole = (canvas) => {
     const size = 70;
@@ -3085,34 +3020,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         </div>
       </div>
 
-      {/* Aide flottante (overlay) */}
-      <div className="canvas-aide" style={{ display: 'none' }}>
-        <button className="close-aide-btn" onClick={() => toggleAide()}>×</button>
-        <h4>💡 Aide & Raccourcis</h4>
-        <div className="aide-grid">
-          <div className="aide-section">
-            <strong>🖱️ Souris</strong>
-            <ul>
-              <li>Glisser pour déplacer</li>
-              <li>Coins pour redimensionner</li>
-              <li>Snap automatique grille</li>
-              <li>Guides rouges alignement</li>
-            </ul>
-          </div>
-          
-          <div className="aide-section">
-            <strong>⌨️ Clavier</strong>
-            <ul>
-              <li><kbd>Suppr</kbd> Supprimer</li>
-              <li><kbd>Ctrl+D</kbd> Dupliquer</li>
-              <li><kbd>↑↓←→</kbd> Déplacer 10cm</li>
-              <li><kbd>Shift+↑</kbd> Déplacer 1m</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Dashboard statistiques (inclut maintenant composition du sol) */}
+      {/* Dashboard statistiques (inclut composition du sol) */}
       <DashboardTerrain 
         canvas={fabricCanvasRef.current} 
         arbres={arbresAPlanter}
