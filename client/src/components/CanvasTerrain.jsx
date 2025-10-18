@@ -523,6 +523,17 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
     }
     
+    // Vérifier citernes/fosses
+    const citernes = canvas.getObjects().filter(obj => obj.customType === 'citerne');
+    const distanceFosseSeptique = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fossesSeptiques?.split('m')[0] || '6');
+    for (const citerne of citernes) {
+      const distCiterne = calculerDistanceRectangle(x, y, citerne) / echelle;
+      if (distCiterne < distanceFosseSeptique) {
+        const pointProche = trouverPointPlusProcheMaison(x, y, citerne);
+        ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCiterne, distanceFosseSeptique, '💧');
+      }
+    }
+    
     canvas.renderAll();
   };
   
@@ -945,23 +956,35 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const x = arbreGroup.left;
     const y = arbreGroup.top;
     
-    // Vérifier maison/fondations
+    // Vérifier maison/fondations (validation 3D : profondeur)
     const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
     if (maison) {
       const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
-      if (distMaison < distanceFondations) {
+      const profondeurFondations = maison.profondeurFondations || 1.2;
+      
+      // Si les racines descendent plus profond que les fondations
+      if (profondeurRacines > profondeurFondations && distMaison < distanceFondations) {
+        problemes.push(`🏠 CRITIQUE: Racines (${profondeurRacines}m prof.) dépassent fondations (${profondeurFondations}m) à ${distMaison.toFixed(1)}m`);
+      } else if (distMaison < distanceFondations) {
         problemes.push(`🏠 Trop près de la maison (${distMaison.toFixed(1)}m < ${distanceFondations}m requis)`);
       } else if (distMaison < distanceFondations + 1) {
         avertissements.push(`🏠 Proche de la maison (${distMaison.toFixed(1)}m, ${distanceFondations}m recommandé)`);
       }
     }
     
-    // Vérifier canalisations
+    // Vérifier canalisations (validation 3D : profondeur)
     const canalisations = canvas.getObjects().filter(obj => obj.customType === 'canalisation');
     for (const canal of canalisations) {
       const distCanal = calculerDistanceLigne(x, y, canal) / echelle;
-      if (distCanal < distanceCanalisations) {
+      const profondeurCanal = canal.profondeur || 0.6;
+      
+      // Si les racines descendent plus profond que la canalisation
+      if (profondeurRacines > profondeurCanal && distCanal < distanceCanalisations) {
+        problemes.push(`🚰 CRITIQUE: Racines (${profondeurRacines}m) dépassent canalisation (${profondeurCanal}m) à ${distCanal.toFixed(1)}m - Risque colmatage`);
+      } else if (distCanal < distanceCanalisations) {
         problemes.push(`🚰 Trop près d'une canalisation (${distCanal.toFixed(1)}m < ${distanceCanalisations}m requis)`);
+      } else if (distCanal < distanceCanalisations + 0.5) {
+        avertissements.push(`🚰 Proche canalisation (${distCanal.toFixed(1)}m)`);
       }
     }
     
@@ -987,7 +1010,23 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
     }
     
-    // Vérifier terrasses
+    // Vérifier citernes/fosses septiques (validation 3D critique)
+    const citernes = canvas.getObjects().filter(obj => obj.customType === 'citerne');
+    const distanceFosseSeptique = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fossesSeptiques?.split('m')[0] || '6');
+    
+    for (const citerne of citernes) {
+      const distCiterne = calculerDistanceRectangle(x, y, citerne) / echelle;
+      const profondeurCiterne = citerne.profondeur || 2.5;
+      
+      // Si les racines atteignent la profondeur de la citerne
+      if (profondeurRacines > profondeurCiterne && distCiterne < distanceFosseSeptique) {
+        problemes.push(`💧 DANGER: Racines (${profondeurRacines}m) atteignent citerne (${profondeurCiterne}m) - Risque contamination`);
+      } else if (distCiterne < distanceFosseSeptique) {
+        problemes.push(`💧 Trop près fosse septique (${distCiterne.toFixed(1)}m < ${distanceFosseSeptique}m légal)`);
+      }
+    }
+    
+    // Vérifier terrasses/pavés
     const terrasses = canvas.getObjects().filter(obj => obj.customType === 'paves');
     for (const terrasse of terrasses) {
       const distTerrasse = calculerDistanceRectangle(x, y, terrasse) / echelle;
@@ -2059,7 +2098,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       fill: '#bdbdbd',
       stroke: '#424242',
       strokeWidth: 2,
-      customType: 'maison'
+      customType: 'maison',
+      // Données structurelles éditables
+      profondeurFondations: 1.2, // 1.2m par défaut (fondations standard)
+      typeFondations: 'semelles', // semelles, pieux, radier
+      surfaceSol: 100 // 10m × 10m = 100m²
     });
 
     const label = new fabric.Text('🏠', {
@@ -2092,17 +2135,20 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       strokeLineCap: 'round',
       customType: 'canalisation',
       selectable: true,
-      hasBorders: true, // Afficher les bordures pour mieux voir
+      hasBorders: true,
       hasControls: true,
-      lockScalingY: false, // Autoriser tout type de scaling
+      lockScalingY: false,
       lockScalingX: false,
-      lockRotation: false, // Autoriser rotation
-      strokeUniform: true, // L'épaisseur reste constante
+      lockRotation: false,
+      strokeUniform: true,
       perPixelTargetFind: true,
       cornerSize: 12,
       cornerColor: '#757575',
       cornerStyle: 'circle',
-      transparentCorners: false
+      transparentCorners: false,
+      // Données techniques éditables
+      profondeur: 0.6, // 60cm par défaut (canalisation standard)
+      diametre: 0.1 // 10cm de diamètre
     });
 
     canvas.add(canalisation);
@@ -2195,6 +2241,31 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     canvas.add(terrasse);
     canvas.setActiveObject(terrasse);
+    canvas.renderAll();
+  };
+
+  const ajouterCiterne = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    const citerne = new fabric.Rect({
+      left: 300,
+      top: 300,
+      width: 2 * echelle,  // 2m par défaut
+      height: 3 * echelle, // 3m par défaut
+      fill: '#90caf9',
+      stroke: '#1976d2',
+      strokeWidth: 2,
+      strokeDashArray: [5, 5],
+      customType: 'citerne',
+      // Données techniques
+      profondeur: 2.5, // 2.5m sous terre (fosse septique/citerne)
+      volume: 3000, // 3000L par défaut
+      typeCiterne: 'fosse-septique' // fosse-septique, citerne-eau, puits
+    });
+
+    canvas.add(citerne);
+    canvas.setActiveObject(citerne);
     canvas.renderAll();
   };
 
@@ -2563,6 +2634,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           </button>
           <button className="btn-outil" onClick={ajouterTerrasse} title="Ajouter une terrasse">
             🏡
+          </button>
+          <button className="btn-outil" onClick={ajouterCiterne} title="Ajouter une citerne/fosse septique (2.5m prof.)">
+            💧
           </button>
           <button className="btn-outil" onClick={ajouterPaves} title="Ajouter des pavés enherbés">
             🟩
