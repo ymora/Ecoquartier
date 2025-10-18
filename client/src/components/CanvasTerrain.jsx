@@ -2928,31 +2928,66 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         <div className="outils-dessin">
           {/* STRUCTURES */}
           <div className="section-title">🏗️ Structures</div>
-          <button className="btn-outil" onClick={ajouterMaison} title="Maison">
+          <button 
+            className="btn-outil" 
+            onClick={ajouterMaison} 
+            title="Ajouter maison (10m × 10m, H:7m)&#10;Double-clic pour éditer hauteur"
+            aria-label="Ajouter une maison"
+          >
             🏠
           </button>
-          <button className="btn-outil" onClick={ajouterTerrasse} title="Terrasse">
+          <button 
+            className="btn-outil" 
+            onClick={ajouterTerrasse} 
+            title="Ajouter terrasse (4m × 3m)&#10;Redimensionnable"
+            aria-label="Ajouter une terrasse"
+          >
             🏡
           </button>
-          <button className="btn-outil" onClick={ajouterPaves} title="Pavés enherbés">
+          <button 
+            className="btn-outil" 
+            onClick={ajouterPaves} 
+            title="Ajouter pavés enherbés (5m × 5m)&#10;Zones perméables"
+            aria-label="Ajouter des pavés enherbés"
+          >
             🟩
           </button>
           
           {/* RÉSEAUX */}
           <div className="section-title">🔧 Réseaux</div>
-          <button className="btn-outil" onClick={ajouterCanalisation} title="Canalisation">
+          <button 
+            className="btn-outil" 
+            onClick={ajouterCanalisation} 
+            title="Ajouter canalisation (prof. 0.6m)&#10;Gris, trait continu&#10;Double-clic pts pour courber"
+            aria-label="Ajouter une canalisation"
+          >
             🚰
           </button>
-          <button className="btn-outil" onClick={ajouterCiterne} title="Citerne/Fosse">
+          <button 
+            className="btn-outil" 
+            onClick={ajouterCiterne} 
+            title="Ajouter citerne/fosse (2m × 3m, prof. 2.5m)&#10;Validation 3D automatique"
+            aria-label="Ajouter citerne ou fosse septique"
+          >
             💧
           </button>
-          <button className="btn-outil" onClick={ajouterCloture} title="Clôture">
+          <button 
+            className="btn-outil" 
+            onClick={ajouterCloture} 
+            title="Ajouter clôture (limite propriété)&#10;Jaune, pointillés&#10;Double-clic pts pour courber"
+            aria-label="Ajouter une clôture"
+          >
             🚧
           </button>
           
           {/* VÉGÉTATION */}
           <div className="section-title">🌳 Végétation</div>
-          <button className="btn-outil" onClick={ajouterArbreExistant} title="Arbre existant">
+          <button 
+            className="btn-outil" 
+            onClick={ajouterArbreExistant} 
+            title="Ajouter arbre existant (rayon 2.5m)&#10;Vert, à conserver sur plan"
+            aria-label="Ajouter un arbre existant"
+          >
             🌳
           </button>
           
@@ -2961,27 +2996,44 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           <button 
             className={`btn-outil ${zonesContraintesVisibles ? 'btn-active' : ''}`}
             onClick={() => setZonesContraintesVisibles(!zonesContraintesVisibles)} 
-            title="Zones contraintes"
+            title="Zones de contraintes (ON/OFF)&#10;Halos colorés : distances légales"
+            aria-label="Afficher ou masquer les zones de contraintes"
           >
             👁️
           </button>
           <button 
             className={`btn-outil ${ombreVisible ? 'btn-active' : ''}`}
             onClick={() => setOmbreVisible(!ombreVisible)} 
-            title="Ombre maison"
+            title="Ombre portée maison (ON/OFF)&#10;Selon saison et hauteur bâtiment"
+            aria-label="Afficher ou masquer l'ombre de la maison"
           >
             ☀️
           </button>
           
           {/* ACTIONS */}
           <div className="section-title">⚡ Actions</div>
-          <button className="btn-outil btn-lock" onClick={verrouillerSelection} title="Verrouiller">
+          <button 
+            className="btn-outil btn-lock" 
+            onClick={verrouillerSelection} 
+            title="Verrouiller sélection&#10;Empêche déplacement/modification"
+            aria-label="Verrouiller la sélection"
+          >
             🔒
           </button>
-          <button className="btn-outil btn-danger" onClick={supprimerSelection} title="Supprimer">
+          <button 
+            className="btn-outil btn-danger" 
+            onClick={supprimerSelection} 
+            title="Supprimer sélection&#10;Raccourci : Suppr"
+            aria-label="Supprimer la sélection"
+          >
             🗑️
           </button>
-          <button className="btn-outil btn-danger" onClick={effacerTout} title="Tout effacer">
+          <button 
+            className="btn-outil btn-danger" 
+            onClick={effacerTout} 
+            title="Effacer TOUT le plan&#10;⚠️ Action irréversible"
+            aria-label="Effacer tout le plan"
+          >
             ⚠️
           </button>
         </div>

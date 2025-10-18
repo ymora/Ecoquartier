@@ -4,13 +4,15 @@
  */
 
 // ========== CONFIGURATION ==========
+const IS_PRODUCTION = import.meta.env.PROD;
+
 const LOG_CONFIG = {
-  enabled: true,                    // Activer/désactiver les logs
-  level: 'debug',                   // 'debug', 'info', 'warn', 'error'
+  enabled: !IS_PRODUCTION,          // Désactivé en production
+  level: IS_PRODUCTION ? 'error' : 'debug', // Seulement erreurs en prod
   showTimestamp: true,              // Afficher timestamp
   showComponent: true,              // Afficher nom composant
-  maxHistorySize: 100,              // Nombre max logs en mémoire
-  saveToLocalStorage: true,         // Sauvegarder logs
+  maxHistorySize: IS_PRODUCTION ? 50 : 100, // Moins de logs en prod
+  saveToLocalStorage: !IS_PRODUCTION, // Pas de sauvegarde en prod
   localStorageKey: 'planificateur_logs'
 };
 

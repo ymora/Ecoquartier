@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import CanvasTerrain from './CanvasTerrain';
+import OnboardingPlanificateur from './OnboardingPlanificateur';
 import './PlanificateurTerrain.css';
 
 function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) {
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Vérifier si l'utilisateur a déjà vu l'onboarding
+  useEffect(() => {
+    const dejavu = localStorage.getItem('planificateur_onboarding_vu');
+    if (!dejavu) {
+      setShowOnboarding(true);
+    }
+  }, []);
   const [dimensions, setDimensions] = useState({ largeur: 30, hauteur: 30 });
   const [orientation, setOrientation] = useState('nord-haut');
   const [plan, setPlan] = useState(null);
@@ -14,8 +24,14 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
   };
 
   return (
-    <div className="planificateur-modal-overlay" onClick={onClose}>
-      <div className="planificateur-modal" onClick={(e) => e.stopPropagation()}>
+    <>
+      {/* Onboarding au premier lancement */}
+      {showOnboarding && (
+        <OnboardingPlanificateur onClose={() => setShowOnboarding(false)} />
+      )}
+      
+      <div className="planificateur-modal-overlay" onClick={onClose}>
+        <div className="planificateur-modal" onClick={(e) => e.stopPropagation()}>
         {/* En-tête simplifié */}
         <div className="planificateur-header-compact">
           <h2>📐 Planificateur de Terrain</h2>
@@ -34,9 +50,18 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
                    <span className="legend-item"><span className="dot red"></span> ⚖️ Illégal (voisinage/Code Civil)</span>
                  </div>
 
-          <button className="close-btn" onClick={onClose} aria-label="Fermer">
-            <FaTimes />
-          </button>
+                <button 
+                  className="help-btn" 
+                  onClick={() => setShowOnboarding(true)}
+                  aria-label="Aide"
+                  title="Afficher l'aide"
+                >
+                  ❓
+                </button>
+                
+                <button className="close-btn" onClick={onClose} aria-label="Fermer">
+                  <FaTimes />
+                </button>
         </div>
 
         {/* Contenu - Un seul écran avec validation en temps réel */}
@@ -51,7 +76,8 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
           />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
