@@ -24,6 +24,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [anneeProjection, setAnneeProjection] = useState(20); // Projection temporelle (20 ans par défaut = maturité)
   const [ombreVisible, setOmbreVisible] = useState(false); // Afficher l'ombre de la maison
   const [saison, setSaison] = useState('ete'); // Saison pour calcul ombre (hiver, printemps, ete, automne)
+  const [snapMagnetiqueActif, setSnapMagnetiqueActif] = useState(true); // Accrochage magnétique entre objets
 
   // Initialiser le canvas UNE SEULE FOIS
   useEffect(() => {
@@ -61,13 +62,66 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     // Boussole interactive sur le canvas
     ajouterIndicateurSud(canvas);
 
-    // SNAP TO GRID - Aligner automatiquement sur la grille
+    // SNAP TO GRID - Aligner automatiquement sur la grille (5cm)
     canvas.on('object:moving', (e) => {
       const obj = e.target;
-      // Snap aux multiples de l'échelle (grille de 1m)
+      const snapSize = echelle * 0.05; // 5cm en pixels
+      
+      // Snap aux multiples de 5cm (plus précis que 1m)
+      let newLeft = Math.round(obj.left / snapSize) * snapSize;
+      let newTop = Math.round(obj.top / snapSize) * snapSize;
+      
+      // SNAP MAGNÉTIQUE entre objets (si activé)
+      if (snapMagnetiqueActif && !obj.isGridLine && !obj.isBoussole) {
+        const snapDistance = echelle * 0.1; // 10cm de distance d'accrochage
+        
+        canvas.getObjects().forEach(target => {
+          // Ignorer objets UI et soi-même
+          if (target === obj || target.isGridLine || target.isBoussole || 
+              target.measureLabel || target.isZoneContrainte || target.isOmbre ||
+              target.isLigneMesure || target.isTroncIndicator) return;
+          
+          // SNAP HORIZONTAL (aligner bords)
+          const targetLeft = target.left;
+          const targetRight = target.left + (target.getScaledWidth ? target.getScaledWidth() : 0);
+          const objWidth = obj.getScaledWidth ? obj.getScaledWidth() : 0;
+          
+          // Bord gauche obj → Bord gauche target
+          if (Math.abs(newLeft - targetLeft) < snapDistance) {
+            newLeft = targetLeft;
+          }
+          // Bord gauche obj → Bord droit target (coller à droite)
+          if (Math.abs(newLeft - targetRight) < snapDistance) {
+            newLeft = targetRight;
+          }
+          // Bord droit obj → Bord gauche target (coller à gauche)
+          if (Math.abs((newLeft + objWidth) - targetLeft) < snapDistance) {
+            newLeft = targetLeft - objWidth;
+          }
+          
+          // SNAP VERTICAL (aligner bords)
+          const targetTop = target.top;
+          const targetBottom = target.top + (target.getScaledHeight ? target.getScaledHeight() : 0);
+          const objHeight = obj.getScaledHeight ? obj.getScaledHeight() : 0;
+          
+          // Bord haut obj → Bord haut target
+          if (Math.abs(newTop - targetTop) < snapDistance) {
+            newTop = targetTop;
+          }
+          // Bord haut obj → Bord bas target (coller en dessous)
+          if (Math.abs(newTop - targetBottom) < snapDistance) {
+            newTop = targetBottom;
+          }
+          // Bord bas obj → Bord haut target (coller au-dessus)
+          if (Math.abs((newTop + objHeight) - targetTop) < snapDistance) {
+            newTop = targetTop - objHeight;
+          }
+        });
+      }
+      
       obj.set({
-        left: Math.round(obj.left / echelle) * echelle,
-        top: Math.round(obj.top / echelle) * echelle
+        left: newLeft,
+        top: newTop
       });
     });
 
@@ -3029,6 +3083,14 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             aria-label="Afficher ou masquer l'ombre de la maison"
           >
             ☀️
+          </button>
+          <button 
+            className={`btn-outil ${snapMagnetiqueActif ? 'btn-active' : ''}`}
+            onClick={() => setSnapMagnetiqueActif(!snapMagnetiqueActif)} 
+            title="Accrochage magnétique (ON/OFF)&#10;Colle automatiquement les objets entre eux&#10;Snap: 5cm grille + 10cm objets"
+            aria-label="Activer ou désactiver l'accrochage magnétique"
+          >
+            🧲
           </button>
           
           {/* ACTIONS */}

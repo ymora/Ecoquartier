@@ -5,7 +5,9 @@
 
 // ========== ÉCHELLES ET MESURES ==========
 export const ECHELLE = 30; // 30 pixels = 1 mètre (modifiable pour zoom)
-export const GRILLE_TAILLE = 1; // 1 mètre par carreau
+export const GRILLE_TAILLE = 1; // 1 mètre par carreau (visuel)
+export const SNAP_GRID = 0.05; // 5cm (précision snap-to-grid)
+export const SNAP_OBJET_DISTANCE = 0.1; // 10cm (distance accrochage entre objets)
 
 // ========== ANGLES SOLAIRES (France métropolitaine ~48°N) ==========
 export const ANGLES_SOLAIRES = {
