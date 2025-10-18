@@ -397,6 +397,50 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // Note: Modal sol déplacé dans Dashboard (plus pratique)
 
+  // Rendre le menu contextuel déplaçable
+  useEffect(() => {
+    const menu = contextMenuRef.current;
+    if (!menu) return;
+
+    let isDragging = false;
+    let currentX, currentY, initialX, initialY;
+
+    const dragStart = (e) => {
+      if (menu.style.display === 'none') return;
+      
+      initialX = e.clientX - menu.offsetLeft;
+      initialY = e.clientY - menu.offsetTop;
+      isDragging = true;
+      menu.style.cursor = 'grabbing';
+    };
+
+    const drag = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      currentX = e.clientX - initialX;
+      currentY = e.clientY - initialY;
+      
+      menu.style.left = currentX + 'px';
+      menu.style.top = currentY + 'px';
+    };
+
+    const dragEnd = () => {
+      isDragging = false;
+      menu.style.cursor = 'move';
+    };
+
+    menu.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    return () => {
+      menu.removeEventListener('mousedown', dragStart);
+      document.removeEventListener('mousemove', drag);
+      document.removeEventListener('mouseup', dragEnd);
+    };
+  }, []);
+
   // Rendre la palette déplaçable
   useEffect(() => {
     const palette = document.getElementById('palette-outils');
@@ -472,11 +516,40 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     const canvasRect = canvasRef.current.getBoundingClientRect();
     const objCenter = obj.getCenterPoint();
+    const objHeight = obj.getScaledHeight ? obj.getScaledHeight() : 50;
+    const objWidth = obj.getScaledWidth ? obj.getScaledWidth() : 50;
     
-    // Positionner au-dessus de l'objet
-    menu.style.left = `${canvasRect.left + objCenter.x}px`;
-    menu.style.top = `${canvasRect.top + objCenter.y - obj.getScaledHeight() / 2 - 50}px`;
+    // POSITIONNEMENT INTELLIGENT pour éviter masquage
+    let menuLeft = canvasRect.left + objCenter.x;
+    let menuTop = canvasRect.top + objCenter.y - objHeight / 2 - 50;
+    
+    const menuWidth = 100; // Largeur approximative du menu
+    const menuHeight = 40; // Hauteur approximative
+    
+    // Si trop en haut → Placer en dessous
+    if (menuTop < canvasRect.top + 10) {
+      menuTop = canvasRect.top + objCenter.y + objHeight / 2 + 10;
+    }
+    
+    // Si trop à droite → Décaler à gauche
+    if (menuLeft + menuWidth > canvasRect.right) {
+      menuLeft = canvasRect.right - menuWidth - 10;
+    }
+    
+    // Si trop à gauche → Décaler à droite
+    if (menuLeft < canvasRect.left) {
+      menuLeft = canvasRect.left + 10;
+    }
+    
+    // Si trop en bas → Remonter
+    if (menuTop + menuHeight > canvasRect.bottom) {
+      menuTop = canvasRect.bottom - menuHeight - 10;
+    }
+    
+    menu.style.left = `${menuLeft}px`;
+    menu.style.top = `${menuTop}px`;
     menu.style.display = 'flex';
+    menu.style.cursor = 'move'; // Indiquer déplaçable
     
     // Mettre à jour l'état verrouillé
     const btnLock = menu.querySelector('.context-lock');

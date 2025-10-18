@@ -786,19 +786,19 @@
   z-index: 10000;
   transform: translateX(-50%);
   pointer-events: all;
+  cursor: move;
+  user-select: none;
 }
 
 .context-menu::before {
-  content: '';
+  content: '⋮⋮';
   position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid var(--accent-primary);
+  top: 4px;
+  left: 8px;
+  font-size: 0.7rem;
+  color: #999;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .context-btn {
