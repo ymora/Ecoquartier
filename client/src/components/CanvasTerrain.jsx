@@ -363,26 +363,46 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     logger.debug('Timeline', `Redimensionnement ${arbresPlantes.length} arbres → ${anneeProjection} ans`);
     
-    arbresPlantes.forEach(arbreGroup => {
-      const arbre = arbreGroup.arbreData;
-      if (!arbre) return;
-      
-      const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
-      
-      // IMPORTANT : Si c'est un Group, accéder aux items
-      if (arbreGroup.type === 'group' && arbreGroup.item) {
-        const ellipse = arbreGroup.item(0); // Premier élément = ellipse
+    arbresPlantes.forEach((arbreGroup, idx) => {
+      try {
+        const arbre = arbreGroup.arbreData;
+        if (!arbre) {
+          logger.warn('Timeline', `Arbre ${idx} sans données`);
+          return;
+        }
         
-        if (ellipse) {
-          // Redimensionner l'ellipse
+        const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
+        
+        // Vérifier que c'est bien un groupe
+        if (!arbreGroup._objects || arbreGroup._objects.length < 4) {
+          logger.error('Timeline', `Arbre ${arbre.name} n'est pas un groupe valide`, {
+            type: arbreGroup.type,
+            hasObjects: !!arbreGroup._objects
+          });
+          return;
+        }
+        
+        // Accéder directement aux objets du groupe
+        const ellipse = arbreGroup._objects[0]; // Premier élément = ellipse
+        const emoji = arbreGroup._objects[1];    // Deuxième = emoji
+        const label = arbreGroup._objects[2];    // Troisième = nom
+        const dimensionsLabel = arbreGroup._objects[3]; // Quatrième = dimensions
+        
+        // Redimensionner l'ellipse
+        if (ellipse && ellipse.type === 'ellipse') {
           ellipse.set({
             rx: tailles.largeur / 2,
             ry: tailles.hauteur / 2
           });
         }
         
+        // Mettre à jour l'emoji
+        if (emoji) {
+          const newFontSize = Math.min(tailles.largeur, tailles.hauteur) * 0.3;
+          emoji.set({ fontSize: newFontSize });
+        }
+        
         // Mettre à jour le label des dimensions
-        const dimensionsLabel = arbreGroup.item(3); // Quatrième élément = dimensions
         if (dimensionsLabel) {
           let texte;
           const iconeType = tailles.typeCroissance === 'rapide' ? '⚡' : tailles.typeCroissance === 'lente' ? '🐌' : '🌿';
@@ -399,21 +419,17 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           
           dimensionsLabel.set({ text: texte });
         }
+        
+        // Force dirty pour forcer le rendu du groupe
+        arbreGroup.dirty = true;
+        arbreGroup.setCoords(); // Recalculer les coordonnées
+        
+        // Revalider
+        validerPositionArbre(canvas, arbreGroup);
+        
+      } catch (error) {
+        logger.error('Timeline', `Erreur redimensionnement arbre ${idx}`, error);
       }
-      
-      // Force dirty pour forcer le rendu du groupe
-      arbreGroup.dirty = true;
-      arbreGroup.setCoords(); // Recalculer les coordonnées
-      
-      // Mettre à jour l'emoji au centre
-      const emoji = arbreGroup.item(1);
-      if (emoji) {
-        const newFontSize = Math.min(tailles.largeur, tailles.hauteur) * 0.3;
-        emoji.set({ fontSize: newFontSize });
-      }
-      
-      // Revalider
-      validerPositionArbre(canvas, arbreGroup);
     });
     
     canvas.renderAll();
