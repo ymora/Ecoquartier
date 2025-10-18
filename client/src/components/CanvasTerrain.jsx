@@ -1501,8 +1501,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton) return;
 
       if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves') {
-        const w = (obj.getScaledWidth() / echelle).toFixed(1);
-        const h = (obj.getScaledHeight() / echelle).toFixed(1);
+        const w = Math.round(obj.getScaledWidth() / echelle);
+        const h = Math.round(obj.getScaledHeight() / echelle);
         
         const labelW = new fabric.Text(`${w}m`, {
           left: obj.left + obj.getScaledWidth() / 2,
@@ -1524,9 +1524,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         });
 
         labelW.on('mousedown', () => {
-          const newValue = prompt('Nouvelle largeur (en mètres) :', w);
+          const newValue = prompt('Nouvelle largeur (en mètres, nombre entier) :', w);
           if (newValue && !isNaN(newValue)) {
-            const newWidth = parseFloat(newValue) * echelle;
+            const newWidth = Math.round(parseFloat(newValue)) * echelle;
             obj.set({ width: newWidth, scaleX: 1 });
             canvas.renderAll();
             ajouterMesuresLive(canvas);
@@ -1556,9 +1556,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         });
 
         labelH.on('mousedown', () => {
-          const newValue = prompt('Nouvelle hauteur (en mètres) :', h);
+          const newValue = prompt('Nouvelle hauteur (en mètres, nombre entier) :', h);
           if (newValue && !isNaN(newValue)) {
-            const newHeight = parseFloat(newValue) * echelle;
+            const newHeight = Math.round(parseFloat(newValue)) * echelle;
             obj.set({ height: newHeight, scaleY: 1 });
             canvas.renderAll();
             ajouterMesuresLive(canvas);
@@ -1568,10 +1568,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
         canvas.add(labelH);
       } else if (obj.customType === 'arbre-existant' || obj.customType === 'arbre-a-planter') {
-        const r = (obj.radius * obj.scaleX / echelle).toFixed(1);
+        const r = Math.round(obj.radius * obj.scaleX / echelle);
         const couleur = obj.customType === 'arbre-a-planter' ? '#1b5e20' : '#2e7d32';
         
-        const labelR = new fabric.Text(`⌀ ${(r * 2).toFixed(1)}m`, {
+        const labelR = new fabric.Text(`⌀ ${r * 2}m`, {
           left: obj.left,
           top: obj.top - obj.radius * obj.scaleX - 15,
           fontSize: 12,
@@ -1591,9 +1591,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         });
 
         labelR.on('mousedown', () => {
-          const newValue = prompt('Nouveau diamètre (en mètres) :', (r * 2).toFixed(1));
+          const newValue = prompt('Nouveau diamètre (en mètres) :', r * 2);
           if (newValue && !isNaN(newValue)) {
-            const newRadius = (parseFloat(newValue) / 2) * echelle;
+            const newRadius = (Math.round(parseFloat(newValue)) / 2) * echelle;
             obj.set({ radius: newRadius, scaleX: 1, scaleY: 1 });
             canvas.renderAll();
             ajouterMesuresLive(canvas);
