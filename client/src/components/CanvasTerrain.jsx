@@ -154,12 +154,34 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
     });
 
-    canvas.on('object:modified', () => {
-      // Supprimer les guides d'alignement
+    // GESTIONNAIRE UNIQUE object:modified (consolidé pour éviter conflits)
+    canvas.on('object:modified', (e) => {
+      // 1. Supprimer les guides d'alignement
       canvas.getObjects().forEach(obj => {
         if (obj.alignmentGuide) canvas.remove(obj);
       });
+      
+      // 2. Exporter et mettre à jour mesures
+      exporterPlan(canvas);
+      ajouterMesuresLive(canvas);
+      
+      // 3. Cacher tooltip et cercle tronc (fin du déplacement arbre)
+      cacherTooltipValidation();
+      cacherCercleTronc(canvas);
+      
+      // 4. Revalider tous les arbres après modification
+      if (e.target) {
+        canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter').forEach(arbre => {
+          validerPositionArbre(canvas, arbre);
+        });
+      }
+      
+      // 5. Recalculer zones et ombres
+      afficherZonesContraintes(canvas);
+      afficherOmbreMaison(canvas);
+      
       canvas.renderAll();
+      logger.debug('ObjectModified', 'Objet modifié, tout mis à jour');
     });
 
     // Gestion des raccourcis clavier
@@ -242,7 +264,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     window.addEventListener('keydown', handleKeyDown);
 
     // Export automatique lors des modifications
-    const handleModification = (e) => {
+    // Gestionnaires added/removed (modified déjà géré plus haut)
+    const handleAddedOrRemoved = (e) => {
       // Ignorer si c'est un label de mesure ou guide
       if (e && e.target && (e.target.measureLabel || e.target.alignmentGuide || e.target.isGridLine)) {
         return;
@@ -251,9 +274,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       ajouterMesuresLive(canvas);
     };
 
-    canvas.on('object:modified', handleModification);
-    canvas.on('object:added', handleModification);
-    canvas.on('object:removed', handleModification);
+    canvas.on('object:added', handleAddedOrRemoved);
+    canvas.on('object:removed', handleAddedOrRemoved);
     canvas.on('object:scaling', (e) => {
       if (e.target && !e.target.measureLabel && !e.target.alignmentGuide && !e.target.isGridLine) {
         ajouterMesuresLive(canvas);
@@ -278,22 +300,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
     });
     
-    canvas.on('object:modified', (e) => {
-      // Cacher le tooltip et le cercle tronc à la fin du déplacement
-      cacherTooltipValidation();
-      cacherCercleTronc(canvas);
-      
-      // Revalider tous les arbres après modification
-      if (e.target) {
-        canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter').forEach(arbre => {
-          validerPositionArbre(canvas, arbre);
-        });
-      }
-      
-      // Recalculer les zones de contraintes et l'ombre
-      afficherZonesContraintes(canvas);
-      afficherOmbreMaison(canvas);
-    });
+    // NOTE: object:modified déjà géré en haut (ligne ~158) - pas de doublon!
 
     // Afficher menu contextuel lors de la sélection
     canvas.on('selection:created', (e) => {
