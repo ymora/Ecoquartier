@@ -321,9 +321,14 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       // Mettre à jour le label des dimensions
       const dimensionsLabel = arbreGroup.item(3); // Quatrième élément = dimensions
       if (dimensionsLabel) {
-        const texte = anneeProjection >= 20 
-          ? `${tailles.envergureMax}m × ${tailles.hauteurMax}m (Maturité)` 
-          : `${(tailles.envergureMax * tailles.pourcentage).toFixed(1)}m × ${(tailles.hauteurMax * tailles.pourcentage).toFixed(1)}m (${anneeProjection} ans)`;
+        let texte;
+        if (anneeProjection === 0) {
+          texte = `Plantation: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm`;
+        } else if (anneeProjection >= tailles.anneesMaturite) {
+          texte = `Maturité (${tailles.anneesMaturite}+ ans): ${tailles.envergureMax}m × ${tailles.hauteurMax}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm`;
+        } else {
+          texte = `${anneeProjection} an${anneeProjection > 1 ? 's' : ''}: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm`;
+        }
         
         dimensionsLabel.set({ text: texte });
       }
@@ -520,7 +525,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const ancienCercle = canvas.getObjects().find(obj => obj.isTroncIndicator);
     if (ancienCercle) canvas.remove(ancienCercle);
     
-    const diametreTronc = 0.3; // 30cm
+    const arbre = arbreGroup.arbreData;
+    if (!arbre) return;
+    
+    // Calculer le diamètre selon l'année de projection
+    const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
+    const diametreTronc = tailles.diametreTroncActuel;
     const rayonTronc = (diametreTronc / 2) * echelle;
     
     const cercleTronc = new fabric.Circle({
@@ -1398,11 +1408,19 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // Calculer la taille d'un arbre selon l'année de projection
   const calculerTailleSelonAnnee = (arbre, annee) => {
+    // Tailles à la plantation (jeune plant)
+    const hauteurPlantation = 1.5;    // 1.5m à la plantation
+    const envergurePlantation = 0.8;  // 0.8m à la plantation
+    const diametreTroncPlantation = 0.05; // 5cm de diamètre
+    
     // Extraire taille à maturité
     const envergureStr = arbre.envergure || '5';
     const envergureMax = parseFloat(envergureStr.split('-').pop());
     const hauteurStr = arbre.tailleMaturite || '5';
     const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
+    
+    // Diamètre tronc adulte (estimation basée sur hauteur)
+    const diametreTroncMax = Math.min(0.6, hauteurMax * 0.06); // ~6% hauteur, max 60cm
     
     // Extraire vitesse de croissance (cm/an)
     const croissanceStr = arbre.croissance || 'Moyenne (30-40 cm/an)';
@@ -1413,19 +1431,36 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     }
     
     // Années pour atteindre maturité (estimation)
-    const anneesMaturite = (hauteurMax / (vitesseCroissance / 100)) || 20;
+    const anneesMaturite = ((hauteurMax - hauteurPlantation) / (vitesseCroissance / 100)) || 20;
     
-    // Calculer le pourcentage de croissance
-    let pourcentage = 1.0; // 100% par défaut (maturité)
-    if (annee < anneesMaturite) {
-      pourcentage = annee / anneesMaturite;
+    // Calculer le pourcentage de croissance depuis la plantation
+    let pourcentage = 0; // 0% = plantation
+    if (annee >= anneesMaturite) {
+      pourcentage = 1.0; // 100% = maturité
+    } else if (annee > 0) {
+      pourcentage = annee / anneesMaturite; // Progression linéaire
     }
     
-    // Taille actuelle selon l'année
-    const largeur = (envergureMax * pourcentage) * echelle;
-    const hauteur = (hauteurMax * pourcentage) * echelle;
+    // Taille actuelle selon l'année (interpolation linéaire)
+    const hauteurActuelle = hauteurPlantation + (hauteurMax - hauteurPlantation) * pourcentage;
+    const envergureActuelle = envergurePlantation + (envergureMax - envergurePlantation) * pourcentage;
+    const diametreTroncActuel = diametreTroncPlantation + (diametreTroncMax - diametreTroncPlantation) * pourcentage;
     
-    return { largeur, hauteur, pourcentage, envergureMax, hauteurMax };
+    // Conversion en pixels
+    const largeur = envergureActuelle * echelle;
+    const hauteur = hauteurActuelle * echelle;
+    
+    return { 
+      largeur, 
+      hauteur, 
+      pourcentage, 
+      envergureMax, 
+      hauteurMax,
+      envergureActuelle,
+      hauteurActuelle,
+      diametreTroncActuel,
+      anneesMaturite: Math.round(anneesMaturite)
+    };
   };
 
   // Ajouter les arbres à planter automatiquement au démarrage
@@ -3119,7 +3154,15 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
               <span className="timeline-label">Maturité</span>
             </div>
             <div className="timeline-value">
-              {anneeProjection === 0 ? 'Plantation' : anneeProjection >= 20 ? '20+ ans (Maturité)' : `Dans ${anneeProjection} an${anneeProjection > 1 ? 's' : ''}`}
+              {anneeProjection === 0 && (
+                <span>🌱 <strong>Plantation</strong> - Jeune plant (H: 1.5m, Ø: 0.8m, Tronc: ⌀5cm)</span>
+              )}
+              {anneeProjection > 0 && anneeProjection < 20 && (
+                <span>🌿 <strong>{anneeProjection} an{anneeProjection > 1 ? 's' : ''}</strong> - Croissance en cours (~{Math.round(anneeProjection / 20 * 100)}% maturité)</span>
+              )}
+              {anneeProjection >= 20 && (
+                <span>🌳 <strong>Maturité atteinte</strong> (20+ ans) - Taille adulte maximale</span>
+              )}
             </div>
           </div>
           
