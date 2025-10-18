@@ -3,7 +3,7 @@ import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash, FaSearchPlus
 import FiabiliteBadge from './FiabiliteBadge';
 import './Comparateur.css';
 
-function Comparateur({ plantes, preselectedPlante }) {
+function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes }) {
   const [selectedPlantes, setSelectedPlantes] = useState(preselectedPlante ? [preselectedPlante] : []);
   const [imageIndices, setImageIndices] = useState(preselectedPlante ? { [preselectedPlante.id]: 0 } : {});
   const [visibleCriteres, setVisibleCriteres] = useState({});
@@ -17,6 +17,14 @@ function Comparateur({ plantes, preselectedPlante }) {
       setImageIndices({ [preselectedPlante.id]: 0 });
     }
   }, [preselectedPlante]);
+
+  // Remonter les arbres sélectionnés au parent
+  useEffect(() => {
+    if (onArbresSelectionnes) {
+      onArbresSelectionnes(selectedPlantes);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPlantes]); // Volontairement pas onArbresSelectionnes pour éviter la boucle
 
   const togglePlante = (plante) => {
     if (selectedPlantes.find(p => p.id === plante.id)) {
@@ -170,6 +178,7 @@ function Comparateur({ plantes, preselectedPlante }) {
   const criteres = [
     { id: 'taille', key: 'tailleMaturite', label: 'Hauteur', icon: '📏', fiabilite: 'moyenne', defaultVisible: true },
     { id: 'envergure', key: 'envergure', label: 'Largeur (envergure)', icon: '↔️', fiabilite: 'moyenne', defaultVisible: true },
+    { id: 'plantation', key: 'plantation.periode', label: 'Période de plantation', icon: '🌱', fiabilite: 'haute', defaultVisible: true },
     { id: 'floraison', key: 'floraison.periode', label: 'Floraison', icon: '🌸', fiabilite: 'moyenne', defaultVisible: true },
     { id: 'couleurFleurs', key: 'floraison.couleur', label: 'Couleur fleurs', icon: '🎨', fiabilite: 'haute', defaultVisible: true },
     { id: 'parfum', key: 'floraison.parfum', label: 'Parfum', icon: '👃', fiabilite: 'haute', defaultVisible: false },

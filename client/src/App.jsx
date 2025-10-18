@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { FaExchangeAlt, FaEye } from 'react-icons/fa';
+import { FaExchangeAlt, FaEye, FaMapMarkedAlt } from 'react-icons/fa';
 import Navigation from './components/Navigation';
 import ArbusteDetail from './components/ArbusteDetail';
 import Comparateur from './components/Comparateur';
 import Disclaimer from './components/Disclaimer';
+import PlanificateurTerrain from './components/PlanificateurTerrain';
 import plantesData from './data/arbustesData';
 import './App.css';
 
@@ -12,6 +13,8 @@ function App() {
   const [modeComparaison, setModeComparaison] = useState(false);
   const [menuOpen, setMenuOpen] = useState(true);
   const [disclaimerClosed, setDisclaimerClosed] = useState(false); // Toujours false au départ
+  const [planificateurOpen, setPlanificateurOpen] = useState(false);
+  const [arbresComparaison, setArbresComparaison] = useState([]); // Arbres sélectionnés en mode comparaison
 
   const handleSelectPlante = (planteId) => {
     const plante = plantesData.find(p => p.id === planteId);
@@ -35,7 +38,7 @@ function App() {
   return (
     <div className="app">
       
-      {/* Bouton de bascule Mode */}
+      {/* Boutons de bascule Mode */}
       <button 
         className="mode-toggle"
         onClick={toggleModeComparaison}
@@ -52,10 +55,25 @@ function App() {
         )}
       </button>
 
+      {/* Bouton Planifier visible uniquement en mode comparaison */}
+      {modeComparaison && (
+        <button 
+          className="mode-toggle planificateur-toggle"
+          onClick={() => setPlanificateurOpen(true)}
+          aria-label="Planifier mon terrain"
+        >
+          <FaMapMarkedAlt /> Planifier
+        </button>
+      )}
+
       {modeComparaison ? (
         // Mode Comparaison
         <main className="content full-width">
-          <Comparateur plantes={plantesData} preselectedPlante={selectedPlante} />
+          <Comparateur 
+            plantes={plantesData} 
+            preselectedPlante={selectedPlante}
+            onArbresSelectionnes={setArbresComparaison}
+          />
         </main>
       ) : (
         // Mode Normal
@@ -74,6 +92,15 @@ function App() {
       )}
 
       <Disclaimer onClose={handleDisclaimerClose} />
+
+      {/* Planificateur de terrain (modal) */}
+      {planificateurOpen && (
+        <PlanificateurTerrain
+          plantes={plantesData}
+          arbresPreselectionnes={arbresComparaison}
+          onClose={() => setPlanificateurOpen(false)}
+        />
+      )}
     </div>
   );
 }

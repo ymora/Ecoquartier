@@ -31,7 +31,7 @@
   width: 100%;
 }
 
-/* === BOUTON MODE TOGGLE === */
+/* === BOUTONS MODE TOGGLE === */
 .mode-toggle {
   position: fixed;
   top: 1rem;
@@ -52,10 +52,22 @@
   transition: all 0.3s ease;
 }
 
+.mode-toggle.planificateur-toggle {
+  right: 2rem;
+  top: 4.5rem;
+  background: #1976d2;
+  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+}
+
 .mode-toggle:hover {
   background: var(--accent-secondary);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(46, 139, 87, 0.4);
+}
+
+.mode-toggle.planificateur-toggle:hover {
+  background: #1565c0;
+  box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
 }
 
 .mode-toggle:active {
