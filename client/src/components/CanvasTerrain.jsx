@@ -2301,11 +2301,20 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         
         fabric.Image.fromURL(imgUrl, (img) => {
           const canvas = fabricCanvasRef.current;
-          if (!canvas) return;
+          if (!canvas) {
+            logger.error('ImageFond', 'Canvas non disponible');
+            return;
+          }
+          
+          logger.info('ImageFond', 'Image chargée depuis fichier', {
+            largeur: img.width,
+            hauteur: img.height
+          });
           
           // Supprimer l'ancienne image de fond si elle existe
           if (imageFondRef.current) {
             canvas.remove(imageFondRef.current);
+            logger.debug('ImageFond', 'Ancienne image supprimée');
           }
           
           // Ajuster la taille pour qu'elle s'adapte au canvas
@@ -2313,6 +2322,15 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             canvas.width / img.width,
             canvas.height / img.height
           );
+          
+          logger.debug('ImageFond', 'Calcul échelle', {
+            canvasW: canvas.width,
+            canvasH: canvas.height,
+            imgW: img.width,
+            imgH: img.height,
+            scale,
+            opacite: opaciteImage
+          });
           
           img.set({
             left: 0,
@@ -2325,22 +2343,41 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             hasBorders: true,
             lockRotation: false,
             isImageFond: true, // Marquer comme image de fond
-            cornerSize: 10,
+            cornerSize: 12,
             cornerColor: '#2196f3',
-            transparentCorners: false
+            cornerStyle: 'circle',
+            transparentCorners: false,
+            borderColor: '#2196f3',
+            borderScaleFactor: 2,
+            evented: true // Permettre interactions
           });
           
-          // Compter le nombre de lignes de grille pour insérer l'image juste après
-          const gridCount = canvas.getObjects().filter(obj => obj.isGridLine).length;
+          // STRATÉGIE : Insérer à la position 0 pour être tout en bas (sous la grille)
+          // Puis utiliser sendToBack pour garantir position
+          canvas.add(img);
+          canvas.sendToBack(img);
           
-          // Ajouter l'image juste après la grille (fond mais au-dessus de la grille)
-          canvas.insertAt(img, gridCount, false);
           imageFondRef.current = img;
           setImageFondChargee(true);
-          canvas.renderAll();
           
-          console.log(`✅ Image de fond chargée (position ${gridCount} après la grille)`);
-          alert('✅ Image de fond chargée ! Vous pouvez la déplacer, redimensionner et ajuster son opacité avec le slider.');
+          logger.info('ImageFond', '✅ Image ajoutée en arrière-plan', {
+            position: 0,
+            totalObjets: canvas.getObjects().length,
+            opacite: opaciteImage,
+            scale
+          });
+          
+          canvas.renderAll();
+          canvas.requestRenderAll(); // Force le rendu
+          
+          // Afficher l'image au premier plan temporairement pour vérifier
+          setTimeout(() => {
+            canvas.bringToFront(img);
+            canvas.renderAll();
+            logger.debug('ImageFond', 'Image mise au premier plan temporairement pour test');
+          }, 100);
+          
+          alert(`✅ Image de fond chargée et visible !\n\n📊 Détails:\n- Position: ${gridCount} (après grille)\n- Opacité: ${Math.round(opaciteImage * 100)}%\n- Échelle: ${(scale * 100).toFixed(0)}%\n\n💡 Vous pouvez:\n- La déplacer\n- La redimensionner\n- Ajuster l'opacité avec le slider`);
         });
       };
       reader.readAsDataURL(file);
