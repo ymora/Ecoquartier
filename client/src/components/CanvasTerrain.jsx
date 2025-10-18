@@ -1425,13 +1425,39 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   // Ajouter les arbres à planter automatiquement au démarrage
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
-    if (!canvas || arbresAPlanter.length === 0) return;
+    if (!canvas || arbresAPlanter.length === 0) {
+      logger.warn('CanvasTerrain', 'Arbres non ajoutés', { 
+        canvasExiste: !!canvas, 
+        nbArbres: arbresAPlanter.length 
+      });
+      return;
+    }
+    
+    logger.info('CanvasTerrain', `Tentative ajout de ${arbresAPlanter.length} arbres`, {
+      arbres: arbresAPlanter.map(a => a.name)
+    });
     
     // Attendre que le plan par défaut soit chargé avant d'ajouter les arbres
     setTimeout(() => {
       // Vérifier si les arbres sont déjà sur le canvas
       const arbresExistants = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
-      if (arbresExistants.length >= arbresAPlanter.length) return;
+      logger.debug('CanvasTerrain', `Arbres existants: ${arbresExistants.length}/${arbresAPlanter.length}`);
+      
+      // Si on a déjà le bon nombre d'arbres, ne pas les recréer
+      // SAUF si la liste arbresAPlanter a changé (comparaison IDs)
+      if (arbresExistants.length >= arbresAPlanter.length) {
+        const idsExistants = arbresExistants.map(a => a.arbreData?.id).sort().join(',');
+        const idsAPlanter = arbresAPlanter.map(a => a.id).sort().join(',');
+        
+        if (idsExistants === idsAPlanter) {
+          logger.info('CanvasTerrain', 'Mêmes arbres déjà présents, pas de réajout');
+          return;
+        }
+        
+        // Liste différente → Supprimer les anciens et ajouter les nouveaux
+        logger.info('CanvasTerrain', 'Liste arbres changée, réinitialisation');
+        arbresExistants.forEach(a => canvas.remove(a));
+      }
 
       // Ajouter chaque arbre avec sa taille réelle (ellipse : largeur = envergure, hauteur = hauteur)
     arbresAPlanter.forEach((arbre, index) => {
@@ -1508,6 +1534,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
 
       canvas.add(group);
+      logger.info('CanvasTerrain', `Arbre ajouté: ${arbre.name}`, { 
+        position: { x: offsetX, y: offsetY },
+        tailles: { largeur: tailles.largeur, hauteur: tailles.hauteur }
+      });
       
       // Valider la position initiale
       validerPositionArbre(canvas, group);
@@ -1515,8 +1545,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     canvas.renderAll();
     ajouterMesuresLive(canvas);
+    afficherZonesContraintes(canvas);
+    logger.info('CanvasTerrain', `✅ ${arbresAPlanter.length} arbres ajoutés et validés`);
     }, 500); // Attendre 500ms pour que le plan par défaut soit chargé
-  }, [arbresAPlanter]);
+  }, [arbresAPlanter]); // Seulement quand la liste change
 
   // Mettre à jour les dimensions du canvas quand elles changent
   useEffect(() => {
