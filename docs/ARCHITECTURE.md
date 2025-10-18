@@ -388,5 +388,50 @@ Console groupée et colorée pour debug facile ✅
 
 ---
 
+## ⚠️ Notes Techniques Importantes
+
+### Erreurs 404 Normales dans la Console
+
+Les erreurs **404 (Not Found)** visibles dans la console du navigateur (F12) sont **NORMALES et ATTENDUES**. Ce n'est **PAS un bug**.
+
+**Pourquoi ?** Le système de détection automatique des images teste toutes les combinaisons possibles :
+
+```
+Pour chaque plante:
+  Pour chaque TYPE (vue_generale, bourgeons, fleurs, etc.):
+    Pour chaque NUMÉRO (01 à 10):
+      Pour chaque EXTENSION (.jpg, .jpeg, .png, .webp):
+        ✅ Teste si l'image existe
+        ❌ Si 404: essaye l'extension suivante
+        ✅ Si trouvée: ajoute à la galerie
+```
+
+**Calcul** : 8 types × 10 numéros × 4 extensions = 320 tests potentiels  
+**Résultat** : ~300 erreurs 404 normales par plante
+
+**Avantages de ce système** :
+- ✅ Flexibilité totale (support jpg, jpeg, png, webp)
+- ✅ Pas de configuration manuelle
+- ✅ Auto-découverte des images
+- ✅ Upload facile via admin (n'importe quel format)
+
+**Impact performance** : Aucun (requêtes HEAD très légères, cache navigateur)
+
+### Sécurité
+
+**Bonnes pratiques implémentées** :
+- ✅ Validation des fichiers (limite 5MB, types MIME vérifiés)
+- ✅ Headers de sécurité (X-Frame-Options, CSP, etc.)
+- ✅ Path traversal protection
+- ✅ Regex validation pour noms de fichiers
+- ✅ HTTPS sur Render (production)
+
+**Points d'attention** :
+- ⚠️ Échappement des caractères spéciaux dans commits Git
+- ⚠️ XSS potentiel via innerHTML (utiliser textContent)
+- ⚠️ Validation côté serveur pour uploads
+
+---
+
 **Développé avec 💚 pour la biodiversité locale**
 

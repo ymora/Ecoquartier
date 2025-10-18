@@ -52,20 +52,39 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
             <div className="arbres-selection-header">
               <strong>🌳 Arbres à planter ({arbresSelectionnes.length}) :</strong>
             </div>
-            <div className="arbres-checkboxes">
-              {arbresPreselectionnes.map((arbre) => (
-                <label key={arbre.id} className="arbre-checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={arbresSelectionnes.find(a => a.id === arbre.id) !== undefined}
-                    onChange={() => toggleArbre(arbre)}
-                  />
-                  <span className="arbre-name">{arbre.name}</span>
-                </label>
-              ))}
-              {arbresPreselectionnes.length === 0 && (
-                <span className="arbres-vide">Aucun arbre sélectionné en mode comparaison</span>
-              )}
+            
+            {/* ARBRES - Catégorie */}
+            <div className="arbres-categorie">
+              <div className="categorie-label">🌳 Arbres</div>
+              <div className="arbres-checkboxes">
+                {plantes.filter(p => p.type === 'arbre').map((arbre) => (
+                  <label key={arbre.id} className="arbre-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={arbresSelectionnes.find(a => a.id === arbre.id) !== undefined}
+                      onChange={() => toggleArbre(arbre)}
+                    />
+                    <span className="arbre-name">{arbre.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            
+            {/* ARBUSTES - Catégorie */}
+            <div className="arbres-categorie">
+              <div className="categorie-label">🌿 Arbustes</div>
+              <div className="arbres-checkboxes">
+                {plantes.filter(p => p.type === 'arbuste').map((arbre) => (
+                  <label key={arbre.id} className="arbre-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={arbresSelectionnes.find(a => a.id === arbre.id) !== undefined}
+                      onChange={() => toggleArbre(arbre)}
+                    />
+                    <span className="arbre-name">{arbre.name}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
 

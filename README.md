@@ -79,14 +79,14 @@ Voir détails : **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)**
 
 ## 📚 Documentation
 
-**📖 [Index complet de la documentation](docs/INDEX.md)** - Toute la documentation est centralisée dans le dossier `docs/`
+**📖 [Index complet de la documentation](docs/INDEX.md)** - 9 fichiers essentiels, organisés et à jour
 
 ### **Accès rapide**
 
 - 👤 **Utilisateurs** → [Guide d'utilisation](docs/GUIDE_UTILISATION_COMPLET.md)
-- 👨‍💼 **Administrateurs** → [Guide Admin](docs/GUIDE_ADMIN.md) | [Référence rapide](docs/GUIDE_RAPIDE_ADMIN.md)
-- 💻 **Développeurs** → [Architecture](docs/ARCHITECTURE.md) | [Planificateur](docs/PLANIFICATEUR.md)
-- 🚀 **DevOps** → [Déploiement](docs/DEPLOIEMENT.md)
+- 👨‍💼 **Administrateurs** → [Guide Admin](docs/GUIDE_ADMIN.md) (upload, sync, numérotation)
+- 💻 **Développeurs** → [Architecture](docs/ARCHITECTURE.md) (structure complète du code)
+- 🚀 **Déploiement** → [Render.com](docs/DEPLOIEMENT.md) (build automatique)
 - 🌳 **Ajouter une espèce** → [Guide complet](docs/GUIDE_AJOUT_NOUVEL_ARBRE.md)
 
 ## 🛠️ Technologies

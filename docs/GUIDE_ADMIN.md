@@ -1,26 +1,56 @@
-# 📖 Guide Interface Admin - Haies Bessancourt
+# 👨‍💼 Guide Administration - Interface Admin
 
-## 🚀 Démarrage
+Documentation complète de l'interface d'administration pour la gestion des images.
 
-### **Lancer l'interface admin**
+---
+
+## 🚀 Démarrage Rapide
+
 ```bash
 npm run admin
-```
-
-### **Ouvrir dans le navigateur**
-```
-http://localhost:3001
+# Ouvrir http://localhost:3001
 ```
 
 ---
 
-## 🎯 Interface Simplifiée
+## ⚡ Actions Principales
 
-L'interface admin a été **entièrement refondue** pour une utilisation **simple, logique et sans redondance**.
+### 1️⃣ **Ajouter une Image**
+```
+1. Glisser-déposer image dans la zone
+2. Sélectionner espèce + type
+3. Cliquer 🚀
+→ Image uploadée avec numérotation automatique +1
+```
+
+### 2️⃣ **Supprimer des Images**
+```
+1. Filtrer par espèce/type
+2. Cocher les images ☑
+3. Cliquer 🗑️ dans le header
+→ Suppression confirmée
+```
+
+### 3️⃣ **Changer le Numéro**
+```
+1. Input numéro → taper nouveau numéro
+2. Confirmer permutation
+→ Swap automatique (ex: #03 ↔ #01)
+```
+
+### 4️⃣ **Modifier Espèce/Type**
+```
+1. Changer select Espèce ou Type
+2. Bouton 💾 devient orange
+3. Cliquer 💾
+→ Image renommée et déplacée
+```
 
 ---
 
-## 🖥️ **LAYOUT**
+## 🖥️ Interface Détaillée
+
+### Layout
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -30,314 +60,340 @@ L'interface admin a été **entièrement refondue** pour une utilisation **simpl
 
 ┌─────────────────────────────────────────────────────────┐
 │ 📷 IMAGES EXISTANTES                                     │
-│ 0 sélectionnée(s) [🗑️ Supprimer la sélection]          │
+│ 0 sélectionnée(s) [🗑️ Supprimer] [💾 Sauvegarder tout]  │
 │                                                          │
 │ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐                │
 │ │☑ #1   │ │☐ #2   │ │☐ #3   │ │☐ #4   │                │
-│ │[image]│ │[image]│ │[image]│ │[image]│                │
+│ │[img]  │ │[img]  │ │[img]  │ │[img]  │                │
+│ │💾 🗑️  │ │💾 🗑️  │ │💾 🗑️  │ │💾 🗑️  │                │
 │ └───────┘ └───────┘ └───────┘ └───────┘                │
 └─────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────┐
-│ 📤 AJOUTER DE NOUVELLES IMAGES                           │
-│ [📁 Glisser-déposer ou cliquer]  (zone compacte)        │
+│ 📤 AJOUTER IMAGES                                        │
+│ [📁 Glisser-déposer ou cliquer]                         │
 │                                                          │
-│ Images à uploader :                                      │
+│ Queue d'upload :                                         │
 │ ┌────────────────────────────────────────────────────┐  │
-│ │ [img] image1.jpg                                    │  │
-│ │       [Espèce ▼] [Type ▼]  [⏳ En attente] [🚀] [🗑️] │  │
-│ └────────────────────────────────────────────────────┘  │
-│ ┌────────────────────────────────────────────────────┐  │
-│ │ [img] image2.jpg                                    │  │
-│ │       [Kanzan ▼] [Fleurs ▼] [⏳ En attente] [🚀] [🗑️] │  │
+│ │ [img] photo.jpg                                     │  │
+│ │       [Espèce ▼] [Type ▼]  [→ #05] [🚀] [🗑️]       │  │
 │ └────────────────────────────────────────────────────┘  │
 │                                                          │
-│ [🚀 Envoyer toutes les images] [🗑️ Vider la file]       │
+│ [🚀 Envoyer toutes] [🗑️ Vider]                          │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📋 **WORKFLOWS**
+## 📋 Workflows Complets
 
-### **Workflow 1: Visualiser les images**
+### Workflow 1 : Visualiser
 
-1. **Sélectionner une espèce** dans le premier filtre
-2. **Sélectionner un type** dans le second filtre
-3. ✅ **Les images s'affichent automatiquement**
+1. Sélectionner **espèce** dans filtre
+2. Sélectionner **type** dans filtre
+3. ✅ Images s'affichent automatiquement
 
----
+### Workflow 2 : Ajouter Une Image
 
-### **Workflow 2: Supprimer des images**
+1. **Glisser-déposer** image
+2. Image apparaît dans **queue d'upload**
+3. **Sélectionner espèce** (auto-détection si nom contient espèce)
+4. **Sélectionner type** (auto-détection si nom contient type)
+5. Badge affiche **→ #05** (numéro automatique)
+6. **Cliquer 🚀**
+7. ✅ Image uploadée + commit Git + push automatique
 
-1. **Appliquer les filtres** (espèce + type)
-2. **Cliquer sur les images** à supprimer (elles deviennent vertes)
-   - OU cocher les checkbox
-   - Sélection multiple possible
-3. **Cliquer sur "🗑️ Supprimer la sélection"**
-4. **Confirmer** la suppression
-5. ✅ **Les images sont supprimées et la grille se rafraîchit**
+### Workflow 3 : Ajouter Plusieurs Images
 
----
+1. **Glisser-déposer 10 images**
+2. Toutes apparaissent dans la **queue**
+3. **Configurer chaque image** (espèce/type)
+4. **Cliquer "🚀 Envoyer toutes"**
+5. ✅ Upload séquentiel + commit unique
 
-### **Workflow 3: Ajouter une nouvelle image**
+### Workflow 4 : Supprimer
 
-1. **Glisser-déposer une image** dans la zone compacte
-   - OU cliquer pour parcourir vos fichiers
-2. L'image apparaît dans la **file d'attente**
-3. **Sélectionner l'espèce** (détection automatique si nom de fichier contient l'espèce)
-4. **Sélectionner le type** (détection automatique si nom de fichier contient le type)
-5. **Cliquer sur "🚀 Envoyer"** pour cette image
-6. ✅ **L'image est uploadée et apparaîtra dans la grille**
+1. **Filtrer** par espèce/type
+2. **Cocher** les images à supprimer (☑)
+3. Header affiche "**5 sélectionnée(s)**"
+4. **Cliquer 🗑️** dans header
+5. **Confirmer** suppression
+6. ✅ Supprimées + commit Git + push
 
----
+### Workflow 5 : Réorganiser Numéros
 
-### **Workflow 4: Ajouter plusieurs images d'un coup**
-
-1. **Glisser-déposer plusieurs images** (ou sélection multiple)
-2. Toutes les images apparaissent dans la **file d'attente**
-3. **Configurer chaque image** :
-   - Sélectionner espèce
-   - Sélectionner type
-4. **Option A** : Cliquer "🚀 Envoyer" sur chaque image individuellement
-5. **Option B** : Cliquer "🚀 Envoyer toutes les images" pour envoyer en lot
-6. ✅ **Toutes les images configurées sont uploadées**
-
----
-
-### **Workflow 5: Remplacer une image existante**
-
-1. **Appliquer les filtres** pour voir l'image actuelle
-2. **Uploader la nouvelle image** avec les mêmes espèce/type
-3. Le système **numérotera automatiquement** (ex: `fleurs_01.jpg`, `fleurs_02.jpg`...)
-4. ✅ **La nouvelle image est ajoutée** (pas de remplacement automatique)
-5. Si vous voulez **vraiment remplacer** :
-   - Supprimer l'ancienne via la sélection
-   - Uploader la nouvelle
-
----
-
-## 🎨 **FONCTIONNALITÉS DÉTAILLÉES**
-
-### **1️⃣ Filtres**
-
-- **Espèce** : 
-  - Prunus Kanzan, Accolade, Sunset Boulevard
-  - Noisetier, Fusain, Troène, Osmanthe, Cornouiller, Seringat
-
-- **Type** :
-  - Vue générale
-  - Bourgeons
-  - Fleurs
-  - Fruits
-  - Automne
-  - Hiver
-
-- **Réinitialiser** : Efface tous les filtres
-
----
-
-### **2️⃣ Grille d'images existantes**
-
-- **Affichage** : Grille responsive (s'adapte à la taille de l'écran)
-- **Sélection** : 
-  - Cliquer sur une carte = sélectionner/désélectionner
-  - OU cocher/décocher la checkbox
-  - Carte sélectionnée = fond vert
-- **Informations** : 
-  - Miniature de l'image
-  - Numéro (#1, #2, #3...)
-  - Nom du fichier
-- **Compteur** : "X sélectionnée(s)" mis à jour en temps réel
-
----
-
-### **3️⃣ Upload**
-
-#### **Zone de dépôt**
-- **Compacte** : Petite zone horizontale
-- **Glisser-déposer** : Drag & drop d'images
-- **Clic** : Ouvre l'explorateur de fichiers
-- **Formats** : JPG, PNG, WebP (max 5 MB)
-
-#### **File d'attente**
-- **Miniature** : Aperçu de l'image
-- **Nom du fichier** : Affiché
-- **Configuration** :
-  - Select "Espèce" (détection auto si possible)
-  - Select "Type" (détection auto si possible)
-- **Statut** :
-  - ⏳ En attente (jaune)
-  - 🔄 Envoi... (bleu)
-  - ✓ Envoyé (vert)
-  - ✗ Erreur (rouge)
-- **Actions** :
-  - 🚀 Envoyer : Upload cette image
-  - 🗑️ : Retirer de la file
-
-#### **Actions globales**
-- **🚀 Envoyer toutes les images** : Upload en lot
-- **🗑️ Vider la file** : Efface toutes les images en attente
-
----
-
-### **4️⃣ Détection automatique**
-
-Le système **analyse le nom du fichier** pour détecter :
-
-**Espèces** :
 ```
-kanzan_fleurs.jpg        → Détecte "Prunus Kanzan"
-accolade_automne.png     → Détecte "Prunus Accolade"
-noisetier_vue.webp       → Détecte "Noisetier"
+Situation actuelle :
+#01 → Photo floue
+#02 → Photo moyenne
+#03 → Photo PARFAITE ★★★
+
+Action :
+Input #03 → taper "1"
+Confirmation : "Permuter #03 ↔ #01 ?"
+
+Résultat :
+#01 → Photo PARFAITE ★★★ (ancien #03)
+#02 → Photo moyenne
+#03 → Photo floue (ancien #01)
 ```
 
-**Types** :
+**Swap automatique en 3 étapes** :
+1. Renommer #01 → temp
+2. Renommer #03 → #01
+3. Renommer temp → #03
+
+### Workflow 6 : Modifier Plusieurs Images
+
+1. Changer **espèce/type/numéro** sur 10 images
+2. Boutons 💾 deviennent **orange** et pulsent
+3. Header affiche "**Sauvegarder 10 modification(s)**"
+4. **Cliquer 💾** dans header
+5. ✅ Toutes sauvegardées en séquence + commit unique
+
+---
+
+## 🎯 Fonctionnalités Avancées
+
+### Numérotation Automatique +1
+
+Le système **compte automatiquement** les images existantes et propose le prochain numéro :
+
+```javascript
+Images existantes : kanzan_fleurs_01.jpg, kanzan_fleurs_02.jpg
+Nouvelle image : → Badge affiche "#03"
+Upload : kanzan_fleurs_03.jpg ✅
 ```
-kanzan_fleurs.jpg        → Détecte "Fleurs"
-accolade_automne.png     → Détecte "Automne"
-noisetier_vue_generale.webp → Détecte "Vue générale"
+
+### Détection Automatique
+
+Si le nom de fichier contient l'espèce ou le type, ils sont **pré-sélectionnés** :
+
+```
+Fichier : "kanzan_fleurs_printemps.jpg"
+→ Espèce auto : "Cerisier Kanzan"
+→ Type auto : "Fleurs"
 ```
 
-**Mots-clés détectés** :
-- `vue`, `general` → Vue générale
-- `bourgeon` → Bourgeons
-- `fleur` → Fleurs
-- `fruit` → Fruits
-- `automne` → Automne
-- `hiver` → Hiver
+### Modal Zoom Plein Écran
+
+- **Clic sur miniature** → Modal plein écran
+- Navigation **← →** entre images
+- **Échap** pour fermer
+- Affiche nom complet et métadonnées
+
+### Logs en Temps Réel
+
+Zone de logs en bas affiche :
+- ✅ Succès (vert)
+- ⚠️ Warnings (orange)
+- ❌ Erreurs (rouge)
 
 ---
 
-### **5️⃣ Logging**
+## 🔄 Synchronisation Automatique
 
-- **Journal en temps réel** : Affiche toutes les opérations
-- **Types de logs** :
-  - 🔵 Info (bleu)
-  - ✅ Succès (vert)
-  - ⚠️ Avertissement (orange)
-  - ❌ Erreur (rouge)
-- **Horodatage** : Chaque log avec l'heure précise
-- **Auto-scroll** : Défile automatiquement vers le bas
+### Comment ça marche ?
 
----
+**Chaque action admin synchronise automatiquement le site web.**
 
-## ⚙️ **TIPS & ASTUCES**
+```
+Vous uploadez une image
+    ↓
+server.js : /upload-image
+    ↓
+Fichier enregistré localement
+    ↓
+gitCommitAndPush("Upload: image.jpg")
+    ├─ generateImagesJson() ← Régénère images.json
+    ├─ git add images/ + images.json
+    ├─ git commit -m "Upload: image.jpg"
+    └─ git push → Déclenche Render
+    ↓
+✅ Site web affiche la nouvelle image (2-3 min)
+```
 
-### ✅ **Bonnes pratiques**
+### Actions Synchronisées
 
-1. **Nommer vos fichiers intelligemment** :
-   ```
-   ✅ kanzan_fleurs_gros_plan.jpg  → Détection auto
-   ✅ noisetier_automne_01.png     → Détection auto
-   ❌ IMG_1234.jpg                 → Aucune détection
-   ```
+| Action | Synchronisation |
+|--------|-----------------|
+| 📤 Upload image | ✅ Auto |
+| 🗑️ Suppression | ✅ Auto |
+| 🔄 Changement numéro | ✅ Auto |
+| ↔️ Permutation | ✅ Auto |
+| ✏️ Modification espèce/type | ✅ Auto |
 
-2. **Filtrer avant de supprimer** :
-   - Appliquer les filtres pour voir exactement ce que vous allez supprimer
-   - Vérifier la sélection avant de confirmer
+**Délai** : 2-3 minutes (build Render)
 
-3. **Configurer avant d'envoyer** :
-   - Toutes les images de la file doivent avoir une espèce ET un type
-   - Le bouton "Envoyer" est désactivé si configuration incomplète
+### Fonction Centrale : `gitCommitAndPush()`
 
-4. **Vérifier les statuts** :
-   - ✓ Envoyé (vert) = Image uploadée avec succès
-   - ✗ Erreur (rouge) = Cliquer à nouveau sur "Envoyer" pour réessayer
+```javascript
+async function gitCommitAndPush(message) {
+  // 1. Régénérer images.json automatiquement
+  await generateImagesJson();  // ← CRUCIAL !
+  
+  // 2. Git add
+  await execPromise('git add client/public/images/ client/public/images.json');
+  
+  // 3. Git commit
+  await execPromise(`git commit -m "${message}"`);
+  
+  // 4. Git push (arrière-plan)
+  execPromise('git push');  // → Déclenche Render
+}
+```
 
----
-
-### 🔄 **Workflow optimal**
-
-**Pour ajouter des images en masse** :
-
-1. **Préparer vos fichiers** avec des noms intelligents :
-   ```
-   kanzan_fleurs_01.jpg
-   kanzan_fleurs_02.jpg
-   kanzan_bourgeons_01.jpg
-   accolade_automne_01.jpg
-   ```
-
-2. **Glisser-déposer toutes les images** en une fois
-
-3. **Vérifier la détection automatique** (espèce/type)
-
-4. **Corriger manuellement** si nécessaire
-
-5. **Cliquer "🚀 Envoyer toutes les images"**
-
-6. ✅ **Toutes vos images sont uploadées en un clic !**
+**Appelée par** : upload, delete, rename, swap, change-species/type
 
 ---
 
-## 🚀 **DÉPLOIEMENT**
+## 🛠️ Scripts Disponibles
 
-### **Local** :
-1. Images uploadées → Stockées dans `client/public/images/`
-2. Visible immédiatement sur le site local
+### Interface Admin (Principal)
 
-### **Production** :
-1. Les images sont uploadées localement
-2. Pusher sur GitHub manuellement :
-   ```bash
-   git add client/public/images/
-   git commit -m "Add: nouvelles images"
-   git push
-   ```
-3. Render détecte le push et **redéploie automatiquement**
-4. Images visibles sur le site en production après ~2 minutes
+```bash
+npm run admin
+# Lance serveur Node.js sur port 3001
+# Interface web complète
+```
 
----
+**Usage quotidien** : ⭐⭐⭐⭐⭐ **RECOMMANDÉ**
 
-## 🆘 **AIDE & DÉPANNAGE**
+### Script Python (Occasionnel)
 
-### **Les images ne s'affichent pas**
-- ✅ Vérifier que les filtres sont bien appliqués
-- ✅ Vérifier qu'il y a bien des images pour cette espèce/type
-- ✅ Rafraîchir la page (Ctrl + F5)
+```bash
+python telecharger_toutes_images.py
+# Télécharge images en masse depuis URLs
+```
 
-### **L'upload échoue**
-- ✅ Vérifier que espèce ET type sont sélectionnés
-- ✅ Vérifier le format de l'image (JPG, PNG, WebP)
-- ✅ Vérifier la taille (< 5 MB)
-- ✅ Consulter le journal pour l'erreur exacte
+**Quand l'utiliser** :
+- Récupérer 20-50 images depuis ChatGPT
+- Réinstallation complète du projet
 
-### **La détection auto ne fonctionne pas**
-- ✅ Vérifier le nom du fichier (mots-clés présents ?)
-- ✅ Configurer manuellement via les selects
-- ✅ Renommer vos fichiers pour utiliser les mots-clés détectés
+**Usage** : ⭐⭐ **RARE**
 
 ---
 
-## 📊 **STATISTIQUES**
+## 📦 Fichiers de Configuration
 
-- **Filtres** : 2 (Espèce + Type)
-- **Espèces** : 9
-- **Types** : 6
-- **Formats supportés** : 3 (JPG, PNG, WebP)
-- **Taille max** : 5 MB
-- **Sélection** : Multiple (illimitée)
-- **Upload** : Multiple (illimité)
-- **Détection auto** : Espèce + Type
+### `images.json`
+
+Généré automatiquement par `generateImagesJson()` :
+
+```json
+{
+  "prunus-kanzan": {
+    "fleurs": ["01.jpg", "02.jpg", "03.jpg"],
+    "vue_generale": ["01.jpg", "02.jpg"]
+  }
+}
+```
+
+**MAI ÉDITER À LA MAIN** - Régénéré automatiquement à chaque action admin
+
+### `images_completes.json`
+
+Pour script Python uniquement :
+
+```json
+{
+  "prunus-kanzan": {
+    "fleurs_01": "https://pexels.com/photo/...",
+    "fleurs_02": "https://unsplash.com/photo/..."
+  }
+}
+```
+
+**Usage** : Téléchargement massif d'images
 
 ---
 
-## ✅ **CHECKLIST**
+## 🎨 Interface Moderne
 
-Avant d'uploader :
-- [ ] Fichiers bien nommés (mots-clés pour détection auto)
-- [ ] Formats valides (JPG, PNG, WebP)
-- [ ] Taille < 5 MB par fichier
-- [ ] Espèce et type configurés pour chaque image
+### Glassmorphism Design
 
-Après upload :
-- [ ] Statut "✓ Envoyé" pour toutes les images
-- [ ] Images visibles dans la grille (avec filtres)
-- [ ] Journal sans erreurs
-- [ ] Git commit + push pour déployer en production
+- Arrière-plan dégradé animé
+- Cartes avec effet verre
+- Animations fluides
+- Thème sombre élégant
+
+### Feedback Visuel
+
+- ✅ **Succès** : Bordure verte + animation
+- ⚠️ **Attention** : Bouton orange pulsant
+- ❌ **Erreur** : Bordure rouge + message
+- 🔄 **Loading** : Spinner animé
 
 ---
 
-**🎉 Bonne gestion d'images !**
+## 🚨 Troubleshooting
 
+### "Port 3001 already in use"
+
+```bash
+# Windows
+netstat -ano | findstr :3001
+taskkill /PID <PID> /F
+
+# Mac/Linux
+lsof -ti:3001 | xargs kill
+```
+
+### "Git push failed"
+
+```bash
+# Vérifier statut Git
+git status
+git log --oneline -5
+
+# Forcer sync
+git pull --rebase
+git push
+```
+
+### "Images n'apparaissent pas sur le site"
+
+1. Vérifier que le push Git a réussi (logs admin)
+2. Attendre 2-3 minutes (build Render)
+3. Vider cache navigateur (Ctrl + F5)
+4. Vérifier console Render : https://dashboard.render.com
+
+### "Numérotation incorrecte"
+
+Le système compte **automatiquement** :
+- Filtre sur espèce + type voulu
+- Vérifie numéros existants
+- Suggère numéro suivant
+
+Si erreur : renommer manuellement via input numéro + 💾
+
+---
+
+## ✅ Checklist Upload Image
+
+- [ ] Image de bonne qualité (min 800px)
+- [ ] Nom de fichier clair (espèce_type_description.jpg)
+- [ ] Espèce sélectionnée
+- [ ] Type sélectionné
+- [ ] Badge numéro vérifié
+- [ ] Clic 🚀
+- [ ] Attendre confirmation verte
+- [ ] Vérifier sur site après 2-3 min
+
+---
+
+## 📊 Statistiques Interface
+
+| Métrique | Valeur |
+|----------|--------|
+| **Temps moyen upload** | 2-3 sec/image |
+| **Images traitables** | Illimité |
+| **Formats supportés** | JPG, JPEG, PNG, WebP |
+| **Taille max** | 5 MB/image |
+| **Auto-détection** | Espèce + Type |
+| **Numérotation** | Automatique +1 |
+| **Sync Git** | Automatique |
+
+---
+
+**Développé avec 💚 pour une gestion d'images sans friction**

@@ -49,6 +49,27 @@ Nouveaux conseils ajoutés basés sur :
 - Rechargement automatique au retour
 - Bouton 💾 pour vérifier l'état
 
+### ✅ Import de Plan de Fond
+
+Vous pouvez importer un plan existant (Kazaplan, etc.) comme arrière-plan :
+
+**Fonctionnalités** :
+- ✅ **Import d'image** : PNG, JPG, JPEG acceptés
+- ✅ **Ajustement automatique** : L'image s'adapte au canvas
+- ✅ **Opacité réglable** : Slider 0-100% pour transparence
+- ✅ **Repositionnement** : Déplacer, redimensionner, pivoter
+- ✅ **Non-exportée** : L'image reste en arrière-plan
+
+**Mode d'emploi** :
+1. Préparer votre plan (capture d'écran ou export)
+2. Dans le planificateur : Section "📷 Plan de Fond"
+3. Cliquer "📷 Charger Image" et sélectionner fichier
+4. Ajuster opacité (recommandé : 40-60%)
+5. Positionner/redimensionner l'image
+6. Tracer par-dessus avec les outils normaux
+
+**Conseil** : Verrouillez l'image (clic droit > 🔒) une fois positionnée
+
 ---
 
 ## 💡 Améliorations Futures (V2)
