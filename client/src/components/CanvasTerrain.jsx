@@ -1627,7 +1627,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
       
       // Dimensions affichées (envergure × hauteur)
-      const dimensions = new fabric.Text(`${envergureMax}m × ${hauteurMax}m`, {
+      const iconeType = tailles.typeCroissance === 'rapide' ? '⚡' : tailles.typeCroissance === 'lente' ? '🐌' : '🌿';
+      const dimensions = new fabric.Text(`${tailles.envergureMax}m × ${tailles.hauteurMax}m ${iconeType}`, {
         left: 0,
         top: -hauteur / 2 - 20,
         fontSize: 10,
