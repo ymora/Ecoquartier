@@ -1452,6 +1452,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const exposition = arbre.exposition || '';
     const solType = arbre.sol?.type || '';
     
+    // IMPORTANT : Déclarer profondeurRacines ICI (utilisée dans les validations 3D)
+    const profondeurRacines = parseFloat(arbre.reglementation?.systemeRacinaire?.profondeur?.split('-')[0] || '1');
+    
     const problemes = [];
     const avertissements = [];
     const conseils = [];
@@ -1555,8 +1558,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
     }
     
-    // Vérifier la compatibilité avec le sol
-    const profondeurRacines = parseFloat(arbre.reglementation?.systemeRacinaire?.profondeur?.split('-')[0] || '1');
+    // Vérifier la compatibilité avec le sol (profondeurRacines déjà déclarée en haut)
     const profondeurTerreVegetale = couchesSol[0].profondeur / 100; // Convertir cm en m
     const typeSolProfondeur = couchesSol[1].type;
     
