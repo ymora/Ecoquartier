@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash, FaSearchPlus } from 'react-icons/fa';
 import FiabiliteBadge from './FiabiliteBadge';
+import CanvasTerrain from './CanvasTerrain';
 import './Comparateur.css';
 
-function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes }) {
+function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePlanification }) {
   const [selectedPlantes, setSelectedPlantes] = useState(preselectedPlante ? [preselectedPlante] : []);
   const [imageIndices, setImageIndices] = useState(preselectedPlante ? { [preselectedPlante.id]: 0 } : {});
   const [visibleCriteres, setVisibleCriteres] = useState({});
   const [zoomedImage, setZoomedImage] = useState(null);
   const [selectedImageType, setSelectedImageType] = useState('tous'); // Type d'image à afficher
+  
+  // States pour le planificateur (si modePlanification)
+  const [dimensions, setDimensions] = useState({ largeur: 30, hauteur: 30 });
+  const [orientation, setOrientation] = useState('nord-haut');
 
   // Mettre à jour la présélection quand elle change
   useEffect(() => {
@@ -287,7 +292,21 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes }) {
         </div>
       </div>
 
-      {selectedPlantes.length > 0 && (
+      {/* Contenu : Tableau comparatif OU Canvas planification */}
+      {modePlanification ? (
+        // Mode Planification - Canvas de terrain
+        <div className="comparateur-content planification-canvas">
+          <CanvasTerrain
+            dimensions={dimensions}
+            orientation={orientation}
+            onDimensionsChange={setDimensions}
+            onOrientationChange={setOrientation}
+            onPlanComplete={() => {}}
+            arbresAPlanter={selectedPlantes}
+          />
+        </div>
+      ) : selectedPlantes.length > 0 ? (
+        // Mode Tableau - Comparaison classique
         <div className="comparateur-content">
           <table className="comparison-table">
               <thead>
@@ -969,9 +988,10 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes }) {
               </tbody>
             </table>
         </div>
-      )}
-
-      {selectedPlantes.length === 0 && (
+      ) : null}
+      
+      {/* Message si aucun arbre sélectionné */}
+      {selectedPlantes.length === 0 && !modePlanification && (
         <div className="comparateur-content">
           <div className="comparateur-empty">
             <p>👆 Sélectionnez au moins 2 plantes pour commencer la comparaison</p>

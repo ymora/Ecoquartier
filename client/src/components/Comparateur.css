@@ -809,6 +809,13 @@
   min-height: 0;
 }
 
+/* Mode planification - Canvas intégré */
+.comparateur-content.planification-canvas {
+  overflow: hidden;
+  padding: 0;
+  height: calc(100vh - 200px);
+}
+
 /* Scrollbars VISIBLES (vertical ET horizontal) */
 .comparateur-content::-webkit-scrollbar {
   width: 12px;

@@ -12,9 +12,9 @@ import './App.css';
 function App() {
   const [selectedPlante, setSelectedPlante] = useState(plantesData[0]);
   const [modeComparaison, setModeComparaison] = useState(false);
+  const [modePlanification, setModePlanification] = useState(false); // Planification au lieu de tableau comparaison
   const [menuOpen, setMenuOpen] = useState(true);
   const [disclaimerClosed, setDisclaimerClosed] = useState(false); // Toujours false au départ
-  const [planificateurOpen, setPlanificateurOpen] = useState(false);
   const [arbresComparaison, setArbresComparaison] = useState([]); // Arbres sélectionnés en mode comparaison
   const [logViewerOpen, setLogViewerOpen] = useState(false); // Journal des logs
 
@@ -61,10 +61,18 @@ function App() {
       {modeComparaison && (
         <button 
           className="mode-toggle planificateur-toggle"
-          onClick={() => setPlanificateurOpen(true)}
-          aria-label="Planifier mon terrain"
+          onClick={() => setModePlanification(!modePlanification)}
+          aria-label={modePlanification ? "Voir tableau" : "Planifier mon terrain"}
         >
-          <FaMapMarkedAlt /> Planifier
+          {modePlanification ? (
+            <>
+              <FaExchangeAlt /> Tableau
+            </>
+          ) : (
+            <>
+              <FaMapMarkedAlt /> Planifier
+            </>
+          )}
         </button>
       )}
 
@@ -79,12 +87,13 @@ function App() {
       </button>
 
       {modeComparaison ? (
-        // Mode Comparaison
+        // Mode Comparaison (tableau ou planification)
         <main className="content full-width">
           <Comparateur 
             plantes={plantesData} 
             preselectedPlante={selectedPlante}
             onArbresSelectionnes={setArbresComparaison}
+            modePlanification={modePlanification}
           />
         </main>
       ) : (
@@ -104,15 +113,6 @@ function App() {
       )}
 
       <Disclaimer onClose={handleDisclaimerClose} />
-
-      {/* Planificateur de terrain (modal) */}
-      {planificateurOpen && (
-        <PlanificateurTerrain
-          plantes={plantesData}
-          arbresPreselectionnes={arbresComparaison}
-          onClose={() => setPlanificateurOpen(false)}
-        />
-      )}
 
       {/* Log Viewer (debug) */}
       <LogViewer 
