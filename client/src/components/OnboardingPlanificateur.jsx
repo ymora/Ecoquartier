@@ -115,11 +115,12 @@ function OnboardingPlanificateur({ onClose }) {
               </div>
               <p>Glissez le curseur pour voir vos arbres grandir !</p>
               <ul>
-                <li><strong>Année 0</strong> : Jeunes plants (1.5m, ⌀5cm tronc)</li>
-                <li><strong>5-10 ans</strong> : Croissance progressive</li>
-                <li><strong>20+ ans</strong> : Maturité (taille adulte)</li>
-                <li>Les <strong>ellipses s'agrandissent</strong> automatiquement</li>
-                <li>Le <strong>diamètre du tronc</strong> augmente</li>
+                <li><strong>Année 0</strong> : Jeunes plants (H: 2m, Ø: 0.8m, Tronc: ⌀5cm)</li>
+                <li><strong>5 ans</strong> : Croissance ~30% (H: 3-4m, Ø: 2-3m, Tronc: ⌀15cm)</li>
+                <li><strong>10 ans</strong> : Croissance ~60% (H: 5-6m, Ø: 3-4m, Tronc: ⌀25cm)</li>
+                <li><strong>20+ ans</strong> : Maturité 100% (taille adulte maximale)</li>
+                <li>Les <strong>ellipses (couronne)</strong> s'agrandissent progressivement</li>
+                <li>Le <strong>diamètre du tronc</strong> augmente (5cm → 30-60cm)</li>
               </ul>
             </>
           )}

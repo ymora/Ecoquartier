@@ -170,9 +170,9 @@ export const TIMELINE = {
 
 // ========== TAILLES À LA PLANTATION ==========
 export const TAILLE_PLANTATION = {
-  hauteur: 1.5,             // mètres (jeune plant)
-  envergure: 0.8,           // mètres (jeune plant)
-  diametreTronc: 0.05       // mètres (5cm)
+  hauteur: 2.0,             // mètres (jeune plant standard)
+  envergure: 0.8,           // mètres (couronne initiale)
+  diametreTronc: 0.05       // mètres (5cm - tronc jeune)
 };
 
 // ========== DASHBOARD STATISTIQUES ==========

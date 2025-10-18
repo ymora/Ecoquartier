@@ -1367,9 +1367,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // Calculer la taille d'un arbre selon l'année de projection
   const calculerTailleSelonAnnee = (arbre, annee) => {
-    // Tailles à la plantation (jeune plant)
-    const hauteurPlantation = 1.5;    // 1.5m à la plantation
-    const envergurePlantation = 0.8;  // 0.8m à la plantation
+    // Tailles à la plantation (jeune plant) - Valeurs configurables
+    const hauteurPlantation = 2.0;    // 2m à la plantation (jeune plant standard)
+    const envergurePlantation = 0.8;  // 0.8m couronne initiale
     const diametreTroncPlantation = 0.05; // 5cm de diamètre
     
     // Extraire taille à maturité
@@ -1378,8 +1378,17 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const hauteurStr = arbre.tailleMaturite || '5';
     const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
     
-    // Diamètre tronc adulte (estimation basée sur hauteur)
-    const diametreTroncMax = Math.min(0.6, hauteurMax * 0.06); // ~6% hauteur, max 60cm
+    // Diamètre tronc adulte (estimation basée sur hauteur et type d'arbre)
+    // Arbres élancés (>8m) : tronc plus fin relatif
+    // Arbres trapus (<5m) : tronc plus épais relatif
+    let diametreTroncMax;
+    if (hauteurMax > 8) {
+      diametreTroncMax = Math.min(0.5, hauteurMax * 0.05); // 5% pour grands arbres
+    } else if (hauteurMax < 5) {
+      diametreTroncMax = Math.min(0.4, hauteurMax * 0.08); // 8% pour arbustes
+    } else {
+      diametreTroncMax = Math.min(0.6, hauteurMax * 0.06); // 6% standard
+    }
     
     // Extraire vitesse de croissance (cm/an)
     const croissanceStr = arbre.croissance || 'Moyenne (30-40 cm/an)';
@@ -3091,7 +3100,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             </div>
             <div className="timeline-value">
               {anneeProjection === 0 && (
-                <span>🌱 <strong>Plantation</strong> - Jeune plant (H: 1.5m, Ø: 0.8m, Tronc: ⌀5cm)</span>
+                <span>🌱 <strong>Plantation</strong> - Jeune plant (H: 2m, Ø: 0.8m, Tronc: ⌀5cm)</span>
               )}
               {anneeProjection > 0 && anneeProjection < 20 && (
                 <span>🌿 <strong>{anneeProjection} an{anneeProjection > 1 ? 's' : ''}</strong> - Croissance en cours (~{Math.round(anneeProjection / 20 * 100)}% maturité)</span>
