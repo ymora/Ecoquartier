@@ -23,7 +23,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [imageFondChargee, setImageFondChargee] = useState(false); // État pour afficher/cacher les contrôles
   const [opaciteImage, setOpaciteImage] = useState(0.5); // Opacité de l'image de fond (50% par défaut)
   const [zonesContraintesVisibles, setZonesContraintesVisibles] = useState(true); // Afficher les zones de contraintes par défaut
-  const [anneeProjection, setAnneeProjection] = useState(20); // Projection temporelle (20 ans par défaut = maturité)
+  const [anneeProjection, setAnneeProjection] = useState(0); // Projection temporelle (0 = plantation par défaut)
   const [ombreVisible, setOmbreVisible] = useState(false); // Afficher l'ombre de la maison
   const [saison, setSaison] = useState('ete'); // Saison pour calcul ombre (hiver, printemps, ete, automne)
   const [snapMagnetiqueActif, setSnapMagnetiqueActif] = useState(true); // Accrochage magnétique entre objets
@@ -383,20 +383,32 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     arbresPlantes.forEach((arbreGroup, idx) => {
       try {
+        // Vérifications strictes
+        if (!arbreGroup) {
+          logger.error('Timeline', `arbreGroup ${idx} est null/undefined`);
+          return;
+        }
+        
         const arbre = arbreGroup.arbreData;
         if (!arbre) {
-          logger.warn('Timeline', `Arbre ${idx} sans données`);
+          logger.warn('Timeline', `Arbre ${idx} sans données arbreData`);
+          return;
+        }
+        
+        // Vérifier que c'est bien un groupe AVANT de calculer les tailles
+        if (!arbreGroup._objects || !Array.isArray(arbreGroup._objects) || arbreGroup._objects.length < 4) {
+          logger.error('Timeline', `Arbre ${arbre.name} n'est pas un groupe valide`, {
+            type: arbreGroup.type,
+            hasObjects: !!arbreGroup._objects,
+            length: arbreGroup._objects?.length
+          });
           return;
         }
         
         const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
         
-        // Vérifier que c'est bien un groupe
-        if (!arbreGroup._objects || arbreGroup._objects.length < 4) {
-          logger.error('Timeline', `Arbre ${arbre.name} n'est pas un groupe valide`, {
-            type: arbreGroup.type,
-            hasObjects: !!arbreGroup._objects
-          });
+        if (!tailles || !tailles.largeur || !tailles.hauteur) {
+          logger.error('Timeline', `Tailles invalides pour ${arbre.name}`, { tailles });
           return;
         }
         
