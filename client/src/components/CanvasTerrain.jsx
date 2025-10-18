@@ -1164,6 +1164,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       const group = new fabric.Group([ellipse, emoji, label, dimensions], {
         left: offsetX,
         top: offsetY,
+        originX: 'center',
+        originY: 'center',
         customType: 'arbre-a-planter',
         arbreData: arbre
       });
