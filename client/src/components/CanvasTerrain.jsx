@@ -372,12 +372,16 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       const dimensionsLabel = arbreGroup.item(3); // Quatrième élément = dimensions
       if (dimensionsLabel) {
         let texte;
+        const iconeType = tailles.typeCroissance === 'rapide' ? '⚡' : tailles.typeCroissance === 'lente' ? '🐌' : '🌿';
+        
         if (anneeProjection === 0) {
-          texte = `Plantation: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm`;
+          texte = `Plantation: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
         } else if (anneeProjection >= tailles.anneesMaturite) {
-          texte = `Maturité (${tailles.anneesMaturite}+ ans): ${tailles.envergureMax}m × ${tailles.hauteurMax}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm`;
+          texte = `Maturité (${tailles.anneesMaturite}+ ans): ${tailles.envergureMax}m × ${tailles.hauteurMax}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
         } else {
-          texte = `${anneeProjection} an${anneeProjection > 1 ? 's' : ''}: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm`;
+          const progH = Math.round(tailles.pourcentageHauteur * 100);
+          const progE = Math.round(tailles.pourcentageEnvergure * 100);
+          texte = `${anneeProjection} an${anneeProjection > 1 ? 's' : ''}: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType} (H:${progH}% E:${progE}%)`;
         }
         
         dimensionsLabel.set({ text: texte });
@@ -1444,29 +1448,65 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       diametreTroncMax = Math.min(0.6, hauteurMax * 0.06); // 6% standard
     }
     
-    // Extraire vitesse de croissance (cm/an)
+    // Extraire vitesse de croissance (cm/an) et type de croissance
     const croissanceStr = arbre.croissance || 'Moyenne (30-40 cm/an)';
-    const match = croissanceStr.match(/(\d+)-?(\d*)\s*cm/);
+    
+    // Détecter le type de croissance
+    let typeCroissance = 'moyenne';
     let vitesseCroissance = 30; // Par défaut
+    let coefficientEnvergure = 1.0; // Coefficient pour l'envergure
+    
+    if (croissanceStr.toLowerCase().includes('rapide') || croissanceStr.toLowerCase().includes('vigoureuse')) {
+      typeCroissance = 'rapide';
+      vitesseCroissance = 50; // 50cm/an par défaut pour rapide
+      coefficientEnvergure = 1.2; // Envergure se développe plus vite
+    } else if (croissanceStr.toLowerCase().includes('lente') || croissanceStr.toLowerCase().includes('lent')) {
+      typeCroissance = 'lente';
+      vitesseCroissance = 20; // 20cm/an par défaut pour lente
+      coefficientEnvergure = 0.8; // Envergure se développe moins vite
+    }
+    
+    // Extraire les valeurs numériques si présentes
+    const match = croissanceStr.match(/(\d+)-?(\d*)\s*cm/);
     if (match) {
       vitesseCroissance = match[2] ? (parseInt(match[1]) + parseInt(match[2])) / 2 : parseInt(match[1]);
     }
     
-    // Années pour atteindre maturité (estimation)
-    const anneesMaturite = ((hauteurMax - hauteurPlantation) / (vitesseCroissance / 100)) || 20;
+    // Années pour atteindre maturité (estimation basée sur hauteur)
+    const anneesMaturite = Math.max(5, Math.min(30, (hauteurMax - hauteurPlantation) / (vitesseCroissance / 100))) || 20;
     
-    // Calculer le pourcentage de croissance depuis la plantation
-    let pourcentage = 0; // 0% = plantation
+    // Années pour atteindre maturité envergure (peut être différent)
+    const anneesMaturiteEnvergure = anneesMaturite * coefficientEnvergure;
+    
+    // Calculer les pourcentages de croissance (peuvent être différents pour hauteur/envergure)
+    let pourcentageHauteur = 0;
+    let pourcentageEnvergure = 0;
+    
+    // HAUTEUR : Croissance selon type
     if (annee >= anneesMaturite) {
-      pourcentage = 1.0; // 100% = maturité
+      pourcentageHauteur = 1.0;
     } else if (annee > 0) {
-      pourcentage = annee / anneesMaturite; // Progression linéaire
+      pourcentageHauteur = annee / anneesMaturite;
     }
     
-    // Taille actuelle selon l'année (interpolation linéaire)
-    const hauteurActuelle = hauteurPlantation + (hauteurMax - hauteurPlantation) * pourcentage;
-    const envergureActuelle = envergurePlantation + (envergureMax - envergurePlantation) * pourcentage;
-    const diametreTroncActuel = diametreTroncPlantation + (diametreTroncMax - diametreTroncPlantation) * pourcentage;
+    // ENVERGURE : Croissance plus rapide ou lente selon type
+    if (annee >= anneesMaturiteEnvergure) {
+      pourcentageEnvergure = 1.0;
+    } else if (annee > 0) {
+      pourcentageEnvergure = annee / anneesMaturiteEnvergure;
+      
+      // Correction : envergure ne doit pas dépasser 100%
+      if (pourcentageEnvergure > 1.0) pourcentageEnvergure = 1.0;
+    }
+    
+    // TRONC : Croissance proportionnelle à la hauteur (ralentit avec l'âge)
+    // Les premières années, tronc pousse vite, puis ralentit
+    const pourcentageTronc = pourcentageHauteur > 0 ? Math.sqrt(pourcentageHauteur) : 0;
+    
+    // Taille actuelle selon l'année (interpolation adaptée au type)
+    const hauteurActuelle = hauteurPlantation + (hauteurMax - hauteurPlantation) * pourcentageHauteur;
+    const envergureActuelle = envergurePlantation + (envergureMax - envergurePlantation) * pourcentageEnvergure;
+    const diametreTroncActuel = diametreTroncPlantation + (diametreTroncMax - diametreTroncPlantation) * pourcentageTronc;
     
     // Conversion en pixels
     const largeur = envergureActuelle * echelle;
@@ -1475,13 +1515,19 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     return { 
       largeur, 
       hauteur, 
-      pourcentage, 
+      pourcentage: pourcentageHauteur, // Pour compatibilité
+      pourcentageHauteur,
+      pourcentageEnvergure,
+      pourcentageTronc,
       envergureMax, 
       hauteurMax,
       envergureActuelle,
       hauteurActuelle,
       diametreTroncActuel,
-      anneesMaturite: Math.round(anneesMaturite)
+      anneesMaturite: Math.round(anneesMaturite),
+      anneesMaturiteEnvergure: Math.round(anneesMaturiteEnvergure),
+      typeCroissance,
+      vitesseCroissance
     };
   };
 
