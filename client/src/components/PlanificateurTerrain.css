@@ -170,29 +170,7 @@
   font-size: 1.2rem;
 }
 
-.validation-legend {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  border: 1px solid rgba(46, 139, 87, 0.3);
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #333;
-  padding: 0.3rem 0.6rem;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  border: 1px solid rgba(46, 139, 87, 0.2);
-}
+/* Légende validation supprimée - Info dans panneau latéral déplaçable */
 
 .help-btn {
   background: #2196f3;

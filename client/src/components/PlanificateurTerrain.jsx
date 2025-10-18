@@ -88,12 +88,6 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
             </div>
           </div>
 
-                <div className="validation-legend">
-                   <span className="legend-item">✅ Conforme</span>
-                   <span className="legend-item">⚠️ Attention</span>
-                   <span className="legend-item">⚖️ Illégal (voisinage/Code Civil)</span>
-                 </div>
-
                 <button 
                   className="help-btn" 
                   onClick={() => setShowOnboarding(true)}
