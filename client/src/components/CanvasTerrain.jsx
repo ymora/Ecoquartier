@@ -856,25 +856,38 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       y: coin.y + Math.sin(angleOmbre) * longueurOmbrePx
     }));
     
-    // Créer le polygone de l'ombre (maison + projection)
+    // Créer le polygone de l'ombre (trapèze : maison + projection)
+    // Format correct pour Polygon : points consécutifs formant un contour fermé
     const pointsOmbre = [
-      ...coins,
-      ...coinsOmbre.reverse() // Inverser pour fermer le polygone correctement
+      ...coins,                    // 4 coins maison
+      coinsOmbre[3],              // Coin projeté 4 (bas gauche)
+      coinsOmbre[2],              // Coin projeté 3 (bas droit)
+      coinsOmbre[1],              // Coin projeté 2 (haut droit)
+      coinsOmbre[0]               // Coin projeté 1 (haut gauche)
     ];
     
     const ombre = new fabric.Polygon(pointsOmbre, {
-      fill: 'rgba(0, 0, 0, 0.25)',
-      stroke: 'rgba(0, 0, 0, 0.4)',
-      strokeWidth: 1,
-      strokeDashArray: [5, 5],
+      fill: 'rgba(0, 0, 0, 0.3)',
+      stroke: 'rgba(0, 0, 0, 0.5)',
+      strokeWidth: 2,
+      strokeDashArray: [8, 4],
       selectable: false,
       evented: false,
-      isOmbre: true
+      isOmbre: true,
+      opacity: 0.8
     });
     
-    // Insérer l'ombre juste après les lignes de grille
+    // Insérer l'ombre juste après les lignes de grille (mais avant les objets)
     const gridCount = canvas.getObjects().filter(obj => obj.isGridLine).length;
-    canvas.insertAt(ombre, gridCount + 1);
+    const imageFondCount = canvas.getObjects().filter(obj => obj.isImageFond).length;
+    canvas.insertAt(ombre, gridCount + imageFondCount + 1);
+    
+    logger.info('Ombre', `Ombre créée: ${longueurOmbre.toFixed(1)}m vers nord`, {
+      saison,
+      angleSoleil,
+      hauteurMaison,
+      nbPoints: pointsOmbre.length
+    });
     
     // Ajouter un label informatif
     const labelOmbre = new fabric.Text(
