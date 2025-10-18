@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { FaExchangeAlt, FaEye, FaMapMarkedAlt } from 'react-icons/fa';
+import { FaExchangeAlt, FaEye, FaMapMarkedAlt, FaBug } from 'react-icons/fa';
 import Navigation from './components/Navigation';
 import ArbusteDetail from './components/ArbusteDetail';
 import Comparateur from './components/Comparateur';
 import Disclaimer from './components/Disclaimer';
 import PlanificateurTerrain from './components/PlanificateurTerrain';
+import LogViewer from './components/LogViewer';
 import plantesData from './data/arbustesData';
 import './App.css';
 
@@ -15,6 +16,7 @@ function App() {
   const [disclaimerClosed, setDisclaimerClosed] = useState(false); // Toujours false au départ
   const [planificateurOpen, setPlanificateurOpen] = useState(false);
   const [arbresComparaison, setArbresComparaison] = useState([]); // Arbres sélectionnés en mode comparaison
+  const [logViewerOpen, setLogViewerOpen] = useState(false); // Journal des logs
 
   const handleSelectPlante = (planteId) => {
     const plante = plantesData.find(p => p.id === planteId);
@@ -66,6 +68,16 @@ function App() {
         </button>
       )}
 
+      {/* Bouton Logs (debug) */}
+      <button 
+        className="mode-toggle logs-toggle"
+        onClick={() => setLogViewerOpen(true)}
+        aria-label="Voir les logs (debug)"
+        title="Journal des logs (debug)"
+      >
+        <FaBug />
+      </button>
+
       {modeComparaison ? (
         // Mode Comparaison
         <main className="content full-width">
@@ -101,6 +113,12 @@ function App() {
           onClose={() => setPlanificateurOpen(false)}
         />
       )}
+
+      {/* Log Viewer (debug) */}
+      <LogViewer 
+        isOpen={logViewerOpen}
+        onClose={() => setLogViewerOpen(false)}
+      />
     </div>
   );
 }

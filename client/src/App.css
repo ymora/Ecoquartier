@@ -70,6 +70,19 @@
   box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
 }
 
+.mode-toggle.logs-toggle {
+  right: 2rem;
+  top: 8rem;
+  background: #f57c00;
+  box-shadow: 0 4px 15px rgba(245, 124, 0, 0.3);
+  padding: 0.75rem;
+}
+
+.mode-toggle.logs-toggle:hover {
+  background: #e65100;
+  box-shadow: 0 6px 20px rgba(230, 81, 0, 0.4);
+}
+
 .mode-toggle:active {
   transform: translateY(0);
 }

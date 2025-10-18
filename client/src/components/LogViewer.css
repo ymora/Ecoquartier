@@ -1,0 +1,248 @@
+/* Log Viewer - Overlay modal */
+.log-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 2rem;
+}
+
+.log-viewer {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  border-radius: 8px;
+  width: 95%;
+  max-width: 1400px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Header */
+.log-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #2d2d2d;
+  border-bottom: 2px solid #404040;
+  border-radius: 8px 8px 0 0;
+}
+
+.log-viewer-header h3 {
+  margin: 0;
+  color: #4ec9b0;
+  font-size: 1.2rem;
+}
+
+.log-viewer-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.log-viewer-controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.log-viewer-controls input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.log-viewer-controls button {
+  padding: 0.4rem 0.8rem;
+  background: #404040;
+  color: #d4d4d4;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.log-viewer-controls button:hover {
+  background: #505050;
+  transform: scale(1.05);
+}
+
+/* Filtres */
+.log-viewer-filters {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #252525;
+  border-bottom: 1px solid #404040;
+  align-items: center;
+}
+
+.log-viewer-filters select {
+  padding: 0.5rem;
+  background: #2d2d2d;
+  color: #d4d4d4;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.log-count {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #9cdcfe;
+  font-weight: 600;
+}
+
+/* Contenu */
+.log-viewer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background: #1e1e1e;
+}
+
+.log-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #808080;
+  font-size: 1.1rem;
+}
+
+/* Table des logs */
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.log-table thead {
+  position: sticky;
+  top: 0;
+  background: #2d2d2d;
+  z-index: 10;
+}
+
+.log-table th {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 2px solid #404040;
+  font-weight: 600;
+  color: #9cdcfe;
+}
+
+.log-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #2d2d2d;
+  vertical-align: top;
+}
+
+.log-table tr:hover {
+  background: #252525;
+}
+
+/* Colonnes */
+.log-time {
+  color: #808080;
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.log-level {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.log-component {
+  color: #4ec9b0;
+  font-weight: 600;
+}
+
+.log-message {
+  color: #d4d4d4;
+  max-width: 400px;
+}
+
+.log-data details {
+  cursor: pointer;
+}
+
+.log-data summary {
+  color: #9cdcfe;
+  font-size: 0.8rem;
+}
+
+.log-data pre {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #2d2d2d;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  overflow-x: auto;
+  color: #ce9178;
+}
+
+/* Niveaux de log */
+.log-level-debug .log-level {
+  color: #808080;
+}
+
+.log-level-info .log-level {
+  color: #4ec9b0;
+}
+
+.log-level-warn .log-level {
+  color: #dcdcaa;
+}
+
+.log-level-error .log-level {
+  color: #f48771;
+}
+
+.log-level-error {
+  background: rgba(244, 67, 54, 0.05);
+}
+
+.log-level-warn {
+  background: rgba(255, 193, 7, 0.05);
+}
+
+/* Footer */
+.log-viewer-footer {
+  padding: 0.75rem 1.5rem;
+  background: #2d2d2d;
+  border-top: 1px solid #404040;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #808080;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Scrollbar custom */
+.log-viewer-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.log-viewer-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.log-viewer-content::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 5px;
+}
+
+.log-viewer-content::-webkit-scrollbar-thumb:hover {
+  background: #505050;
+}
+

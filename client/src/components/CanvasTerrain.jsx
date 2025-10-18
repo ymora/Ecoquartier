@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
 import DashboardTerrain from './DashboardTerrain';
+import logger from '../utils/logger';
 import './CanvasTerrain.css';
 
 function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete, arbresAPlanter = [] }) {
@@ -28,6 +29,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   // Initialiser le canvas UNE SEULE FOIS
   useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return;
+    
+    logger.info('CanvasTerrain', 'Initialisation du canvas');
 
     // Calculer la hauteur et largeur disponibles (viewport - header - footer - marges)
     const viewportHeight = window.innerHeight;
@@ -1207,6 +1210,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const validerPositionArbre = (canvas, arbreGroup) => {
     const arbre = arbreGroup.arbreData;
     if (!arbre) return;
+    
+    logger.debug('Validation', `Validation arbre: ${arbre.name}`, { arbreId: arbre.id });
     
     // Extraire les distances minimales depuis les données réglementaires
     const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
