@@ -590,15 +590,58 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       icone = '⚠️';
     }
     
-    // Construire le HTML
+    // Enrichir les informations affichées
+    const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
+    
+    // Construire le HTML enrichi
     let html = `<div class="panel-validation-header ${classe}">`;
     html += `<strong>${icone} ${arbre?.name || 'Arbre'}</strong>`;
     html += `</div>`;
-    html += `<div class="panel-validation-messages">`;
-    messages.forEach(msg => {
-      html += `<div class="panel-msg">${msg}</div>`;
-    });
+    
+    // SECTION INFO ARBRE
+    html += `<div class="panel-section panel-info">`;
+    html += `<div class="panel-subtitle">📊 Informations</div>`;
+    html += `<div class="panel-detail">🌳 Taille actuelle: ${tailles.hauteurActuelle.toFixed(1)}m × ${tailles.envergureActuelle.toFixed(1)}m</div>`;
+    html += `<div class="panel-detail">⌀ Tronc: ${(tailles.diametreTroncActuel * 100).toFixed(0)}cm</div>`;
+    html += `<div class="panel-detail">📅 Âge: ${anneeProjection} an${anneeProjection > 1 ? 's' : ''} (${Math.round(tailles.pourcentageHauteur * 100)}% maturité)</div>`;
+    html += `<div class="panel-detail">📏 Racines prof.: ${arbre.reglementation?.systemeRacinaire?.profondeur || 'N/A'}</div>`;
     html += `</div>`;
+    
+    // SECTION VALIDATION
+    html += `<div class="panel-validation-messages">`;
+    if (messages.length === 0) {
+      html += `<div class="panel-msg panel-msg-success">✅ Emplacement conforme à toutes les règles</div>`;
+      html += `<div class="panel-detail">• Distance voisinage respectée</div>`;
+      html += `<div class="panel-detail">• Loin des fondations</div>`;
+      html += `<div class="panel-detail">• Loin des canalisations</div>`;
+      html += `<div class="panel-detail">• Sol compatible</div>`;
+    } else {
+      messages.forEach(msg => {
+        const isError = msg.includes('CRITIQUE') || msg.includes('ILLÉGAL') || msg.includes('DANGER');
+        const msgClass = isError ? 'panel-msg-error' : 'panel-msg-warning';
+        html += `<div class="panel-msg ${msgClass}">${msg}</div>`;
+      });
+    }
+    html += `</div>`;
+    
+    // SECTION CONSEILS
+    if (status !== 'ok') {
+      html += `<div class="panel-section panel-conseils">`;
+      html += `<div class="panel-subtitle">💡 Conseils</div>`;
+      if (messages.some(m => m.includes('voisinage') || m.includes('limite'))) {
+        html += `<div class="panel-detail">• Éloigner de la clôture (limite légale)</div>`;
+        html += `<div class="panel-detail">• Minimum: ${arbre.reglementation?.distancesLegales?.voisinage?.distance || '2m'}</div>`;
+      }
+      if (messages.some(m => m.includes('fondations') || m.includes('maison'))) {
+        html += `<div class="panel-detail">• Éloigner de la maison</div>`;
+        html += `<div class="panel-detail">• Minimum: ${arbre.reglementation?.distancesLegales?.infrastructures?.fondations || '5m'}</div>`;
+      }
+      if (messages.some(m => m.includes('canalisation'))) {
+        html += `<div class="panel-detail">• Risque colmatage racines</div>`;
+        html += `<div class="panel-detail">• Minimum: ${arbre.reglementation?.distancesLegales?.infrastructures?.canalisations || '4m'}</div>`;
+      }
+      html += `</div>`;
+    }
     
     panel.innerHTML = html;
     panel.className = `panel-validation ${classe}`;
