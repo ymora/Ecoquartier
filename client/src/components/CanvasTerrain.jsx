@@ -2529,15 +2529,17 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             evented: true // Permettre interactions
           });
           
-          // STRATÉGIE : Insérer à la position 0 pour être tout en bas (sous la grille)
-          // Puis utiliser sendToBack pour garantir position
+          // STRATÉGIE : Mettre TOUT EN BAS (sous la grille)
           canvas.add(img);
           canvas.sendToBack(img);
+          
+          // S'assurer que l'image est vraiment en position 0 (tout en bas)
+          canvas.moveTo(img, 0);
           
           imageFondRef.current = img;
           setImageFondChargee(true);
           
-          logger.info('ImageFond', '✅ Image ajoutée en arrière-plan', {
+          logger.info('ImageFond', '✅ Image placée en arrière-plan (sous grille)', {
             position: 0,
             totalObjets: canvas.getObjects().length,
             opacite: opaciteImage,
@@ -2545,14 +2547,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           });
           
           canvas.renderAll();
-          canvas.requestRenderAll(); // Force le rendu
           
-          // Afficher l'image au premier plan temporairement pour vérifier
-          setTimeout(() => {
-            canvas.bringToFront(img);
-            canvas.renderAll();
-            logger.debug('ImageFond', 'Image mise au premier plan temporairement pour test');
-          }, 100);
+          // Changer le fond du canvas en transparent pour voir l'image
+          canvas.backgroundColor = null;
+          canvas.renderAll();
           
           alert(`✅ Image de fond chargée et visible !\n\n📊 Détails:\n- Position: ${gridCount} (après grille)\n- Opacité: ${Math.round(opaciteImage * 100)}%\n- Échelle: ${(scale * 100).toFixed(0)}%\n\n💡 Vous pouvez:\n- La déplacer\n- La redimensionner\n- Ajuster l'opacité avec le slider`);
         });
@@ -2584,7 +2582,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       canvas.remove(imageFondRef.current);
       imageFondRef.current = null;
       setImageFondChargee(false);
+      
+      // Restaurer le fond vert (#f0f4f0)
+      canvas.backgroundColor = '#f0f4f0';
+      
       canvas.renderAll();
+      logger.info('ImageFond', 'Image supprimée, fond vert restauré');
     }
   };
 
