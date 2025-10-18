@@ -356,36 +356,60 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     const arbresPlantes = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
     
+    if (arbresPlantes.length === 0) {
+      logger.warn('Timeline', 'Aucun arbre à redimensionner', { annee: anneeProjection });
+      return;
+    }
+    
+    logger.debug('Timeline', `Redimensionnement ${arbresPlantes.length} arbres → ${anneeProjection} ans`);
+    
     arbresPlantes.forEach(arbreGroup => {
       const arbre = arbreGroup.arbreData;
       if (!arbre) return;
       
       const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
-      const ellipse = arbreGroup.item(0); // Premier élément = ellipse
       
-      // Redimensionner l'ellipse
-      ellipse.set({
-        rx: tailles.largeur / 2,
-        ry: tailles.hauteur / 2
-      });
-      
-      // Mettre à jour le label des dimensions
-      const dimensionsLabel = arbreGroup.item(3); // Quatrième élément = dimensions
-      if (dimensionsLabel) {
-        let texte;
-        const iconeType = tailles.typeCroissance === 'rapide' ? '⚡' : tailles.typeCroissance === 'lente' ? '🐌' : '🌿';
+      // IMPORTANT : Si c'est un Group, accéder aux items
+      if (arbreGroup.type === 'group' && arbreGroup.item) {
+        const ellipse = arbreGroup.item(0); // Premier élément = ellipse
         
-        if (anneeProjection === 0) {
-          texte = `Plantation: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
-        } else if (anneeProjection >= tailles.anneesMaturite) {
-          texte = `Maturité (${tailles.anneesMaturite}+ ans): ${tailles.envergureMax}m × ${tailles.hauteurMax}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
-        } else {
-          const progH = Math.round(tailles.pourcentageHauteur * 100);
-          const progE = Math.round(tailles.pourcentageEnvergure * 100);
-          texte = `${anneeProjection} an${anneeProjection > 1 ? 's' : ''}: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType} (H:${progH}% E:${progE}%)`;
+        if (ellipse) {
+          // Redimensionner l'ellipse
+          ellipse.set({
+            rx: tailles.largeur / 2,
+            ry: tailles.hauteur / 2
+          });
         }
         
-        dimensionsLabel.set({ text: texte });
+        // Mettre à jour le label des dimensions
+        const dimensionsLabel = arbreGroup.item(3); // Quatrième élément = dimensions
+        if (dimensionsLabel) {
+          let texte;
+          const iconeType = tailles.typeCroissance === 'rapide' ? '⚡' : tailles.typeCroissance === 'lente' ? '🐌' : '🌿';
+          
+          if (anneeProjection === 0) {
+            texte = `Plantation: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
+          } else if (anneeProjection >= tailles.anneesMaturite) {
+            texte = `Maturité (${tailles.anneesMaturite}+ ans): ${tailles.envergureMax}m × ${tailles.hauteurMax}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
+          } else {
+            const progH = Math.round(tailles.pourcentageHauteur * 100);
+            const progE = Math.round(tailles.pourcentageEnvergure * 100);
+            texte = `${anneeProjection} an${anneeProjection > 1 ? 's' : ''}: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType} (H:${progH}% E:${progE}%)`;
+          }
+          
+          dimensionsLabel.set({ text: texte });
+        }
+      }
+      
+      // Force dirty pour forcer le rendu du groupe
+      arbreGroup.dirty = true;
+      arbreGroup.setCoords(); // Recalculer les coordonnées
+      
+      // Mettre à jour l'emoji au centre
+      const emoji = arbreGroup.item(1);
+      if (emoji) {
+        const newFontSize = Math.min(tailles.largeur, tailles.hauteur) * 0.3;
+        emoji.set({ fontSize: newFontSize });
       }
       
       // Revalider
@@ -393,7 +417,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     });
     
     canvas.renderAll();
+    canvas.requestRenderAll(); // Force le rendu complet
     afficherZonesContraintes(canvas);
+    
+    logger.info('Timeline', `✅ ${arbresPlantes.length} arbres redimensionnés (année ${anneeProjection})`);
   }, [anneeProjection]);
 
   // Note: Modal sol déplacé dans Dashboard (plus pratique)
