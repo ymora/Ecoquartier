@@ -220,52 +220,132 @@ function DashboardTerrain({ canvas, arbres, couchesSol, onCouchesSolChange }) {
         )}
       </div>
       
-      {/* Section composition du sol */}
-      <div className="stat-section highlight">
+      {/* Section composition du sol - Rectangle visuel */}
+      <div className="stat-section highlight sol-section">
         <div className="stat-label">🌍 Composition du sol</div>
-        {couchesSol && couchesSol.map((couche, index) => (
-          <div key={index} className="sol-couche">
-            <div className="sol-couche-header">
+        
+        {/* Rectangle de visualisation du sol (100cm de hauteur totale) */}
+        <div className="sol-visualisation">
+          {couchesSol && couchesSol.map((couche, index) => {
+            // Calculer la hauteur relative (proportionnelle)
+            const profondeurTotale = couchesSol.reduce((sum, c) => sum + c.profondeur, 0);
+            const hauteurPourcent = (couche.profondeur / profondeurTotale) * 100;
+            
+            return (
               <div 
-                className="sol-couleur" 
-                style={{ backgroundColor: couche.couleur }}
-              ></div>
-              <strong>{couche.nom}</strong>
+                key={index} 
+                className="sol-couche-rect"
+                style={{ 
+                  backgroundColor: couche.couleur,
+                  height: `${hauteurPourcent}%`,
+                  borderBottom: index < couchesSol.length - 1 ? '2px dashed #fff' : 'none'
+                }}
+              >
+                <div className="sol-couche-label">
+                  <strong>{couche.nom}</strong>
+                  <span className="sol-couche-prof">{couche.profondeur}cm</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        {/* Contrôles d'édition par couche */}
+        <div className="sol-controles">
+          {couchesSol && couchesSol.map((couche, index) => (
+            <div key={index} className="sol-controle-ligne">
+              <div className="sol-controle-label">
+                <div 
+                  className="sol-couleur-mini" 
+                  style={{ backgroundColor: couche.couleur }}
+                ></div>
+                <span>{couche.nom}</span>
+              </div>
+              
+              <div className="sol-controle-boutons">
+                <button
+                  className="btn-sol-adjust"
+                  onClick={() => {
+                    if (onCouchesSolChange) {
+                      const nouvellesCouches = [...couchesSol];
+                      nouvellesCouches[index].profondeur = Math.max(5, nouvellesCouches[index].profondeur - 5);
+                      onCouchesSolChange(nouvellesCouches);
+                    }
+                  }}
+                  title="Réduire de 5cm"
+                >
+                  −
+                </button>
+                
+                <span className="sol-controle-valeur">{couche.profondeur}cm</span>
+                
+                <button
+                  className="btn-sol-adjust"
+                  onClick={() => {
+                    if (onCouchesSolChange) {
+                      const nouvellesCouches = [...couchesSol];
+                      nouvellesCouches[index].profondeur = Math.min(200, nouvellesCouches[index].profondeur + 5);
+                      onCouchesSolChange(nouvellesCouches);
+                    }
+                  }}
+                  title="Augmenter de 5cm"
+                >
+                  +
+                </button>
+              </div>
+              
+              {/* Dropdown type de sol */}
+              <select
+                className="sol-type-select"
+                value={couche.type}
+                onChange={(e) => {
+                  if (onCouchesSolChange) {
+                    const nouvellesCouches = [...couchesSol];
+                    nouvellesCouches[index].type = e.target.value;
+                    
+                    // Mettre à jour la couleur selon le type
+                    if (index === 0) {
+                      nouvellesCouches[index].couleur = '#8d6e63'; // Terre végétale
+                    } else {
+                      switch(e.target.value) {
+                        case 'argileux':
+                          nouvellesCouches[index].couleur = '#a1887f';
+                          nouvellesCouches[index].nom = 'Marne';
+                          break;
+                        case 'calcaire':
+                          nouvellesCouches[index].couleur = '#d7ccc8';
+                          nouvellesCouches[index].nom = 'Calcaire';
+                          break;
+                        case 'sableux':
+                          nouvellesCouches[index].couleur = '#ffecb3';
+                          nouvellesCouches[index].nom = 'Sable';
+                          break;
+                        case 'rocheux':
+                          nouvellesCouches[index].couleur = '#78909c';
+                          nouvellesCouches[index].nom = 'Roche';
+                          break;
+                        default:
+                          nouvellesCouches[index].couleur = '#8d6e63';
+                      }
+                    }
+                    
+                    onCouchesSolChange(nouvellesCouches);
+                  }
+                }}
+              >
+                <option value="fertile">Fertile</option>
+                <option value="argileux">Argileux</option>
+                <option value="sableux">Sableux</option>
+                <option value="calcaire">Calcaire</option>
+                <option value="rocheux">Rocheux</option>
+              </select>
             </div>
-            <div className="sol-details">
-              {couche.profondeur}cm - {couche.type}
-            </div>
-          </div>
-        ))}
-        <button 
-          className="btn-edit-sol"
-          onClick={() => {
-            if (onCouchesSolChange) {
-              const nouvelleCouche1Nom = prompt('Nom couche 1:', couchesSol[0]?.nom || 'Terre végétale');
-              if (!nouvelleCouche1Nom) return;
-              
-              const nouvelleCouche1Prof = parseFloat(prompt('Profondeur couche 1 (cm, ex: 35.5):', couchesSol[0]?.profondeur || 30));
-              if (isNaN(nouvelleCouche1Prof)) return;
-              
-              const nouvelleCouche1Type = prompt('Type (fertile/argileux/sableux/calcaire/rocheux):', couchesSol[0]?.type || 'fertile');
-              
-              const nouvelleCouche2Nom = prompt('Nom couche 2:', couchesSol[1]?.nom || 'Marne');
-              if (!nouvelleCouche2Nom) return;
-              
-              const nouvelleCouche2Prof = parseFloat(prompt('Profondeur couche 2 (cm, ex: 75.5):', couchesSol[1]?.profondeur || 70));
-              if (isNaN(nouvelleCouche2Prof)) return;
-              
-              const nouvelleCouche2Type = prompt('Type:', couchesSol[1]?.type || 'argileux');
-              
-              onCouchesSolChange([
-                { nom: nouvelleCouche1Nom, profondeur: nouvelleCouche1Prof, couleur: '#8d6e63', type: nouvelleCouche1Type },
-                { nom: nouvelleCouche2Nom, profondeur: nouvelleCouche2Prof, couleur: '#a1887f', type: nouvelleCouche2Type }
-              ]);
-            }
-          }}
-        >
-          ✏️ Modifier
-        </button>
+          ))}
+        </div>
+        
+        <div className="sol-info">
+          ℹ️ Profondeur totale : {couchesSol ? couchesSol.reduce((sum, c) => sum + c.profondeur, 0) : 0}cm
+        </div>
       </div>
     </div>
   </div>
