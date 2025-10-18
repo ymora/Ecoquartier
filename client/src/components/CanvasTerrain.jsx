@@ -7,6 +7,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const fabricCanvasRef = useRef(null); // Stocker le canvas dans un ref, pas un state
   const echelle = 30; // 30 pixels = 1 mètre
   const outilActifRef = useRef(null);
+  const validationTooltipRef = useRef(null);
   const pointsClotureRef = useRef([]);
   const arbresAjoutesRef = useRef(false); // Pour ajouter les arbres une seule fois
   const contextMenuRef = useRef(null); // Référence au menu contextuel HTML
@@ -203,14 +204,18 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         if (!e.target.isBoussole) {
           afficherMenuContextuel(e.target, canvas);
         }
-        // Revalider si c'est un arbre
+        // Revalider si c'est un arbre et afficher le tooltip en temps réel
         if (e.target.customType === 'arbre-a-planter') {
           validerPositionArbre(canvas, e.target);
+          afficherTooltipValidation(e.target, canvas);
         }
       }
     });
     
     canvas.on('object:modified', (e) => {
+      // Cacher le tooltip à la fin du déplacement
+      cacherTooltipValidation();
+      
       // Revalider tous les arbres après modification
       if (e.target) {
         canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter').forEach(arbre => {
@@ -349,6 +354,56 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const menu = contextMenuRef.current;
     if (menu) {
       menu.style.display = 'none';
+    }
+  };
+
+  // Afficher tooltip de validation en temps réel pendant le déplacement
+  const afficherTooltipValidation = (arbreGroup, canvas) => {
+    const tooltip = validationTooltipRef.current;
+    if (!tooltip) return;
+    
+    const messages = arbreGroup.validationMessages || [];
+    const status = arbreGroup.validationStatus || 'ok';
+    const arbre = arbreGroup.arbreData;
+    
+    // Déterminer la classe CSS
+    let classe = 'validation-ok';
+    let icone = '✅';
+    if (status === 'error') {
+      classe = 'validation-error';
+      icone = '❌';
+    } else if (status === 'warning') {
+      classe = 'validation-warning';
+      icone = '⚠️';
+    }
+    
+    // Construire le HTML
+    let html = `<div class="tooltip-header ${classe}">`;
+    html += `<strong>${icone} ${arbre?.name || 'Arbre'}</strong>`;
+    html += `</div>`;
+    html += `<div class="tooltip-messages">`;
+    messages.slice(0, 3).forEach(msg => {
+      html += `<div class="tooltip-msg">${msg}</div>`;
+    });
+    if (messages.length > 3) {
+      html += `<div class="tooltip-more">... +${messages.length - 3} autre(s)</div>`;
+    }
+    html += `</div>`;
+    
+    tooltip.innerHTML = html;
+    tooltip.className = `validation-tooltip ${classe}`;
+    
+    // Positionner le tooltip au-dessus de l'arbre
+    const canvasRect = canvas.upperCanvasEl.getBoundingClientRect();
+    tooltip.style.left = `${canvasRect.left + arbreGroup.left}px`;
+    tooltip.style.top = `${canvasRect.top + arbreGroup.top - 100}px`;
+    tooltip.style.display = 'block';
+  };
+  
+  const cacherTooltipValidation = () => {
+    const tooltip = validationTooltipRef.current;
+    if (tooltip) {
+      tooltip.style.display = 'none';
     }
   };
 
@@ -2189,6 +2244,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       <div className="canvas-wrapper">
         <canvas id="canvas-terrain" ref={canvasRef}></canvas>
         
+        {/* Tooltip de validation en temps réel */}
+        <div className="validation-tooltip" ref={validationTooltipRef} style={{ display: 'none' }}>
+        </div>
+
         {/* Menu contextuel en bulle */}
         <div className="context-menu" ref={contextMenuRef}>
           <button 

@@ -449,6 +449,76 @@
   border-radius: 4px;
 }
 
+/* Tooltip de validation en temps réel */
+.validation-tooltip {
+  position: fixed;
+  display: none;
+  min-width: 250px;
+  max-width: 350px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.validation-tooltip.validation-error {
+  border: 3px solid #c62828;
+}
+
+.validation-tooltip.validation-warning {
+  border: 3px solid #e65100;
+}
+
+.validation-tooltip.validation-ok {
+  border: 3px solid #2e7d32;
+}
+
+.tooltip-header {
+  padding: 0.75rem 1rem;
+  border-radius: 10px 10px 0 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+}
+
+.tooltip-header.validation-error {
+  background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
+}
+
+.tooltip-header.validation-warning {
+  background: linear-gradient(135deg, #e65100 0%, #f57c00 100%);
+}
+
+.tooltip-header.validation-ok {
+  background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+}
+
+.tooltip-messages {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.tooltip-msg {
+  margin: 0.3rem 0;
+  color: #333;
+}
+
+.tooltip-more {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #666;
+  font-size: 0.8rem;
+}
+
 /* Menu contextuel en bulle */
 .context-menu {
   position: fixed;
