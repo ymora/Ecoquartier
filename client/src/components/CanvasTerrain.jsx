@@ -16,9 +16,15 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return;
 
+    // Calculer la hauteur disponible (viewport - header - footer - marges)
+    const viewportHeight = window.innerHeight;
+    const headerHeight = 150; // Hauteur approximative du header avec arbres
+    const footerHeight = 80;  // Hauteur du footer avec boutons
+    const availableHeight = viewportHeight - headerHeight - footerHeight - 40; // -40 pour marges
+    
     const canvas = new fabric.Canvas('canvas-terrain', {
-      width: Math.min(dimensions.largeur * echelle, 800),
-      height: Math.min(dimensions.hauteur * echelle, 600),
+      width: dimensions.largeur * echelle,
+      height: availableHeight, // Utiliser toute la hauteur disponible
       backgroundColor: '#e8f5e9',
       selection: true,
       // Optimisations UX
@@ -34,7 +40,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     ajouterGrille(canvas);
 
     // Boussole interactive sur le canvas
-    ajouterBoussole(canvas);
+    ajouterIndicateurSud(canvas);
 
     // Dimensions du terrain sur le canvas (en haut à gauche)
     ajouterDimensionsSurPlan(canvas);
@@ -193,16 +199,43 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         if (!e.target.isBoussole) {
           afficherMenuContextuel(e.target, canvas);
         }
+        // Revalider si c'est un arbre
+        if (e.target.customType === 'arbre-a-planter') {
+          validerPositionArbre(canvas, e.target);
+        }
+      }
+    });
+    
+    canvas.on('object:modified', (e) => {
+      // Revalider tous les arbres après modification
+      if (e.target) {
+        canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter').forEach(arbre => {
+          validerPositionArbre(canvas, arbre);
+        });
       }
     });
 
     // Afficher menu contextuel lors de la sélection
     canvas.on('selection:created', (e) => {
-      afficherMenuContextuel(e.selected[0], canvas);
+      const obj = e.selected[0];
+      if (obj && !obj.isAideButton && !obj.isBoussole && !obj.isDimensionBox) {
+        afficherMenuContextuel(obj, canvas);
+        // Afficher les messages de validation pour les arbres
+        if (obj.customType === 'arbre-a-planter' && obj.validationMessages) {
+          afficherMessagesValidation(obj);
+        }
+      }
     });
 
     canvas.on('selection:updated', (e) => {
-      afficherMenuContextuel(e.selected[0], canvas);
+      const obj = e.selected[0];
+      if (obj && !obj.isAideButton && !obj.isBoussole && !obj.isDimensionBox) {
+        afficherMenuContextuel(obj, canvas);
+        // Afficher les messages de validation pour les arbres
+        if (obj.customType === 'arbre-a-planter' && obj.validationMessages) {
+          afficherMessagesValidation(obj);
+        }
+      }
     });
 
     canvas.on('selection:cleared', () => {
@@ -215,6 +248,69 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       fabricCanvasRef.current = null;
     };
   }, []); // Dépendances vides = s'exécute UNE SEULE FOIS
+
+  // Rendre la palette déplaçable
+  useEffect(() => {
+    const palette = document.getElementById('palette-outils');
+    const header = palette?.querySelector('.palette-header');
+    if (!palette || !header) return;
+
+    let isDragging = false;
+    let currentX, currentY, initialX, initialY;
+
+    const dragStart = (e) => {
+      if (e.type === 'touchstart') {
+        initialX = e.touches[0].clientX - palette.offsetLeft;
+        initialY = e.touches[0].clientY - palette.offsetTop;
+      } else {
+        initialX = e.clientX - palette.offsetLeft;
+        initialY = e.clientY - palette.offsetTop;
+      }
+
+      if (e.target === header || e.target.classList.contains('palette-handle') || e.target.tagName === 'H4') {
+        isDragging = true;
+        palette.style.cursor = 'grabbing';
+      }
+    };
+
+    const drag = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+
+      if (e.type === 'touchmove') {
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+      } else {
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+      }
+
+      palette.style.left = currentX + 'px';
+      palette.style.top = currentY + 'px';
+    };
+
+    const dragEnd = () => {
+      isDragging = false;
+      palette.style.cursor = 'grab';
+    };
+
+    header.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    header.addEventListener('touchstart', dragStart);
+    document.addEventListener('touchmove', drag);
+    document.addEventListener('touchend', dragEnd);
+
+    return () => {
+      header.removeEventListener('mousedown', dragStart);
+      document.removeEventListener('mousemove', drag);
+      document.removeEventListener('mouseup', dragEnd);
+      header.removeEventListener('touchstart', dragStart);
+      document.removeEventListener('touchmove', drag);
+      document.removeEventListener('touchend', dragEnd);
+    };
+  }, []);
 
   // Afficher le menu contextuel au-dessus de l'objet sélectionné
   const afficherMenuContextuel = (obj, canvas) => {
@@ -250,6 +346,30 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     if (menu) {
       menu.style.display = 'none';
     }
+  };
+
+  const afficherMessagesValidation = (arbreGroup) => {
+    const messages = arbreGroup.validationMessages || [];
+    const status = arbreGroup.validationStatus || 'ok';
+    
+    let titre = '';
+    let couleur = '';
+    
+    if (status === 'error') {
+      titre = '❌ Problèmes détectés';
+      couleur = '#c62828';
+    } else if (status === 'warning') {
+      titre = '⚠️ Avertissements';
+      couleur = '#e65100';
+    } else {
+      titre = '✅ Position valide';
+      couleur = '#2e7d32';
+    }
+    
+    const messageText = messages.join('\n');
+    
+    // Afficher dans un alert pour le moment (on pourrait faire mieux plus tard)
+    alert(`${titre}\n\n${messageText}`);
   };
 
   const supprimerObjetActif = () => {
@@ -325,24 +445,271 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     }, 100);
   };
 
+  // Fonction pour trouver une position valide pour un arbre
+  const trouverPositionValide = (canvas, arbre, largeur, hauteur, index) => {
+    // Extraire les distances minimales depuis les données de l'arbre
+    const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
+    const distanceCanalisations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.canalisations?.split('m')[0] || '4');
+    const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
+    const distanceEntreArbres = parseFloat(arbre.reglementation?.distancesLegales?.entreArbres?.distance?.split('m')[0] || '5');
+    
+    // Récupérer tous les objets existants
+    const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
+    const canalisations = canvas.getObjects().filter(obj => obj.customType === 'canalisation');
+    const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
+    const autresArbres = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter' || obj.customType === 'arbre-existant');
+    
+    // Grille de recherche (tous les 2m)
+    const pasGrille = 2 * echelle;
+    const positions = [];
+    
+    for (let x = 100; x < canvas.width - 100; x += pasGrille) {
+      for (let y = 100; y < canvas.height - 100; y += pasGrille) {
+        let valide = true;
+        
+        // Vérifier distance avec la maison
+        if (maison) {
+          const distMaison = calculerDistanceRectangle(x, y, maison);
+          if (distMaison < distanceFondations * echelle) {
+            valide = false;
+            continue;
+          }
+        }
+        
+        // Vérifier distance avec les canalisations
+        for (const canal of canalisations) {
+          const distCanal = calculerDistanceLigne(x, y, canal);
+          if (distCanal < distanceCanalisations * echelle) {
+            valide = false;
+            break;
+          }
+        }
+        if (!valide) continue;
+        
+        // Vérifier distance avec les clôtures
+        for (const cloture of clotures) {
+          const distCloture = calculerDistanceLigne(x, y, cloture);
+          if (distCloture < distanceCloture * echelle) {
+            valide = false;
+            break;
+          }
+        }
+        if (!valide) continue;
+        
+        // Vérifier distance avec les autres arbres
+        for (const autreArbre of autresArbres) {
+          const dx = x - autreArbre.left;
+          const dy = y - autreArbre.top;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < distanceEntreArbres * echelle) {
+            valide = false;
+            break;
+          }
+        }
+        if (!valide) continue;
+        
+        // Position valide trouvée
+        positions.push({ x, y, score: Math.random() }); // Score aléatoire pour varier
+      }
+    }
+    
+    // Si aucune position valide, placer en diagonale par défaut (en dehors mais visible)
+    if (positions.length === 0) {
+      console.warn(`⚠️ Aucune position valide trouvée pour ${arbre.name}, placement par défaut`);
+      return {
+        x: 150 + (index * 200),
+        y: 150 + (index * 150)
+      };
+    }
+    
+    // Trier par score et prendre la meilleure
+    positions.sort((a, b) => b.score - a.score);
+    return positions[0];
+  };
+  
+  // Fonction helper : distance entre un point et un rectangle
+  const calculerDistanceRectangle = (px, py, rect) => {
+    const rx = rect.left;
+    const ry = rect.top;
+    const rw = rect.getScaledWidth();
+    const rh = rect.getScaledHeight();
+    
+    const dx = Math.max(rx - px, 0, px - (rx + rw));
+    const dy = Math.max(ry - py, 0, py - (ry + rh));
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+  
+  // Fonction helper : distance entre un point et une ligne
+  const calculerDistanceLigne = (px, py, ligne) => {
+    const x1 = ligne.x1 + ligne.left;
+    const y1 = ligne.y1 + ligne.top;
+    const x2 = ligne.x2 + ligne.left;
+    const y2 = ligne.y2 + ligne.top;
+    
+    const A = px - x1;
+    const B = py - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+    
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    const param = lenSq !== 0 ? dot / lenSq : -1;
+    
+    let xx, yy;
+    
+    if (param < 0) {
+      xx = x1;
+      yy = y1;
+    } else if (param > 1) {
+      xx = x2;
+      yy = y2;
+    } else {
+      xx = x1 + param * C;
+      yy = y1 + param * D;
+    }
+    
+    const dx = px - xx;
+    const dy = py - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  // Valider la position d'un arbre et changer sa couleur + ajouter tooltip
+  const validerPositionArbre = (canvas, arbreGroup) => {
+    const arbre = arbreGroup.arbreData;
+    if (!arbre) return;
+    
+    // Extraire les distances minimales
+    const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
+    const distanceCanalisations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.canalisations?.split('m')[0] || '4');
+    const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
+    const distanceEntreArbres = parseFloat(arbre.reglementation?.distancesLegales?.entreArbres?.distance?.split('m')[0] || '5');
+    const distanceTerrasse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.terrasse?.split('m')[0] || '3');
+    
+    const problemes = [];
+    const avertissements = [];
+    
+    const x = arbreGroup.left;
+    const y = arbreGroup.top;
+    
+    // Vérifier maison/fondations
+    const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
+    if (maison) {
+      const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
+      if (distMaison < distanceFondations) {
+        problemes.push(`🏠 Trop près de la maison (${distMaison.toFixed(1)}m < ${distanceFondations}m requis)`);
+      } else if (distMaison < distanceFondations + 1) {
+        avertissements.push(`🏠 Proche de la maison (${distMaison.toFixed(1)}m, ${distanceFondations}m recommandé)`);
+      }
+    }
+    
+    // Vérifier canalisations
+    const canalisations = canvas.getObjects().filter(obj => obj.customType === 'canalisation');
+    for (const canal of canalisations) {
+      const distCanal = calculerDistanceLigne(x, y, canal) / echelle;
+      if (distCanal < distanceCanalisations) {
+        problemes.push(`🚰 Trop près d'une canalisation (${distCanal.toFixed(1)}m < ${distanceCanalisations}m requis)`);
+      }
+    }
+    
+    // Vérifier clôtures/limites
+    const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
+    for (const cloture of clotures) {
+      const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
+      if (distCloture < distanceCloture) {
+        problemes.push(`🚧 Trop près de la limite (${distCloture.toFixed(1)}m < ${distanceCloture}m légal)`);
+      } else if (distCloture < distanceCloture + 0.5) {
+        avertissements.push(`🚧 Proche de la limite (${distCloture.toFixed(1)}m, ${distanceCloture}m minimum)`);
+      }
+    }
+    
+    // Vérifier terrasses
+    const terrasses = canvas.getObjects().filter(obj => obj.customType === 'paves');
+    for (const terrasse of terrasses) {
+      const distTerrasse = calculerDistanceRectangle(x, y, terrasse) / echelle;
+      if (distTerrasse < distanceTerrasse) {
+        avertissements.push(`🏡 Proche d'une terrasse (${distTerrasse.toFixed(1)}m < ${distanceTerrasse}m recommandé)`);
+      }
+    }
+    
+    // Vérifier autres arbres
+    const autresArbres = canvas.getObjects().filter(obj => 
+      (obj.customType === 'arbre-a-planter' || obj.customType === 'arbre-existant') && obj !== arbreGroup
+    );
+    for (const autreArbre of autresArbres) {
+      const dx = (x - autreArbre.left) / echelle;
+      const dy = (y - autreArbre.top) / echelle;
+      const distArbre = Math.sqrt(dx * dx + dy * dy);
+      if (distArbre < distanceEntreArbres) {
+        problemes.push(`🌳 Trop près d'un autre arbre (${distArbre.toFixed(1)}m < ${distanceEntreArbres}m requis)`);
+      } else if (distArbre < distanceEntreArbres + 1) {
+        avertissements.push(`🌳 Proche d'un autre arbre (${distArbre.toFixed(1)}m)`);
+      }
+    }
+    
+    // Changer la couleur de l'ellipse
+    const ellipse = arbreGroup.item(0); // Premier élément = ellipse
+    if (problemes.length > 0) {
+      ellipse.set({
+        fill: 'rgba(244, 67, 54, 0.4)', // Rouge
+        stroke: '#c62828'
+      });
+      arbreGroup.validationStatus = 'error';
+      arbreGroup.validationMessages = problemes;
+    } else if (avertissements.length > 0) {
+      ellipse.set({
+        fill: 'rgba(255, 152, 0, 0.4)', // Orange
+        stroke: '#e65100'
+      });
+      arbreGroup.validationStatus = 'warning';
+      arbreGroup.validationMessages = avertissements;
+    } else {
+      ellipse.set({
+        fill: 'rgba(129, 199, 132, 0.4)', // Vert
+        stroke: '#2e7d32'
+      });
+      arbreGroup.validationStatus = 'ok';
+      arbreGroup.validationMessages = ['✅ Position conforme à toutes les règles'];
+    }
+    
+    canvas.renderAll();
+  };
+
   // Ajouter les arbres à planter automatiquement au démarrage
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
-    if (!canvas || arbresAjoutesRef.current || arbresAPlanter.length === 0) return;
+    if (!canvas || arbresAPlanter.length === 0) return;
+    
+    // Attendre que le plan par défaut soit chargé avant d'ajouter les arbres
+    setTimeout(() => {
+      // Vérifier si les arbres sont déjà sur le canvas
+      const arbresExistants = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
+      if (arbresExistants.length >= arbresAPlanter.length) return;
 
-    // Ajouter chaque arbre avec sa taille réelle
+      // Ajouter chaque arbre avec sa taille réelle (ellipse : largeur = envergure, hauteur = hauteur)
     arbresAPlanter.forEach((arbre, index) => {
-      const envergureMax = parseFloat(arbre.envergure?.split('-')[1] || arbre.envergure || 5);
-      const rayon = (envergureMax / 2) * echelle;
+      // Extraire l'envergure (largeur) - prendre la valeur max si plage
+      const envergureStr = arbre.envergure || '5';
+      const envergureMax = parseFloat(envergureStr.split('-').pop());
       
-      // Positionner en diagonale pour éviter les chevauchements initiaux
-      const offsetX = 100 + (index * 150);
-      const offsetY = 100 + (index * 100);
+      // Extraire la hauteur - prendre la valeur max si plage
+      const hauteurStr = arbre.tailleMaturite || '5';
+      const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
+      
+      // Convertir en pixels
+      const largeur = envergureMax * echelle;
+      const hauteur = hauteurMax * echelle;
+      
+      // Trouver une position valide qui respecte toutes les contraintes
+      const position = trouverPositionValide(canvas, arbre, largeur, hauteur, index);
+      const offsetX = position.x;
+      const offsetY = position.y;
 
-      const cercle = new fabric.Circle({
+      // Ellipse (largeur = envergure, hauteur = hauteur de l'arbre)
+      const ellipse = new fabric.Ellipse({
         left: 0,
         top: 0,
-        radius: rayon,
+        rx: largeur / 2,  // Rayon horizontal (envergure/2)
+        ry: hauteur / 2,  // Rayon vertical (hauteur/2)
         fill: 'rgba(129, 199, 132, 0.4)',
         stroke: '#2e7d32',
         strokeWidth: 3,
@@ -354,7 +721,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       const emoji = new fabric.Text('🌳', {
         left: 0,
         top: 0,
-        fontSize: rayon * 0.6,
+        fontSize: Math.min(largeur, hauteur) * 0.3,
         originX: 'center',
         originY: 'center',
         selectable: false,
@@ -364,8 +731,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       // Nom en dessous
       const label = new fabric.Text(arbre.name, {
         left: 0,
-        top: rayon + 10,
-        fontSize: 14,
+        top: hauteur / 2 + 10,
+        fontSize: 12,
         fontWeight: 'bold',
         fill: '#1b5e20',
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -375,8 +742,22 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         selectable: false,
         evented: false
       });
+      
+      // Dimensions affichées (envergure × hauteur)
+      const dimensions = new fabric.Text(`${envergureMax}m × ${hauteurMax}m`, {
+        left: 0,
+        top: -hauteur / 2 - 20,
+        fontSize: 10,
+        fill: '#666',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        padding: 2,
+        originX: 'center',
+        originY: 'bottom',
+        selectable: false,
+        evented: false
+      });
 
-      const group = new fabric.Group([cercle, emoji, label], {
+      const group = new fabric.Group([ellipse, emoji, label, dimensions], {
         left: offsetX,
         top: offsetY,
         customType: 'arbre-a-planter',
@@ -384,11 +765,14 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
 
       canvas.add(group);
+      
+      // Valider la position initiale
+      validerPositionArbre(canvas, group);
     });
 
-    arbresAjoutesRef.current = true;
     canvas.renderAll();
     ajouterMesuresLive(canvas);
+    }, 500); // Attendre 500ms pour que le plan par défaut soit chargé
   }, [arbresAPlanter]);
 
   // Mettre à jour les dimensions du canvas quand elles changent
@@ -404,7 +788,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       if (obj.isGridLine || obj.isBoussole || obj.isDimensionBox || obj.isAideButton) canvas.remove(obj);
     });
     ajouterGrille(canvas);
-    ajouterBoussole(canvas);
+    ajouterIndicateurSud(canvas);
     ajouterDimensionsSurPlan(canvas);
     ajouterBoutonAide(canvas);
     canvas.renderAll();
@@ -507,8 +891,156 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.add(textDim);
   };
 
+  // Créer un plan par défaut
+  const creerPlanParDefaut = (canvas) => {
+    // Clôture rectangulaire qui utilise presque tout l'espace disponible
+    const margin = 50; // Marge de 50px de chaque côté
+    const terrainLargeur = canvas.width - (margin * 2);
+    const terrainHauteur = canvas.height - (margin * 2);
+    const marginX = margin;
+    const marginY = margin;
+    
+    // 4 côtés de la clôture
+    const clotures = [
+      // Haut
+      { x1: marginX, y1: marginY, x2: marginX + terrainLargeur, y2: marginY },
+      // Droite
+      { x1: marginX + terrainLargeur, y1: marginY, x2: marginX + terrainLargeur, y2: marginY + terrainHauteur },
+      // Bas
+      { x1: marginX + terrainLargeur, y1: marginY + terrainHauteur, x2: marginX, y2: marginY + terrainHauteur },
+      // Gauche
+      { x1: marginX, y1: marginY + terrainHauteur, x2: marginX, y2: marginY }
+    ];
+    
+    clotures.forEach(coords => {
+      const cloture = new fabric.Line([coords.x1, coords.y1, coords.x2, coords.y2], {
+        stroke: '#ffd54f',
+        strokeWidth: 3,
+        strokeDashArray: [10, 5],
+        strokeLineCap: 'round',
+        customType: 'cloture',
+        strokeUniform: true,
+        hasBorders: true,
+        hasControls: true,
+        cornerSize: 12,
+        cornerColor: '#ffd54f',
+        cornerStyle: 'circle',
+        transparentCorners: false
+      });
+      canvas.add(cloture);
+    });
+    
+    // Maison 10m x 10m au centre-gauche
+    const maisonSize = 10 * echelle;
+    const maisonX = marginX + terrainLargeur * 0.25 - maisonSize / 2;
+    const maisonY = marginY + terrainHauteur / 2 - maisonSize / 2;
+    
+    const maison = new fabric.Rect({
+      left: maisonX,
+      top: maisonY,
+      width: maisonSize,
+      height: maisonSize,
+      fill: '#bdbdbd',
+      stroke: '#424242',
+      strokeWidth: 2,
+      customType: 'maison'
+    });
+    
+    const maisonLabel = new fabric.Text('🏠', {
+      left: maisonX + maisonSize / 2,
+      top: maisonY + maisonSize / 2,
+      fontSize: 32,
+      originX: 'center',
+      originY: 'center',
+      selectable: false,
+      evented: false
+    });
+    
+    const maisonGroup = new fabric.Group([maison, maisonLabel], {
+      customType: 'maison'
+    });
+    canvas.add(maisonGroup);
+    
+    // Créer le motif pour pavés (fonction réutilisable)
+    const creerMotifPaves = () => {
+      const patternCanvas = document.createElement('canvas');
+      patternCanvas.width = 20;
+      patternCanvas.height = 20;
+      const ctx = patternCanvas.getContext('2d');
+      ctx.fillStyle = '#9ccc65';
+      ctx.fillRect(0, 0, 20, 20);
+      ctx.fillStyle = '#bdbdbd';
+      ctx.fillRect(0, 0, 8, 8);
+      ctx.fillRect(12, 12, 8, 8);
+      
+      return new fabric.Pattern({
+        source: patternCanvas,
+        repeat: 'repeat'
+      });
+    };
+    
+    // Pavés enherbés 5m x 5m à droite
+    const paveSize1 = 5 * echelle;
+    const paveX1 = marginX + terrainLargeur * 0.7;
+    const paveY1 = marginY + terrainHauteur / 2 - paveSize1 / 2;
+    
+    const paves1 = new fabric.Rect({
+      left: paveX1,
+      top: paveY1,
+      width: paveSize1,
+      height: paveSize1,
+      fill: creerMotifPaves(),
+      stroke: '#7cb342',
+      strokeWidth: 2,
+      customType: 'paves'
+    });
+    canvas.add(paves1);
+    
+    // Pavés enherbés 5m x 5m en bas de la maison (qui la touchent)
+    const paveSize2 = 5 * echelle;
+    const paveX2 = maisonX + maisonSize / 2 - paveSize2 / 2; // Centré sous la maison
+    const paveY2 = maisonY + maisonSize; // Juste en dessous de la maison
+    
+    const paves2 = new fabric.Rect({
+      left: paveX2,
+      top: paveY2,
+      width: paveSize2,
+      height: paveSize2,
+      fill: creerMotifPaves(),
+      stroke: '#7cb342',
+      strokeWidth: 2,
+      customType: 'paves'
+    });
+    canvas.add(paves2);
+    
+    canvas.renderAll();
+    const largeurM = (terrainLargeur / echelle).toFixed(0);
+    const hauteurM = (terrainHauteur / echelle).toFixed(0);
+    console.log(`✅ Plan par défaut créé : clôture ${largeurM}×${hauteurM}m, maison 10×10m, 2 pavés 5×5m (utilise tout l'espace disponible)`);
+  };
+
+  // Charger automatiquement le plan au démarrage
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    // Vérifier si le plan par défaut existe déjà (vérifier spécifiquement la maison ou les clôtures)
+    const planDefautExiste = canvas.getObjects().some(obj => 
+      obj.customType === 'maison' || 
+      obj.customType === 'cloture' || 
+      obj.customType === 'paves'
+    );
+    
+    if (planDefautExiste) return; // Plan déjà créé
+
+    setTimeout(() => {
+      // Toujours charger le plan par défaut
+      creerPlanParDefaut(canvas);
+    }, 300); // Réduit à 300ms pour être avant les arbres
+  }, []);
+
   const ajouterBoutonAide = (canvas) => {
-    const size = 50;
+    const size = 40; // Réduit de 50 à 40
     const btnX = canvas.width - size - 15;
     const btnY = canvas.height - size - 15;
 
@@ -522,27 +1054,30 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       strokeWidth: 2,
       originX: 'center',
       originY: 'center',
-      selectable: true,
+      selectable: false, // Ne pas être sélectionnable
       hasControls: false,
       hasBorders: false,
       lockMovementX: true,
       lockMovementY: true,
       hoverCursor: 'pointer',
-      isAideButton: true
+      evented: true,
+      isAideButton: true, // Ignoré lors de l'export
+      excludeFromExport: true // Exclu de l'export
     });
 
     // Point d'interrogation
     const icon = new fabric.Text('?', {
       left: btnX,
       top: btnY,
-      fontSize: 28,
+      fontSize: 24, // Réduit de 28 à 24
       fontWeight: 'bold',
       fill: 'white',
       originX: 'center',
       originY: 'center',
       selectable: false,
       evented: false,
-      isAideButton: true
+      isAideButton: true,
+      excludeFromExport: true
     });
 
     cercle.on('mousedown', () => {
@@ -713,6 +1248,123 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.add(label);
   };
 
+  const ajouterIndicateurSud = (canvas) => {
+    // Position initiale du soleil selon l'orientation (le soleil à midi indique le SUD)
+    let soleilX, soleilY;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    // Le soleil à midi est au SUD
+    if (orientation === 'nord-haut') {
+      soleilX = centerX;
+      soleilY = canvas.height - 60; // Sud en bas
+    } else if (orientation === 'nord-droite') {
+      soleilX = 60; // Sud à gauche
+      soleilY = centerY;
+    } else if (orientation === 'nord-bas') {
+      soleilX = centerX;
+      soleilY = 60; // Sud en haut
+    } else { // nord-gauche
+      soleilX = canvas.width - 60; // Sud à droite
+      soleilY = centerY;
+    }
+
+    // Soleil "SUD" (midi) - cercle jaune/orange avec dégradé
+    const soleil = new fabric.Circle({
+      left: soleilX,
+      top: soleilY,
+      radius: 20,
+      fill: new fabric.Gradient({
+        type: 'radial',
+        coords: {
+          x1: 0,
+          y1: 0,
+          x2: 0,
+          y2: 0,
+          r1: 0,
+          r2: 20
+        },
+        colorStops: [
+          { offset: 0, color: '#ffeb3b' },  // Jaune vif au centre
+          { offset: 0.7, color: '#ffa726' }, // Orange
+          { offset: 1, color: '#ff6f00' }    // Orange foncé au bord
+        ]
+      }),
+      stroke: '#ff6f00',
+      strokeWidth: 2,
+      originX: 'center',
+      originY: 'center',
+      selectable: true,
+      hasControls: false,
+      hasBorders: false,
+      lockScalingX: true,
+      lockScalingY: true,
+      lockRotation: true,
+      hoverCursor: 'move',
+      isBoussole: true,
+      shadow: new fabric.Shadow({
+        color: 'rgba(255, 165, 0, 0.6)',
+        blur: 15,
+        offsetX: 0,
+        offsetY: 0
+      })
+    });
+
+    // Label "SUD (midi)"
+    const label = new fabric.Text('SUD', {
+      left: soleilX,
+      top: soleilY + 30,
+      fontSize: 12,
+      fontWeight: 'bold',
+      fill: '#ff6f00',
+      originX: 'center',
+      originY: 'center',
+      selectable: false,
+      evented: false,
+      isBoussole: true,
+      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+      padding: 3
+    });
+
+    // Calculer l'orientation quand le soleil bouge
+    soleil.on('moving', () => {
+      // Mettre à jour la position du label
+      label.set({
+        left: soleil.left,
+        top: soleil.top + 30
+      });
+
+      // Calculer le vecteur centre -> soleil (indique le SUD)
+      const dx = soleil.left - centerX;
+      const dy = soleil.top - centerY;
+      
+      // Calculer l'angle en degrés
+      let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      angle = ((angle % 360) + 360) % 360;
+      
+      // Déterminer l'orientation (où est le NORD par rapport au SUD)
+      let newOrientation;
+      if (angle >= 315 || angle < 45) {
+        newOrientation = 'nord-gauche'; // Sud à droite = Nord à gauche
+      } else if (angle >= 45 && angle < 135) {
+        newOrientation = 'nord-haut'; // Sud en bas = Nord en haut
+      } else if (angle >= 135 && angle < 225) {
+        newOrientation = 'nord-droite'; // Sud à gauche = Nord à droite
+      } else {
+        newOrientation = 'nord-bas'; // Sud en haut = Nord en bas
+      }
+      
+      if (newOrientation !== orientation) {
+        onOrientationChange(newOrientation);
+      }
+      
+      canvas.renderAll();
+    });
+
+    canvas.add(soleil);
+    canvas.add(label);
+  };
+
   const ajouterGrille = (canvas) => {
     const width = canvas.width;
     const height = canvas.height;
@@ -751,6 +1403,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       largeur: dimensions.largeur,
       hauteur: dimensions.hauteur,
       orientation,
+      timestamp: Date.now(), // Horodatage pour tracer les sauvegardes
       maison: null,
       canalisations: [],
       arbresExistants: [],
@@ -771,20 +1424,19 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           height: (obj.getScaledHeight()) / echelle
         };
       } else if (obj.customType === 'canalisation') {
-        if (obj.type === 'line') {
-          planData.canalisations.push({
-            type: 'line',
-            x1: obj.x1,
-            y1: obj.y1,
-            x2: obj.x2,
-            y2: obj.y2
-          });
-        } else if (obj.type === 'polyline') {
-          planData.canalisations.push({
-            type: 'polyline',
-            points: obj.points
-          });
-        }
+        planData.canalisations.push({
+          x1: obj.x1,
+          y1: obj.y1,
+          x2: obj.x2,
+          y2: obj.y2
+        });
+      } else if (obj.customType === 'cloture') {
+        planData.clotures.push({
+          x1: obj.x1,
+          y1: obj.y1,
+          x2: obj.x2,
+          y2: obj.y2
+        });
       } else if (obj.customType === 'arbre-existant') {
         planData.arbresExistants.push({
           left: obj.left / echelle,
@@ -949,8 +1601,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const maison = new fabric.Rect({
       left: 50,
       top: 50,
-      width: 10 * echelle,
-      height: 8 * echelle,
+      width: 10 * echelle,  // 10m par défaut
+      height: 10 * echelle, // 10m par défaut
       fill: '#bdbdbd',
       stroke: '#424242',
       strokeWidth: 2,
@@ -959,7 +1611,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     const label = new fabric.Text('🏠', {
       left: 50 + (10 * echelle) / 2,
-      top: 50 + (8 * echelle) / 2,
+      top: 50 + (10 * echelle) / 2,  // Centré sur 10m
       fontSize: 32,
       originX: 'center',
       originY: 'center',
@@ -981,17 +1633,56 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     if (!canvas) return;
 
     const canalisation = new fabric.Line([50, 50, 200, 50], {
-      stroke: '#2196f3',
+      stroke: '#757575', // Gris
       strokeWidth: 3,
-      strokeDashArray: [5, 5],
+      strokeDashArray: null, // Ligne continue
+      strokeLineCap: 'round',
       customType: 'canalisation',
       selectable: true,
-      hasBorders: false,
-      hasControls: true
+      hasBorders: true, // Afficher les bordures pour mieux voir
+      hasControls: true,
+      lockScalingY: false, // Autoriser tout type de scaling
+      lockScalingX: false,
+      lockRotation: false, // Autoriser rotation
+      strokeUniform: true, // L'épaisseur reste constante
+      perPixelTargetFind: true,
+      cornerSize: 12,
+      cornerColor: '#757575',
+      cornerStyle: 'circle',
+      transparentCorners: false
     });
 
     canvas.add(canalisation);
     canvas.setActiveObject(canalisation);
+    canvas.renderAll();
+  };
+
+  const ajouterCloture = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    const cloture = new fabric.Line([50, 100, 200, 100], {
+      stroke: '#ffd54f', // Jaune
+      strokeWidth: 3,
+      strokeDashArray: [10, 5], // Pointillés
+      strokeLineCap: 'round',
+      customType: 'cloture',
+      selectable: true,
+      hasBorders: true, // Afficher les bordures pour mieux voir
+      hasControls: true,
+      lockScalingY: false, // Autoriser tout type de scaling
+      lockScalingX: false,
+      lockRotation: false, // Autoriser rotation
+      strokeUniform: true, // L'épaisseur reste constante
+      perPixelTargetFind: true,
+      cornerSize: 12,
+      cornerColor: '#ffd54f',
+      cornerStyle: 'circle',
+      transparentCorners: false
+    });
+
+    canvas.add(cloture);
+    canvas.setActiveObject(cloture);
     canvas.renderAll();
   };
 
@@ -1077,8 +1768,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const paves = new fabric.Rect({
       left: 200,
       top: 200,
-      width: 4 * echelle,
-      height: 6 * echelle,
+      width: 7 * echelle,  // 7m de largeur par défaut
+      height: 5 * echelle, // 5m de hauteur par défaut
       fill: pattern,
       stroke: '#7cb342',
       strokeWidth: 2,
@@ -1216,8 +1907,15 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     try {
       const planData = JSON.parse(saved);
       
-      // Effacer tout sauf la grille
-      const objets = canvas.getObjects().filter(obj => !obj.isGridLine);
+      // Effacer seulement les objets du plan (pas grille, boussole, dimensions, aide)
+      const objets = canvas.getObjects().filter(obj => 
+        !obj.isGridLine && 
+        !obj.isBoussole && 
+        !obj.isDimensionBox && 
+        !obj.isAideButton &&
+        !obj.measureLabel &&
+        !obj.alignmentGuide
+      );
       objets.forEach(obj => canvas.remove(obj));
       
       // Maison
@@ -1254,10 +1952,44 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             canal.x2 || 200,
             canal.y2 || 50
           ], {
-            stroke: '#2196f3',
+            stroke: '#757575', // Gris
             strokeWidth: 3,
-            strokeDashArray: [5, 5],
-            customType: 'canalisation'
+            strokeDashArray: null, // Ligne continue
+            strokeLineCap: 'round',
+            customType: 'canalisation',
+            strokeUniform: true, // Épaisseur constante
+            hasBorders: true,
+            hasControls: true,
+            cornerSize: 12,
+            cornerColor: '#757575',
+            cornerStyle: 'circle',
+            transparentCorners: false
+          });
+          canvas.add(line);
+        });
+      }
+      
+      // Clôtures
+      if (planData.clotures) {
+        planData.clotures.forEach(cloture => {
+          const line = new fabric.Line([
+            cloture.x1,
+            cloture.y1,
+            cloture.x2,
+            cloture.y2
+          ], {
+            stroke: '#ffd54f', // Jaune
+            strokeWidth: 3,
+            strokeDashArray: [10, 5], // Pointillés
+            strokeLineCap: 'round',
+            customType: 'cloture',
+            strokeUniform: true, // Épaisseur constante
+            hasBorders: true,
+            hasControls: true,
+            cornerSize: 12,
+            cornerColor: '#ffd54f',
+            cornerStyle: 'circle',
+            transparentCorners: false
           });
           canvas.add(line);
         });
@@ -1351,84 +2083,90 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   return (
     <div className="canvas-terrain-container">
-      <div className="canvas-controls">
-        <h3>🛠️ Outils de dessin</h3>
+      {/* Palette d'outils flottante et déplaçable */}
+      <div className="palette-outils" id="palette-outils">
+        <div className="palette-header">
+          <span className="palette-handle">⋮⋮</span>
+          <h4>🛠️ Outils</h4>
+        </div>
         
         <div className="outils-dessin">
-          <button className="btn-outil" onClick={ajouterMaison}>
-            🏠 Maison
+          <button className="btn-outil" onClick={ajouterMaison} title="Ajouter une maison">
+            🏠
           </button>
-          <button className="btn-outil" onClick={ajouterCanalisation}>
-            🚰 Canalisation
+          <button className="btn-outil" onClick={ajouterCanalisation} title="Ajouter une canalisation (gris)">
+            🚰
           </button>
-          <button className="btn-outil" onClick={ajouterArbreExistant}>
-            🌳 Arbre existant
+          <button className="btn-outil" onClick={ajouterCloture} title="Ajouter une clôture (jaune pointillés)">
+            🚧
           </button>
-          <button className="btn-outil" onClick={ajouterTerrasse}>
-            🏡 Terrasse
+          <button className="btn-outil" onClick={ajouterArbreExistant} title="Ajouter un arbre existant">
+            🌳
           </button>
-          <button className="btn-outil" onClick={ajouterPaves}>
-            🟩 Pavés enherbés
+          <button className="btn-outil" onClick={ajouterTerrasse} title="Ajouter une terrasse">
+            🏡
           </button>
-          <button className="btn-outil btn-success" onClick={chargerPlanSauvegarde}>
-            📥 Charger plan sauvegardé
+          <button className="btn-outil" onClick={ajouterPaves} title="Ajouter des pavés enherbés">
+            🟩
           </button>
-          <div className="separator"></div>
-          <button className="btn-outil btn-lock" onClick={verrouillerSelection}>
-            🔒 Verrouiller sélection
+          <button className="btn-outil btn-success" onClick={chargerPlanSauvegarde} title="Charger le plan sauvegardé">
+            📥
           </button>
-          <button className="btn-outil btn-unlock" onClick={deverrouillerTout}>
-            🔓 Tout déverrouiller
+          <button className="btn-outil btn-lock" onClick={verrouillerSelection} title="Verrouiller la sélection">
+            🔒
           </button>
-          <div className="raccourci-info lock-info">
-            <small>💡 Les objets verrouillés (bordure orange) ne peuvent plus être déplacés ni supprimés</small>
-          </div>
-          <div className="separator"></div>
-          <button className="btn-outil btn-danger" onClick={supprimerSelection}>
-            🗑️ Supprimer sélection
+          <button className="btn-outil btn-unlock" onClick={deverrouillerTout} title="Tout déverrouiller">
+            🔓
           </button>
-          <div className="raccourci-info">
-            <small>💡 Raccourci : Sélectionnez + touche <kbd>Suppr</kbd> ou <kbd>⌫</kbd></small>
-          </div>
-          <button className="btn-outil btn-danger" onClick={effacerTout}>
-            ⚠️ Effacer tout
+          <button className="btn-outil btn-danger" onClick={supprimerSelection} title="Supprimer la sélection (ou Suppr)">
+            🗑️
+          </button>
+          <button className="btn-outil btn-danger" onClick={effacerTout} title="Effacer tout le plan + sauvegarde">
+            ⚠️
+          </button>
+          <button className="btn-outil" onClick={() => {
+            const saved = localStorage.getItem('planTerrain');
+            if (saved) {
+              const planData = JSON.parse(saved);
+              const date = new Date(planData.timestamp || Date.now()).toLocaleString('fr-FR');
+              alert(`💾 Plan sauvegardé le ${date}\n✅ Sera rechargé automatiquement`);
+            } else {
+              alert('Aucune sauvegarde trouvée');
+            }
+          }} title="Vérifier la sauvegarde">
+            💾
           </button>
         </div>
+      </div>
 
-        <div className="canvas-aide" style={{ display: 'none' }}>
-          <button className="close-aide-btn" onClick={() => toggleAide()}>×</button>
-          <h4>💡 Aide & Raccourcis clavier</h4>
-          <div className="aide-grid">
-            <div className="aide-section">
-              <strong>🖱️ Souris</strong>
-              <ul>
-                <li>Glisser-déposer pour déplacer</li>
-                <li>Coins/bords pour redimensionner</li>
-                <li><strong>Snap automatique</strong> à la grille !</li>
-                <li><strong>Guides d'alignement</strong> (lignes rouges)</li>
-              </ul>
-            </div>
-            
-            <div className="aide-section">
-              <strong>⌨️ Clavier</strong>
-              <ul>
-                <li><kbd>Suppr</kbd> ou <kbd>⌫</kbd> : Supprimer</li>
-                <li><kbd>Ctrl+D</kbd> : Dupliquer</li>
-                <li><kbd>↑↓←→</kbd> : Déplacer 10cm</li>
-                <li><kbd>Shift+↑↓←→</kbd> : Déplacer 1m</li>
-              </ul>
-            </div>
+      {/* Aide flottante (overlay) */}
+      <div className="canvas-aide" style={{ display: 'none' }}>
+        <button className="close-aide-btn" onClick={() => toggleAide()}>×</button>
+        <h4>💡 Aide & Raccourcis</h4>
+        <div className="aide-grid">
+          <div className="aide-section">
+            <strong>🖱️ Souris</strong>
+            <ul>
+              <li>Glisser pour déplacer</li>
+              <li>Coins pour redimensionner</li>
+              <li>Snap automatique grille</li>
+              <li>Guides rouges alignement</li>
+            </ul>
           </div>
           
-          <div className="aide-features">
-            <p>✨ <strong>Snap to Grid</strong> : Les objets s'alignent automatiquement sur la grille</p>
-            <p>📏 <strong>Guides d'alignement</strong> : Lignes rouges apparaissent quand 2 objets s'alignent</p>
-            <p>🎯 <strong>Mesures temps réel</strong> : Dimensions affichées pendant le redimensionnement</p>
-            <p>💾 <strong>Sauvegarde auto</strong> : Votre plan est sauvegardé en permanence</p>
+          <div className="aide-section">
+            <strong>⌨️ Clavier</strong>
+            <ul>
+              <li><kbd>Suppr</kbd> Supprimer</li>
+              <li><kbd>Ctrl+D</kbd> Dupliquer</li>
+              <li><kbd>↑↓←→</kbd> Déplacer 10cm</li>
+              <li><kbd>Shift+↑</kbd> Déplacer 1m</li>
+            </ul>
           </div>
         </div>
       </div>
 
+      {/* Canvas plein écran */}
       <div className="canvas-wrapper">
         <canvas id="canvas-terrain" ref={canvasRef}></canvas>
         

@@ -32,8 +32,8 @@ function ResultatsPlanification({ plan, arbres, dimensions, orientation, onSugge
     if (!canvasRef.current || !plan) return;
 
     const fabricCanvas = new fabric.Canvas('canvas-resultats', {
-      width: Math.min(plan.largeur * echelle, 800),
-      height: Math.min(plan.hauteur * echelle, 600),
+      width: dimensions.largeur * echelle,
+      height: dimensions.hauteur * echelle,
       backgroundColor: '#e8f5e9',
       selection: false
     });
@@ -45,14 +45,16 @@ function ResultatsPlanification({ plan, arbres, dimensions, orientation, onSugge
     dessinerPlan(fabricCanvas);
 
     // Dessiner les suggestions
-    dessinerSuggestions(fabricCanvas, suggestions);
+    if (suggestions.length > 0) {
+      dessinerSuggestions(fabricCanvas, suggestions);
+    }
 
     setCanvas(fabricCanvas);
 
     return () => {
       fabricCanvas.dispose();
     };
-  }, [plan, suggestions]);
+  }, [plan, suggestions, suggestionSelectionnee]);
 
   const ajouterGrille = (fabricCanvas) => {
     const width = fabricCanvas.width;
@@ -104,20 +106,41 @@ function ResultatsPlanification({ plan, arbres, dimensions, orientation, onSugge
     }
 
     // Canalisations
-    plan.canalisations.forEach(canal => {
-      const ligne = new fabric.Line([
-        canal.x1 * echelle,
-        canal.y1 * echelle,
-        canal.x2 * echelle,
-        canal.y2 * echelle
-      ], {
-        stroke: '#2196f3',
-        strokeWidth: 3,
-        strokeDashArray: [5, 5],
-        selectable: false
+    if (plan.canalisations) {
+      plan.canalisations.forEach(canal => {
+        const ligne = new fabric.Line([
+          canal.x1,
+          canal.y1,
+          canal.x2,
+          canal.y2
+        ], {
+          stroke: '#757575', // Gris
+          strokeWidth: 3,
+          strokeUniform: true,
+          selectable: false
+        });
+        fabricCanvas.add(ligne);
       });
-      fabricCanvas.add(ligne);
-    });
+    }
+
+    // Clôtures
+    if (plan.clotures) {
+      plan.clotures.forEach(cloture => {
+        const ligne = new fabric.Line([
+          cloture.x1,
+          cloture.y1,
+          cloture.x2,
+          cloture.y2
+        ], {
+          stroke: '#ffd54f', // Jaune
+          strokeWidth: 3,
+          strokeDashArray: [10, 5],
+          strokeUniform: true,
+          selectable: false
+        });
+        fabricCanvas.add(ligne);
+      });
+    }
 
     // Arbres existants
     plan.arbresExistants.forEach(arbre => {
@@ -146,20 +169,55 @@ function ResultatsPlanification({ plan, arbres, dimensions, orientation, onSugge
     });
 
     // Terrasses
-    plan.terrasses.forEach(terrasse => {
-      const rect = new fabric.Rect({
-        left: terrasse.left * echelle,
-        top: terrasse.top * echelle,
-        width: terrasse.width * echelle,
-        height: terrasse.height * echelle,
-        fill: '#ffecb3',
-        stroke: '#f57c00',
-        strokeWidth: 2,
-        strokeDashArray: [5, 5],
-        selectable: false
+    if (plan.terrasses) {
+      plan.terrasses.forEach(terrasse => {
+        const rect = new fabric.Rect({
+          left: terrasse.left * echelle,
+          top: terrasse.top * echelle,
+          width: terrasse.width * echelle,
+          height: terrasse.height * echelle,
+          fill: '#ffecb3',
+          stroke: '#f57c00',
+          strokeWidth: 2,
+          strokeDashArray: [5, 5],
+          selectable: false
+        });
+        fabricCanvas.add(rect);
       });
-      fabricCanvas.add(rect);
-    });
+    }
+
+    // Pavés enherbés
+    if (plan.paves) {
+      plan.paves.forEach(pave => {
+        // Créer le motif
+        const patternCanvas = document.createElement('canvas');
+        patternCanvas.width = 20;
+        patternCanvas.height = 20;
+        const ctx = patternCanvas.getContext('2d');
+        ctx.fillStyle = '#9ccc65';
+        ctx.fillRect(0, 0, 20, 20);
+        ctx.fillStyle = '#bdbdbd';
+        ctx.fillRect(0, 0, 8, 8);
+        ctx.fillRect(12, 12, 8, 8);
+        
+        const pattern = new fabric.Pattern({
+          source: patternCanvas,
+          repeat: 'repeat'
+        });
+
+        const rect = new fabric.Rect({
+          left: pave.left * echelle,
+          top: pave.top * echelle,
+          width: pave.width * echelle,
+          height: pave.height * echelle,
+          fill: pattern,
+          stroke: '#7cb342',
+          strokeWidth: 2,
+          selectable: false
+        });
+        fabricCanvas.add(rect);
+      });
+    }
   };
 
   const dessinerSuggestions = (fabricCanvas, suggestions) => {
