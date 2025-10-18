@@ -2378,38 +2378,41 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       canvas.renderAll();
     };
     
+    // Variable pour tracker si le soleil est en train d'être déplacé
+    let isMovingSoleil = false;
+    
     // Événement pendant le déplacement (feedback visuel)
-    soleil.on('moving', updateOrientation);
+    soleil.on('moving', () => {
+      isMovingSoleil = true;
+      updateOrientation();
+    });
     
     // Événement à la fin du déplacement (important pour "déposer")
     soleil.on('modified', () => {
       updateOrientation();
-      // Désélectionner automatiquement après modification
-      setTimeout(() => {
-        canvas.discardActiveObject();
-        canvas.renderAll();
-      }, 100);
+      isMovingSoleil = false;
+    });
+    
+    // Événement mousedown pour détecter le début de sélection
+    soleil.on('mousedown', () => {
+      isMovingSoleil = false; // Réinitialiser au début
+    });
+    
+    // Événement mouseup directement sur l'objet
+    soleil.on('mouseup', () => {
+      // Si on a bougé, on désélectionne automatiquement
+      if (isMovingSoleil) {
+        setTimeout(() => {
+          canvas.discardActiveObject();
+          canvas.renderAll();
+          logger.debug('Boussole', 'Soleil déposé après drag');
+        }, 50);
+      }
+      // Si on n'a pas bougé, on laisse sélectionné (clic simple)
     });
 
     canvas.add(soleil);
     canvas.add(label);
-    
-    // Écouteur global pour le mouseup sur le canvas
-    // Gère le relâchement de la souris pour tous les objets boussole
-    const handleCanvasMouseUp = (e) => {
-      const activeObj = canvas.getActiveObject();
-      if (activeObj && activeObj.isBoussole) {
-        // Désélectionner l'objet
-        canvas.discardActiveObject();
-        canvas.renderAll();
-        logger.debug('Boussole', 'Soleil déposé', { 
-          position: { x: activeObj.left, y: activeObj.top }
-        });
-      }
-    };
-    
-    // Attacher l'événement au canvas (pas à l'objet)
-    canvas.on('mouse:up', handleCanvasMouseUp);
   };
 
   const ajouterGrille = (canvas) => {
