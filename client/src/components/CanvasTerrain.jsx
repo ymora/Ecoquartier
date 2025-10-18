@@ -1749,23 +1749,26 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     setTimeout(() => {
       // Vérifier si les arbres sont déjà sur le canvas
       const arbresExistants = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
-      logger.debug('CanvasTerrain', `Arbres existants: ${arbresExistants.length}/${arbresAPlanter.length}`);
       
-      // Si on a déjà le bon nombre d'arbres, ne pas les recréer
-      // SAUF si la liste arbresAPlanter a changé (comparaison IDs)
-      if (arbresExistants.length >= arbresAPlanter.length) {
-        const idsExistants = arbresExistants.map(a => a.arbreData?.id).sort().join(',');
-        const idsAPlanter = arbresAPlanter.map(a => a.id).sort().join(',');
-        
-        if (idsExistants === idsAPlanter) {
-          logger.info('CanvasTerrain', 'Mêmes arbres déjà présents, pas de réajout');
-          return;
-        }
-        
-        // Liste différente → Supprimer les anciens et ajouter les nouveaux
-        logger.info('CanvasTerrain', 'Liste arbres changée, réinitialisation');
-        arbresExistants.forEach(a => canvas.remove(a));
+      // Comparer les IDs pour voir si la liste a changé
+      const idsExistants = arbresExistants.map(a => a.arbreData?.id).sort().join(',');
+      const idsAPlanter = arbresAPlanter.map(a => a.id).sort().join(',');
+      
+      logger.debug('CanvasTerrain', `Arbres: existants=${arbresExistants.length} à_planter=${arbresAPlanter.length}`);
+      logger.debug('CanvasTerrain', `IDs: existants="${idsExistants}" vs à_planter="${idsAPlanter}"`);
+      
+      // Si les listes sont EXACTEMENT identiques, ne rien faire
+      if (idsExistants === idsAPlanter && arbresExistants.length === arbresAPlanter.length) {
+        logger.info('CanvasTerrain', `✅ Mêmes ${arbresAPlanter.length} arbres déjà présents, skip`);
+        return;
       }
+      
+      // Sinon, supprimer TOUS les anciens arbres et ajouter les nouveaux
+      logger.warn('CanvasTerrain', `🔄 Liste changée: ${arbresExistants.length} → ${arbresAPlanter.length} arbres`);
+      arbresExistants.forEach(a => {
+        logger.debug('Suppression', `Retrait: ${a.arbreData?.name || 'inconnu'}`);
+        canvas.remove(a);
+      });
 
       // Ajouter chaque arbre avec sa taille réelle (ellipse : largeur = envergure, hauteur = hauteur)
       logger.info('Ajout', `🌳 Début ajout arbre ${arbresAPlanter.length} arbres`);
@@ -1851,8 +1854,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
 
       canvas.add(group);
-      logger.debug('CanvasTerrain', `Arbre ajouté: ${arbre.name}`, { 
-        position: { x: offsetX, y: offsetY },
+      logger.info('Ajout', `✅ Arbre ${index + 1}/${arbresAPlanter.length} ajouté: ${arbre.name}`, { 
+        position: { x: offsetX.toFixed(0), y: offsetY.toFixed(0) },
         tailles: { envergure: tailles.envergureActuelle.toFixed(1), hauteur: tailles.hauteurActuelle.toFixed(1) }
       });
       
@@ -1860,15 +1863,19 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       validerPositionArbre(canvas, group);
     });
 
+    // IMPORTANT: Forcer le rendu complet après ajout de tous les arbres
     canvas.renderAll();
+    canvas.requestRenderAll();
     ajouterMesuresLive(canvas);
     afficherZonesContraintes(canvas);
     
-    // Log final simplifié
+    // Log final pour vérifier le nombre réel d'arbres sur le canvas
     const arbresFinaux = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
-    logger.info('CanvasTerrain', `✅ ${arbresFinaux.length}/${arbresAPlanter.length} arbres placés`);
+    logger.info('CanvasTerrain', `🎯 FINAL: ${arbresFinaux.length}/${arbresAPlanter.length} arbres sur canvas`, {
+      ids: arbresFinaux.map(a => a.arbreData?.name).join(', ')
+    });
     }, 500); // Attendre 500ms pour que le plan par défaut soit chargé
-  }, [arbresAPlanter]); // Seulement quand la liste change
+  }, [arbresAPlanter.map(a => a.id).join(',')]); // Réagir quand la liste d'IDs change
 
   // Mettre à jour les dimensions du canvas quand elles changent
   useEffect(() => {
