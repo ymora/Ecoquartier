@@ -410,8 +410,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // Afficher tooltip de validation en temps réel pendant le déplacement
   const afficherTooltipValidation = (arbreGroup, canvas) => {
-    const tooltip = validationTooltipRef.current;
-    if (!tooltip) return;
+    const panel = validationTooltipRef.current;
+    if (!panel) return;
     
     const messages = arbreGroup.validationMessages || [];
     const status = arbreGroup.validationStatus || 'ok';
@@ -429,26 +429,18 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     }
     
     // Construire le HTML
-    let html = `<div class="tooltip-header ${classe}">`;
+    let html = `<div class="panel-validation-header ${classe}">`;
     html += `<strong>${icone} ${arbre?.name || 'Arbre'}</strong>`;
     html += `</div>`;
-    html += `<div class="tooltip-messages">`;
-    messages.slice(0, 3).forEach(msg => {
-      html += `<div class="tooltip-msg">${msg}</div>`;
+    html += `<div class="panel-validation-messages">`;
+    messages.forEach(msg => {
+      html += `<div class="panel-msg">${msg}</div>`;
     });
-    if (messages.length > 3) {
-      html += `<div class="tooltip-more">... +${messages.length - 3} autre(s)</div>`;
-    }
     html += `</div>`;
     
-    tooltip.innerHTML = html;
-    tooltip.className = `validation-tooltip ${classe}`;
-    
-    // Positionner le tooltip au-dessus de l'arbre
-    const canvasRect = canvas.upperCanvasEl.getBoundingClientRect();
-    tooltip.style.left = `${canvasRect.left + arbreGroup.left}px`;
-    tooltip.style.top = `${canvasRect.top + arbreGroup.top - 100}px`;
-    tooltip.style.display = 'block';
+    panel.innerHTML = html;
+    panel.className = `panel-validation ${classe}`;
+    panel.style.display = 'block';
     
     // Afficher un cercle rouge pour le tronc pendant le déplacement
     afficherCercleTronc(canvas, arbreGroup);
@@ -692,9 +684,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   };
   
   const cacherTooltipValidation = () => {
-    const tooltip = validationTooltipRef.current;
-    if (tooltip) {
-      tooltip.style.display = 'none';
+    const panel = validationTooltipRef.current;
+    if (panel) {
+      panel.style.display = 'none';
     }
   };
 
@@ -2704,13 +2696,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         </div>
       </div>
 
+      {/* Panneau de validation latéral fixe */}
+      <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
+      </div>
+
       {/* Canvas plein écran */}
       <div className="canvas-wrapper">
         <canvas id="canvas-terrain" ref={canvasRef}></canvas>
-        
-        {/* Tooltip de validation en temps réel */}
-        <div className="validation-tooltip" ref={validationTooltipRef} style={{ display: 'none' }}>
-        </div>
 
         {/* Menu contextuel en bulle */}
         <div className="context-menu" ref={contextMenuRef}>
