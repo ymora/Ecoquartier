@@ -4,6 +4,7 @@ import DashboardTerrain from './DashboardTerrain';
 import logger from '../utils/logger';
 import diagnosticCanvas from '../utils/diagnosticCanvas';
 import './CanvasTerrain.css';
+import './PanneauLateral.css';
 
 function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete, arbresAPlanter = [] }) {
   const canvasRef = useRef(null);
@@ -26,6 +27,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [ombreVisible, setOmbreVisible] = useState(false); // Afficher l'ombre de la maison
   const [saison, setSaison] = useState('ete'); // Saison pour calcul ombre (hiver, printemps, ete, automne)
   const [snapMagnetiqueActif, setSnapMagnetiqueActif] = useState(true); // Accrochage magnétique entre objets
+  const [ongletActif, setOngletActif] = useState('outils'); // Onglet actif dans le panneau latéral (outils ou stats)
 
   // Initialiser le canvas UNE SEULE FOIS
   useEffect(() => {
@@ -37,13 +39,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
     const headerHeight = 65; // Header compact réel (mesure exacte)
-    const dashboardWidth = 340; // Dashboard gauche (statistiques + sol)
-    const paletteWidth = 220;   // Palette droite (outils + marges)
+    const panneauLateralWidth = 400; // Panneau latéral unifié gauche (statistiques + outils)
     const timelineHeight = 140; // Timeline en bas (hauteur réelle + marges)
     
     // MAXIMISER l'espace : utiliser TOUT l'espace disponible
     const availableHeight = viewportHeight - headerHeight - timelineHeight; // Pas de marge verticale!
-    const availableWidth = viewportWidth - dashboardWidth - paletteWidth; // Pas de marge horizontale!
+    const availableWidth = viewportWidth - panneauLateralWidth - 40; // -40px marge droite pour panneau validation
     
     const canvas = new fabric.Canvas('canvas-terrain', {
       width: availableWidth, // Utiliser toute la largeur disponible
@@ -552,68 +553,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     };
   }, []);
 
-  // Rendre la palette déplaçable
-  useEffect(() => {
-    const palette = document.getElementById('palette-outils');
-    const header = palette?.querySelector('.palette-header');
-    if (!palette || !header) return;
-
-    let isDragging = false;
-    let currentX, currentY, initialX, initialY;
-
-    const dragStart = (e) => {
-      if (e.type === 'touchstart') {
-        initialX = e.touches[0].clientX - palette.offsetLeft;
-        initialY = e.touches[0].clientY - palette.offsetTop;
-      } else {
-        initialX = e.clientX - palette.offsetLeft;
-        initialY = e.clientY - palette.offsetTop;
-      }
-
-      if (e.target === header || e.target.classList.contains('palette-handle') || e.target.tagName === 'H4') {
-        isDragging = true;
-        palette.style.cursor = 'grabbing';
-      }
-    };
-
-    const drag = (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-
-      if (e.type === 'touchmove') {
-        currentX = e.touches[0].clientX - initialX;
-        currentY = e.touches[0].clientY - initialY;
-      } else {
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-      }
-
-      palette.style.left = currentX + 'px';
-      palette.style.top = currentY + 'px';
-    };
-
-    const dragEnd = () => {
-      isDragging = false;
-      palette.style.cursor = 'grab';
-    };
-
-    header.addEventListener('mousedown', dragStart);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', dragEnd);
-
-    header.addEventListener('touchstart', dragStart);
-    document.addEventListener('touchmove', drag);
-    document.addEventListener('touchend', dragEnd);
-
-    return () => {
-      header.removeEventListener('mousedown', dragStart);
-      document.removeEventListener('mousemove', drag);
-      document.removeEventListener('mouseup', dragEnd);
-      header.removeEventListener('touchstart', dragStart);
-      document.removeEventListener('touchmove', drag);
-      document.removeEventListener('touchend', dragEnd);
-    };
-  }, []);
+  // NOTE: Palette déplaçable supprimée - Maintenant intégrée dans panneau latéral avec onglets
 
   // Afficher le menu contextuel au-dessus de l'objet sélectionné
   const afficherMenuContextuel = (obj, canvas) => {
@@ -3359,168 +3299,79 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   return (
     <div className="canvas-terrain-container">
-      {/* Palette d'outils flottante et déplaçable */}
-      <div className="palette-outils" id="palette-outils">
-        <div className="palette-header">
-          <span className="palette-handle">⋮⋮</span>
-          <h4>🛠️ Outils</h4>
-        </div>
-        
-        <div className="outils-dessin">
-          {/* STRUCTURES */}
-          <div className="section-title">🏗️ Structures</div>
+      {/* Panneau latéral unifié (statistiques + outils) */}
+      <div className="panneau-lateral">
+        {/* En-tête avec onglets */}
+        <div className="panneau-tabs">
           <button 
-            className="btn-outil" 
-            onClick={ajouterMaison} 
-            title="Ajouter maison (10m × 10m, H:7m)&#10;Double-clic pour éditer hauteur"
-            aria-label="Ajouter une maison"
+            className={`tab-btn ${ongletActif === 'outils' ? 'active' : ''}`}
+            onClick={() => setOngletActif('outils')}
           >
-            🏠
+            🛠️ Outils
           </button>
           <button 
-            className="btn-outil" 
-            onClick={ajouterTerrasse} 
-            title="Ajouter terrasse (4m × 3m)&#10;Redimensionnable"
-            aria-label="Ajouter une terrasse"
+            className={`tab-btn ${ongletActif === 'stats' ? 'active' : ''}`}
+            onClick={() => setOngletActif('stats')}
           >
-            🏡
-          </button>
-          <button 
-            className="btn-outil" 
-            onClick={ajouterPaves} 
-            title="Ajouter pavés enherbés (5m × 5m)&#10;Zones perméables"
-            aria-label="Ajouter des pavés enherbés"
-          >
-            🟩
-          </button>
-          
-          {/* RÉSEAUX */}
-          <div className="section-title">🔧 Réseaux</div>
-          <button 
-            className="btn-outil" 
-            onClick={ajouterCanalisation} 
-            title="Ajouter canalisation (prof. 0.6m)&#10;Gris, trait continu&#10;Double-clic pts pour courber"
-            aria-label="Ajouter une canalisation"
-          >
-            🚰
-          </button>
-          <button 
-            className="btn-outil" 
-            onClick={ajouterCiterne} 
-            title="Ajouter citerne/fosse (2m × 3m, prof. 2.5m)&#10;Validation 3D automatique"
-            aria-label="Ajouter citerne ou fosse septique"
-          >
-            💧
-          </button>
-          <button 
-            className="btn-outil" 
-            onClick={ajouterCloture} 
-            title="Ajouter clôture (limite propriété)&#10;Jaune, pointillés&#10;Double-clic pts pour courber"
-            aria-label="Ajouter une clôture"
-          >
-            🚧
-          </button>
-          
-          {/* VÉGÉTATION */}
-          <div className="section-title">🌳 Végétation</div>
-          <button 
-            className="btn-outil" 
-            onClick={ajouterArbreExistant} 
-            title="Ajouter arbre existant (rayon 2.5m)&#10;Vert, à conserver sur plan"
-            aria-label="Ajouter un arbre existant"
-          >
-            🌳
-          </button>
-          
-          {/* AFFICHAGE */}
-          <div className="section-title">👁️ Affichage</div>
-          <button 
-            className={`btn-outil ${zonesContraintesVisibles ? 'btn-active' : ''}`}
-            onClick={() => setZonesContraintesVisibles(!zonesContraintesVisibles)} 
-            title="Zones de contraintes (ON/OFF)&#10;Halos colorés : distances légales"
-            aria-label="Afficher ou masquer les zones de contraintes"
-          >
-            👁️
-          </button>
-          <button 
-            className={`btn-outil ${ombreVisible ? 'btn-active' : ''}`}
-            onClick={() => setOmbreVisible(!ombreVisible)} 
-            title="Ombre portée maison (ON/OFF)&#10;Selon saison et hauteur bâtiment"
-            aria-label="Afficher ou masquer l'ombre de la maison"
-          >
-            ☀️
-          </button>
-          <button 
-            className={`btn-outil ${snapMagnetiqueActif ? 'btn-active' : ''}`}
-            onClick={() => setSnapMagnetiqueActif(!snapMagnetiqueActif)} 
-            title="Accrochage magnétique (ON/OFF)&#10;Colle automatiquement les objets entre eux&#10;Snap: 5cm grille + 10cm objets"
-            aria-label="Activer ou désactiver l'accrochage magnétique"
-          >
-            🧲
-          </button>
-          
-          {/* ACTIONS */}
-          <div className="section-title">⚡ Actions</div>
-          <button 
-            className="btn-outil btn-lock" 
-            onClick={verrouillerSelection} 
-            title="Verrouiller sélection&#10;Empêche déplacement/modification"
-            aria-label="Verrouiller la sélection"
-          >
-            🔒
-          </button>
-          <button 
-            className="btn-outil btn-danger" 
-            onClick={supprimerSelection} 
-            title="Supprimer sélection&#10;Raccourci : Suppr"
-            aria-label="Supprimer la sélection"
-          >
-            🗑️
-          </button>
-          <button 
-            className="btn-outil btn-danger" 
-            onClick={effacerTout} 
-            title="Effacer TOUT le plan&#10;⚠️ Action irréversible"
-            aria-label="Effacer tout le plan"
-          >
-            ⚠️
-          </button>
-          <button 
-            className="btn-outil" 
-            onClick={() => {
-              const canvas = fabricCanvasRef.current;
-              if (canvas) {
-                diagnosticCanvas(canvas);
-                alert('🔍 Diagnostic affiché dans console F12');
-              }
-            }}
-            title="Diagnostic canvas (console F12)&#10;Affiche tous les objets et leur état"
-            aria-label="Lancer diagnostic canvas"
-          >
-            🔬
+            📊 Stats
           </button>
         </div>
-        
-        {/* Section IMAGE DE FOND */}
-        <div style={{ padding: '1rem', borderTop: '2px solid #e0e0e0', marginTop: '0.5rem' }}>
-          <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', color: '#2196f3', textAlign: 'center' }}>
-            📷 Plan de Fond
-          </h4>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <button 
-              className="btn-outil" 
-              onClick={chargerImageFond}
-              title="Charger votre plan Kazaplan (PNG/JPG)"
-              style={{ fontSize: '1.2rem', gridColumn: 'span 2' }}
-            >
-              📷 Charger Image
-            </button>
+
+        {/* Contenu selon onglet actif */}
+        {ongletActif === 'stats' ? (
+          <DashboardTerrain 
+            canvas={fabricCanvasRef.current} 
+            arbres={arbresAPlanter}
+            couchesSol={couchesSol}
+            onCouchesSolChange={setCouchesSol}
+          />
+        ) : (
+          <div className="panneau-outils-content">
+            {/* STRUCTURES */}
+            <div className="section-title">🏗️ Structures</div>
+            <div className="outils-grid">
+              <button className="btn-outil" onClick={ajouterMaison} title="Maison (10×10m, H:7m)">🏠</button>
+              <button className="btn-outil" onClick={ajouterTerrasse} title="Terrasse (4×3m)">🏡</button>
+              <button className="btn-outil" onClick={ajouterPaves} title="Pavés (5×5m)">🟩</button>
+            </div>
             
+            {/* RÉSEAUX */}
+            <div className="section-title">🔧 Réseaux</div>
+            <div className="outils-grid">
+              <button className="btn-outil" onClick={ajouterCanalisation} title="Canalisation">🚰</button>
+              <button className="btn-outil" onClick={ajouterCiterne} title="Citerne/Fosse">💧</button>
+              <button className="btn-outil" onClick={ajouterCloture} title="Clôture">🚧</button>
+            </div>
+            
+            {/* VÉGÉTATION */}
+            <div className="section-title">🌳 Végétation</div>
+            <div className="outils-grid">
+              <button className="btn-outil" onClick={ajouterArbreExistant} title="Arbre existant">🌳</button>
+            </div>
+            
+            {/* AFFICHAGE */}
+            <div className="section-title">👁️ Affichage</div>
+            <div className="outils-grid">
+              <button className={`btn-outil ${zonesContraintesVisibles ? 'btn-active' : ''}`} onClick={() => setZonesContraintesVisibles(!zonesContraintesVisibles)} title="Zones contraintes">👁️</button>
+              <button className={`btn-outil ${ombreVisible ? 'btn-active' : ''}`} onClick={() => setOmbreVisible(!ombreVisible)} title="Ombre maison">☀️</button>
+              <button className={`btn-outil ${snapMagnetiqueActif ? 'btn-active' : ''}`} onClick={() => setSnapMagnetiqueActif(!snapMagnetiqueActif)} title="Snap magnétique">🧲</button>
+            </div>
+            
+            {/* ACTIONS */}
+            <div className="section-title">⚡ Actions</div>
+            <div className="outils-grid">
+              <button className="btn-outil btn-lock" onClick={verrouillerSelection} title="Verrouiller">🔒</button>
+              <button className="btn-outil btn-danger" onClick={supprimerSelection} title="Supprimer">🗑️</button>
+              <button className="btn-outil btn-danger" onClick={effacerTout} title="Effacer tout">⚠️</button>
+            </div>
+            
+            {/* IMAGE DE FOND */}
+            <div className="section-title">📷 Image</div>
+            <button className="btn-outil" onClick={chargerImageFond} title="Charger image" style={{ gridColumn: 'span 3' }}>📷 Charger</button>
             {imageFondChargee && (
               <>
-                <div style={{ padding: '0.5rem', background: '#e3f2fd', borderRadius: '6px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', color: '#1976d2', fontWeight: 'bold' }}>
+                <div style={{ gridColumn: 'span 3', padding: '0.5rem', background: '#e3f2fd', borderRadius: '6px' }}>
+                  <label style={{ fontSize: '0.75rem', color: '#1976d2', fontWeight: 'bold' }}>
                     Opacité: {Math.round(opaciteImage * 100)}%
                   </label>
                   <input 
@@ -3533,28 +3384,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                     style={{ width: '100%' }}
                   />
                 </div>
-                
-                <button 
-                  className="btn-outil btn-danger" 
-                  onClick={supprimerImageFond}
-                  title="Supprimer l'image de fond"
-                  style={{ fontSize: '1.2rem', gridColumn: 'span 2' }}
-                >
-                  🗑️ Retirer Image
-                </button>
+                <button className="btn-outil btn-danger" onClick={supprimerImageFond} title="Retirer image" style={{ gridColumn: 'span 3' }}>🗑️ Retirer</button>
               </>
             )}
           </div>
-        </div>
+        )}
       </div>
-
-      {/* Dashboard statistiques (inclut composition du sol) */}
-      <DashboardTerrain 
-        canvas={fabricCanvasRef.current} 
-        arbres={arbresAPlanter}
-        couchesSol={couchesSol}
-        onCouchesSolChange={setCouchesSol}
-      />
 
       {/* Timeline de croissance (slider temporel) */}
       <div className="timeline-croissance">
