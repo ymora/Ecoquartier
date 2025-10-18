@@ -705,19 +705,21 @@
   font-weight: 600;
 }
 
-/* Panneau de validation latéral fixe */
+/* Panneau de validation latéral - DÉPLAÇABLE */
 .panel-validation {
   position: fixed;
   right: 20px;
   top: 200px;
-  width: 320px;
-  max-height: 500px;
+  width: 340px;
+  max-height: 520px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   z-index: 9999;
   overflow: hidden;
   animation: panelSlideIn 0.3s ease;
+  cursor: move; /* Indique qu'on peut le déplacer */
+  user-select: none; /* Éviter sélection texte pendant drag */
 }
 
 @keyframes panelSlideIn {
@@ -738,11 +740,29 @@
 }
 
 .panel-validation-header {
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.25rem 1rem 2rem; /* Plus de padding à gauche pour l'icône */
   border-radius: 10px 10px 0 0;
   font-size: 1rem;
   font-weight: bold;
   color: white;
+  cursor: grab; /* Curseur main pour indiquer déplaçable */
+  position: relative;
+}
+
+.panel-validation-header:active {
+  cursor: grabbing; /* Curseur poing fermé pendant drag */
+}
+
+/* Indicateur visuel de drag sur le header */
+.panel-validation-header::before {
+  content: '⋮⋮';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  opacity: 0.6;
+  letter-spacing: -2px;
 }
 
 .panel-validation-header.validation-error {

@@ -502,6 +502,56 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     };
   }, []);
 
+  // Rendre le panneau de validation déplaçable
+  useEffect(() => {
+    const panel = validationTooltipRef.current;
+    if (!panel) return;
+
+    let isDragging = false;
+    let currentX, currentY, initialX, initialY;
+
+    const dragStart = (e) => {
+      if (panel.style.display === 'none') return;
+      
+      // Vérifier si on clique sur le header (pas sur les boutons ou contenu)
+      if (!e.target.classList.contains('panel-validation-header') && 
+          !e.target.closest('.panel-validation-header')) {
+        return;
+      }
+      
+      initialX = e.clientX - panel.offsetLeft;
+      initialY = e.clientY - panel.offsetTop;
+      isDragging = true;
+      panel.style.cursor = 'grabbing';
+    };
+
+    const drag = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      currentX = e.clientX - initialX;
+      currentY = e.clientY - initialY;
+      
+      panel.style.left = currentX + 'px';
+      panel.style.top = currentY + 'px';
+    };
+
+    const dragEnd = () => {
+      isDragging = false;
+      panel.style.cursor = 'move';
+    };
+
+    panel.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    return () => {
+      panel.removeEventListener('mousedown', dragStart);
+      document.removeEventListener('mousemove', drag);
+      document.removeEventListener('mouseup', dragEnd);
+    };
+  }, []);
+
   // Rendre la palette déplaçable
   useEffect(() => {
     const palette = document.getElementById('palette-outils');
