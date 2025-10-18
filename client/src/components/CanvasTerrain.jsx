@@ -16,14 +16,18 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return;
 
-    // Calculer la hauteur disponible (viewport - header - footer - marges)
+    // Calculer la hauteur et largeur disponibles (viewport - header - footer - marges)
     const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
     const headerHeight = 150; // Hauteur approximative du header avec arbres
-    const footerHeight = 80;  // Hauteur du footer avec boutons
+    const footerHeight = 0;  // Pas de footer maintenant
+    const sidebarWidth = 250; // Largeur de la palette d'outils
+    
     const availableHeight = viewportHeight - headerHeight - footerHeight - 40; // -40 pour marges
+    const availableWidth = viewportWidth - sidebarWidth - 40; // -40 pour marges
     
     const canvas = new fabric.Canvas('canvas-terrain', {
-      width: dimensions.largeur * echelle,
+      width: availableWidth, // Utiliser toute la largeur disponible
       height: availableHeight, // Utiliser toute la hauteur disponible
       backgroundColor: '#e8f5e9',
       selection: true,
