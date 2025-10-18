@@ -1325,22 +1325,48 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         }
         if (!valide) continue;
         
-        // Position valide trouvée
-        positions.push({ x, y, score: Math.random() }); // Score aléatoire pour varier
+        // Calculer un score pour cette position (plus c'est haut, mieux c'est)
+        let score = 0;
+        
+        // Préférer le centre du terrain
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const distFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        score += (1000 - distFromCenter); // Plus près du centre = mieux
+        
+        // Préférer loin des obstacles
+        if (maison) {
+          const distMaison = calculerDistanceRectangle(x, y, maison);
+          score += distMaison; // Plus loin = mieux
+        }
+        
+        // Préférer loin des autres arbres (éviter regroupement)
+        autresArbres.forEach(autreArbre => {
+          const dx = x - autreArbre.left;
+          const dy = y - autreArbre.top;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          score += dist * 0.5; // Bonus distance
+        });
+        
+        positions.push({ x, y, score });
       }
     }
     
-    // Si aucune position valide, placer en diagonale par défaut (en dehors mais visible)
+    // Si aucune position valide, placer en diagonale par défaut (visible mais clairement invalide)
     if (positions.length === 0) {
-      console.warn(`⚠️ Aucune position valide trouvée pour ${arbre.name}, placement par défaut`);
+      logger.warn('Placement', `Aucune position valide pour ${arbre.name}`, { index });
       return {
         x: 150 + (index * 200),
         y: 150 + (index * 150)
       };
     }
     
-    // Trier par score et prendre la meilleure
+    // Trier par score (meilleur en premier) et prendre la meilleure
     positions.sort((a, b) => b.score - a.score);
+    logger.debug('Placement', `${positions.length} positions valides trouvées pour ${arbre.name}`, {
+      meilleure: positions[0],
+      score: positions[0].score.toFixed(0)
+    });
     return positions[0];
   };
   
@@ -1726,16 +1752,24 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       }
 
       // Ajouter chaque arbre avec sa taille réelle (ellipse : largeur = envergure, hauteur = hauteur)
+      logger.info('Ajout', `🌳 Début ajout arbre ${arbresAPlanter.length} arbres`);
+    
     arbresAPlanter.forEach((arbre, index) => {
+      logger.debug('Ajout', `Traitement arbre ${index + 1}/${arbresAPlanter.length}: ${arbre.name}`);
+      
       // Calculer taille selon année de projection
       const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
       const largeur = tailles.largeur;
       const hauteur = tailles.hauteur;
       
+      logger.debug('Ajout', `Tailles calculées: ${largeur.toFixed(0)}×${hauteur.toFixed(0)}px`);
+      
       // Trouver une position valide qui respecte toutes les contraintes
       const position = trouverPositionValide(canvas, arbre, largeur, hauteur, index);
       const offsetX = position.x;
       const offsetY = position.y;
+      
+      logger.debug('Ajout', `Position trouvée: (${offsetX.toFixed(0)}, ${offsetY.toFixed(0)})`);
 
       // Ellipse (largeur = envergure, hauteur = hauteur de l'arbre)
       const ellipse = new fabric.Ellipse({
