@@ -19,12 +19,7 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
   const [plan, setPlan] = useState(null);
   const [arbresSelectionnes] = useState(arbresPreselectionnes.length > 0 ? arbresPreselectionnes : [plantes[0]]);
 
-  // Log pour debug
-  useEffect(() => {
-    console.log('🌳 PlanificateurTerrain - Arbres sélectionnés:', arbresSelectionnes);
-    console.log('🌳 Nombre arbres:', arbresSelectionnes.length);
-    console.log('🌳 Noms:', arbresSelectionnes.map(a => a.name));
-  }, [arbresSelectionnes]);
+  // Note: Logs purgés - Utiliser logger.js ou 🐛 bouton si besoin debug
 
   const handlePlanComplete = (planData) => {
     setPlan(planData);

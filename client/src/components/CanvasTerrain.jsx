@@ -1533,14 +1533,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // Ajouter les arbres à planter automatiquement au démarrage
   useEffect(() => {
-    console.log('🎯 CanvasTerrain useEffect DÉCLENCHÉ');
-    console.log('   - Canvas existe:', !!fabricCanvasRef.current);
-    console.log('   - Arbres reçus:', arbresAPlanter);
-    console.log('   - Nombre arbres:', arbresAPlanter.length);
-    
     const canvas = fabricCanvasRef.current;
     if (!canvas || arbresAPlanter.length === 0) {
-      console.error('❌ Arbres NON ajoutés - Canvas:', !!canvas, 'Nb arbres:', arbresAPlanter.length);
       logger.warn('CanvasTerrain', 'Arbres non ajoutés', { 
         canvasExiste: !!canvas, 
         nbArbres: arbresAPlanter.length 
@@ -1548,8 +1542,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       return;
     }
     
-    console.log('✅ Canvas OK, arbres OK, démarrage ajout...');
-    logger.info('CanvasTerrain', `Tentative ajout de ${arbresAPlanter.length} arbres`, {
+    logger.info('CanvasTerrain', `Ajout de ${arbresAPlanter.length} arbres`, {
       arbres: arbresAPlanter.map(a => a.name)
     });
     
@@ -1651,15 +1644,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       });
 
       canvas.add(group);
-      console.log(`✅ Arbre ajouté: ${arbre.name}`, {
+      logger.debug('CanvasTerrain', `Arbre ajouté: ${arbre.name}`, { 
         position: { x: offsetX, y: offsetY },
-        tailles: tailles,
-        visible: group.visible,
-        opacity: group.opacity
-      });
-      logger.info('CanvasTerrain', `Arbre ajouté: ${arbre.name}`, { 
-        position: { x: offsetX, y: offsetY },
-        tailles: { largeur: tailles.largeur, hauteur: tailles.hauteur }
+        tailles: { envergure: tailles.envergureActuelle.toFixed(1), hauteur: tailles.hauteurActuelle.toFixed(1) }
       });
       
       // Valider la position initiale
@@ -1670,17 +1657,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     ajouterMesuresLive(canvas);
     afficherZonesContraintes(canvas);
     
-    // Log final avec détails canvas
+    // Log final simplifié
     const arbresFinaux = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
-    console.log(`🎉 RÉSUMÉ FINAL AJOUT ARBRES:`);
-    console.log(`   ✅ Arbres sur canvas: ${arbresFinaux.length}/${arbresAPlanter.length}`);
-    console.log(`   📊 Total objets: ${canvas.getObjects().length}`);
-    console.log(`   📐 Canvas: ${canvas.width}×${canvas.height}px`);
-    arbresFinaux.forEach((a, i) => {
-      console.log(`   ${i+1}. ${a.arbreData?.name} à (${a.left.toFixed(0)}, ${a.top.toFixed(0)}) - Visible: ${a.visible !== false}`);
-    });
-    
-    logger.info('CanvasTerrain', `✅ ${arbresAPlanter.length} arbres ajoutés et validés`);
+    logger.info('CanvasTerrain', `✅ ${arbresFinaux.length}/${arbresAPlanter.length} arbres placés`);
     }, 500); // Attendre 500ms pour que le plan par défaut soit chargé
   }, [arbresAPlanter]); // Seulement quand la liste change
 
@@ -1842,7 +1821,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.renderAll();
     const largeurM = (terrainLargeur / echelle).toFixed(0);
     const hauteurM = (terrainHauteur / echelle).toFixed(0);
-    console.log(`✅ Plan par défaut créé : clôture ${largeurM}×${hauteurM}m, maison 10×10m, pavés 5×5m sous la maison (utilise tout l'espace disponible)`);
+    logger.info('CanvasTerrain', `Plan défaut créé: ${largeurM}×${hauteurM}m`);
     
     // Afficher les zones de contraintes initiales
     setTimeout(() => afficherZonesContraintes(canvas), 100);
