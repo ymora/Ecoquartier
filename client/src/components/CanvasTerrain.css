@@ -4,6 +4,105 @@
   height: 100%;
 }
 
+/* Modal composition du sol - déplaçable */
+.modal-sol {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  width: 200px;
+  background: white;
+  border: 2px solid #795548;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  cursor: grab;
+  user-select: none;
+}
+
+.modal-sol-header {
+  background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: grab;
+}
+
+.modal-sol-header:active {
+  cursor: grabbing;
+}
+
+.modal-handle {
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.modal-sol-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.btn-edit-sol {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-sol:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.modal-sol-content {
+  padding: 0.75rem;
+}
+
+.couche-sol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  min-height: 30px;
+}
+
+.couche-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  font-size: 0.85rem;
+}
+
+.couche-label strong {
+  font-size: 0.9rem;
+}
+
+.couche-label span {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.modal-sol-info {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #666;
+  font-style: italic;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
 /* Palette flottante déplaçable */
 .palette-outils {
   position: absolute;
