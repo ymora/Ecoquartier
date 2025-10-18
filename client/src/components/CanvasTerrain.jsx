@@ -1591,8 +1591,14 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     // Conseil sur la composition du sol
     conseils.push(`🌍 Sol actuel : ${profondeurTerreVegetale}m de terre végétale, puis ${couchesSol[1].nom.toLowerCase()}`);
     
-    // Changer la couleur de l'ellipse
-    const ellipse = arbreGroup.item(0); // Premier élément = ellipse
+    // Changer la couleur de l'ellipse (accès direct via _objects)
+    const ellipse = arbreGroup._objects ? arbreGroup._objects[0] : null;
+    
+    if (!ellipse) {
+      logger.error('Validation', `Impossible d'accéder à l'ellipse de ${arbre.name}`);
+      return;
+    }
+    
     if (problemes.length > 0) {
       ellipse.set({
         fill: 'rgba(244, 67, 54, 0.4)', // Rouge
@@ -1619,6 +1625,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       arbreGroup.validationConseils = conseils;
     }
     
+    // Forcer le rendu du groupe
+    arbreGroup.dirty = true;
+    arbreGroup.setCoords();
     canvas.renderAll();
   };
 
