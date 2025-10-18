@@ -220,8 +220,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     });
     
     canvas.on('object:modified', (e) => {
-      // Cacher le tooltip à la fin du déplacement
+      // Cacher le tooltip et le cercle tronc à la fin du déplacement
       cacherTooltipValidation();
+      cacherCercleTronc(canvas);
       
       // Revalider tous les arbres après modification
       if (e.target) {
@@ -405,6 +406,44 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     tooltip.style.left = `${canvasRect.left + arbreGroup.left}px`;
     tooltip.style.top = `${canvasRect.top + arbreGroup.top - 100}px`;
     tooltip.style.display = 'block';
+    
+    // Afficher un cercle rouge pour le tronc pendant le déplacement
+    afficherCercleTronc(canvas, arbreGroup);
+  };
+  
+  const afficherCercleTronc = (canvas, arbreGroup) => {
+    // Supprimer l'ancien cercle s'il existe
+    const ancienCercle = canvas.getObjects().find(obj => obj.isTroncIndicator);
+    if (ancienCercle) canvas.remove(ancienCercle);
+    
+    const diametreTronc = 0.3; // 30cm
+    const rayonTronc = (diametreTronc / 2) * echelle;
+    
+    const cercleTronc = new fabric.Circle({
+      left: arbreGroup.left,
+      top: arbreGroup.top,
+      radius: rayonTronc,
+      fill: 'rgba(255, 0, 0, 0.2)',
+      stroke: '#d32f2f',
+      strokeWidth: 2,
+      strokeDashArray: [5, 5],
+      originX: 'center',
+      originY: 'center',
+      selectable: false,
+      evented: false,
+      isTroncIndicator: true
+    });
+    
+    canvas.add(cercleTronc);
+    canvas.renderAll();
+  };
+  
+  const cacherCercleTronc = (canvas) => {
+    const cercleTronc = canvas.getObjects().find(obj => obj.isTroncIndicator);
+    if (cercleTronc) {
+      canvas.remove(cercleTronc);
+      canvas.renderAll();
+    }
   };
   
   const cacherTooltipValidation = () => {
@@ -691,9 +730,20 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     // Vérifier clôtures/limites
     const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
+    
+    // Extraire le diamètre du tronc (si disponible, sinon estimation à 30cm)
+    const diametreTronc = 0.3; // 30cm par défaut (estimation adulte)
+    const rayonTronc = diametreTronc / 2;
+    
     for (const cloture of clotures) {
       const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
-      if (distCloture < distanceCloture) {
+      
+      // Le TRONC ne doit pas dépasser la clôture (limite interne)
+      if (distCloture < rayonTronc) {
+        problemes.push(`🚧 TRONC dépasse la limite propriété (${distCloture.toFixed(1)}m < ${rayonTronc.toFixed(1)}m rayon tronc) - INTERDIT`);
+      }
+      // L'arbre entier (branches) doit respecter la distance légale
+      else if (distCloture < distanceCloture) {
         problemes.push(`🚧 Trop près de la limite (${distCloture.toFixed(1)}m < ${distanceCloture}m légal)`);
       } else if (distCloture < distanceCloture + 0.5) {
         avertissements.push(`🚧 Proche de la limite (${distCloture.toFixed(1)}m, ${distanceCloture}m minimum)`);
