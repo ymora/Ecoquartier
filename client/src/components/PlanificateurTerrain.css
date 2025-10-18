@@ -44,23 +44,68 @@
   flex-shrink: 0;
 }
 
-.arbres-badges-inline {
+.arbres-selection {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  flex-direction: column;
+  gap: 0.5rem;
   flex: 1;
   min-width: 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(46, 139, 87, 0.3);
 }
 
-.arbre-badge-mini {
+.arbres-selection-header {
+  font-size: 0.85rem;
+  color: var(--accent-primary);
+  margin-bottom: 0.25rem;
+}
+
+.arbres-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.arbre-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
   background: white;
   border: 2px solid var(--accent-primary);
-  border-radius: 15px;
-  padding: 0.3rem 0.7rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--accent-primary);
   white-space: nowrap;
+}
+
+.arbre-checkbox-label:hover {
+  background: #e8f5e9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(46, 139, 87, 0.2);
+}
+
+.arbre-checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+
+.arbre-name {
+  user-select: none;
+}
+
+.arbres-vide {
+  font-size: 0.75rem;
+  color: #999;
+  font-style: italic;
+  padding: 0.5rem;
 }
 
 .etapes-indicator-inline {

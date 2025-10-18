@@ -81,18 +81,13 @@ Voir détails : **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)**
 
 **📖 [Index complet de la documentation](docs/INDEX.md)** - Toute la documentation est centralisée dans le dossier `docs/`
 
-### **Guides d'utilisation**
-- **[docs/GUIDE_ADMIN.md](docs/GUIDE_ADMIN.md)** - Interface admin complète
-- **[docs/GUIDE_RAPIDE_ADMIN.md](docs/GUIDE_RAPIDE_ADMIN.md)** - Référence rapide
-- **[docs/GUIDE_UTILISATION_COMPLET.md](docs/GUIDE_UTILISATION_COMPLET.md)** - Guide utilisateur
-- **[docs/OUTILS.md](docs/OUTILS.md)** - Tous les outils disponibles
+### **Accès rapide**
 
-### **Documentation technique**
-- **[docs/ARCHITECTURE_CODE.md](docs/ARCHITECTURE_CODE.md)** - Architecture du code
-- **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)** - Déploiement Render
-- **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Historique versions
-- **[docs/VALIDATION_SOURCES.md](docs/VALIDATION_SOURCES.md)** - Fiabilité données
-- **[docs/AUDIT_SECURITE.md](docs/AUDIT_SECURITE.md)** - Audit sécurité
+- 👤 **Utilisateurs** → [Guide d'utilisation](docs/GUIDE_UTILISATION_COMPLET.md)
+- 👨‍💼 **Administrateurs** → [Guide Admin](docs/GUIDE_ADMIN.md) | [Référence rapide](docs/GUIDE_RAPIDE_ADMIN.md)
+- 💻 **Développeurs** → [Architecture](docs/ARCHITECTURE.md) | [Planificateur](docs/PLANIFICATEUR.md)
+- 🚀 **DevOps** → [Déploiement](docs/DEPLOIEMENT.md)
+- 🌳 **Ajouter une espèce** → [Guide complet](docs/GUIDE_AJOUT_NOUVEL_ARBRE.md)
 
 ## 🛠️ Technologies
 

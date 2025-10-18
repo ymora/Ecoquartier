@@ -17,12 +17,22 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
   const [dimensions, setDimensions] = useState({ largeur: 30, hauteur: 30 });
   const [orientation, setOrientation] = useState('nord-haut');
   const [plan, setPlan] = useState(null);
-  const [arbresSelectionnes] = useState(arbresPreselectionnes.length > 0 ? arbresPreselectionnes : [plantes[0]]);
+  const [arbresSelectionnes, setArbresSelectionnes] = useState(arbresPreselectionnes.length > 0 ? arbresPreselectionnes : []);
 
   // Note: Logs purgés - Utiliser logger.js ou 🐛 bouton si besoin debug
 
   const handlePlanComplete = (planData) => {
     setPlan(planData);
+  };
+  
+  const toggleArbre = (arbre) => {
+    if (arbresSelectionnes.find(a => a.id === arbre.id)) {
+      // Retirer si déjà sélectionné
+      setArbresSelectionnes(arbresSelectionnes.filter(a => a.id !== arbre.id));
+    } else {
+      // Ajouter
+      setArbresSelectionnes([...arbresSelectionnes, arbre]);
+    }
   };
 
   return (
@@ -38,12 +48,25 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
         <div className="planificateur-header-compact">
           <h2>📐 Planificateur de Terrain</h2>
           
-          <div className="arbres-badges-inline">
-            {arbresSelectionnes.map((arbre, index) => (
-              <span key={index} className="arbre-badge-mini">
-                {arbre.name}
-              </span>
-            ))}
+          <div className="arbres-selection">
+            <div className="arbres-selection-header">
+              <strong>🌳 Arbres à planter ({arbresSelectionnes.length}) :</strong>
+            </div>
+            <div className="arbres-checkboxes">
+              {arbresPreselectionnes.map((arbre) => (
+                <label key={arbre.id} className="arbre-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={arbresSelectionnes.find(a => a.id === arbre.id) !== undefined}
+                    onChange={() => toggleArbre(arbre)}
+                  />
+                  <span className="arbre-name">{arbre.name}</span>
+                </label>
+              ))}
+              {arbresPreselectionnes.length === 0 && (
+                <span className="arbres-vide">Aucun arbre sélectionné en mode comparaison</span>
+              )}
+            </div>
           </div>
 
                 <div className="validation-legend">
