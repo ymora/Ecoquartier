@@ -164,9 +164,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       exporterPlan(canvas);
       ajouterMesuresLive(canvas);
       
-      // 3. Cacher tooltip et cercle tronc (fin du déplacement arbre)
-      cacherTooltipValidation();
+      // 3. Cacher cercle tronc (fin du déplacement arbre) - GARDER le panneau visible
       cacherCercleTronc(canvas);
+      
+      // Si c'est un arbre, mettre à jour le panneau (ne pas cacher)
+      if (e.target && e.target.customType === 'arbre-a-planter') {
+        afficherTooltipValidation(e.target, canvas);
+      }
       
       // 4. Revalider tous les arbres après modification
       if (e.target) {
@@ -306,9 +310,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       const obj = e.selected[0];
       if (obj && !obj.isAideButton && !obj.isBoussole && !obj.isDimensionBox) {
         afficherMenuContextuel(obj, canvas);
-        // Afficher les messages de validation pour les arbres
-        if (obj.customType === 'arbre-a-planter' && obj.validationMessages) {
-          afficherMessagesValidation(obj);
+        // Afficher les infos dans le panneau latéral pour les arbres
+        if (obj.customType === 'arbre-a-planter') {
+          validerPositionArbre(canvas, obj);
+          afficherTooltipValidation(obj, canvas);
         }
       }
     });
@@ -317,14 +322,17 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       const obj = e.selected[0];
       if (obj && !obj.isAideButton && !obj.isBoussole && !obj.isDimensionBox) {
         afficherMenuContextuel(obj, canvas);
-        // Afficher les messages de validation pour les arbres
-        if (obj.customType === 'arbre-a-planter' && obj.validationMessages) {
-          afficherMessagesValidation(obj);
+        // Afficher les infos dans le panneau latéral pour les arbres
+        if (obj.customType === 'arbre-a-planter') {
+          validerPositionArbre(canvas, obj);
+          afficherTooltipValidation(obj, canvas);
         }
       }
     });
-
+    
+    // Cacher le panneau quand on désélectionne
     canvas.on('selection:cleared', () => {
+      cacherTooltipValidation();
       cacherMenuContextuel();
     });
     
@@ -1189,34 +1197,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     }
   };
 
-  const afficherMessagesValidation = (arbreGroup) => {
-    const messages = arbreGroup.validationMessages || [];
-    const conseils = arbreGroup.validationConseils || [];
-    const status = arbreGroup.validationStatus || 'ok';
-    const arbre = arbreGroup.arbreData;
-    
-    let titre = '';
-    
-    if (status === 'error') {
-      titre = '❌ PROBLÈMES DÉTECTÉS';
-    } else if (status === 'warning') {
-      titre = '⚠️ AVERTISSEMENTS';
-    } else {
-      titre = '✅ POSITION VALIDE';
-    }
-    
-    let messageText = `${arbre?.name || 'Arbre'}\n`;
-    messageText += `${arbre?.envergure || '?'}m (envergure) × ${arbre?.tailleMaturite || '?'} (hauteur)\n\n`;
-    messageText += `${titre}\n`;
-    messageText += messages.join('\n');
-    
-    if (conseils.length > 0) {
-      messageText += '\n\n💡 CONSEILS :\n' + conseils.join('\n');
-    }
-    
-    // Afficher dans un alert pour le moment (on pourrait faire mieux plus tard)
-    alert(messageText);
-  };
+  // NOTE: afficherMessagesValidation supprimé - Utilise maintenant le panneau latéral permanent
 
   const supprimerObjetActif = () => {
     const canvas = fabricCanvasRef.current;
