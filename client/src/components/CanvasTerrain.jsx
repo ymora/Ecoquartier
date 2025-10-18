@@ -2262,6 +2262,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   };
 
   const ajouterIndicateurSud = (canvas) => {
+    // Supprimer les anciens indicateurs SUD s'ils existent
+    const anciensIndicateurs = canvas.getObjects().filter(obj => obj.isBoussole);
+    anciensIndicateurs.forEach(obj => canvas.remove(obj));
+    
     // Position initiale du soleil selon l'orientation (le soleil à midi indique le SUD)
     let soleilX, soleilY;
     const centerX = canvas.width / 2;
@@ -2378,17 +2382,34 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     soleil.on('moving', updateOrientation);
     
     // Événement à la fin du déplacement (important pour "déposer")
-    soleil.on('modified', updateOrientation);
-    
-    // Événement mouseup pour s'assurer que l'objet se dépose
-    soleil.on('mouseup', () => {
-      canvas.setActiveObject(null); // Désélectionner pour "déposer"
+    soleil.on('modified', () => {
       updateOrientation();
-      canvas.renderAll();
+      // Désélectionner automatiquement après modification
+      setTimeout(() => {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      }, 100);
     });
 
     canvas.add(soleil);
     canvas.add(label);
+    
+    // Écouteur global pour le mouseup sur le canvas
+    // Gère le relâchement de la souris pour tous les objets boussole
+    const handleCanvasMouseUp = (e) => {
+      const activeObj = canvas.getActiveObject();
+      if (activeObj && activeObj.isBoussole) {
+        // Désélectionner l'objet
+        canvas.discardActiveObject();
+        canvas.renderAll();
+        logger.debug('Boussole', 'Soleil déposé', { 
+          position: { x: activeObj.left, y: activeObj.top }
+        });
+      }
+    };
+    
+    // Attacher l'événement au canvas (pas à l'objet)
+    canvas.on('mouse:up', handleCanvasMouseUp);
   };
 
   const ajouterGrille = (canvas) => {
