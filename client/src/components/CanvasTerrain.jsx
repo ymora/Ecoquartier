@@ -2722,30 +2722,37 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             evented: true // Permettre interactions
           });
           
-          // STRATÉGIE : Mettre TOUT EN BAS (sous la grille)
+          // STRATÉGIE : Ajouter l'image ET forcer son z-index à 0
           canvas.add(img);
-          canvas.sendToBack(img);
           
-          // S'assurer que l'image est vraiment en position 0 (tout en bas)
-          canvas.moveTo(img, 0);
+          // Forcer position 0 (tout en bas, même sous la grille)
+          const objets = canvas.getObjects();
+          const indexActuel = objets.indexOf(img);
+          if (indexActuel > 0) {
+            canvas.moveTo(img, 0);
+          }
           
           imageFondRef.current = img;
           setImageFondChargee(true);
           
-          logger.info('ImageFond', '✅ Image placée en arrière-plan (sous grille)', {
-            position: 0,
+          logger.info('ImageFond', '✅ Image de fond ajoutée', {
+            indexFinal: canvas.getObjects().indexOf(img),
             totalObjets: canvas.getObjects().length,
             opacite: opaciteImage,
-            scale
+            scale,
+            dimensions: { w: img.width * scale, h: img.height * scale }
           });
           
+          // Rendre d'abord l'image
           canvas.renderAll();
           
-          // Changer le fond du canvas en transparent pour voir l'image
-          canvas.backgroundColor = null;
-          canvas.renderAll();
+          // Puis redessiner la grille PAR-DESSUS
+          ajouterGrille(canvas);
           
-          alert(`✅ Image de fond chargée et visible !\n\n📊 Détails:\n- Position: ${gridCount} (après grille)\n- Opacité: ${Math.round(opaciteImage * 100)}%\n- Échelle: ${(scale * 100).toFixed(0)}%\n\n💡 Vous pouvez:\n- La déplacer\n- La redimensionner\n- Ajuster l'opacité avec le slider`);
+          // Forcer un nouveau rendu complet
+          canvas.requestRenderAll();
+          
+          logger.debug('ImageFond', 'Grille redessinée par-dessus image');
         });
       };
       reader.readAsDataURL(file);
