@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
 import './CanvasTerrain.css';
 
@@ -16,6 +16,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'fertile' },
     { nom: 'Marne', profondeur: 70, couleur: '#a1887f', type: 'argileux' }
   ]); // Composition du sol par défaut
+  const imageFondRef = useRef(null); // Image de fond du plan
+  const [imageFondChargee, setImageFondChargee] = useState(false); // État pour afficher/cacher les contrôles
+  const [opaciteImage, setOpaciteImage] = useState(0.5); // Opacité de l'image de fond (50% par défaut)
 
   // Initialiser le canvas UNE SEULE FOIS
   useEffect(() => {
@@ -53,9 +56,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
     // Indicateur de composition du sol (en bas à gauche)
     ajouterIndicateurSol(canvas);
-
-    // Dimensions du terrain sur le canvas (en haut à gauche)
-    ajouterDimensionsSurPlan(canvas);
 
     // Bouton d'aide sur le canvas (en bas à droite)
     ajouterBoutonAide(canvas);
@@ -1032,7 +1032,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     ajouterGrille(canvas);
     ajouterIndicateurSud(canvas);
     ajouterIndicateurSol(canvas);
-    ajouterDimensionsSurPlan(canvas);
     ajouterBoutonAide(canvas);
     canvas.renderAll();
   }, [dimensions.largeur, dimensions.hauteur]);
@@ -1069,70 +1068,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.renderAll();
   };
 
-  const ajouterDimensionsSurPlan = (canvas) => {
-    // Fond semi-transparent
-    const fond = new fabric.Rect({
-      left: 10,
-      top: 10,
-      width: 120,
-      height: 50,
-      fill: 'rgba(255, 255, 255, 0.95)',
-      stroke: '#2e7d32',
-      strokeWidth: 2,
-      rx: 8,
-      ry: 8,
-      selectable: false,
-      evented: false,
-      isDimensionBox: true
-    });
-
-    // Texte des dimensions - CLIQUABLE
-    const textDim = new fabric.Text(`${dimensions.largeur}m × ${dimensions.hauteur}m`, {
-      left: 70,
-      top: 23,
-      fontSize: 14,
-      fontWeight: 'bold',
-      fill: '#2e7d32',
-      originX: 'center',
-      originY: 'center',
-      selectable: true,
-      hasControls: false,
-      hasBorders: false,
-      lockMovementX: true,
-      lockMovementY: true,
-      hoverCursor: 'pointer',
-      isDimensionBox: true
-    });
-
-    textDim.on('mousedown', () => {
-      const largeur = prompt('Largeur du terrain (en mètres) :', dimensions.largeur);
-      if (largeur && !isNaN(largeur)) {
-        const hauteur = prompt('Hauteur du terrain (en mètres) :', dimensions.hauteur);
-        if (hauteur && !isNaN(hauteur)) {
-          onDimensionsChange({
-            largeur: parseInt(largeur),
-            hauteur: parseInt(hauteur)
-          });
-        }
-      }
-    });
-
-    // Icône
-    const icon = new fabric.Text('📐', {
-      left: 25,
-      top: 23,
-      fontSize: 20,
-      originX: 'center',
-      originY: 'center',
-      selectable: false,
-      evented: false,
-      isDimensionBox: true
-    });
-
-    canvas.add(fond);
-    canvas.add(icon);
-    canvas.add(textDim);
-  };
 
   // Créer un plan par défaut
   const creerPlanParDefaut = (canvas) => {
@@ -1945,6 +1880,91 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.renderAll();
   };
 
+  // Charger une image de fond (plan Kazaplan ou autre)
+  const chargerImageFond = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/png,image/jpeg,image/jpg';
+    
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imgUrl = event.target.result;
+        
+        fabric.Image.fromURL(imgUrl, (img) => {
+          const canvas = fabricCanvasRef.current;
+          if (!canvas) return;
+          
+          // Supprimer l'ancienne image de fond si elle existe
+          if (imageFondRef.current) {
+            canvas.remove(imageFondRef.current);
+          }
+          
+          // Ajuster la taille pour qu'elle s'adapte au canvas
+          const scale = Math.min(
+            canvas.width / img.width,
+            canvas.height / img.height
+          );
+          
+          img.set({
+            left: 0,
+            top: 0,
+            scaleX: scale,
+            scaleY: scale,
+            opacity: opaciteImage,
+            selectable: true, // Permettre de la déplacer/redimensionner
+            hasControls: true,
+            hasBorders: true,
+            lockRotation: false,
+            isImageFond: true, // Marquer comme image de fond
+            cornerSize: 10,
+            cornerColor: '#2196f3',
+            transparentCorners: false
+          });
+          
+          // Ajouter l'image en premier (fond)
+          canvas.insertAt(img, 0, false);
+          imageFondRef.current = img;
+          setImageFondChargee(true);
+          canvas.renderAll();
+          
+          alert('✅ Image de fond chargée ! Vous pouvez la déplacer, redimensionner et ajuster son opacité avec le slider.');
+        });
+      };
+      reader.readAsDataURL(file);
+    };
+    
+    input.click();
+  };
+  
+  // Ajuster l'opacité de l'image de fond
+  const ajusterOpaciteImage = (nouvelleOpacite) => {
+    setOpaciteImage(nouvelleOpacite);
+    if (imageFondRef.current) {
+      imageFondRef.current.set({ opacity: nouvelleOpacite });
+      fabricCanvasRef.current.renderAll();
+    }
+  };
+  
+  // Supprimer l'image de fond
+  const supprimerImageFond = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas || !imageFondRef.current) {
+      alert('Aucune image de fond à supprimer');
+      return;
+    }
+    
+    if (confirm('Supprimer l\'image de fond ?')) {
+      canvas.remove(imageFondRef.current);
+      imageFondRef.current = null;
+      setImageFondChargee(false);
+      canvas.renderAll();
+    }
+  };
+
   // Fonctions d'ajout d'objets
   const ajouterMaison = () => {
     const canvas = fabricCanvasRef.current;
@@ -2488,6 +2508,52 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           }} title="Vérifier la sauvegarde">
             💾
           </button>
+        </div>
+        
+        {/* Section IMAGE DE FOND */}
+        <div style={{ padding: '1rem', borderTop: '2px solid #e0e0e0', marginTop: '0.5rem' }}>
+          <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', color: '#2196f3', textAlign: 'center' }}>
+            📷 Plan de Fond
+          </h4>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <button 
+              className="btn-outil" 
+              onClick={chargerImageFond}
+              title="Charger votre plan Kazaplan (PNG/JPG)"
+              style={{ fontSize: '1.2rem', gridColumn: 'span 2' }}
+            >
+              📷 Charger Image
+            </button>
+            
+            {imageFondRef.current && (
+              <>
+                <div style={{ padding: '0.5rem', background: '#e3f2fd', borderRadius: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', color: '#1976d2', fontWeight: 'bold' }}>
+                    Opacité: {Math.round(opaciteImageRef.current * 100)}%
+                  </label>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="1" 
+                    step="0.05"
+                    defaultValue={opaciteImageRef.current}
+                    onChange={(e) => ajusterOpaciteImage(parseFloat(e.target.value))}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                
+                <button 
+                  className="btn-outil btn-danger" 
+                  onClick={supprimerImageFond}
+                  title="Supprimer l'image de fond"
+                  style={{ fontSize: '1.2rem', gridColumn: 'span 2' }}
+                >
+                  🗑️ Retirer Image
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
