@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
 import DashboardTerrain from './DashboardTerrain';
 import logger from '../utils/logger';
+import diagnosticCanvas from '../utils/diagnosticCanvas';
 import './CanvasTerrain.css';
 
 function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete, arbresAPlanter = [] }) {
@@ -3244,6 +3245,20 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             aria-label="Effacer tout le plan"
           >
             ⚠️
+          </button>
+          <button 
+            className="btn-outil" 
+            onClick={() => {
+              const canvas = fabricCanvasRef.current;
+              if (canvas) {
+                diagnosticCanvas(canvas);
+                alert('🔍 Diagnostic affiché dans console F12');
+              }
+            }}
+            title="Diagnostic canvas (console F12)&#10;Affiche tous les objets et leur état"
+            aria-label="Lancer diagnostic canvas"
+          >
+            🔬
           </button>
         </div>
         
