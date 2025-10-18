@@ -2002,12 +2002,16 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             transparentCorners: false
           });
           
-          // Ajouter l'image en premier (fond)
-          canvas.insertAt(img, 0, false);
+          // Compter le nombre de lignes de grille pour insérer l'image juste après
+          const gridCount = canvas.getObjects().filter(obj => obj.isGridLine).length;
+          
+          // Ajouter l'image juste après la grille (fond mais au-dessus de la grille)
+          canvas.insertAt(img, gridCount, false);
           imageFondRef.current = img;
           setImageFondChargee(true);
           canvas.renderAll();
           
+          console.log(`✅ Image de fond chargée (position ${gridCount} après la grille)`);
           alert('✅ Image de fond chargée ! Vous pouvez la déplacer, redimensionner et ajuster son opacité avec le slider.');
         });
       };
