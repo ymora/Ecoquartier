@@ -1,6 +1,107 @@
 # 📝 Changelog
 
-**Version actuelle : 2.18.0**
+**Version actuelle : 2.19.0**
+
+---
+
+## [2.19.0] - 2025-10-19 🔄 SYNCHRONISATION 2D↔3D BIDIRECTIONNELLE + DRAG & DROP 3D
+
+**Fonctionnalités majeures** :
+- ✅ **Synchronisation 2D↔3D** en temps réel
+- ✅ **Drag & Drop en 3D** : Déplacer arbres/objets
+- ✅ **Validation collision maison** : Impossible d'entrer dans la maison
+- ✅ **Positions sauvegardées** : Changements conservés entre vues
+- ✅ **Mode déplacement** : Toggle pour activer/désactiver
+
+**Architecture de synchronisation** :
+```javascript
+// État partagé entre 2D et 3D
+const [planDataSync, setPlanDataSync] = useState(null);
+
+// 2D → 3D : Extraction throttled
+syncCanvasTo3D() {
+  const data = canvas.getObjects().filter(...);
+  setPlanDataSync(data);
+}
+
+// 3D → 2D : Callback position
+handleObjetPositionChange3D(dragData) {
+  const objet = canvas.find(o => o.left ≈ dragData.oldPosition);
+  objet.set({ left: dragData.newPosition.x * 30 });
+  canvas.requestRenderAll();
+}
+```
+
+**Système de drag & drop 3D** :
+```javascript
+<ObjetDraggable3D
+  enabled={modeDeplacement}
+  maisonBounds={maisonBounds}
+  onDragEnd={(data) => sync3DTo2D(data)}
+>
+  <Arbre3D {...props} />
+</ObjetDraggable3D>
+```
+
+**Validation collision maison** :
+```javascript
+// Vérifier si objet à l'intérieur de la maison
+const isInsideMaison = 
+  newX > maisonBounds.left &&
+  newX < maisonBounds.right &&
+  newY > maisonBounds.top &&
+  newY < maisonBounds.bottom;
+
+if (isInsideMaison) {
+  console.warn('❌ Impossible: objet à l\'intérieur de la maison');
+  return; // Bloquer le déplacement
+}
+```
+
+**Workflow utilisateur** :
+```
+1. 🗺️ Placer arbres en 2D
+2. 🧊 Passer en 3D → Arbres visibles à même position
+3. ✅ Activer "Mode déplacement"
+4. 👆 Clic + drag sur arbre en 3D
+5. 🚫 Impossible d'entrer dans maison
+6. 💾 Position synchronisée automatiquement
+7. 🗺️ Retour en 2D → Arbre déplacé !
+```
+
+**Throttling pour performance** :
+- Synchronisation 2D→3D : Max 1x/100ms
+- Événements canvas écoutés : `object:modified`, `object:added`, `object:removed`
+- Évite surcharge et lag
+
+**Indicateurs visuels en 3D** :
+- 🔵 **Anneau bleu** : Objet survolé (draggable)
+- 🟢 **Anneau vert** : Objet en cours de déplacement
+- 🚫 **Blocage** : Pas de mouvement si collision détectée
+
+**Toggle mode déplacement** :
+```
+☐ Mode déplacement d'objets (drag & drop)
+
+Mode normal:        Mode déplacement:
+- Rotation caméra   - Déplacer objets
+- Zoom              - Zoom uniquement
+- Panoramique       - Pas de rotation
+- Clic = Éditer     - Drag = Déplacer
+```
+
+**Impact** :
+- Édition fluide entre 2D et 3D
+- Validation en temps réel
+- Aucune perte de données
+- UX cohérente et intuitive
+
+**Fichiers créés** :
+- `client/src/components/3d/ObjetDraggable3D.jsx` : Wrapper drag & drop 3D
+
+**Fichiers modifiés** :
+- `client/src/components/CanvasTerrain.jsx` : Système de sync
+- `client/src/components/CanvasTerrain3D.jsx` : Drag & drop + callbacks
 
 ---
 

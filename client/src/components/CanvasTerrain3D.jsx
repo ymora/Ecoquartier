@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Sky } from '@react-three/drei';
 import Arbre3D from './3d/Arbre3D';
 import Maison3D from './3d/Maison3D';
@@ -7,6 +7,7 @@ import Sol3D from './3d/Sol3D';
 import Canalisation3D from './3d/Canalisation3D';
 import Citerne3D from './3d/Citerne3D';
 import Cloture3D from './3d/Cloture3D';
+import ObjetDraggable3D from './3d/ObjetDraggable3D';
 import PanneauEdition3D from './PanneauEdition3D';
 import './CanvasTerrain3D.css';
 
@@ -18,11 +19,14 @@ function CanvasTerrain3D({
   couchesSol = [
     { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
     { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' }
-  ]
+  ],
+  onObjetPositionChange = null
 }) {
   const [objetSelectionne, setObjetSelectionne] = useState(null);
   const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote, coupe
   const [afficherSousTerre, setAfficherSousTerre] = useState(true);
+  const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
+  const orbitControlsRef = useRef();
   
   // Convertir les données 2D en 3D
   const convertir2DTo3D = () => {
@@ -172,6 +176,14 @@ function CanvasTerrain3D({
   
   const data3D = convertir2DTo3D();
   
+  // Calculer les bounds de la maison pour validation collision
+  const maisonBounds = data3D?.maison ? {
+    minX: data3D.maison.position[0],
+    maxX: data3D.maison.position[0] + data3D.maison.largeur,
+    minZ: data3D.maison.position[2],
+    maxZ: data3D.maison.position[2] + data3D.maison.profondeur
+  } : null;
+  
   // Positions de caméra selon mode
   const cameraPositions = {
     perspective: [20, 15, 20],
@@ -192,6 +204,13 @@ function CanvasTerrain3D({
         [propriete]: valeur
       });
       // TODO: Propager au planData
+    }
+  };
+  
+  // Callback pour le drag end d'un objet
+  const handleObjetDragEnd = (dragData) => {
+    if (onObjetPositionChange) {
+      onObjetPositionChange(dragData);
     }
   };
   
@@ -237,6 +256,15 @@ function CanvasTerrain3D({
             onChange={(e) => setAfficherSousTerre(e.target.checked)}
           />
           <span>👁️ Afficher sous-terre (racines, fondations, canalisations)</span>
+        </label>
+        
+        <label className="checkbox-3d">
+          <input 
+            type="checkbox" 
+            checked={modeDeplacement}
+            onChange={(e) => setModeDeplacement(e.target.checked)}
+          />
+          <span>✋ Mode déplacement d'objets (drag & drop)</span>
         </label>
       </div>
       
@@ -319,41 +347,59 @@ function CanvasTerrain3D({
           </mesh>
         ))}
         
-        {/* Arbres à planter (utiliser data3D.arbres qui contient les arbres placés) */}
+        {/* Arbres à planter (draggable si mode activé) */}
         {data3D?.arbres?.map((arbre, idx) => (
-          <Arbre3D
+          <ObjetDraggable3D
             key={`arbre-plante-${idx}`}
             position={arbre.position}
-            arbreData={arbre.arbreData}
-            hauteur={arbre.hauteur}
-            envergure={arbre.envergure}
-            profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
-            validationStatus={arbre.validationStatus || 'ok'}
-            anneeProjection={anneeProjection}
-            onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
-          />
+            type="arbre-a-planter"
+            enabled={modeDeplacement}
+            onDragEnd={handleObjetDragEnd}
+            maisonBounds={maisonBounds}
+          >
+            <Arbre3D
+              position={[0, 0, 0]} // Position relative au groupe draggable
+              arbreData={arbre.arbreData}
+              hauteur={arbre.hauteur}
+              envergure={arbre.envergure}
+              profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
+              validationStatus={arbre.validationStatus || 'ok'}
+              anneeProjection={anneeProjection}
+              onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
+            />
+          </ObjetDraggable3D>
         ))}
         
-        {/* Arbres existants */}
+        {/* Arbres existants (draggable si mode activé) */}
         {data3D?.arbresExistants?.map((arbre, idx) => (
-          <Arbre3D
+          <ObjetDraggable3D
             key={`arbre-existant-${idx}`}
             position={arbre.position}
-            arbreData={arbre.arbreData}
-            hauteur={arbre.hauteur}
-            envergure={arbre.envergure}
-            profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
-            validationStatus={arbre.validationStatus || 'ok'}
-            anneeProjection={0}
-            onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
-          />
+            type="arbre-existant"
+            enabled={modeDeplacement}
+            onDragEnd={handleObjetDragEnd}
+            maisonBounds={maisonBounds}
+          >
+            <Arbre3D
+              position={[0, 0, 0]} // Position relative au groupe draggable
+              arbreData={arbre.arbreData}
+              hauteur={arbre.hauteur}
+              envergure={arbre.envergure}
+              profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
+              validationStatus={arbre.validationStatus || 'ok'}
+              anneeProjection={0}
+              onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
+            />
+          </ObjetDraggable3D>
         ))}
         
         {/* Caméra contrôlable */}
         <OrbitControls 
-          enablePan 
+          ref={orbitControlsRef}
+          enablePan={!modeDeplacement} 
           enableZoom 
-          enableRotate
+          enableRotate={!modeDeplacement}
+          enabled={!modeDeplacement} // Désactiver OrbitControls en mode déplacement
           minPolarAngle={0}
           maxPolarAngle={Math.PI / 2 - 0.1} // Empêcher de passer sous le sol
           target={[0, 0, 0]}
@@ -398,10 +444,21 @@ function CanvasTerrain3D({
       
       {/* Aide */}
       <div className="aide-3d">
-        <p>🖱️ <strong>Clic gauche + drag</strong> : Rotation</p>
-        <p>🖱️ <strong>Molette</strong> : Zoom</p>
-        <p>🖱️ <strong>Clic droit + drag</strong> : Panoramique</p>
-        <p>👆 <strong>Clic sur objet</strong> : Éditer propriétés</p>
+        {!modeDeplacement ? (
+          <>
+            <p>🖱️ <strong>Clic gauche + drag</strong> : Rotation</p>
+            <p>🖱️ <strong>Molette</strong> : Zoom</p>
+            <p>🖱️ <strong>Clic droit + drag</strong> : Panoramique</p>
+            <p>👆 <strong>Clic sur objet</strong> : Éditer propriétés</p>
+          </>
+        ) : (
+          <>
+            <p>✋ <strong>MODE DÉPLACEMENT ACTIF</strong></p>
+            <p>👆 <strong>Clic + drag sur arbre</strong> : Déplacer</p>
+            <p>🚫 <strong>Impossible d'entrer dans maison</strong></p>
+            <p>💾 <strong>Position synchronisée avec 2D</strong></p>
+          </>
+        )}
       </div>
     </div>
   );

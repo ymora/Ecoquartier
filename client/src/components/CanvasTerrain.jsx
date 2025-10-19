@@ -109,6 +109,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [saison, setSaison] = useState('ete');
   const [snapMagnetiqueActif, setSnapMagnetiqueActif] = useState(true);
   const [mode3D, setMode3D] = useState(false);
+  const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D
+  const syncTimerRef = useRef(null); // Timer pour throttle de la sync
 
   // ========== WRAPPERS POUR ADAPTER LES SIGNATURES ==========
   
@@ -394,6 +396,139 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       document.removeEventListener('mouseup', dragEnd);
     };
   }, []);
+  
+  // ========== SYNCHRONISATION 2D ↔ 3D ==========
+  
+  // Extraire les données du canvas 2D pour la vue 3D (throttled)
+  const syncCanvasTo3D = useCallback(() => {
+    if (!fabricCanvasRef.current) return;
+    
+    const canvas = fabricCanvasRef.current;
+    const echelle3D = 30;
+    
+    const extractedData = {
+      maison: canvas.getObjects().find(o => o.customType === 'maison'),
+      citernes: canvas.getObjects().filter(o => o.customType === 'citerne'),
+      canalisations: canvas.getObjects().filter(o => o.customType === 'canalisation'),
+      clotures: canvas.getObjects().filter(o => o.customType === 'cloture'),
+      terrasses: canvas.getObjects().filter(o => o.customType === 'paves'),
+      arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter'),
+      arbresExistants: canvas.getObjects().filter(o => o.customType === 'arbre-existant'),
+      echelle: echelle3D
+    };
+    
+    setPlanDataSync(extractedData);
+  }, []);
+  
+  // Throttle la synchronisation pour éviter trop d'updates
+  const throttledSync = useCallback(() => {
+    if (syncTimerRef.current) {
+      clearTimeout(syncTimerRef.current);
+    }
+    syncTimerRef.current = setTimeout(() => {
+      syncCanvasTo3D();
+    }, 100); // Update max toutes les 100ms
+  }, [syncCanvasTo3D]);
+  
+  // Synchroniser au montage et quand les arbres changent
+  useEffect(() => {
+    syncCanvasTo3D();
+  }, [arbresAPlanter, syncCanvasTo3D]);
+  
+  // Écouter les modifications du canvas pour resynchroniser
+  useEffect(() => {
+    if (!fabricCanvasRef.current) return;
+    
+    const canvas = fabricCanvasRef.current;
+    
+    const handleModified = () => throttledSync();
+    const handleAdded = () => throttledSync();
+    const handleRemoved = () => throttledSync();
+    
+    canvas.on('object:modified', handleModified);
+    canvas.on('object:added', handleAdded);
+    canvas.on('object:removed', handleRemoved);
+    
+    return () => {
+      canvas.off('object:modified', handleModified);
+      canvas.off('object:added', handleAdded);
+      canvas.off('object:removed', handleRemoved);
+    };
+  }, [throttledSync]);
+  
+  // Callback pour mettre à jour la position d'un objet depuis la 3D
+  const handleObjetPositionChange3D = useCallback((objetData) => {
+    if (!fabricCanvasRef.current) return;
+    
+    const canvas = fabricCanvasRef.current;
+    const echelle = 30;
+    
+    // Trouver l'objet dans le canvas
+    const objet = canvas.getObjects().find(o => {
+      if (o.customType !== objetData.type) return false;
+      // Comparer position approximative (tolérance 1 pixel)
+      const match = Math.abs(o.left - objetData.oldPosition.x * echelle) < 1 && 
+                    Math.abs(o.top - objetData.oldPosition.z * echelle) < 1;
+      return match;
+    });
+    
+    if (!objet) {
+      console.warn('Objet non trouvé pour sync 3D→2D', objetData);
+      return;
+    }
+    
+    // Convertir position 3D → 2D
+    const newLeft = objetData.newPosition.x * echelle;
+    const newTop = objetData.newPosition.z * echelle;
+    
+    // VALIDATION : Vérifier collision avec la maison
+    const maison = canvas.getObjects().find(o => o.customType === 'maison');
+    if (maison && objetData.type !== 'maison') {
+      const maisonWidth = maison.getScaledWidth ? maison.getScaledWidth() : maison.width;
+      const maisonHeight = maison.getScaledHeight ? maison.getScaledHeight() : maison.height;
+      
+      const maisonBounds = {
+        left: maison.left,
+        right: maison.left + maisonWidth,
+        top: maison.top,
+        bottom: maison.top + maisonHeight
+      };
+      
+      // Taille de l'objet
+      let objetSize = 50; // Default
+      if (objet.radius) {
+        objetSize = objet.radius * 2 * (objet.scaleX || 1);
+      } else if (objet.getScaledWidth) {
+        objetSize = Math.max(objet.getScaledWidth(), objet.getScaledHeight());
+      }
+      
+      // Vérifier si l'objet serait à l'intérieur de la maison
+      const isInsideMaison = 
+        newLeft + objetSize / 2 > maisonBounds.left &&
+        newLeft - objetSize / 2 < maisonBounds.right &&
+        newTop + objetSize / 2 > maisonBounds.top &&
+        newTop - objetSize / 2 < maisonBounds.bottom;
+      
+      if (isInsideMaison) {
+        console.warn('❌ Impossible: objet à l\'intérieur de la maison');
+        // Resynchroniser pour annuler le déplacement en 3D
+        throttledSync();
+        return; // Bloquer le déplacement
+      }
+    }
+    
+    // Mettre à jour la position
+    objet.set({
+      left: newLeft,
+      top: newTop
+    });
+    
+    objet.setCoords();
+    canvas.requestRenderAll();
+    
+    // Resynchroniser vers la 3D après un court délai
+    setTimeout(() => throttledSync(), 150);
+  }, [throttledSync]);
 
   // ========== JSX ==========
 
@@ -423,18 +558,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           <div style={{ display: mode3D ? 'block' : 'none', width: '100%', height: '100%' }}>
             <CanvasTerrain3D
               dimensions={dimensions}
-              planData={fabricCanvasRef.current ? {
-                maison: fabricCanvasRef.current.getObjects().find(o => o.customType === 'maison'),
-                citernes: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'citerne'),
-                canalisations: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'canalisation'),
-                clotures: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'cloture'),
-                terrasses: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'paves'),
-                arbres: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'arbre-a-planter'),
-                arbresExistants: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'arbre-existant')
-              } : null}
+              planData={planDataSync}
               arbresAPlanter={arbresAPlanter}
               anneeProjection={anneeProjection}
               couchesSol={couchesSol}
+              onObjetPositionChange={handleObjetPositionChange3D}
             />
           </div>
         </Suspense>
