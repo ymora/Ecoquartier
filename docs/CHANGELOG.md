@@ -1,6 +1,62 @@
 # 📝 Changelog
 
-**Version actuelle : 2.15.2**
+**Version actuelle : 2.15.3**
+
+---
+
+## [2.15.3] - 2025-10-19 🌍 COUCHES SOL 3D REPRÉSENTATIVES
+
+**Visualisation sol améliorée en 3D** :
+- ✅ **Opacité augmentée** : Terre 85%, Marne 70% (vs 50%/30%)
+- ✅ **Bordure visible** entre les couches (plan marron foncé)
+- ✅ **Lignes orange** de séparation sur les côtés
+- ✅ **Labels enrichis** avec icônes et flèches de profondeur
+- ✅ **Couleurs réalistes** : Terre #795548 (marron), Marne #bdbdbd (gris)
+
+**Avant (peu visible)** :
+```
+Couche 1 : opacity 0.5 → Transparente
+Couche 2 : opacity 0.3 → Presque invisible
+Pas de séparation visible
+```
+
+**Après (représentatif)** :
+```
+🌱 Terre végétale (30cm)
+   Opacity 0.85 → Bien visible
+   ↕️ Indique la profondeur
+━━━━━━━━━━━━━━━━━━━━━━ ← Bordure marron
+⛰️ Marne calcaire (70cm)
+   Opacity 0.7 → Visible
+   ↕️ Indique la profondeur
+━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Éléments visuels** :
+1. **Plan de séparation** : #4a3728 (marron foncé) entre couches
+2. **Lignes orange** : Marqueurs visuels sur bords avant/arrière
+3. **Labels améliorés** :
+   - Fond coloré selon couche (marron/gris)
+   - Icône 🌱 (terre) et ⛰️ (marne)
+   - Flèche ↕️ + profondeur en cm
+   - Border 2px pour visibilité
+   - Box-shadow pour relief
+
+**Vue en coupe** :
+```
+Surface verte ━━━━━━━━━━━━━━━━ 0m
+              ┊ 🌱 Terre (30cm)
+              ━━━━━━━━━━━━━━━━ -0.3m
+              ┊ ⛰️ Marne (70cm)
+              ┊
+              ━━━━━━━━━━━━━━━━ -1.0m
+```
+
+**Impact** :
+- Profondeur du sol clairement visible
+- Distinction nette entre couches
+- Compréhension immédiate de la structure
+- Labels informatifs et esthétiques
 
 ---
 
