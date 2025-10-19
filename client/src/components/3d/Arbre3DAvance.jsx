@@ -109,7 +109,7 @@ function Arbre3DAvance({
             feuillage: couleur,
             typeRendu: 'jeunes-feuilles',
             densite: 0.5,
-            tailleFeuille: 0.8 // 80% de la taille normale
+            tailleFeui lle: 0.8 // 80% de la taille normale
           };
         }
         
@@ -125,7 +125,7 @@ function Arbre3DAvance({
           feuillage: '#2e7d32',
           typeRendu: 'feuillage',
           densite: 1.0, // Densité maximale
-          tailleFeuille: 1.0
+          tailleFeui lle: 1.0
         };
       
       case 'automne': {
@@ -463,16 +463,14 @@ function Arbre3DAvance({
         </>
       )}
       
-      {/* RACINES sous terre - Évolution selon l'âge */}
+      {/* RACINES sous terre */}
       {profondeurRacinesActuelle > 0 && (
         <>
-          {/* Racines principales (nombre augmente avec l'âge : 3 → 7) */}
-          {[...Array(Math.floor(3 + progression * 4))].map((_, i) => {
-            const nombreRacines = Math.floor(3 + progression * 4);
-            const angle = (i / nombreRacines) * Math.PI * 2;
-            const longueur = envergureActuelle * (0.3 + progression * 0.2); // Grandissent avec l'âge
+          {/* Racines principales (5-7 racines) */}
+          {[...Array(6)].map((_, i) => {
+            const angle = (i / 6) * Math.PI * 2;
+            const longueur = envergureActuelle * 0.4;
             const profondeur = profondeurRacinesActuelle * (0.6 + Math.random() * 0.4);
-            const epaisseur = rayonTronc * (0.2 + progression * 0.15); // Épaississent avec l'âge
             
             return (
               <mesh 
@@ -483,55 +481,28 @@ function Arbre3DAvance({
                   Math.sin(angle) * longueur * 0.3
                 ]}
                 rotation={[Math.PI / 4, angle, 0]}
-                castShadow
               >
-                <cylinderGeometry args={[epaisseur, epaisseur * 0.5, profondeur, 8]} />
+                <cylinderGeometry args={[rayonTronc * 0.3, rayonTronc * 0.15, profondeur, 8]} />
                 <meshStandardMaterial 
-                  color={validationStatus === 'error' ? '#ff0000' : '#6d4c41'}
-                  transparent 
-                  opacity={validationStatus === 'error' ? 0.8 : 0.7}
-                  roughness={0.9}
-                />
-              </mesh>
-            );
-          })}
-          
-          {/* Pivot central (racine principale) - Grandit avec l'âge */}
-          <mesh position={[0, -profondeurRacinesActuelle / 2, 0]} castShadow>
-            <coneGeometry args={[rayonTronc * (0.6 + progression * 0.3), profondeurRacinesActuelle, 12]} />
-            <meshStandardMaterial 
-              color={validationStatus === 'error' ? '#ff0000' : '#6d4c41'}
-              transparent 
-              opacity={validationStatus === 'error' ? 0.8 : 0.6}
-              roughness={0.9}
-            />
-          </mesh>
-          
-          {/* Radicelles secondaires (fines racines) - Apparaissent avec l'âge */}
-          {progression > 0.3 && [...Array(Math.floor(progression * 12))].map((_, i) => {
-            const angle = Math.random() * Math.PI * 2;
-            const rayon = envergureActuelle * (0.2 + Math.random() * 0.3);
-            const profondeur = profondeurRacinesActuelle * (0.3 + Math.random() * 0.5);
-            
-            return (
-              <mesh 
-                key={`radicelle-${i}`}
-                position={[
-                  Math.cos(angle) * rayon,
-                  -profondeur / 2,
-                  Math.sin(angle) * rayon
-                ]}
-                rotation={[Math.random() * Math.PI / 3, angle, Math.random() * Math.PI / 6]}
-              >
-                <cylinderGeometry args={[0.02, 0.01, profondeur * 0.6, 4]} />
-                <meshStandardMaterial 
-                  color={validationStatus === 'error' ? '#ff4444' : '#8B4513'}
+                  color={validationStatus === 'error' ? '#ff0000' : '#8B4513'}
                   transparent 
                   opacity={0.5}
+                  wireframe
                 />
               </mesh>
             );
           })}
+          
+          {/* Pivot central */}
+          <mesh position={[0, -profondeurRacinesActuelle / 2, 0]}>
+            <coneGeometry args={[rayonTronc * 0.8, profondeurRacinesActuelle, 8]} />
+            <meshStandardMaterial 
+              color={validationStatus === 'error' ? '#ff0000' : '#8B4513'}
+              transparent 
+              opacity={0.4}
+              wireframe
+            />
+          </mesh>
         </>
       )}
       

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash, FaSearchPlus } from 'react-icons/fa';
 import FiabiliteBadge from './FiabiliteBadge';
 import CanvasTerrain from './CanvasTerrain';
@@ -21,7 +21,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
       setSelectedPlantes([preselectedPlante]);
       setImageIndices({ [preselectedPlante.id]: 0 });
     }
-  }, [preselectedPlante]);
+  }, [preselectedPlante, selectedPlantes]);
 
   // Remonter les arbres sélectionnés au parent
   useEffect(() => {
@@ -42,14 +42,14 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
     }
   };
 
-  const changeImage = (planteId, direction) => {
+  const changeImage = useCallback((planteId, direction) => {
     const plante = selectedPlantes.find(p => p.id === planteId);
     if (!plante) return;
 
     const images = getPlantImages(plante);
     const currentIndex = imageIndices[planteId] || 0;
     const newIndex = (currentIndex + direction + images.length) % images.length;
-    setImageIndices({ ...imageIndices, [planteId]: newIndex });
+    setImageIndices(prev => ({ ...prev, [planteId]: newIndex }));
     
     // Mettre à jour l'image zoomée si le zoom est actif pour cette plante
     if (zoomedImage && zoomedImage.planteId === planteId) {
@@ -62,7 +62,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
         totalImages: images.length
       });
     }
-  };
+  }, [selectedPlantes, imageIndices, zoomedImage]);
 
   const openZoom = (planteId, imageSrc, imageAlt, imageLegend, currentIndex, totalImages) => {
     setZoomedImage({
@@ -97,7 +97,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [zoomedImage]);
+  }, [zoomedImage, navigateZoom, closeZoom]);
 
   // Charger les images disponibles pour une plante (logique unifiée avec ImageGallery)
   const [plantImages, setPlantImages] = useState({});

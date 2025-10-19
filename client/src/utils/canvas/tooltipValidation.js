@@ -4,7 +4,6 @@
  */
 
 import * as fabric from 'fabric';
-import { calculerDistanceRectangle, calculerDistanceLigne, trouverPointPlusProcheMaison, trouverPointPlusProcheLigne } from './canvasHelpers';
 
 /**
  * Afficher le tooltip de validation pour un arbre

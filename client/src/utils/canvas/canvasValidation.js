@@ -22,7 +22,7 @@ export const validerPositionArbre = (canvas, arbreGroup, echelle, couchesSol, or
   const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
   const distanceEntreArbres = parseFloat(arbre.reglementation?.distancesLegales?.entreArbres?.distance?.split('m')[0] || '5');
   const distanceTerrasse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.terrasse?.split('m')[0] || '3');
-  const distancePiscine = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.piscine?.split('m')[0] || '4');
+  // const distancePiscine = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.piscine?.split('m')[0] || '4'); // Future feature
   
   // Données supplémentaires pour validation
   const systemeRacinaire = arbre.reglementation?.systemeRacinaire?.agressivite || 'Modérée';

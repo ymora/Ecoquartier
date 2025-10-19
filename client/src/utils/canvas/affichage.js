@@ -4,8 +4,6 @@
  */
 
 import * as fabric from 'fabric';
-import logger from '../logger';
-import { calculerDistanceRectangle, calculerDistanceLigne } from './canvasHelpers';
 
 /**
  * Afficher les zones de contraintes autour des obstacles
@@ -24,8 +22,7 @@ export const afficherZonesContraintes = (canvas, echelle, zonesContraintesVisibl
     const arbre = arbreGroup.arbreData;
     if (!arbre) return;
     
-    const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
-    const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
+  const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
     
     // Zones autour de la maison
     const maison = canvas.getObjects().find(obj => obj.customType === 'maison');

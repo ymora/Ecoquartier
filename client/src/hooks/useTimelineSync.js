@@ -47,7 +47,6 @@ export const useTimelineSync = ({
         
         const ellipse = arbreGroup._objects[0];
         const emoji = arbreGroup._objects[1];
-        const label = arbreGroup._objects[2];
         const dimensionsLabel = arbreGroup._objects[3];
         
         if (ellipse && ellipse.type === 'ellipse') {

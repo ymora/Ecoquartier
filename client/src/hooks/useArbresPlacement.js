@@ -8,7 +8,6 @@ import logger from '../utils/logger';
 export const useArbresPlacement = ({
   fabricCanvasRef,
   arbresAPlanter,
-  echelle,
   anneeProjection,
   calculerTailleSelonAnnee,
   trouverPositionValide,

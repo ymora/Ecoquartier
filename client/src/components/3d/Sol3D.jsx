@@ -1,8 +1,12 @@
+import { memo } from 'react';
 import { Html } from '@react-three/drei';
 
 function Sol3D({ 
   largeur = 30, 
   hauteur = 30,
+  offsetX = 0,
+  offsetZ = 0,
+  transparent = false,
   couchesSol = [
     { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63' },
     { nom: 'Sous-sol', profondeur: 200, couleur: '#a1887f' },
@@ -14,7 +18,7 @@ function Sol3D({
   
   // Calculer les profondeurs cumulées
   let profondeurCumulee = 0;
-  const couches = couchesSol.map((couche, index) => {
+  const couches = couchesSol.map((couche) => {
     const profondeurM = couche.profondeur / 100;
     const position = profondeurCumulee + profondeurM / 2;
     profondeurCumulee += profondeurM;
@@ -27,9 +31,13 @@ function Sol3D({
     };
   });
   
+  // Centre du terrain adaptatif
+  const centreX = offsetX + largeur / 2;
+  const centreZ = offsetZ + hauteur / 2;
+  
   return (
-    <group>
-      {/* SOL SURFACE (herbe verte) - Élevée de 7cm pour éviter z-fighting */}
+    <group position={[centreX, 0, centreZ]}>
+      {/* SOL SURFACE (herbe verte) - Transparent si mode activé */}
       <mesh 
         rotation={[-Math.PI / 2, 0, 0]} 
         position={[0, 0.07, 0]} 
@@ -39,14 +47,11 @@ function Sol3D({
         <meshStandardMaterial 
           color="#8bc34a"
           roughness={0.9}
+          transparent={transparent}
+          opacity={transparent ? 0.15 : 1.0}
+          depthWrite={!transparent}
         />
       </mesh>
-      
-      {/* GRILLE au sol (pour référence) - Élevée de 8cm pour être au-dessus de l'herbe */}
-      <gridHelper 
-        args={[largeur, largeur, '#cccccc', '#eeeeee']} 
-        position={[0, 0.08, 0]}
-      />
       
       {/* COUCHES DE SOL (dynamique) */}
       {couches.map((couche, index) => (
@@ -57,9 +62,10 @@ function Sol3D({
             <meshStandardMaterial 
               color={couche.couleur}
               transparent 
-              opacity={0.85 - index * 0.1}
+              opacity={transparent ? 0.25 - index * 0.05 : 0.85 - index * 0.1}
               roughness={0.95}
               metalness={index * 0.05}
+              depthWrite={!transparent}
             />
           </mesh>
           
@@ -118,5 +124,6 @@ function Sol3D({
   );
 }
 
-export default Sol3D;
+// Optimisation : Éviter re-renders du sol 3D
+export default memo(Sol3D);
 

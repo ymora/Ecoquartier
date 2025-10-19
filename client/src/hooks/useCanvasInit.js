@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
-import { afficherGuideTemporaire } from '../utils/canvas/affichage';
 
 /**
  * Hook pour initialiser le canvas Fabric.js
@@ -10,7 +9,6 @@ import { afficherGuideTemporaire } from '../utils/canvas/affichage';
 export const useCanvasInit = ({
   canvasRef,
   fabricCanvasRef,
-  echelle,
   ajouterGrille,
   ajouterIndicateurSud,
   chargerPlanDemo
@@ -74,7 +72,6 @@ export const useCanvasInit = ({
       // Clic gauche maintenu OU Alt + clic OU clic molette OU clic droit pour activer pan
       if (evt.button === 0 || evt.altKey || evt.button === 1 || evt.button === 2) {
         // Vérifier qu'on ne clique pas sur un objet Fabric.js
-        const pointer = canvas.getPointer(evt);
         const target = canvas.findTarget(evt);
         
         // Si on clique sur le canvas vide (pas d'objet), activer le pan

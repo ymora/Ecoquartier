@@ -248,8 +248,9 @@ export const updateClotureCoords = (cloture, x1, y1, x2, y2) => {
 
 /**
  * Ajuster les clôtures connectées lors d'un déplacement
+ * Gère l'étirement intelligent des clôtures
  */
-export const ajusterCloturesConnectees = (cloture, canvas, deltaX, deltaY) => {
+export const ajusterCloturesConnectees = (cloture, canvas) => {
   const connectees = trouverCloturesConnectees(cloture, canvas);
   const pointsActuels = getCloturePoints(cloture);
   
@@ -262,7 +263,7 @@ export const ajusterCloturesConnectees = (cloture, canvas, deltaX, deltaY) => {
       let newX2 = pointsAutre.x2;
       let newY2 = pointsAutre.y2;
       
-      // Déterminer quel point de l'autre clôture doit bouger
+      // Déterminer quel point de l'autre clôture doit suivre et s'étirer
       if (autrePoint === 'x1y1') {
         // Le point 1 de l'autre clôture doit suivre
         if (point === 'x1y1') {
@@ -283,6 +284,7 @@ export const ajusterCloturesConnectees = (cloture, canvas, deltaX, deltaY) => {
         }
       }
       
+      // Mettre à jour la clôture (elle s'étire automatiquement)
       updateClotureCoords(autre, newX1, newY1, newX2, newY2);
     });
   });
@@ -291,7 +293,7 @@ export const ajusterCloturesConnectees = (cloture, canvas, deltaX, deltaY) => {
 /**
  * Gérer le déplacement d'une clôture avec ses connexions et snap
  */
-export const deplacerClotureAvecConnexions = (cloture, canvas, event) => {
+export const deplacerClotureAvecConnexions = (cloture, canvas) => {
   // Calculer le delta depuis la dernière position
   if (!cloture._lastPos) {
     cloture._lastPos = { x: cloture.left, y: cloture.top };
@@ -334,8 +336,8 @@ export const deplacerClotureAvecConnexions = (cloture, canvas, event) => {
     // Mettre à jour les coordonnées
     updateClotureCoords(cloture, newX1, newY1, newX2, newY2);
     
-    // Ajuster les clôtures connectées
-    ajusterCloturesConnectees(cloture, canvas, deltaX, deltaY);
+    // Ajuster les clôtures connectées (elles s'étirent automatiquement)
+    ajusterCloturesConnectees(cloture, canvas);
     
     cloture._lastPos = { x: cloture.left, y: cloture.top };
   }

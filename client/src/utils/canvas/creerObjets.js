@@ -10,7 +10,7 @@ import logger from '../logger';
 /**
  * Créer une maison
  */
-export const creerMaison = (canvas, echelle, onDoubleClick) => {
+export const creerMaison = (canvas, echelle) => {
   if (!canvas) return;
   
   const maison = new fabric.Rect({
@@ -344,7 +344,7 @@ export const creerGrille = (canvas, echelle) => {
 /**
  * Créer l'indicateur Sud
  */
-export const creerIndicateurSud = (canvas, orientation, onOrientationChange, echelle) => {
+export const creerIndicateurSud = (canvas, orientation, onOrientationChange) => {
   // Supprimer les anciens indicateurs SUD s'ils existent
   const anciensIndicateurs = canvas.getObjects().filter(obj => obj.isBoussole);
   anciensIndicateurs.forEach(obj => canvas.remove(obj));

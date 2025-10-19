@@ -18,7 +18,6 @@ export const afficherMenuContextuel = (obj, canvas, canvasRef, contextMenuRef) =
   const canvasRect = canvasRef.current.getBoundingClientRect();
   const objCenter = obj.getCenterPoint();
   const objHeight = obj.getScaledHeight ? obj.getScaledHeight() : 50;
-  const objWidth = obj.getScaledWidth ? obj.getScaledWidth() : 50;
   
   // POSITIONNEMENT INTELLIGENT pour éviter masquage
   let menuLeft = canvasRect.left + objCenter.x;

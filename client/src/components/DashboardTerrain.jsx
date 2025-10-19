@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import './DashboardTerrain.css';
 
 function DashboardTerrain({ 
@@ -441,5 +441,6 @@ function DashboardTerrain({
   );
 }
 
-export default DashboardTerrain;
+// Optimisation : Éviter re-renders inutiles
+export default memo(DashboardTerrain);
 

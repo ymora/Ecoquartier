@@ -4,6 +4,7 @@
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: visible; /* Permettre à la timeline de dépasser */
 }
 
 /* Boutons 2D/3D flottants */
@@ -641,18 +642,21 @@
 
 /* Timeline de croissance */
 .timeline-croissance {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  border: 2px solid var(--accent-primary);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  z-index: 1001;
-  min-width: 500px;
-  max-width: 1000px;
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: white !important;
+  padding: 1rem 1.5rem !important;
+  border-radius: 12px !important;
+  border: 2px solid var(--accent-primary) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  z-index: 2000 !important; /* Au-dessus de tout, y compris la 3D */
+  min-width: 500px !important;
+  max-width: 1000px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .timeline-row {

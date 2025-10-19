@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { 
   FaSeedling, 
   FaTree, 
@@ -534,5 +534,6 @@ function ArbusteDetail({ arbuste, menuOpen }) {
   );
 }
 
-export default ArbusteDetail;
+// Optimisation : Éviter re-renders inutiles quand arbuste ne change pas
+export default memo(ArbusteDetail);
 

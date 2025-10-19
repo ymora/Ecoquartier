@@ -3,8 +3,6 @@
  * Fonctions utilitaires géométriques pour le canvas
  */
 
-import logger from '../logger';
-
 /**
  * Calculer la distance entre un point et un rectangle
  */

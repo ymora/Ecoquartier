@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import DashboardTerrain from './DashboardTerrain';
 import SolInteractif from './SolInteractif';
 import './PanneauLateral.css';
@@ -367,9 +367,9 @@ function PanneauLateral({
             <button 
               className={`btn-outil ${timelineVisible ? 'btn-active' : ''}`} 
               onClick={onToggleTimeline} 
-              title="Projection temporelle (timeline)"
+              title={timelineVisible ? "Masquer la timeline" : "Afficher la timeline"}
             >
-              📅
+              {timelineVisible ? '📅' : '📅'}
             </button>
             <button 
               className={`btn-outil ${snapMagnetiqueActif ? 'btn-active' : ''}`} 
@@ -448,5 +448,6 @@ function PanneauLateral({
   );
 }
 
-export default PanneauLateral;
+// Optimisation : Éviter re-renders inutiles
+export default memo(PanneauLateral);
 

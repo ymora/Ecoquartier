@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react';
-import * as fabric from 'fabric';
 import { FaMap, FaCube } from 'react-icons/fa';
 import PanneauLateral from './PanneauLateral';
 import logger from '../utils/logger';
+import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 
 // Dynamic import pour Three.js (évite bundle 3x trop gros)
 const CanvasTerrain3D = lazy(() => import('./CanvasTerrain3D'));
@@ -22,17 +22,9 @@ import {
 
 import {
   afficherOmbreMaison as afficherOmbreUtils,
-  afficherGuideTemporaire,
   afficherCercleTronc as afficherCercleTroncUtils,
   cacherCercleTronc as cacherCercleTroncUtils
 } from '../utils/canvas/affichage';
-
-import {
-  calculerDistanceRectangle,
-  calculerDistanceLigne,
-  trouverPointPlusProcheMaison,
-  trouverPointPlusProcheLigne
-} from '../utils/canvas/canvasHelpers';
 
 import { calculerTailleSelonAnnee as calculerTailleUtils } from '../utils/canvas/croissance';
 
@@ -50,13 +42,11 @@ import {
 
 import {
   afficherTooltipValidation as afficherTooltipUtils,
-  cacherTooltipValidation as cacherTooltipUtils,
-  ajouterLigneMesureProbleme
+  cacherTooltipValidation as cacherTooltipUtils
 } from '../utils/canvas/tooltipValidation';
 
 import {
   exporterPlan as exporterPlanUtils,
-  chargerPlanSauvegarde as chargerPlanUtils,
   chargerImageFond as chargerImageUtils,
   ajusterOpaciteImage as ajusterOpaciteUtils,
   supprimerImageFond as supprimerImageUtils,
@@ -67,11 +57,9 @@ import { chargerPlanDemo as chargerPlanDemoUtils } from '../utils/canvas/planDem
 import {
   supprimerSelection as supprimerSelectionUtils,
   verrouillerSelection as verrouillerSelectionUtils,
-  deverrouillerTout as deverrouillerUtils,
   effacerTout as effacerToutUtils,
   ajouterPointIntermediaire as ajouterPointUtils,
-  trouverPositionValide as trouverPositionUtils,
-  creerPlanParDefaut as creerPlanUtils
+  trouverPositionValide as trouverPositionUtils
 } from '../utils/canvas/actionsCanvas';
 
 // ========== IMPORTS HOOKS ==========
@@ -86,21 +74,16 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   // ========== REFS ==========
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
-  const outilActifRef = useRef(null);
   const validationTooltipRef = useRef(null);
   const pointsClotureRef = useRef([]);
   const contextMenuRef = useRef(null);
   const imageFondRef = useRef(null);
   
   // ========== CONSTANTES ==========
-  const echelle = 40;
+  const echelle = ECHELLE_PIXELS_PAR_METRE;
   
   // ========== STATES ==========
-  const [couchesSol, setCouchesSol] = useState([
-    { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'fertile' },
-    { nom: 'Sous-sol', profondeur: 200, couleur: '#a1887f', type: 'argileux' },
-    { nom: 'Marne', profondeur: 250, couleur: '#bdbdbd', type: 'rocheux' }
-  ]);
+  const [couchesSol, setCouchesSol] = useState(COUCHES_SOL_DEFAUT);
   const [imageFondChargee, setImageFondChargee] = useState(false);
   const [opaciteImage, setOpaciteImage] = useState(0.5);
   const [anneeProjection, setAnneeProjection] = useState(0);
@@ -186,10 +169,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     ajouterMesuresUtils(canvas, echelle, exporterPlan);
   };
   
-  const chargerPlanSauvegarde = () => {
-    chargerPlanUtils(fabricCanvasRef.current, echelle, ajouterMesuresLive);
-  };
-  
   const chargerPlanDemo = () => {
     chargerPlanDemoUtils(fabricCanvasRef.current, echelle, ajouterGrille);
   };
@@ -226,9 +205,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     verrouillerSelectionUtils(fabricCanvasRef.current);
   };
   
-  const deverrouillerTout = () => {
-    deverrouillerUtils(fabricCanvasRef.current);
-  };
   
   const effacerTout = () => {
     effacerToutUtils(fabricCanvasRef.current, exporterPlan);
@@ -242,9 +218,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     return trouverPositionUtils(canvas, arbre, largeur, hauteur, index, echelle);
   };
   
-  const creerPlanParDefaut = (canvas) => {
-    creerPlanUtils(canvas, dimensions, echelle);
-  };
   
   // Création d'objets
   const ajouterMaison = () => creerMaison(fabricCanvasRef.current, echelle);
@@ -404,7 +377,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     if (!fabricCanvasRef.current) return;
     
     const canvas = fabricCanvasRef.current;
-    const echelle3D = 30;
+    const echelle3D = ECHELLE_PIXELS_PAR_METRE;
     
     const extractedData = {
       maison: canvas.getObjects().find(o => o.customType === 'maison'),
@@ -456,12 +429,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     };
   }, [throttledSync]);
   
+  
   // Callback pour mettre à jour la position d'un objet depuis la 3D
   const handleObjetPositionChange3D = useCallback((objetData) => {
     if (!fabricCanvasRef.current) return;
     
           const canvas = fabricCanvasRef.current;
-    const echelle = 30;
+    const echelle = ECHELLE_PIXELS_PAR_METRE;
     
     // Trouver l'objet dans le canvas
     const objet = canvas.getObjects().find(o => {
@@ -561,6 +535,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
               planData={planDataSync}
               arbresAPlanter={arbresAPlanter}
               anneeProjection={anneeProjection}
+              saison={saison}
               couchesSol={couchesSol}
               onObjetPositionChange={handleObjetPositionChange3D}
             />
@@ -569,7 +544,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       )}
       
       {/* Vue 2D (toujours montée, cachée si mode 3D) */}
-      <div style={{ display: mode3D ? 'none' : 'flex', width: '100%', height: '100%' }}>
+      <div style={{ display: mode3D ? 'none' : 'flex', width: '100%', height: 'calc(100% - 160px)' }}>
         {/* Panneau latéral avec outils et stats */}
         <PanneauLateral
             canvas={fabricCanvasRef.current} 
@@ -628,15 +603,16 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           </button>
             </div>
       </div>
+      </div>
 
-      {/* Timeline de croissance (slider temporel) */}
+      {/* Timeline de croissance (slider temporel) - EN DEHORS DES CONTENEURS 2D/3D */}
       {timelineVisible && (
       <div className="timeline-croissance">
         <div className="timeline-row">
           <div className="timeline-section">
             <label>
               <span className="timeline-icon">📅</span>
-              <strong>Projection temporelle</strong>
+              <strong>Projection temporelle {mode3D ? '(3D)' : '(2D)'}</strong>
             </label>
             <div className="timeline-slider-container">
               <span className="timeline-label">Aujourd'hui</span>
@@ -664,12 +640,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             </div>
           </div>
           
-          {ombreVisible && (
-            <div className="timeline-section saison-section">
-              <label>
-                <span className="timeline-icon">☀️</span>
-                <strong>Saison (ombre)</strong>
-              </label>
+          <div className="timeline-section saison-section">
+            <label>
+              <span className="timeline-icon">☀️</span>
+              <strong>Saison {mode3D ? '(soleil 3D + feuillage)' : '(ombre 2D)'}</strong>
+            </label>
               <div className="saison-buttons">
                 <button 
                   className={`btn-saison ${saison === 'hiver' ? 'active' : ''}`}
@@ -707,11 +682,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                 {saison === 'automne' && '🍂 Automne : ombre moyenne (45°)'}
               </div>
             </div>
-          )}
         </div>
       </div>
       )}
-      </div>
+      
     </div>
   );
 }

@@ -53,7 +53,6 @@ plantes.forEach(plante => {
   );
   
   let planteTotal = 0;
-  let planteManquantes = 0;
   
   imageTypes.forEach(type => {
     const expectedFile = `${plante.id}_${type.suffix}.jpg`;
@@ -63,7 +62,6 @@ plantes.forEach(plante => {
       const filePath = path.join(planteDir, expectedFile);
       const stats = fs.statSync(filePath);
       const sizeKB = (stats.size / 1024).toFixed(1);
-      const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
       
       let status = '✅';
       let warning = '';
@@ -79,7 +77,7 @@ plantes.forEach(plante => {
       totalImages++;
     } else {
       console.log(`  🔴 ${type.label.padEnd(15)} MANQUANT : ${expectedFile}`);
-      planteManquantes++;
+      // planteManquantes++; // Future use
       totalManquantes++;
     }
   });
