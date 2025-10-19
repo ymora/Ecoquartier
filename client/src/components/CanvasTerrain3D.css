@@ -1,0 +1,129 @@
+.canvas-terrain-3d {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: linear-gradient(to bottom, #87ceeb 0%, #e8f5e9 100%);
+}
+
+.canvas-3d {
+  width: 100%;
+  height: 100%;
+}
+
+/* Barre d'outils 3D */
+.toolbar-3d {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vue-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.vue-selector button {
+  padding: 8px 12px;
+  background: white;
+  border: 2px solid #2e7d32;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2e7d32;
+  transition: all 0.2s;
+}
+
+.vue-selector button:hover {
+  background: #e8f5e9;
+  transform: translateY(-2px);
+}
+
+.vue-selector button.active {
+  background: #2e7d32;
+  color: white;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
+}
+
+.checkbox-3d {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+.checkbox-3d input {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+/* Légende */
+.legende-3d {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  min-width: 250px;
+}
+
+.legende-3d h4 {
+  margin: 0 0 10px 0;
+  color: #2e7d32;
+  font-size: 14px;
+}
+
+.legende-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+  font-size: 12px;
+  color: #333;
+}
+
+.color-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  flex-shrink: 0;
+}
+
+/* Aide */
+.aide-3d {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  font-size: 12px;
+  max-width: 300px;
+}
+
+.aide-3d p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.aide-3d strong {
+  color: #2e7d32;
+}
+

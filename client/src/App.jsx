@@ -14,7 +14,6 @@ function App() {
   const [mode, setMode] = useState('normal'); // 'normal', 'comparaison', ou 'planification'
   const [menuOpen, setMenuOpen] = useState(true);
   const [disclaimerClosed, setDisclaimerClosed] = useState(false);
-  const [arbresComparaison, setArbresComparaison] = useState([]);
   const [logViewerOpen, setLogViewerOpen] = useState(false);
 
   const handleSelectPlante = (planteId) => {
@@ -61,7 +60,6 @@ function App() {
           <Comparateur 
             plantes={plantesData} 
             preselectedPlante={selectedPlante}
-            onArbresSelectionnes={setArbresComparaison}
             modePlanification={mode === 'planification'}
           />
         </main>

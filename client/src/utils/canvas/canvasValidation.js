@@ -5,7 +5,7 @@
 
 import * as fabric from 'fabric';
 import logger from '../logger';
-import { calculerDistanceRectangle, calculerDistanceLigne, trouverPointPlusProcheMaison, trouverPointPlusProcheLigne } from './canvasHelpers';
+import { calculerDistanceRectangle, calculerDistanceCercle, calculerDistanceLigne, trouverPointPlusProcheMaison, trouverPointPlusProcheLigne } from './canvasHelpers';
 
 /**
  * Valider la position d'un arbre et changer sa couleur
@@ -38,84 +38,82 @@ export const validerPositionArbre = (canvas, arbreGroup, echelle, couchesSol, or
   const x = arbreGroup.left;
   const y = arbreGroup.top;
   
-  // Vérifier maison/fondations (validation 3D : profondeur)
+  // Vérifier maison/fondations
   const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
   if (maison) {
     const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
     const profondeurFondations = maison.profondeurFondations || 1.2;
     
-    // Si les racines descendent plus profond que les fondations
     if (profondeurRacines > profondeurFondations && distMaison < distanceFondations) {
-      problemes.push(`🏠 CRITIQUE: Racines (${profondeurRacines}m prof.) dépassent fondations (${profondeurFondations}m) à ${distMaison.toFixed(1)}m`);
+      problemes.push(`🏠 Racines ${profondeurRacines}m > fondations ${profondeurFondations}m (${distMaison.toFixed(1)}m)`);
     } else if (distMaison < distanceFondations) {
-      problemes.push(`🏠 Trop près de la maison (${distMaison.toFixed(1)}m < ${distanceFondations}m requis)`);
+      problemes.push(`🏠 ${distMaison.toFixed(1)}m < ${distanceFondations}m minimum`);
     } else if (distMaison < distanceFondations + 1) {
-      avertissements.push(`🏠 Proche de la maison (${distMaison.toFixed(1)}m, ${distanceFondations}m recommandé)`);
+      avertissements.push(`🏠 ${distMaison.toFixed(1)}m (min ${distanceFondations}m)`);
     }
   }
   
-  // Vérifier canalisations (validation 3D : profondeur)
+  // Vérifier canalisations
   const canalisations = canvas.getObjects().filter(obj => obj.customType === 'canalisation');
   for (const canal of canalisations) {
     const distCanal = calculerDistanceLigne(x, y, canal) / echelle;
     const profondeurCanal = canal.profondeur || 0.6;
     
-    // Si les racines descendent plus profond que la canalisation
     if (profondeurRacines > profondeurCanal && distCanal < distanceCanalisations) {
-      problemes.push(`🚰 CRITIQUE: Racines (${profondeurRacines}m) dépassent canalisation (${profondeurCanal}m) à ${distCanal.toFixed(1)}m - Risque colmatage`);
+      problemes.push(`🚰 Racines ${profondeurRacines}m > canal ${profondeurCanal}m (${distCanal.toFixed(1)}m)`);
     } else if (distCanal < distanceCanalisations) {
-      problemes.push(`🚰 Trop près d'une canalisation (${distCanal.toFixed(1)}m < ${distanceCanalisations}m requis)`);
-    } else if (distCanal < distanceCanalisations + 0.5) {
-      avertissements.push(`🚰 Proche canalisation (${distCanal.toFixed(1)}m)`);
+      problemes.push(`🚰 ${distCanal.toFixed(1)}m < ${distanceCanalisations}m minimum`);
     }
   }
   
-  // Vérifier clôtures/limites (DISTANCE LÉGALE VOISINAGE - Code Civil Art. 671)
+  // Vérifier clôtures/limites
   const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
-  
-  // Extraire le diamètre du tronc (si disponible, sinon estimation à 30cm)
-  const diametreTronc = 0.3; // 30cm par défaut (estimation adulte)
+  const diametreTronc = 0.15; // 15cm estimation
   const rayonTronc = diametreTronc / 2;
   
   for (const cloture of clotures) {
     const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
     
-    // Le TRONC ne doit pas dépasser la clôture (limite interne propriété)
     if (distCloture < rayonTronc) {
-      problemes.push(`⚖️ ILLÉGAL: Tronc dépasse votre limite de propriété (${distCloture.toFixed(1)}m < ${rayonTronc.toFixed(1)}m) - Voisin peut exiger arrachage`);
-    }
-    // L'arbre entier (branches) doit respecter la distance légale voisinage
-    else if (distCloture < distanceCloture) {
-      const articleLoi = arbre.reglementation?.distancesLegales?.voisinage?.regle || 'Code Civil Art. 671';
-      const sanction = arbre.reglementation?.distancesLegales?.voisinage?.sanction || 'Voisin peut exiger arrachage';
-      problemes.push(`⚖️ DISTANCE LÉGALE NON RESPECTÉE: ${distCloture.toFixed(1)}m < ${distanceCloture}m requis (${articleLoi}) - ${sanction}`);
+      problemes.push(`⚖️ Tronc dépasse limite (${distCloture.toFixed(1)}m)`);
+    } else if (distCloture < distanceCloture) {
+      problemes.push(`⚖️ ${distCloture.toFixed(1)}m < ${distanceCloture}m légal (CC Art.671)`);
     } else if (distCloture < distanceCloture + 0.5) {
-      avertissements.push(`⚠️ Proche limite voisinage (${distCloture.toFixed(1)}m, ${distanceCloture}m légal minimum)`);
+      avertissements.push(`⚠️ Limite ${distCloture.toFixed(1)}m (min ${distanceCloture}m)`);
     }
   }
   
-  // Vérifier citernes/fosses septiques (validation 3D critique)
+  // Vérifier citernes/fosses septiques (CERCLE - mesure depuis le BORD)
   const citernes = canvas.getObjects().filter(obj => obj.customType === 'citerne');
   const distanceFosseSeptique = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fossesSeptiques?.split('m')[0] || '6');
   
   for (const citerne of citernes) {
-    const distCiterne = calculerDistanceRectangle(x, y, citerne) / echelle;
+    // CORRECTION : Utiliser calculerDistanceCercle pour mesurer depuis le BORD
+    const distCiterne = calculerDistanceCercle(x, y, citerne) / echelle;
     const profondeurCiterne = citerne.profondeur || 2.5;
     
     // Si les racines atteignent la profondeur de la citerne
     if (profondeurRacines > profondeurCiterne && distCiterne < distanceFosseSeptique) {
-      problemes.push(`💧 DANGER: Racines (${profondeurRacines}m) atteignent citerne (${profondeurCiterne}m) - Risque contamination`);
+      problemes.push(`💧 Racines atteignent citerne (${distCiterne.toFixed(1)}m < ${distanceFosseSeptique}m)`);
     } else if (distCiterne < distanceFosseSeptique) {
-      problemes.push(`💧 Trop près fosse septique (${distCiterne.toFixed(1)}m < ${distanceFosseSeptique}m légal)`);
+      problemes.push(`💧 Trop proche citerne (${distCiterne.toFixed(1)}m < ${distanceFosseSeptique}m)`);
     }
   }
   
-  // Vérifier terrasses/pavés
-  const terrasses = canvas.getObjects().filter(obj => obj.customType === 'paves');
+  // Vérifier terrasses/pavés (inclut aussi les zones minéralisées)
+  const terrasses = canvas.getObjects().filter(obj => obj.customType === 'paves' || obj.customType === 'terrasse');
   for (const terrasse of terrasses) {
     const distTerrasse = calculerDistanceRectangle(x, y, terrasse) / echelle;
-    if (distTerrasse < distanceTerrasse) {
-      avertissements.push(`🏡 Proche d'une terrasse (${distTerrasse.toFixed(1)}m < ${distanceTerrasse}m recommandé)`);
+    
+    // Racines agressives = problème si trop proche
+    if (systemeRacinaire === 'Élevée' || systemeRacinaire === 'Forte') {
+      if (distTerrasse < distanceTerrasse + 1) {
+        problemes.push(`🟩 ${distTerrasse.toFixed(1)}m < ${distanceTerrasse + 1}m (racines ${systemeRacinaire.toLowerCase()})`);
+      }
+    } else if (distTerrasse < distanceTerrasse) {
+      avertissements.push(`🟩 ${distTerrasse.toFixed(1)}m pavés (min ${distanceTerrasse}m)`);
+    } else if (distTerrasse < distanceTerrasse + 0.5) {
+      avertissements.push(`⚠️ ${distTerrasse.toFixed(1)}m pavés (proche limite)`);
     }
   }
   
@@ -128,9 +126,7 @@ export const validerPositionArbre = (canvas, arbreGroup, echelle, couchesSol, or
     const dy = (y - autreArbre.top) / echelle;
     const distArbre = Math.sqrt(dx * dx + dy * dy);
     if (distArbre < distanceEntreArbres) {
-      problemes.push(`🌳 Trop près d'un autre arbre (${distArbre.toFixed(1)}m < ${distanceEntreArbres}m requis)`);
-    } else if (distArbre < distanceEntreArbres + 1) {
-      avertissements.push(`🌳 Proche d'un autre arbre (${distArbre.toFixed(1)}m)`);
+      avertissements.push(`🌳 ${distArbre.toFixed(1)}m autre arbre (min ${distanceEntreArbres}m)`);
     }
   }
   
@@ -267,6 +263,23 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     if (distCiterne < distanceFosseSeptique) {
       const pointProche = trouverPointPlusProcheMaison(x, y, citerne);
       ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCiterne, distanceFosseSeptique, '💧');
+    }
+  }
+  
+  // Vérifier pavés/terrasses (AJOUT LIGNES DE MESURE)
+  const terrassesAffichage = canvas.getObjects().filter(obj => obj.customType === 'paves' || obj.customType === 'terrasse');
+  const distanceTerrasse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.terrasse?.split('m')[0] || '3');
+  const systemeRacinaireAffichage = arbre.reglementation?.systemeRacinaire?.agressivite || 'Modérée';
+  
+  for (const terrasse of terrassesAffichage) {
+    const distTer = calculerDistanceRectangle(x, y, terrasse) / echelle;
+    const distMinTerrasse = (systemeRacinaireAffichage === 'Élevée' || systemeRacinaireAffichage === 'Forte') 
+      ? distanceTerrasse + 1 
+      : distanceTerrasse;
+    
+    if (distTer < distMinTerrasse) {
+      const pointProche = trouverPointPlusProcheMaison(x, y, terrasse);
+      ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distTer, distMinTerrasse, '🟩');
     }
   }
   

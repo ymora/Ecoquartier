@@ -20,13 +20,45 @@ export const calculerDistanceRectangle = (px, py, rect) => {
 };
 
 /**
+ * Calculer la distance entre un point et un cercle (depuis le BORD)
+ */
+export const calculerDistanceCercle = (px, py, cercleGroup) => {
+  // Le cercleGroup est un Group, trouver le cercle à l'intérieur
+  const cercle = cercleGroup._objects ? cercleGroup._objects[0] : cercleGroup;
+  
+  // Centre du cercle (le group utilise originX/Y: center)
+  const cx = cercleGroup.left;
+  const cy = cercleGroup.top;
+  
+  // Rayon du cercle
+  const rayon = cercle.radius || (cercleGroup.diametre / 2) * 40; // echelle 40 par défaut
+  
+  // Distance centre à centre
+  const distCentre = Math.sqrt((px - cx) ** 2 + (py - cy) ** 2);
+  
+  // Distance depuis le BORD du cercle
+  return Math.max(0, distCentre - rayon);
+};
+
+/**
  * Calculer la distance entre un point et une ligne
  */
-export const calculerDistanceLigne = (px, py, ligne) => {
-  const x1 = ligne.x1 + ligne.left;
-  const y1 = ligne.y1 + ligne.top;
-  const x2 = ligne.x2 + ligne.left;
-  const y2 = ligne.y2 + ligne.top;
+export const calculerDistanceLigne = (px, py, ligneOuGroup) => {
+  let x1, y1, x2, y2;
+  
+  // Si c'est un Group (clôtures du plan démo avec x1, y1, x2, y2 au niveau du group)
+  if (ligneOuGroup._objects && ligneOuGroup.x1 !== undefined) {
+    x1 = ligneOuGroup.x1;
+    y1 = ligneOuGroup.y1;
+    x2 = ligneOuGroup.x2;
+    y2 = ligneOuGroup.y2;
+  } else {
+    // Ligne simple ou autre objet
+    x1 = (ligneOuGroup.x1 || 0) + ligneOuGroup.left;
+    y1 = (ligneOuGroup.y1 || 0) + ligneOuGroup.top;
+    x2 = (ligneOuGroup.x2 || 0) + ligneOuGroup.left;
+    y2 = (ligneOuGroup.y2 || 0) + ligneOuGroup.top;
+  }
   
   const A = px - x1;
   const B = py - y1;
@@ -75,11 +107,22 @@ export const trouverPointPlusProcheMaison = (px, py, rect) => {
 /**
  * Trouver le point le plus proche sur une ligne
  */
-export const trouverPointPlusProcheLigne = (px, py, ligne) => {
-  const x1 = ligne.x1 + ligne.left;
-  const y1 = ligne.y1 + ligne.top;
-  const x2 = ligne.x2 + ligne.left;
-  const y2 = ligne.y2 + ligne.top;
+export const trouverPointPlusProcheLigne = (px, py, ligneOuGroup) => {
+  let x1, y1, x2, y2;
+  
+  // Si c'est un Group (clôtures du plan démo)
+  if (ligneOuGroup._objects && ligneOuGroup.x1 !== undefined) {
+    x1 = ligneOuGroup.x1;
+    y1 = ligneOuGroup.y1;
+    x2 = ligneOuGroup.x2;
+    y2 = ligneOuGroup.y2;
+  } else {
+    // Ligne simple
+    x1 = (ligneOuGroup.x1 || 0) + ligneOuGroup.left;
+    y1 = (ligneOuGroup.y1 || 0) + ligneOuGroup.top;
+    x2 = (ligneOuGroup.x2 || 0) + ligneOuGroup.left;
+    y2 = (ligneOuGroup.y2 || 0) + ligneOuGroup.top;
+  }
   
   const A = px - x1;
   const B = py - y1;

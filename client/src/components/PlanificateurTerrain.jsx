@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaCube, FaMap } from 'react-icons/fa';
 import CanvasTerrain from './CanvasTerrain';
+import CanvasTerrain3D from './CanvasTerrain3D';
 import OnboardingPlanificateur from './OnboardingPlanificateur';
 import './PlanificateurTerrain.css';
 
 function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) {
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [mode3D, setMode3D] = useState(false); // Toggle 2D/3D
 
   // Vérifier si l'utilisateur a déjà vu l'onboarding
   useEffect(() => {
@@ -48,70 +50,68 @@ function PlanificateurTerrain({ plantes, arbresPreselectionnes = [], onClose }) 
         <div className="planificateur-header-compact">
           <h2>📐 Planificateur de Terrain</h2>
           
-          <div className="arbres-selection">
-            <div className="arbres-selection-header">
-              <strong>🌳 Arbres à planter ({arbresSelectionnes.length}) :</strong>
-            </div>
-            
-            {/* ARBRES - Catégorie */}
-            <div className="arbres-categorie">
-              <div className="categorie-label">🌳 Arbres</div>
-              <div className="arbres-checkboxes">
-                {plantes.filter(p => p.type === 'arbre').map((arbre) => (
-                  <label key={arbre.id} className="arbre-checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={arbresSelectionnes.find(a => a.id === arbre.id) !== undefined}
-                      onChange={() => toggleArbre(arbre)}
-                    />
-                    <span className="arbre-name">{arbre.name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-            
-            {/* ARBUSTES - Catégorie */}
-            <div className="arbres-categorie">
-              <div className="categorie-label">🌿 Arbustes</div>
-              <div className="arbres-checkboxes">
-                {plantes.filter(p => p.type === 'arbuste').map((arbre) => (
-                  <label key={arbre.id} className="arbre-checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={arbresSelectionnes.find(a => a.id === arbre.id) !== undefined}
-                      onChange={() => toggleArbre(arbre)}
-                    />
-                    <span className="arbre-name">{arbre.name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+          <div className="header-info">
+            🌳 <strong>{arbresSelectionnes.length}</strong> arbre{arbresSelectionnes.length > 1 ? 's' : ''} sélectionné{arbresSelectionnes.length > 1 ? 's' : ''}
           </div>
-
-                <button 
-                  className="help-btn" 
-                  onClick={() => setShowOnboarding(true)}
-                  aria-label="Aide"
-                  title="Afficher l'aide"
-                >
-                  ❓
-                </button>
-                
-                <button className="close-btn" onClick={onClose} aria-label="Fermer">
-                  <FaTimes />
-                </button>
+          
+          <button 
+            className="help-btn" 
+            onClick={() => setShowOnboarding(true)}
+            aria-label="Aide"
+            title="Afficher l'aide"
+          >
+            ❓
+          </button>
+          
+          {/* Toggle 2D/3D */}
+          <div className="toggle-dimension">
+            <button 
+              className={!mode3D ? 'active' : ''}
+              onClick={() => setMode3D(false)}
+              title="Vue 2D (plan)"
+            >
+              <FaMap /> 2D
+            </button>
+            <button 
+              className={mode3D ? 'active' : ''}
+              onClick={() => setMode3D(true)}
+              title="Vue 3D (perspective)"
+            >
+              <FaCube /> 3D
+            </button>
+          </div>
+          
+          <button className="close-btn" onClick={onClose} aria-label="Fermer">
+            <FaTimes />
+          </button>
         </div>
 
         {/* Contenu - Un seul écran avec validation en temps réel */}
         <div className="planificateur-content">
-          <CanvasTerrain
-            dimensions={dimensions}
-            orientation={orientation}
-            onDimensionsChange={setDimensions}
-            onOrientationChange={setOrientation}
-            onPlanComplete={handlePlanComplete}
-            arbresAPlanter={arbresSelectionnes}
-          />
+          {mode3D ? (
+            <CanvasTerrain3D
+              dimensions={dimensions}
+              planData={plan}
+              arbresAPlanter={arbresSelectionnes}
+              anneeProjection={0}
+              couchesSol={[
+                { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
+                { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' }
+              ]}
+            />
+          ) : (
+            <CanvasTerrain
+              dimensions={dimensions}
+              orientation={orientation}
+              onDimensionsChange={setDimensions}
+              onOrientationChange={setOrientation}
+              onPlanComplete={handlePlanComplete}
+              arbresAPlanter={arbresSelectionnes}
+              plantes={plantes}
+              arbresSelectionnes={arbresSelectionnes}
+              onToggleArbre={toggleArbre}
+            />
+          )}
         </div>
       </div>
       </div>

@@ -9,6 +9,110 @@
   overflow-y: auto;
 }
 
+/* Onglets */
+.dashboard-tabs {
+  display: flex;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-bottom: 2px solid var(--accent-primary);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.75rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--accent-primary);
+}
+
+.tab-btn.active {
+  background: white;
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
+/* Onglet Arbres */
+.onglet-arbres {
+  padding: 1rem;
+}
+
+.arbres-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  color: var(--accent-primary);
+  font-size: 0.95rem;
+}
+
+.arbres-categorie {
+  margin-bottom: 1.5rem;
+}
+
+.categorie-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--accent-primary);
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: #e8f5e9;
+  border-radius: 6px;
+}
+
+.arbres-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.arbre-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+}
+
+.arbre-checkbox:hover {
+  background: #f5f5f5;
+  border-color: var(--accent-primary);
+  transform: translateX(2px);
+}
+
+.arbre-checkbox input {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.arbre-checkbox input:checked + span {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+/* Onglet Stats */
+.onglet-stats {
+  padding: 1rem;
+}
+
+/* Onglet Sol */
+.onglet-sol {
+  padding: 1rem;
+}
+
 .dashboard-header {
   background: linear-gradient(135deg, var(--accent-primary) 0%, #1b5e20 100%);
   color: white;

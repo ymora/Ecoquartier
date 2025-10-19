@@ -7,6 +7,8 @@ Application web interactive pour découvrir les arbres et arbustes de l'écocart
 - ✅ **12 espèces documentées** - **6 arbres** (Prunus Kanzan, Accolade, Sunset Boulevard, Arbre de Judée, Érable champêtre, Érable du Japon) + **6 arbustes** (Noisetier, Fusain, Troène, Osmanthe, Cornouiller, Seringat)
 - ✅ **Mode classique** : Fiches détaillées avec 7 onglets complets
 - ✅ **Mode comparaison** : Comparer 2+ plantes avec **20 critères** (distances, racines, fertilisation, allergies, etc.)
+- ✅ **Planificateur 2D** : Canvas interactif avec validation temps réel
+- ✅ **Vue 3D** ⭐ NOUVEAU ! : Visualisation 3D avec hauteurs, profondeurs, racines sous terre
 - ✅ **Galerie photos** : 6-8 types par espèce (vue, bourgeons, fleurs, fruits, feuilles, tronc, automne, hiver)
 - ✅ **Réglementation complète** : Distances légales (Code Civil), système racinaire, risques infrastructures
 - ✅ **Données centralisées** : Architecture professionnelle (1 seul fichier de données)
@@ -48,7 +50,7 @@ npm run admin
 ✅ 30 secondes par image !
 ```
 
-Voir détails : **[docs/GUIDE_ADMIN.md](docs/GUIDE_ADMIN.md)**
+Voir détails : **[docs/GUIDES.md](docs/GUIDES.md)** section "Guide Admin"
 
 ### **Méthode 2 : Script Python** (Téléchargement massif)
 
@@ -57,7 +59,7 @@ Voir détails : **[docs/GUIDE_ADMIN.md](docs/GUIDE_ADMIN.md)**
 python telecharger_toutes_images.py
 ```
 
-Voir détails : **[docs/OUTILS.md](docs/OUTILS.md)**
+Voir détails : **[docs/GUIDES.md](docs/GUIDES.md)** section "Guide Développeur"
 
 ## 🌐 Déploiement sur Render
 
@@ -75,38 +77,41 @@ Voir détails : **[docs/OUTILS.md](docs/OUTILS.md)**
 ✅ Site en ligne !
 ```
 
-Voir détails : **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)**
+Voir détails : **[docs/GUIDES.md](docs/GUIDES.md)** section "Déploiement"
 
 ## 📚 Documentation
 
-**📖 [Index complet de la documentation](docs/INDEX.md)** - 9 fichiers essentiels, organisés et à jour
+**📖 [Index complet de la documentation](docs/INDEX.md)** - 5 fichiers consolidés et à jour
 
 ### **Accès rapide**
 
-- 👤 **Utilisateurs** → [Guide d'utilisation](docs/GUIDE_UTILISATION_COMPLET.md)
-- 👨‍💼 **Administrateurs** → [Guide Admin](docs/GUIDE_ADMIN.md) (upload, sync, numérotation)
-- 💻 **Développeurs** → [Architecture](docs/ARCHITECTURE.md) (structure complète du code)
-- 🚀 **Déploiement** → [Render.com](docs/DEPLOIEMENT.md) (build automatique)
-- 🌳 **Ajouter une espèce** → [Guide complet](docs/GUIDE_AJOUT_NOUVEL_ARBRE.md)
+- 📖 **[INDEX.md](docs/INDEX.md)** : Point d'entrée documentation
+- 📝 **[CHANGELOG.md](docs/CHANGELOG.md)** : Historique des versions
+- 🏗️ **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** : Architecture technique
+- ⚙️ **[FONCTIONNALITES.md](docs/FONCTIONNALITES.md)** : Planificateur 2D/3D, Validation
+- 📚 **[GUIDES.md](docs/GUIDES.md)** : Guides utilisateur/admin/développeur
 
 ## 🛠️ Technologies
 
 - **Frontend** : React 18.3 + Vite 6.3
+- **3D Engine** : React Three Fiber + Three.js ⭐ NOUVEAU !
 - **Styling** : CSS3 moderne (thème clair)
 - **Icons** : React Icons
-- **Backend** : PHP (API images - optionnel)
+- **Canvas 2D** : Fabric.js
+- **Backend Admin** : Node.js + Express
 - **Déploiement** : Render (CDN + HTTPS auto)
 
 ## 📊 Statistiques
 
 ```
-Composants React   : 10
-Fichiers données   : 3
-Espèces           : 9
-Images prévues    : 54 (6 par espèce)
-Images actuelles  : 17
+Composants React   : 25+ (dont 9 composants 3D ⭐)
+Fichiers données   : 1 (centralisé)
+Espèces           : 12
+Composants 3D     : 9 (Arbre, Maison, Sol, etc.)
+Images prévues    : 72 (6 par espèce)
 Critères/plante   : 50+
 Onglets          : 7
+Modes vue         : 6 (Normal, Comparaison, 2D, 3D + 4 vues 3D)
 ```
 
 ## 📄 Licence

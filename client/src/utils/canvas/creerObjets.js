@@ -146,10 +146,15 @@ export const creerCloture = (canvas, pointsClotureRef) => {
     
     const ligne = new fabric.Line([p1.x, p1.y, p2.x, p2.y], {
       stroke: '#ffd54f',
-      strokeWidth: 3,
+      strokeWidth: 2, // Épaisseur fixe 5cm
       strokeDashArray: [10, 5],
       strokeLineCap: 'round',
+      lockRotation: false,
+      lockScalingX: true,
+      lockScalingY: true,
       customType: 'cloture',
+      hauteurCloture: 1.5, // Hauteur par défaut 1.5m
+      epaisseur: 0.05, // 5cm
       strokeUniform: true,
       hasBorders: true,
       hasControls: true,
@@ -157,6 +162,8 @@ export const creerCloture = (canvas, pointsClotureRef) => {
     });
     
     canvas.add(ligne);
+    // Amener la clôture au premier plan pour encadrer les éléments
+    canvas.bringObjectToFront(ligne);
     canvas.renderAll();
     
     logger.debug('Cloture', `Segment ${dernierIndex} ajouté`);
@@ -271,15 +278,24 @@ export const creerArbreExistant = (canvas, echelle) => {
 };
 
 /**
- * Créer une grille
+ * Créer une grille fixe (ne bouge jamais)
  */
 export const creerGrille = (canvas, echelle) => {
-  const width = canvas.width;
-  const height = canvas.height;
+  // Supprimer les anciennes lignes de grille
+  const oldGridLines = canvas.getObjects().filter(obj => obj.isGridLine);
+  oldGridLines.forEach(line => canvas.remove(line));
+  
+  // Grille fixe qui couvre largement (3x la taille du canvas)
+  const width = canvas.width * 3;
+  const height = canvas.height * 3;
+  const offsetX = -canvas.width;
+  const offsetY = -canvas.height;
+  
   const gridLines = [];
 
-  for (let i = 0; i <= width; i += echelle) {
-    const line = new fabric.Line([i, 0, i, height], {
+  // Lignes verticales
+  for (let i = offsetX; i <= width + offsetX; i += echelle) {
+    const line = new fabric.Line([i, offsetY, i, height + offsetY], {
       stroke: '#c8e6c9',
       strokeWidth: i % (echelle * 5) === 0 ? 1.5 : 0.5,
       selectable: false,
@@ -289,8 +305,9 @@ export const creerGrille = (canvas, echelle) => {
     gridLines.push(line);
   }
 
-  for (let i = 0; i <= height; i += echelle) {
-    const line = new fabric.Line([0, i, width, i], {
+  // Lignes horizontales
+  for (let i = offsetY; i <= height + offsetY; i += echelle) {
+    const line = new fabric.Line([offsetX, i, width + offsetX, i], {
       stroke: '#c8e6c9',
       strokeWidth: i % (echelle * 5) === 0 ? 1.5 : 0.5,
       selectable: false,
@@ -300,9 +317,27 @@ export const creerGrille = (canvas, echelle) => {
     gridLines.push(line);
   }
 
-  // Ajouter toutes les lignes EN PREMIER pour qu'elles soient en arrière-plan
+  // Ajouter toutes les lignes de grille
   gridLines.forEach(line => canvas.add(line));
   
+  // Envoyer toutes les lignes de grille en arrière-plan
+  // (juste au-dessus de l'image de fond si elle existe)
+  const imageFond = canvas.getObjects().find(obj => obj.isImageFond);
+  
+  if (imageFond) {
+    // Image de fond existe : envoyer au fond d'abord l'image, puis la grille
+    canvas.sendObjectToBack(imageFond);
+    gridLines.forEach(line => {
+      canvas.sendObjectToBack(line);
+    });
+  } else {
+    // Pas d'image : envoyer juste la grille au fond
+    gridLines.forEach(line => {
+      canvas.sendObjectToBack(line);
+    });
+  }
+  
+  canvas.renderAll();
   logger.debug('Grille', `${gridLines.length} lignes ajoutées`);
 };
 
