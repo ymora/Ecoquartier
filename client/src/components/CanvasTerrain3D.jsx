@@ -26,6 +26,8 @@ function CanvasTerrain3D({
   
   // Convertir les données 2D en 3D
   const convertir2DTo3D = () => {
+    const echelle = 30; // ÉCHELLE CORRECTE : 30 pixels = 1 mètre
+    
     const data3D = {
       maison: null,
       arbres: [],
@@ -40,50 +42,110 @@ function CanvasTerrain3D({
     
     // Maison (si existe)
     if (planData.maison) {
+      const maisonWidth = planData.maison.getScaledWidth ? planData.maison.getScaledWidth() : planData.maison.width;
+      const maisonHeight = planData.maison.getScaledHeight ? planData.maison.getScaledHeight() : planData.maison.height;
+      
       data3D.maison = {
         position: [
-          planData.maison.left / 40, 
+          planData.maison.left / echelle, 
           0, 
-          planData.maison.top / 40
+          planData.maison.top / echelle
         ],
-        largeur: planData.maison.width / 40,
-        profondeur: planData.maison.height / 40,
-        hauteur: planData.maison.hauteur || 7,
+        largeur: maisonWidth / echelle,
+        profondeur: maisonHeight / echelle,
+        hauteur: planData.maison.hauteurBatiment || 7,
         profondeurFondations: planData.maison.profondeurFondations || 1.2
       };
     }
     
-    // Citernes
-    if (planData.citernes) {
-      data3D.citernes = planData.citernes.map(c => ({
-        position: [c.left / 40, 0, c.top / 40],
-        largeur: c.width / 40,
-        profondeur: c.height / 40,
-        profondeurEnterree: c.profondeur || 2.5,
-        volume: c.volume || 3000
+    // Citernes (objets circulaires - Groups)
+    if (planData.citernes && planData.citernes.length > 0) {
+      data3D.citernes = planData.citernes.map(c => {
+        const diametre = c.diametre || 1.5;
+        return {
+          position: [c.left / echelle, 0, c.top / echelle],
+          largeur: diametre,
+          profondeur: diametre,
+          profondeurEnterree: c.profondeur || 2.5,
+          volume: c.volume || 3000
+        };
+      });
+    }
+    
+    // Canalisations (Groups avec x1, y1, x2, y2)
+    if (planData.canalisations && planData.canalisations.length > 0) {
+      data3D.canalisations = planData.canalisations.map(c => {
+        // Si c'est un Group, utiliser x1, y1, x2, y2 directement
+        const x1 = c.x1 !== undefined ? c.x1 : c.left;
+        const y1 = c.y1 !== undefined ? c.y1 : c.top;
+        const x2 = c.x2 !== undefined ? c.x2 : c.left + 100;
+        const y2 = c.y2 !== undefined ? c.y2 : c.top;
+        
+        return {
+          x1: x1 / echelle,
+          y1: y1 / echelle,
+          x2: x2 / echelle,
+          y2: y2 / echelle,
+          profondeur: c.profondeur || 0.6,
+          diametre: c.diametre || 0.1
+        };
+      });
+    }
+    
+    // Clôtures (Groups avec x1, y1, x2, y2)
+    if (planData.clotures && planData.clotures.length > 0) {
+      data3D.clotures = planData.clotures.map(c => {
+        // Utiliser directement x1, y1, x2, y2 du Group
+        const x1 = c.x1 !== undefined ? c.x1 : c.left;
+        const y1 = c.y1 !== undefined ? c.y1 : c.top;
+        const x2 = c.x2 !== undefined ? c.x2 : c.left + 100;
+        const y2 = c.y2 !== undefined ? c.y2 : c.top;
+        
+        return {
+          x1: x1 / echelle,
+          y1: y1 / echelle,
+          x2: x2 / echelle,
+          y2: y2 / echelle,
+          hauteur: c.hauteurCloture || 1.5,
+          epaisseur: c.epaisseur || 0.05
+        };
+      });
+    }
+    
+    // Terrasses/Pavés
+    if (planData.terrasses && planData.terrasses.length > 0) {
+      data3D.terrasses = planData.terrasses.map(t => {
+        const terrasseWidth = t.getScaledWidth ? t.getScaledWidth() : t.width;
+        const terrasseHeight = t.getScaledHeight ? t.getScaledHeight() : t.height;
+        
+        return {
+          position: [t.left / echelle, 0, t.top / echelle],
+          largeur: terrasseWidth / echelle,
+          profondeur: terrasseHeight / echelle,
+          hauteur: 0.1 // 10cm d'épaisseur
+        };
+      });
+    }
+    
+    // Arbres à planter
+    if (planData.arbres && planData.arbres.length > 0) {
+      data3D.arbres = planData.arbres.map(a => ({
+        position: [a.left / echelle, 0, a.top / echelle],
+        arbreData: a.arbreData,
+        hauteur: a.hauteur || 6,
+        envergure: a.envergure || 4,
+        profondeurRacines: a.profondeurRacines || 1.5,
+        validationStatus: a.validationStatus || 'ok'
       }));
     }
     
-    // Canalisations
-    if (planData.canalisations) {
-      data3D.canalisations = planData.canalisations.map(c => ({
-        x1: (c.x1 + c.left) / 40,
-        y1: (c.y1 + c.top) / 40,
-        x2: (c.x2 + c.left) / 40,
-        y2: (c.y2 + c.top) / 40,
-        profondeur: c.profondeur || 0.6,
-        diametre: c.diametre || 0.1
-      }));
-    }
-    
-    // Clôtures
-    if (planData.clotures) {
-      data3D.clotures = planData.clotures.map(c => ({
-        x1: (c.x1 + c.left) / 40,
-        y1: (c.y1 + c.top) / 40,
-        x2: (c.x2 + c.left) / 40,
-        y2: (c.y2 + c.top) / 40,
-        hauteur: c.hauteur || 1.8
+    // Arbres existants
+    if (planData.arbresExistants && planData.arbresExistants.length > 0) {
+      data3D.arbresExistants = planData.arbresExistants.map(a => ({
+        position: [a.left / echelle, 0, a.top / echelle],
+        hauteur: a.hauteur || 8,
+        envergure: a.envergure || 6,
+        profondeurRacines: 2
       }));
     }
     

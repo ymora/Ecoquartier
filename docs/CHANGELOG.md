@@ -1,6 +1,70 @@
 # 📝 Changelog
 
-**Version actuelle : 2.15.3**
+**Version actuelle : 2.16.0**
+
+---
+
+## [2.16.0] - 2025-10-19 🔄 SYNCHRONISATION 2D↔3D PARFAITE
+
+**Correction majeure échelle et positions** :
+- ✅ **Échelle corrigée** : 40 → **30** (30px = 1m comme en 2D)
+- ✅ **Positions exactes** : Objets au même emplacement 2D et 3D
+- ✅ **Tailles correctes** : Dimensions réelles synchronisées
+- ✅ **Groups gérés** : Citernes, canalisations, clôtures (x1, y1, x2, y2)
+
+**Problème échelle** :
+```javascript
+// Avant : Échelle incohérente
+position: [left / 40, 0, top / 40]  ❌
+// Canvas 2D utilise échelle 30 !
+
+// Après : Échelle cohérente
+const echelle = 30; // Même qu'en 2D
+position: [left / echelle, 0, top / echelle]  ✅
+```
+
+**Synchronisation par objet** :
+
+| Objet | 2D | 3D | Correction |
+|-------|----|----|------------|
+| 🏠 **Maison** | 10×10m | 10×10m | ✅ Échelle 30 |
+| 💧 **Citerne** | Ø1.5m | Ø1.5m | ✅ Diamètre direct |
+| 🚰 **Canalisation** | x1,y1→x2,y2 | x1,y1→x2,y2 | ✅ Coordonnées Groups |
+| 🚧 **Clôture** | Rectangle | Rectangle | ✅ x1,y1,x2,y2 Groups |
+| 🟩 **Pavés** | 5×5m | 5×5m | ✅ getScaledWidth/Height |
+| 🌳 **Arbres** | Position XY | Position XY | ✅ Échelle 30 |
+
+**Gestion Groups améliorée** :
+```javascript
+// Clôtures/Canalisations : Groups avec x1, y1, x2, y2
+const x1 = c.x1 !== undefined ? c.x1 : c.left;
+// → Utilise x1 direct du Group (coordonnées absolues)
+
+// Citernes : Groups avec diamètre
+const diametre = c.diametre || 1.5;
+position: [c.left / echelle, ...]
+largeur: diametre  // Pas width/height !
+```
+
+**Positions caméra ajustées** :
+```javascript
+perspective: [20, 15, 20]  // Vue d'ensemble
+dessus: [0, 30, 0]         // Vue de dessus
+cote: [30, 5, 0]           // Vue de côté
+coupe: [0, 5, 25]          // Vue en coupe
+```
+
+**Test de synchronisation** :
+1. Placer maison en 2D à (15m, 15m)
+2. Basculer en 3D
+3. ✅ Maison exactement à (15m, 15m) en 3D
+4. Même chose pour tous les objets
+
+**Impact** :
+- Cohérence parfaite 2D ↔ 3D
+- Positions précises au mètre près
+- Tailles réalistes
+- Validation 3D fiable
 
 ---
 
