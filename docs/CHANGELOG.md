@@ -1,6 +1,36 @@
 # 📝 Changelog
 
-**Version actuelle : 2.19.1**
+**Version actuelle : 2.19.2**
+
+---
+
+## [2.19.2] - 2025-10-19 🐛 FIX IMPORT USECALLBACK
+
+**Correction technique** :
+- ✅ **Import manquant ajouté** : `useCallback` dans React imports
+- ✅ **Erreur résolue** : `ReferenceError: useCallback is not defined`
+
+**Problème** :
+```javascript
+// Avant
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
+// ❌ useCallback utilisé mais non importé
+const syncCanvasTo3D = useCallback(() => {...}, []);
+// → ReferenceError: useCallback is not defined
+```
+
+**Solution** :
+```javascript
+// Après
+import { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react';
+// ✅ useCallback maintenant disponible
+const syncCanvasTo3D = useCallback(() => {...}, []);
+// → Fonctionne parfaitement
+```
+
+**Impact** :
+- Application fonctionnelle en dev et production
+- Synchronisation 2D↔3D opérationnelle
 
 ---
 
