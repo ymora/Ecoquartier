@@ -396,69 +396,53 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // ========== JSX ==========
 
-  // Si mode 3D, afficher CanvasTerrain3D
-  if (mode3D) {
-    return (
-      <div className="canvas-terrain-container">
-        {/* Boutons 2D/3D */}
-        <div className="toggle-dimension-canvas">
-          <button 
-            onClick={() => setMode3D(false)}
-            title="Vue 2D (plan)"
-          >
-            <FaMap /> 2D
-          </button>
-          <button 
-            className="active"
-            onClick={() => setMode3D(true)}
-            title="Vue 3D (perspective)"
-          >
-            <FaCube /> 3D
-          </button>
-        </div>
-        
-        <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '1.5rem' }}>🔄 Chargement 3D...</div>}>
-          <CanvasTerrain3D
-            dimensions={dimensions}
-            planData={fabricCanvasRef.current ? {
-              maison: fabricCanvasRef.current.getObjects().find(o => o.customType === 'maison'),
-              citernes: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'citerne'),
-              canalisations: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'canalisation'),
-              clotures: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'cloture'),
-              terrasses: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'paves'),
-              arbres: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'arbre-a-planter'),
-              arbresExistants: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'arbre-existant')
-            } : null}
-            arbresAPlanter={arbresAPlanter}
-            anneeProjection={anneeProjection}
-            couchesSol={couchesSol}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  
   return (
     <div className="canvas-terrain-container">
       {/* Boutons 2D/3D */}
       <div className="toggle-dimension-canvas">
-        <button 
-          className="active"
+          <button 
+          className={!mode3D ? 'active' : ''}
           onClick={() => setMode3D(false)}
           title="Vue 2D (plan)"
-        >
+          >
           <FaMap /> 2D
-        </button>
-        <button 
+          </button>
+          <button 
+          className={mode3D ? 'active' : ''}
           onClick={() => setMode3D(true)}
           title="Vue 3D (perspective)"
-        >
+          >
           <FaCube /> 3D
-        </button>
-      </div>
+          </button>
+        </div>
+
+      {/* Vue 3D (montée en lazy load, cachée si mode 2D) */}
+      {mode3D && (
+        <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '1.5rem' }}>🔄 Chargement 3D...</div>}>
+          <div style={{ display: mode3D ? 'block' : 'none', width: '100%', height: '100%' }}>
+            <CanvasTerrain3D
+              dimensions={dimensions}
+              planData={fabricCanvasRef.current ? {
+                maison: fabricCanvasRef.current.getObjects().find(o => o.customType === 'maison'),
+                citernes: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'citerne'),
+                canalisations: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'canalisation'),
+                clotures: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'cloture'),
+                terrasses: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'paves'),
+                arbres: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'arbre-a-planter'),
+                arbresExistants: fabricCanvasRef.current.getObjects().filter(o => o.customType === 'arbre-existant')
+              } : null}
+              arbresAPlanter={arbresAPlanter}
+              anneeProjection={anneeProjection}
+              couchesSol={couchesSol}
+            />
+          </div>
+        </Suspense>
+      )}
       
-      {/* Panneau latéral avec outils et stats */}
-      <PanneauLateral
+      {/* Vue 2D (toujours montée, cachée si mode 3D) */}
+      <div style={{ display: mode3D ? 'none' : 'flex', width: '100%', height: '100%' }}>
+        {/* Panneau latéral avec outils et stats */}
+        <PanneauLateral
             canvas={fabricCanvasRef.current} 
         arbresAPlanter={arbresAPlanter}
             couchesSol={couchesSol}
@@ -598,6 +582,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         </div>
       </div>
       )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,59 @@
 # 📝 Changelog
 
-**Version actuelle : 2.16.0**
+**Version actuelle : 2.16.1**
+
+---
+
+## [2.16.1] - 2025-10-19 🔁 FIX TOGGLE 2D/3D
+
+**Correction critique basculement vues** :
+- ✅ **Les 2 vues restent montées** (pas de démontage)
+- ✅ **Basculement par display** : none/block au lieu de if/else
+- ✅ **Canvas 2D persiste** quand on passe en 3D
+- ✅ **Hooks actifs** en permanence
+- ✅ **Retour en 2D fonctionnel** sans réinitialisation
+
+**Problème avant** :
+```javascript
+// Early return détruisait la vue 2D
+if (mode3D) {
+  return <Vue3D />;  // ❌ Vue 2D démontée
+}
+return <Vue2D />;
+```
+
+**Solution** :
+```javascript
+// Les 2 vues coexistent, visibilité par CSS
+return (
+  <>
+    {/* 3D : display: block si mode3D, sinon none */}
+    <div style={{ display: mode3D ? 'block' : 'none' }}>
+      <Vue3D />
+    </div>
+    
+    {/* 2D : display: flex si !mode3D, sinon none */}
+    <div style={{ display: mode3D ? 'none' : 'flex' }}>
+      <Vue2D />  ✅ Toujours montée !
+    </div>
+  </>
+);
+```
+
+**Avantages** :
+- Canvas 2D jamais détruit
+- Hooks useCanvasInit/useCanvasEvents actifs
+- Pas de réinitialisation au retour
+- Basculement instantané
+- État du plan conservé
+
+**Workflow utilisateur** :
+```
+1. Travailler en 2D
+2. Cliquer 3D → Vue 3D s'affiche, 2D cachée (display:none)
+3. Cliquer 2D → Vue 2D réapparaît instantanément ✅
+4. Canvas fonctionne parfaitement
+```
 
 ---
 
