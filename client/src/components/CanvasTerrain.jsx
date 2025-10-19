@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react';
 import * as fabric from 'fabric';
 import { FaMap, FaCube } from 'react-icons/fa';
 import PanneauLateral from './PanneauLateral';
@@ -396,7 +396,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       document.removeEventListener('mouseup', dragEnd);
     };
   }, []);
-  
+
   // ========== SYNCHRONISATION 2D ↔ 3D ==========
   
   // Extraire les données du canvas 2D pour la vue 3D (throttled)
@@ -460,7 +460,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const handleObjetPositionChange3D = useCallback((objetData) => {
     if (!fabricCanvasRef.current) return;
     
-    const canvas = fabricCanvasRef.current;
+          const canvas = fabricCanvasRef.current;
     const echelle = 30;
     
     // Trouver l'objet dans le canvas
