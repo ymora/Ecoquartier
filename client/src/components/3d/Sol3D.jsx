@@ -29,10 +29,10 @@ function Sol3D({
   
   return (
     <group>
-      {/* SOL SURFACE (herbe verte) */}
+      {/* SOL SURFACE (herbe verte) - Élevée de 7cm pour éviter z-fighting */}
       <mesh 
         rotation={[-Math.PI / 2, 0, 0]} 
-        position={[0, 0, 0]} 
+        position={[0, 0.07, 0]} 
         receiveShadow
       >
         <planeGeometry args={[largeur, hauteur]} />
@@ -42,10 +42,10 @@ function Sol3D({
         />
       </mesh>
       
-      {/* GRILLE au sol (pour référence) */}
+      {/* GRILLE au sol (pour référence) - Élevée de 8cm pour être au-dessus de l'herbe */}
       <gridHelper 
         args={[largeur, largeur, '#cccccc', '#eeeeee']} 
-        position={[0, 0.01, 0]}
+        position={[0, 0.08, 0]}
       />
       
       {/* COUCHES DE SOL (dynamique) */}
@@ -109,10 +109,10 @@ function Sol3D({
         </group>
       ))}
       
-      {/* Ligne de référence niveau 0 */}
+      {/* Ligne de référence niveau 0 (sous l'herbe) */}
       <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[largeur + 2, 0.02, hauteur + 2]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.3} />
+        <boxGeometry args={[largeur + 2, 0.01, hauteur + 2]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.2} />
       </mesh>
     </group>
   );

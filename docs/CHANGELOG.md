@@ -1,6 +1,43 @@
 # 📝 Changelog
 
-**Version actuelle : 2.19.0**
+**Version actuelle : 2.19.1**
+
+---
+
+## [2.19.1] - 2025-10-19 🌿 FIX SCINTILLEMENT HERBE 3D
+
+**Correction visuelle** :
+- ✅ **Herbe élevée de 7cm** : Au-dessus du niveau 0
+- ✅ **Grille élevée de 8cm** : Au-dessus de l'herbe
+- ✅ **Fin du z-fighting** : Herbe et terre végétale sur plans différents
+
+**Problème (z-fighting)** :
+```
+Avant :
+Herbe verte     Y = 0.00m  ⚠️ Même niveau
+Terre végétale  Y = 0.00m  ⚠️ Conflit visuel
+→ Scintillement visible
+```
+
+**Solution** :
+```
+Après :
+Grille          Y = 0.08m  ✅ Au-dessus
+Herbe verte     Y = 0.07m  ✅ Élevée
+Niveau 0        Y = 0.00m  ✅ Référence
+Terre végétale  Y = -0.15m ✅ En dessous
+→ Plus de scintillement
+```
+
+**Détails techniques** :
+- Surface herbe : `position={[0, 0.07, 0]}`
+- Grille : `position={[0, 0.08, 0]}`
+- Ligne niveau 0 : `opacity={0.2}` (plus discrète)
+
+**Résultat** :
+- Rendu 3D propre et stable
+- Herbe clairement visible au-dessus du sol
+- Pas de conflit de profondeur (z-fighting)
 
 ---
 
