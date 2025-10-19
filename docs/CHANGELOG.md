@@ -1,6 +1,68 @@
 # 📝 Changelog
 
-**Version actuelle : 2.17.0**
+**Version actuelle : 2.18.0**
+
+---
+
+## [2.18.0] - 2025-10-19 🌳 ARBRES 3D + PROJECTION TEMPORELLE
+
+**Arbres en 3D corrigés et projection temporelle** :
+- ✅ **Arbres affichés en 3D** : Extraction correcte depuis canvas 2D
+- ✅ **Projection temporelle fonctionnelle** : Taille variable selon années
+- ✅ **Arbres existants** : Affichés en plus des arbres à planter
+- ✅ **Terrasses en 3D** : Pavés visibles en 3D
+- ✅ **Labels enrichis** : Nom + âge + dimensions + profondeur racines
+
+**Correction extraction arbres** :
+```javascript
+// Avant : Cherchait planData.arbresPlantes ❌
+const arbre = planData?.arbresPlantes?.find(...)
+
+// Après : Utilise data3D.arbres ✅
+{data3D?.arbres?.map((arbre, idx) => (
+  <Arbre3D {...arbre} anneeProjection={anneeProjection} />
+))}
+```
+
+**Projection temporelle 3D** :
+| Année | Hauteur | Envergure | Racines |
+|-------|---------|-----------|---------|
+| **0 (plantation)** | 2.0m | 0.8m | 0.3m |
+| **10 ans** | 4.0m | 2.4m | 0.9m |
+| **20 ans (maturité)** | 6.0m | 4.0m | 1.5m |
+
+**Calcul croissance** :
+```javascript
+// Croissance linéaire jusqu'à maturité (20 ans)
+const progression = Math.min(anneeProjection / 20, 1);
+hauteurActuelle = 2 + (hauteurMax - 2) * progression;
+envergureActuelle = 0.8 + (envergureMax - 0.8) * progression;
+```
+
+**Labels arbres enrichis** :
+```
+🌳 Cerisier du Japon (5 ans)
+⌀3.0m × H4.0m | ↓0.75m
+```
+
+**Objets 3D complets** :
+- ✅ Maison (avec fondations)
+- ✅ Citernes (enterrées)
+- ✅ Canalisations (sous terre)
+- ✅ Clôtures
+- ✅ Terrasses/Pavés ← NOUVEAU
+- ✅ Arbres à planter (avec croissance)
+- ✅ Arbres existants
+- ✅ Sol (3 couches)
+
+**Interaction** :
+- 🖱️ Clic sur arbre → Voir propriétés
+- 👁️ Checkbox "Afficher sous-terre" → Racines visibles/cachées
+- 📅 Timeline → Croissance en temps réel
+
+**Légende dynamique** :
+- Adapte automatiquement au nombre de couches de sol
+- Affiche toutes les couches avec icônes
 
 ---
 

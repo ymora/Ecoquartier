@@ -129,23 +129,41 @@ function CanvasTerrain3D({
     
     // Arbres à planter
     if (planData.arbres && planData.arbres.length > 0) {
-      data3D.arbres = planData.arbres.map(a => ({
-        position: [a.left / echelle, 0, a.top / echelle],
-        arbreData: a.arbreData,
-        hauteur: a.hauteur || 6,
-        envergure: a.envergure || 4,
-        profondeurRacines: a.profondeurRacines || 1.5,
-        validationStatus: a.validationStatus || 'ok'
-      }));
+      data3D.arbres = planData.arbres.map(a => {
+        // Extraire taille à maturité depuis arbreData
+        const arbreData = a.arbreData || {};
+        const hauteurStr = arbreData.tailleMaturite || '6m';
+        const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
+        const envergureStr = arbreData.envergure || '4';
+        const envergureMax = parseFloat(envergureStr.split('-').pop());
+        
+        // Profondeur des racines
+        let profondeurRacines = 1.5;
+        if (arbreData.reglementation?.systemeRacinaire?.profondeur) {
+          const profStr = arbreData.reglementation.systemeRacinaire.profondeur;
+          profondeurRacines = parseFloat(profStr.split('-')[0]);
+        }
+        
+        return {
+          position: [a.left / echelle, 0, a.top / echelle],
+          arbreData: arbreData,
+          hauteur: hauteurMax,
+          envergure: envergureMax,
+          profondeurRacines: profondeurRacines,
+          validationStatus: a.validationStatus || 'ok'
+        };
+      });
     }
     
     // Arbres existants
     if (planData.arbresExistants && planData.arbresExistants.length > 0) {
       data3D.arbresExistants = planData.arbresExistants.map(a => ({
         position: [a.left / echelle, 0, a.top / echelle],
+        arbreData: { name: 'Arbre existant' },
         hauteur: a.hauteur || 8,
         envergure: a.envergure || 6,
-        profondeurRacines: 2
+        profondeurRacines: 2,
+        validationStatus: 'ok'
       }));
     }
     
@@ -280,36 +298,56 @@ function CanvasTerrain3D({
           />
         ))}
         
-        {/* Arbres à planter */}
-        {arbresAPlanter.map((arbre, idx) => {
-          // Trouver la position depuis planData
-          const arbreCanvas = planData?.arbresPlantes?.find(a => a.id === arbre.id);
-          if (!arbreCanvas) return null;
-          
-          const hauteurStr = arbre.tailleMaturite || '6';
-          const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
-          const envergureStr = arbre.envergure || '4';
-          const envergureMax = parseFloat(envergureStr.split('-').pop());
-          const profondeurRacines = parseFloat(arbre.reglementation?.systemeRacinaire?.profondeur?.split('-')[0] || '1');
-          
-          return (
-            <Arbre3D
-              key={`arbre-${idx}`}
-              position={[
-                arbreCanvas.left / 40,
-                0,
-                arbreCanvas.top / 40
-              ]}
-              arbreData={arbre}
-              hauteur={hauteurMax}
-              envergure={envergureMax}
-              profondeurRacines={afficherSousTerre ? profondeurRacines : 0}
-              validationStatus={arbreCanvas.validationStatus || 'ok'}
-              anneeProjection={anneeProjection}
-              onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
+        {/* Terrasses/Pavés */}
+        {data3D?.terrasses?.map((terrasse, idx) => (
+          <mesh 
+            key={`terrasse-${idx}`}
+            position={[
+              terrasse.position[0] + terrasse.largeur / 2,
+              terrasse.hauteur / 2,
+              terrasse.position[2] + terrasse.profondeur / 2
+            ]}
+            receiveShadow
+            castShadow
+          >
+            <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
+            <meshStandardMaterial 
+              color="#9e9e9e"
+              roughness={0.7}
+              metalness={0.2}
             />
-          );
-        })}
+          </mesh>
+        ))}
+        
+        {/* Arbres à planter (utiliser data3D.arbres qui contient les arbres placés) */}
+        {data3D?.arbres?.map((arbre, idx) => (
+          <Arbre3D
+            key={`arbre-plante-${idx}`}
+            position={arbre.position}
+            arbreData={arbre.arbreData}
+            hauteur={arbre.hauteur}
+            envergure={arbre.envergure}
+            profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
+            validationStatus={arbre.validationStatus || 'ok'}
+            anneeProjection={anneeProjection}
+            onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
+          />
+        ))}
+        
+        {/* Arbres existants */}
+        {data3D?.arbresExistants?.map((arbre, idx) => (
+          <Arbre3D
+            key={`arbre-existant-${idx}`}
+            position={arbre.position}
+            arbreData={arbre.arbreData}
+            hauteur={arbre.hauteur}
+            envergure={arbre.envergure}
+            profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
+            validationStatus={arbre.validationStatus || 'ok'}
+            anneeProjection={0}
+            onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
+          />
+        ))}
         
         {/* Caméra contrôlable */}
         <OrbitControls 
@@ -350,8 +388,12 @@ function CanvasTerrain3D({
         <div className="legende-item"><span className="color-box" style={{background: '#2e7d32'}}></span> Arbre conforme</div>
         <div className="legende-item"><span className="color-box" style={{background: '#ff9800'}}></span> Arbre attention</div>
         <div className="legende-item"><span className="color-box" style={{background: '#f44336'}}></span> Arbre problème</div>
-        <div className="legende-item"><span className="color-box" style={{background: '#795548'}}></span> Terre végétale ({couchesSol[0].profondeur}cm)</div>
-        <div className="legende-item"><span className="color-box" style={{background: '#bdbdbd'}}></span> {couchesSol[1].nom} ({couchesSol[1].profondeur}cm)</div>
+        {couchesSol.map((couche, idx) => (
+          <div key={idx} className="legende-item">
+            <span className="color-box" style={{background: couche.couleur}}></span> 
+            {couche.nom} ({couche.profondeur}cm)
+          </div>
+        ))}
       </div>
       
       {/* Aide */}
