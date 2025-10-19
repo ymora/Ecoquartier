@@ -1,6 +1,73 @@
 # 📝 Changelog
 
-**Version actuelle : 2.16.1**
+**Version actuelle : 2.17.0**
+
+---
+
+## [2.17.0] - 2025-10-19 🌍 3 COUCHES SOL + RENDU DYNAMIQUE
+
+**Structure sol améliorée** :
+- ✅ **3 couches** au lieu de 2
+- ✅ **Profondeurs réalistes** : 30cm, 2m, 2.5m
+- ✅ **Rendu dynamique** : Fonctionne avec N couches
+- ✅ **Icônes adaptées** : 🌱 🪨 ⛰️
+
+**Nouvelle structure** :
+| Couche | Profondeur | Couleur | Type | Icône |
+|--------|------------|---------|------|-------|
+| 1. **Terre végétale** | 30 cm (0.3m) | #8d6e63 Marron | Fertile | 🌱 |
+| 2. **Sous-sol** | 200 cm (2.0m) | #a1887f Beige | Argileux | 🪨 |
+| 3. **Marne** | 250 cm (2.5m) | #bdbdbd Gris | Rocheux | ⛰️ |
+
+**Profondeur totale** : 4.8m (vs 1.0m avant)
+
+**Visualisation 3D** :
+```
+Surface verte ━━━━━━━━━━━━━━ 0m
+              🌱 Terre (30cm)
+              ━━━━━━━━━━━━━━ -0.3m
+              🪨 Sous-sol (200cm)
+              ━━━━━━━━━━━━━━ -2.3m
+              ⛰️ Marne (250cm)
+              ━━━━━━━━━━━━━━ -4.8m
+```
+
+**Rendu dynamique** :
+```javascript
+// Avant : Codé en dur pour 2 couches
+<mesh>Terre</mesh>
+<mesh>Marne</mesh>
+
+// Après : Boucle automatique
+{couches.map((couche, index) => (
+  <mesh opacity={0.85 - index * 0.1}>
+    {couche}
+  </mesh>
+))}
+```
+
+**Opacité dégradée** :
+- Couche 1 : 85% (bien visible)
+- Couche 2 : 75% (visible)
+- Couche 3 : 65% (légèrement transparent)
+
+**Labels améliorés** :
+```
+🌱 Terre végétale
+↕️ 30cm (0.30m)
+
+🪨 Sous-sol
+↕️ 200cm (2.00m)
+
+⛰️ Marne
+↕️ 250cm (2.50m)
+```
+
+**Impact** :
+- Profondeur du sol réaliste
+- Validation racines précise
+- Visualisation claire des couches
+- Ajout/suppression de couches facile
 
 ---
 

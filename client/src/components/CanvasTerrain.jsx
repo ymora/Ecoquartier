@@ -98,7 +98,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   // ========== STATES ==========
   const [couchesSol, setCouchesSol] = useState([
     { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'fertile' },
-    { nom: 'Marne', profondeur: 70, couleur: '#a1887f', type: 'argileux' }
+    { nom: 'Sous-sol', profondeur: 200, couleur: '#a1887f', type: 'argileux' },
+    { nom: 'Marne', profondeur: 250, couleur: '#bdbdbd', type: 'rocheux' }
   ]);
   const [imageFondChargee, setImageFondChargee] = useState(false);
   const [opaciteImage, setOpaciteImage] = useState(0.5);
