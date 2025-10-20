@@ -20,8 +20,9 @@ function DashboardTerrain({
     const calculer = () => {
       const objets = canvas.getObjects();
       
-      console.log('📊 Calcul stats - Objets canvas:', objets.length);
-      console.log('📊 Arbres détectés:', objets.filter(obj => obj.customType === 'arbre-a-planter').length);
+      // Debug désactivé pour performance (calcul fréquent)
+      // console.log('📊 Calcul stats - Objets canvas:', objets.length);
+      // console.log('📊 Arbres détectés:', objets.filter(obj => obj.customType === 'arbre-a-planter').length);
       
       // Arbres plantés
       const arbresPlantes = objets.filter(obj => obj.customType === 'arbre-a-planter');
@@ -158,7 +159,8 @@ function DashboardTerrain({
     
     // Écouter les événements canvas pour recalcul immédiat
     const handleCanvasChange = () => {
-      console.log('📊 Événement canvas détecté - Recalcul stats');
+      // Debug désactivé pour performance (événement très fréquent)
+      // console.log('📊 Événement canvas détecté - Recalcul stats');
       calculer();
     };
     

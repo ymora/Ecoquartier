@@ -14,7 +14,8 @@ export const validerPositionArbre = (canvas, arbreGroup, echelle, couchesSol, or
   const arbre = arbreGroup.arbreData;
   if (!arbre) return;
   
-  logger.debug('Validation', `Validation arbre: ${arbre.name}`, { arbreId: arbre.id });
+  // Debug désactivé pour performance (appelé à chaque modification)
+  // logger.debug('Validation', `Validation arbre: ${arbre.name}`, { arbreId: arbre.id });
   
   // Extraire les distances minimales depuis les données réglementaires
   const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');

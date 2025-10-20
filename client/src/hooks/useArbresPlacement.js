@@ -41,7 +41,8 @@ export const useArbresPlacement = ({
       arbresExistants.forEach(a => canvas.remove(a));
 
       arbresAPlanter.forEach((arbre, index) => {
-        logger.debug('AjoutArbres', `Ajout arbre ${index + 1}/${arbresAPlanter.length}: ${arbre.name}`);
+        // Debug désactivé pour performance (boucle)
+        // logger.debug('AjoutArbres', `Ajout arbre ${index + 1}/${arbresAPlanter.length}: ${arbre.name}`);
         
         const tailles = calculerTailleSelonAnnee(arbre, anneeProjection);
         const largeur = tailles.largeur;
@@ -118,7 +119,8 @@ export const useArbresPlacement = ({
         canvas.add(arbreGroup);
         validerPositionArbre(canvas, arbreGroup);
         
-        logger.debug('AjoutArbres', `✅ ${arbre.name} ajouté en position ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`);
+        // Debug désactivé pour performance (boucle)
+        // logger.debug('AjoutArbres', `✅ ${arbre.name} ajouté en position ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`);
       });
 
       // Trier les objets par profondeur après ajout

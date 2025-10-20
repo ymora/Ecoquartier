@@ -22,7 +22,8 @@ export const useTimelineSync = ({
       return;
     }
     
-    logger.debug('Timeline', `Redimensionnement ${arbresPlantes.length} arbres → ${anneeProjection} ans`);
+    // Debug désactivé pour performance (changement fréquent de timeline)
+    // logger.debug('Timeline', `Redimensionnement ${arbresPlantes.length} arbres → ${anneeProjection} ans`);
     
     arbresPlantes.forEach((arbreGroup, idx) => {
       try {

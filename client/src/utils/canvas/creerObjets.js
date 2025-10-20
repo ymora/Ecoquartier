@@ -49,7 +49,8 @@ export const creerMaison = (canvas, echelle) => {
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Maison ajoutée', { profondeur: 1.2, hauteur: 7 });
+  // Debug désactivé pour performance
+  // logger.debug('Objets', 'Maison ajoutée', { profondeur: 1.2, hauteur: 7 });
 };
 
 /**
@@ -78,7 +79,8 @@ export const creerCanalisation = (canvas) => {
   canvas.setActiveObject(canalisation);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Canalisation ajoutée', { profondeur: 0.6 });
+  // Debug désactivé pour performance
+  // logger.debug('Objets', 'Canalisation ajoutée', { profondeur: 0.6 });
 };
 
 /**
@@ -122,7 +124,8 @@ export const creerCiterne = (canvas, echelle) => {
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Citerne ajoutée', { profondeur: 2.5 });
+  // Debug désactivé pour performance
+  // logger.debug('Objets', 'Citerne ajoutée', { profondeur: 2.5 });
 };
 
 /**
@@ -166,7 +169,8 @@ export const creerCloture = (canvas, pointsClotureRef) => {
     canvas.bringObjectToFront(ligne);
     canvas.renderAll();
     
-    logger.debug('Cloture', `Segment ${dernierIndex} ajouté`);
+    // Debug désactivé pour performance
+    // logger.debug('Cloture', `Segment ${dernierIndex} ajouté`);
   }
 };
 
@@ -192,7 +196,8 @@ export const creerTerrasse = (canvas, echelle) => {
   canvas.setActiveObject(terrasse);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Terrasse ajoutée');
+  // Debug désactivé pour performance
+  // logger.debug('Objets', 'Terrasse ajoutée');
 };
 
 /**
@@ -217,7 +222,8 @@ export const creerPaves = (canvas, echelle) => {
   canvas.setActiveObject(paves);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Pavés enherbés ajoutés');
+  // Debug désactivé pour performance
+  // logger.debug('Objets', 'Pavés enherbés ajoutés');
 };
 
 /**
@@ -274,7 +280,8 @@ export const creerArbreExistant = (canvas, echelle) => {
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Arbre existant ajouté');
+  // Debug désactivé pour performance
+  // logger.debug('Objets', 'Arbre existant ajouté');
 };
 
 /**
@@ -338,7 +345,8 @@ export const creerGrille = (canvas, echelle) => {
   }
   
   canvas.renderAll();
-  logger.debug('Grille', `${gridLines.length} lignes ajoutées`);
+  // Debug désactivé pour performance
+  // logger.debug('Grille', `${gridLines.length} lignes ajoutées`);
 };
 
 /**
@@ -470,7 +478,8 @@ export const creerIndicateurSud = (canvas, orientation, onOrientationChange) => 
       setTimeout(() => {
         canvas.discardActiveObject();
         canvas.renderAll();
-        logger.debug('Boussole', 'Soleil déposé après drag');
+        // Debug désactivé pour performance
+        // logger.debug('Boussole', 'Soleil déposé après drag');
       }, 50);
     }
   });
@@ -478,6 +487,7 @@ export const creerIndicateurSud = (canvas, orientation, onOrientationChange) => 
   canvas.add(soleil);
   canvas.add(label);
   
-  logger.debug('Boussole', 'Indicateur Sud ajouté', { orientation });
+  // Debug désactivé pour performance
+  // logger.debug('Boussole', 'Indicateur Sud ajouté', { orientation });
 };
 

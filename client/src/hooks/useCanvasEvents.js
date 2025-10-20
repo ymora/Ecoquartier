@@ -120,7 +120,8 @@ export const useCanvasEvents = ({
       
       // renderAll() est appelé UNE SEULE FOIS à la fin
       canvas.renderAll();
-      logger.debug('ObjectModified', 'Objet modifié, validation et tri OK');
+      // Debug désactivé pour performance (événement fréquent)
+      // logger.debug('ObjectModified', 'Objet modifié, validation et tri OK');
     };
 
     // Raccourcis clavier

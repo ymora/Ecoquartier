@@ -263,9 +263,10 @@ export const trouverPositionValide = (canvas, arbre, largeur, hauteur, index, ec
   }
 
   positions.sort((a, b) => b.score - a.score);
-  logger.debug('Placement', `${positions.length} positions valides pour ${arbre.name}`, {
-    meilleure: positions[0]
-  });
+  // Debug désactivé pour performance
+  // logger.debug('Placement', `${positions.length} positions valides pour ${arbre.name}`, {
+  //   meilleure: positions[0]
+  // });
   return positions[0];
 };
 
