@@ -356,18 +356,44 @@ function CanvasTerrain3D({
         </label>
         
         <div className="control-group">
-          <label className="control-label">☀️ Heure de la journée (ombres)</label>
-          <select 
-            value={heureJournee}
-            onChange={(e) => setHeureJournee(e.target.value)}
-            className="select-3d"
-          >
-            <option value="lever">🌅 Lever du soleil (Est)</option>
-            <option value="matin">🌄 Matin (Sud-Est)</option>
-            <option value="midi">☀️ Midi (Sud)</option>
-            <option value="soir">🌆 Soir (Sud-Ouest)</option>
-            <option value="coucher">🌇 Coucher du soleil (Ouest)</option>
-          </select>
+          <label className="control-label">☀️ Heure de la journée</label>
+          <div className="heure-selector">
+            <button 
+              className={`heure-btn ${heureJournee === 'lever' ? 'active' : ''}`}
+              onClick={() => setHeureJournee('lever')}
+              title="Lever du soleil (Est)"
+            >
+              🌅
+            </button>
+            <button 
+              className={`heure-btn ${heureJournee === 'matin' ? 'active' : ''}`}
+              onClick={() => setHeureJournee('matin')}
+              title="Matin (Sud-Est)"
+            >
+              🌄
+            </button>
+            <button 
+              className={`heure-btn ${heureJournee === 'midi' ? 'active' : ''}`}
+              onClick={() => setHeureJournee('midi')}
+              title="Midi (Sud)"
+            >
+              ☀️
+            </button>
+            <button 
+              className={`heure-btn ${heureJournee === 'soir' ? 'active' : ''}`}
+              onClick={() => setHeureJournee('soir')}
+              title="Soir (Sud-Ouest)"
+            >
+              🌆
+            </button>
+            <button 
+              className={`heure-btn ${heureJournee === 'coucher' ? 'active' : ''}`}
+              onClick={() => setHeureJournee('coucher')}
+              title="Coucher du soleil (Ouest)"
+            >
+              🌇
+            </button>
+          </div>
         </div>
       </div>
       

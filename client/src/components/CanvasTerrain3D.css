@@ -184,3 +184,36 @@
   padding: 8px;
 }
 
+/* Sélecteur d'heure visuel */
+.heure-selector {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.heure-btn {
+  padding: 8px 12px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.2s;
+  flex: 1;
+  min-width: 45px;
+}
+
+.heure-btn:hover {
+  background: #fff3e0;
+  border-color: #ff9800;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+}
+
+.heure-btn.active {
+  background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+  border-color: #ff6f00;
+  box-shadow: 0 4px 12px rgba(255, 111, 0, 0.4);
+  transform: scale(1.05);
+}
+
