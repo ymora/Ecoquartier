@@ -33,9 +33,13 @@ export function trierObjetsParProfondeur(canvas) {
   });
   
   // Réorganiser dans le canvas
-  objets.forEach((obj, index) => {
-    canvas.moveTo(obj, index);
+  // Méthode 1 : Utiliser sendToBack/bringToFront de Fabric.js
+  objets.forEach((obj) => {
+    canvas.sendToBack(obj);
   });
+  
+  // Maintenant les objets sont triés : le premier du tableau (top le plus petit) est en arrière
+  // Les suivants se superposent progressivement
 }
 
 /**
