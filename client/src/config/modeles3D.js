@@ -1,29 +1,40 @@
 /**
  * Configuration des modèles 3D disponibles
  * 
- * Pour ajouter un nouveau modèle :
- * 1. Placer le fichier .glb dans client/public/models/arbres/
- * 2. Ajouter une entrée dans MODELES_ARBRES ci-dessous
- * 3. Mapper l'ID de l'arbre dans ARBRE_TO_MODEL
+ * SYSTÈME SIMPLIFIÉ:
+ * - 1 modèle GLB peut être utilisé par PLUSIEURS arbres
+ * - Si le fichier GLB n'existe pas ou est trop lourd → Fallback automatique vers arbre procédural
+ * - Fichiers organisés par type : cerisier/, erable/, magnolia/
+ * 
+ * LIMITE DE TAILLE: 5 MB recommandé (10 MB max)
+ * Si > 10 MB : Le modèle ne sera pas chargé (trop lent)
  */
 
 // Types de modèles disponibles
 export const MODEL_TYPES = {
   PROCEDURAL: 'procedural', // Modèle généré par code (actuel)
-  REAL_MODEL: 'real_model'   // Modèle 3D réel (GLB/OBJ)
+  REAL_MODEL: 'real_model'   // Modèle 3D réel (GLB)
 };
+
+// Taille max en MB pour charger un modèle GLB
+const MAX_MODEL_SIZE_MB = 10;
 
 // Catalogue des modèles 3D disponibles
 // Structure : /models/{type}/{type}-{nom}.glb
 export const MODELES_ARBRES = {
   // === CERISIERS ===
+  // NOTE: Les modèles actuels (12 MB) sont trop lourds
+  // → Fallback automatique vers arbre procédural
+  // → À remplacer par des modèles plus légers (< 5 MB)
+  
   'cerisier-tree-1': {
     path: '/models/cerisier/cerisier-tree-1.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Cerisier Modèle 1'
+    nom: 'Cerisier Modèle 1',
+    disabled: true  // Désactivé car trop lourd (12 MB)
   },
   'cerisier-tree-2': {
     path: '/models/cerisier/cerisier-tree-2.glb',
@@ -31,7 +42,8 @@ export const MODELES_ARBRES = {
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Cerisier Modèle 2'
+    nom: 'Cerisier Modèle 2',
+    disabled: true  // Désactivé car trop lourd (12 MB)
   },
   'cerisier-tree-3': {
     path: '/models/cerisier/cerisier-tree-3.glb',
@@ -39,54 +51,58 @@ export const MODELES_ARBRES = {
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Cerisier Modèle 3'
+    nom: 'Cerisier Modèle 3',
+    disabled: true  // Désactivé car trop lourd (12 MB)
   },
+  
+  // Modèle générique léger (à ajouter)
   'cerisier-general': {
     path: '/models/cerisier/cerisier-general.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 8,
-    nom: 'Cerisier (Générique)'
+    nom: 'Cerisier (Générique)',
+    disabled: true  // N'existe pas encore
   },
   
   // === ÉRABLES ===
-  // À ajouter quand vous uploadez des érables
   'erable-general': {
     path: '/models/erable/erable-general.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 8,
-    nom: 'Érable (Générique)'
+    nom: 'Érable (Générique)',
+    disabled: true  // À ajouter
   },
   
   // === MAGNOLIAS ===
-  // À ajouter quand vous uploadez des magnolias
   'magnolia-general': {
     path: '/models/magnolia/magnolia-general.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Magnolia (Générique)'
+    nom: 'Magnolia (Générique)',
+    disabled: true  // À ajouter
   }
 };
 
 // Mapping des arbres de la base de données vers les modèles 3D
 // Clé = ID de l'arbre dans arbustesData.js
 // Valeur = ID du modèle dans MODELES_ARBRES
+// 
+// NOTE: Tous sont désactivés pour l'instant car fichiers trop lourds (> 10 MB)
+// → Le site utilisera automatiquement les arbres procéduraux
 export const ARBRE_TO_MODEL = {
-  // Cerisiers (modèles depuis upload/cerisier/)
-  'cerisier-kanzan': 'cerisier-tree-1',
-  'cerisier-accolade': 'cerisier-tree-1',
-  'cerisier-sunset': 'cerisier-tree-2',
+  // DÉSACTIVÉ temporairement (modèles trop lourds)
+  // Décommentez quand vous aurez des modèles < 5 MB
   
-  // Érables (ajouter vos modèles dans upload/erable/)
-  'erable-japon': 'cerisier-tree-3',
-  
-  // Par défaut, utiliser le rendu procédural
-  // Ajouter d'autres mappings au fur et à mesure
+  // 'cerisier-kanzan': 'cerisier-general',
+  // 'cerisier-accolade': 'cerisier-general',
+  // 'cerisier-sunset': 'cerisier-general',
+  // 'erable-japon': 'erable-general',
 };
 
 /**
@@ -98,8 +114,17 @@ export function getModelPourArbre(arbreId) {
   const modelId = ARBRE_TO_MODEL[arbreId];
   if (!modelId) return null;
   
+  const model = MODELES_ARBRES[modelId];
+  if (!model) return null;
+  
+  // Ne pas charger si désactivé (trop lourd)
+  if (model.disabled) {
+    console.log(`[3D] Modèle ${modelId} désactivé (trop lourd), utilisation arbre procédural`);
+    return null;
+  }
+  
   return {
-    ...MODELES_ARBRES[modelId],
+    ...model,
     id: modelId
   };
 }
@@ -110,14 +135,17 @@ export function getModelPourArbre(arbreId) {
  * @returns {boolean}
  */
 export function hasRealModel(arbreId) {
-  return !!ARBRE_TO_MODEL[arbreId];
+  const model = getModelPourArbre(arbreId);
+  return !!model;
 }
 
 /**
- * Liste de tous les arbres avec modèles 3D
+ * Liste de tous les arbres avec modèles 3D actifs
  * @returns {Array<string>}
  */
 export function getArbresAvecModeles() {
-  return Object.keys(ARBRE_TO_MODEL);
+  return Object.keys(ARBRE_TO_MODEL).filter(arbreId => {
+    const model = getModelPourArbre(arbreId);
+    return model && !model.disabled;
+  });
 }
-

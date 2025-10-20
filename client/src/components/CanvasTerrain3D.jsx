@@ -463,7 +463,7 @@ function CanvasTerrain3D({
               maisonBounds={maisonBounds}
             >
               {model3D ? (
-                /* Modèle 3D réel (GLB) */
+                /* Modèle 3D réel (GLB) avec fallback automatique */
                 <Arbre3DModel
                   position={[0, 0, 0]}
                   modelPath={model3D.path}
@@ -471,9 +471,19 @@ function CanvasTerrain3D({
                   rotation={model3D.rotation}
                   anneeProjection={anneeProjection}
                   onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
+                  fallbackProps={{
+                    arbreData: arbre.arbreData,
+                    hauteur: arbre.hauteur,
+                    envergure: arbre.envergure,
+                    profondeurRacines: afficherSousTerre ? arbre.profondeurRacines : 0,
+                    validationStatus: arbre.validationStatus || 'ok',
+                    anneeProjection: anneeProjection,
+                    saison: saison,
+                    onClick: () => handleObjetClick({ type: 'arbre', ...arbre })
+                  }}
                 />
               ) : (
-                /* Arbre procédural (actuel) */
+                /* Arbre procédural (pas de modèle GLB) */
                 <Arbre3D
                   position={[0, 0, 0]}
                   arbreData={arbre.arbreData}
@@ -505,7 +515,7 @@ function CanvasTerrain3D({
               maisonBounds={maisonBounds}
             >
               {model3D ? (
-                /* Modèle 3D réel (GLB) */
+                /* Modèle 3D réel (GLB) avec fallback automatique */
                 <Arbre3DModel
                   position={[0, 0, 0]}
                   modelPath={model3D.path}
@@ -513,9 +523,19 @@ function CanvasTerrain3D({
                   rotation={model3D.rotation}
                   anneeProjection={20} // Arbres existants = matures
                   onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
+                  fallbackProps={{
+                    arbreData: arbre.arbreData,
+                    hauteur: arbre.hauteur,
+                    envergure: arbre.envergure,
+                    profondeurRacines: afficherSousTerre ? arbre.profondeurRacines : 0,
+                    validationStatus: arbre.validationStatus || 'ok',
+                    anneeProjection: 0,
+                    saison: saison,
+                    onClick: () => handleObjetClick({ type: 'arbre-existant', ...arbre })
+                  }}
                 />
               ) : (
-                /* Arbre procédural (actuel) */
+                /* Arbre procédural (pas de modèle GLB) */
                 <Arbre3D
                   position={[0, 0, 0]}
                   arbreData={arbre.arbreData}
