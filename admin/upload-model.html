@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Modèle 3D - Haies Bessancourt</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .step {
+      margin-bottom: 40px;
+    }
+
+    .step-title {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .input-text {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .input-text:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .type-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .type-btn {
+      padding: 20px;
+      border: 3px solid #e0e0e0;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .type-btn:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    .type-btn.selected {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .type-icon {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .upload-zone {
+      border: 3px dashed #667eea;
+      border-radius: 12px;
+      padding: 60px 20px;
+      text-align: center;
+      background: #f8f9ff;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .upload-zone:hover {
+      background: #f0f2ff;
+      border-color: #5568d3;
+      transform: scale(1.02);
+    }
+
+    .upload-zone.dragover {
+      background: #e8ebff;
+      border-color: #4a5dc0;
+      transform: scale(1.05);
+    }
+
+    .upload-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .upload-text {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .upload-hint {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .file-preview {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      display: none;
+      margin-top: 20px;
+    }
+
+    .file-preview.show {
+      display: block;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .file-icon {
+      font-size: 48px;
+    }
+
+    .file-details {
+      flex: 1;
+    }
+
+    .file-name {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .file-size {
+      color: #999;
+    }
+
+    .btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .progress {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .progress.show {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .result {
+      display: none;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .result.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .result-icon {
+      font-size: 48px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .result-text {
+      text-align: center;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .info-box {
+      background: #e0f2fe;
+      border-left: 4px solid #0284c7;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    .info-box strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌳 Upload Modèle 3D</h1>
+      <p>Convertir et stocker vos modèles d'arbres</p>
+    </div>
+
+    <div class="card">
+      <div class="info-box">
+        <strong>💡 Comment ça marche :</strong>
+        Choisissez le type d'arbre, uploadez votre fichier 3D (Blender, OBJ, FBX), 
+        donnez-lui un nom, et cliquez sur convertir. Le fichier GLB sera automatiquement 
+        créé et stocké dans le bon dossier !
+      </div>
+
+      <!-- ÉTAPE 1: Type d'arbre -->
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">1</span>
+          <span>Choisir le type d'arbre</span>
+        </div>
+        <div class="type-selector">
+          <button class="type-btn selected" data-type="cerisier">
+            <span class="type-icon">🌸</span>
+            <div>Cerisier</div>
+          </button>
+          <button class="type-btn" data-type="erable">
+            <span class="type-icon">🍁</span>
+            <div>Érable</div>
+          </button>
+          <button class="type-btn" data-type="magnolia">
+            <span class="type-icon">🌺</span>
+            <div>Magnolia</div>
+          </button>
+          <button class="type-btn" data-type="prunus">
+            <span class="type-icon">🌳</span>
+            <div>Prunus</div>
+          </button>
+          <button class="type-btn" data-type="arbuste">
+            <span class="type-icon">🌿</span>
+            <div>Arbuste</div>
+          </button>
+          <button class="type-btn" data-type="autre">
+            <span class="type-icon">🌲</span>
+            <div>Autre</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 2: Nom du modèle -->
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">2</span>
+          <span>Nommer le modèle</span>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Nom du modèle</label>
+          <input 
+            type="text" 
+            class="input-text" 
+            id="modelName" 
+            placeholder="ex: kanzan, general, fleuri..."
+          >
+          <div style="margin-top: 8px; font-size: 14px; color: #999;">
+            Résultat : <strong id="resultFilename">cerisier-kanzan.glb</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 3: Upload fichier -->
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">3</span>
+          <span>Uploader le fichier</span>
+        </div>
+        <input type="file" id="fileInput" accept=".blend,.obj,.fbx,.gltf,.glb" style="display: none;">
+        <div class="upload-zone" id="uploadZone">
+          <span class="upload-icon">📁</span>
+          <div class="upload-text">Glissez-déposez votre fichier ici</div>
+          <div class="upload-text">ou cliquez pour sélectionner</div>
+          <div class="upload-hint">Formats acceptés : .blend, .obj, .fbx, .gltf (max 200 MB)</div>
+        </div>
+        <div class="file-preview" id="filePreview">
+          <div class="file-info">
+            <span class="file-icon">📦</span>
+            <div class="file-details">
+              <div class="file-name" id="fileName">-</div>
+              <div class="file-size" id="fileSize">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 4: Conversion -->
+      <div class="step">
+        <button class="btn btn-primary" id="convertBtn" disabled>
+          🔄 Convertir et Stocker
+        </button>
+      </div>
+
+      <!-- Progression -->
+      <div class="progress" id="progress">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">Conversion en cours...</div>
+      </div>
+
+      <!-- Résultat -->
+      <div class="result" id="result">
+        <div class="result-icon" id="resultIcon"></div>
+        <div class="result-text" id="resultText"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="upload-model.js"></script>
+</body>
+</html>
+

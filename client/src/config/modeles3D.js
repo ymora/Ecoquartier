@@ -14,41 +14,62 @@ export const MODEL_TYPES = {
 };
 
 // Catalogue des modèles 3D disponibles
+// Structure : /models/{type}/{type}-{nom}.glb
 export const MODELES_ARBRES = {
-  // Format GLB (recommandé)
-  'cherry-tree-glb': {
-    path: '/models/arbres/cherry-tree.glb',
-    type: 'glb',
-    scale: 1.0, // Échelle de base
-    rotation: [0, 0, 0], // Rotation si nécessaire
-    hauteurReelle: 8, // Hauteur réelle en mètres (pour ajuster l'échelle)
-    nom: 'Cerisier (modèle réaliste)'
-  },
-  
-  // Format GLB - Cerisiers (convertis depuis upload/cerisier/)
+  // === CERISIERS ===
   'cerisier-tree-1': {
-    path: '/models/arbres/cerisier-tree-1.glb',
+    path: '/models/cerisier/cerisier-tree-1.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Cerisier 1'
+    nom: 'Cerisier Modèle 1'
   },
   'cerisier-tree-2': {
-    path: '/models/arbres/cerisier-tree-2.glb',
+    path: '/models/cerisier/cerisier-tree-2.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Cerisier 2'
+    nom: 'Cerisier Modèle 2'
   },
   'cerisier-tree-3': {
-    path: '/models/arbres/cerisier-tree-3.glb',
+    path: '/models/cerisier/cerisier-tree-3.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Cerisier 3'
+    nom: 'Cerisier Modèle 3'
+  },
+  'cerisier-general': {
+    path: '/models/cerisier/cerisier-general.glb',
+    type: 'glb',
+    scale: 0.5,
+    rotation: [0, 0, 0],
+    hauteurReelle: 8,
+    nom: 'Cerisier (Générique)'
+  },
+  
+  // === ÉRABLES ===
+  // À ajouter quand vous uploadez des érables
+  'erable-general': {
+    path: '/models/erable/erable-general.glb',
+    type: 'glb',
+    scale: 0.5,
+    rotation: [0, 0, 0],
+    hauteurReelle: 8,
+    nom: 'Érable (Générique)'
+  },
+  
+  // === MAGNOLIAS ===
+  // À ajouter quand vous uploadez des magnolias
+  'magnolia-general': {
+    path: '/models/magnolia/magnolia-general.glb',
+    type: 'glb',
+    scale: 0.5,
+    rotation: [0, 0, 0],
+    hauteurReelle: 10,
+    nom: 'Magnolia (Générique)'
   }
 };
 
