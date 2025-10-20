@@ -10,18 +10,21 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
   const [visibleCriteres, setVisibleCriteres] = useState({});
   const [zoomedImage, setZoomedImage] = useState(null);
   const [selectedImageType, setSelectedImageType] = useState('tous'); // Type d'image à afficher
+  const [manuallyDeselected, setManuallyDeselected] = useState([]); // Tracker les arbres désélectionnés manuellement
   
   // States pour le planificateur (si modePlanification)
   const [dimensions, setDimensions] = useState({ largeur: 30, hauteur: 30 });
   const [orientation, setOrientation] = useState('nord-haut');
 
-  // Mettre à jour la présélection quand elle change
+  // Mettre à jour la présélection quand elle change (mais pas si l'utilisateur l'a désélectionnée manuellement)
   useEffect(() => {
-    if (preselectedPlante && !selectedPlantes.find(p => p.id === preselectedPlante.id)) {
+    if (preselectedPlante && 
+        !selectedPlantes.find(p => p.id === preselectedPlante.id) &&
+        !manuallyDeselected.includes(preselectedPlante.id)) {
       setSelectedPlantes([preselectedPlante]);
       setImageIndices({ [preselectedPlante.id]: 0 });
     }
-  }, [preselectedPlante, selectedPlantes]);
+  }, [preselectedPlante]); // Enlever selectedPlantes des dépendances pour éviter la boucle
 
   // Remonter les arbres sélectionnés au parent
   useEffect(() => {
@@ -35,10 +38,14 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
     if (selectedPlantes.find(p => p.id === plante.id)) {
       // Retirer si déjà sélectionné
       setSelectedPlantes(selectedPlantes.filter(p => p.id !== plante.id));
+      // Marquer comme désélectionné manuellement pour éviter le re-ajout automatique
+      setManuallyDeselected(prev => [...prev, plante.id]);
     } else {
       // Ajouter sans limite
       setSelectedPlantes([...selectedPlantes, plante]);
       setImageIndices({ ...imageIndices, [plante.id]: 0 });
+      // Retirer de la liste des désélections manuelles
+      setManuallyDeselected(prev => prev.filter(id => id !== plante.id));
     }
   };
 
