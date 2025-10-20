@@ -2,6 +2,8 @@ import { useRef, useState, useMemo, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Sky } from '@react-three/drei';
 import Arbre3D from './3d/Arbre3D';
+import Arbre3DModel from './3d/Arbre3DModel';
+import { getModelPourArbre } from '../config/modeles3D';
 import Maison3D from './3d/Maison3D';
 import Sol3D from './3d/Sol3D';
 import Canalisation3D from './3d/Canalisation3D';
@@ -447,52 +449,88 @@ function CanvasTerrain3D({
         ))}
         
         {/* Arbres à planter (draggable si mode activé) */}
-        {data3D?.arbres?.map((arbre, idx) => (
-          <ObjetDraggable3D
-            key={`arbre-plante-${idx}`}
-            position={arbre.position}
-            type="arbre-a-planter"
-            enabled={modeDeplacement}
-            onDragEnd={handleObjetDragEnd}
-            maisonBounds={maisonBounds}
-          >
-            <Arbre3D
-              position={[0, 0, 0]} // Position relative au groupe draggable
-              arbreData={arbre.arbreData}
-              hauteur={arbre.hauteur}
-              envergure={arbre.envergure}
-              profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
-              validationStatus={arbre.validationStatus || 'ok'}
-              anneeProjection={anneeProjection}
-              saison={saison}
-              onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
-            />
-          </ObjetDraggable3D>
-        ))}
+        {data3D?.arbres?.map((arbre, idx) => {
+          // Vérifier si un modèle 3D réel existe
+          const model3D = arbre.arbreData?.id ? getModelPourArbre(arbre.arbreData.id) : null;
+          
+          return (
+            <ObjetDraggable3D
+              key={`arbre-plante-${idx}`}
+              position={arbre.position}
+              type="arbre-a-planter"
+              enabled={modeDeplacement}
+              onDragEnd={handleObjetDragEnd}
+              maisonBounds={maisonBounds}
+            >
+              {model3D ? (
+                /* Modèle 3D réel (GLB) */
+                <Arbre3DModel
+                  position={[0, 0, 0]}
+                  modelPath={model3D.path}
+                  scale={model3D.scale * (arbre.hauteur / model3D.hauteurReelle)}
+                  rotation={model3D.rotation}
+                  anneeProjection={anneeProjection}
+                  onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
+                />
+              ) : (
+                /* Arbre procédural (actuel) */
+                <Arbre3D
+                  position={[0, 0, 0]}
+                  arbreData={arbre.arbreData}
+                  hauteur={arbre.hauteur}
+                  envergure={arbre.envergure}
+                  profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
+                  validationStatus={arbre.validationStatus || 'ok'}
+                  anneeProjection={anneeProjection}
+                  saison={saison}
+                  onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
+                />
+              )}
+            </ObjetDraggable3D>
+          );
+        })}
         
         {/* Arbres existants (draggable si mode activé) */}
-        {data3D?.arbresExistants?.map((arbre, idx) => (
-          <ObjetDraggable3D
-            key={`arbre-existant-${idx}`}
-            position={arbre.position}
-            type="arbre-existant"
-            enabled={modeDeplacement}
-            onDragEnd={handleObjetDragEnd}
-            maisonBounds={maisonBounds}
-          >
-            <Arbre3D
-              position={[0, 0, 0]} // Position relative au groupe draggable
-              arbreData={arbre.arbreData}
-              hauteur={arbre.hauteur}
-              envergure={arbre.envergure}
-              profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
-              validationStatus={arbre.validationStatus || 'ok'}
-              anneeProjection={0}
-              saison={saison}
-              onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
-            />
-          </ObjetDraggable3D>
-        ))}
+        {data3D?.arbresExistants?.map((arbre, idx) => {
+          // Vérifier si un modèle 3D réel existe
+          const model3D = arbre.arbreData?.id ? getModelPourArbre(arbre.arbreData.id) : null;
+          
+          return (
+            <ObjetDraggable3D
+              key={`arbre-existant-${idx}`}
+              position={arbre.position}
+              type="arbre-existant"
+              enabled={modeDeplacement}
+              onDragEnd={handleObjetDragEnd}
+              maisonBounds={maisonBounds}
+            >
+              {model3D ? (
+                /* Modèle 3D réel (GLB) */
+                <Arbre3DModel
+                  position={[0, 0, 0]}
+                  modelPath={model3D.path}
+                  scale={model3D.scale * (arbre.hauteur / model3D.hauteurReelle)}
+                  rotation={model3D.rotation}
+                  anneeProjection={20} // Arbres existants = matures
+                  onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
+                />
+              ) : (
+                /* Arbre procédural (actuel) */
+                <Arbre3D
+                  position={[0, 0, 0]}
+                  arbreData={arbre.arbreData}
+                  hauteur={arbre.hauteur}
+                  envergure={arbre.envergure}
+                  profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
+                  validationStatus={arbre.validationStatus || 'ok'}
+                  anneeProjection={0}
+                  saison={saison}
+                  onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
+                />
+              )}
+            </ObjetDraggable3D>
+          );
+        })}
         
         {/* Caméra contrôlable */}
         <OrbitControls 
