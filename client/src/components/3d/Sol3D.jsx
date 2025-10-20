@@ -62,15 +62,16 @@ function Sol3D({
             <meshStandardMaterial 
               color={couche.couleur}
               transparent 
-              opacity={transparent ? 0.25 - index * 0.05 : 0.85 - index * 0.1}
+              opacity={transparent ? 0.15 - index * 0.03 : 0.85 - index * 0.1}
               roughness={0.95}
               metalness={index * 0.05}
               depthWrite={!transparent}
+              side={2}
             />
           </mesh>
           
-          {/* Bordure visible entre les couches (sauf pour la dernière) */}
-          {index < couches.length - 1 && (
+          {/* Bordure visible entre les couches (sauf pour la dernière) - Masquée si transparent */}
+          {!transparent && index < couches.length - 1 && (
             <>
               <mesh position={[0, -(couche.profondeurCumuleeAvant + couche.profondeurM), 0]} rotation={[-Math.PI / 2, 0, 0]}>
                 <planeGeometry args={[largeur, hauteur]} />
@@ -93,10 +94,12 @@ function Sol3D({
             </>
           )}
           
-          {/* Label de la couche */}
+          {/* Label de la couche - Toujours visible */}
           <Html position={[-largeur / 2 - 2, couche.positionY, 0]}>
             <div style={{ 
-              background: `rgba(${index === 0 ? '121,85,72' : index === 1 ? '161,136,127' : '189,189,189'},0.95)`, 
+              background: transparent 
+                ? 'rgba(0, 0, 0, 0.8)'  // Fond foncé en mode transparent pour contraste
+                : `rgba(${index === 0 ? '121,85,72' : index === 1 ? '161,136,127' : '189,189,189'},0.95)`, 
               padding: '6px 10px', 
               borderRadius: '6px',
               fontSize: '12px',
@@ -115,11 +118,13 @@ function Sol3D({
         </group>
       ))}
       
-      {/* Ligne de référence niveau 0 (sous l'herbe) */}
-      <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[largeur + 2, 0.01, hauteur + 2]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.2} />
-      </mesh>
+      {/* Ligne de référence niveau 0 (sous l'herbe) - Masquée si transparent */}
+      {!transparent && (
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[largeur + 2, 0.01, hauteur + 2]} />
+          <meshBasicMaterial color="#000000" transparent opacity={0.2} />
+        </mesh>
+      )}
     </group>
   );
 }
