@@ -21,6 +21,7 @@ function CanvasTerrain3D({
   planData = null,
   anneeProjection = 0,
   saison = 'ete', // Saison pour le soleil ET le feuillage des arbres
+  orientation = 'nord-haut', // Orientation du terrain pour les ombres
   couchesSol = [
     { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
     { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' }
