@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
+import { forcerTriObjets } from '../utils/canvas/depthSorting';
 
 /**
  * Hook pour ajouter automatiquement les arbres à planter
