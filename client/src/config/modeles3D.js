@@ -34,7 +34,7 @@ export const MODELES_ARBRES = {
     rotation: [0, 0, 0],
     hauteurReelle: 10,
     nom: 'Cerisier Modèle 1',
-    disabled: true  // Désactivé car trop lourd (12 MB)
+    disabled: false  // ✅ Activé pour test (12 MB - chargement lent)
   },
   'cerisier-tree-2': {
     path: '/models/cerisier/cerisier-tree-2.glb',
@@ -43,7 +43,7 @@ export const MODELES_ARBRES = {
     rotation: [0, 0, 0],
     hauteurReelle: 10,
     nom: 'Cerisier Modèle 2',
-    disabled: true  // Désactivé car trop lourd (12 MB)
+    disabled: false  // ✅ Activé pour test (12 MB - chargement lent)
   },
   'cerisier-tree-3': {
     path: '/models/cerisier/cerisier-tree-3.glb',
@@ -52,7 +52,7 @@ export const MODELES_ARBRES = {
     rotation: [0, 0, 0],
     hauteurReelle: 10,
     nom: 'Cerisier Modèle 3',
-    disabled: true  // Désactivé car trop lourd (12 MB)
+    disabled: false  // ✅ Activé pour test (12 MB - chargement lent)
   },
   
   // Modèle générique léger (à ajouter)
@@ -93,16 +93,14 @@ export const MODELES_ARBRES = {
 // Clé = ID de l'arbre dans arbustesData.js
 // Valeur = ID du modèle dans MODELES_ARBRES
 // 
-// NOTE: Tous sont désactivés pour l'instant car fichiers trop lourds (> 10 MB)
-// → Le site utilisera automatiquement les arbres procéduraux
+// NOTE: Modèles activés temporairement pour test (même si lourds)
+// Chargement lent attendu (12 MB par arbre)
 export const ARBRE_TO_MODEL = {
-  // DÉSACTIVÉ temporairement (modèles trop lourds)
-  // Décommentez quand vous aurez des modèles < 5 MB
-  
-  // 'cerisier-kanzan': 'cerisier-general',
-  // 'cerisier-accolade': 'cerisier-general',
-  // 'cerisier-sunset': 'cerisier-general',
-  // 'erable-japon': 'erable-general',
+  // ACTIVÉ pour test (attention : chargement lent, 12 MB par modèle)
+  'cerisier-kanzan': 'cerisier-tree-1',
+  'cerisier-accolade': 'cerisier-tree-1',
+  'cerisier-sunset': 'cerisier-tree-2',
+  'erable-japon': 'cerisier-tree-3',
 };
 
 /**
