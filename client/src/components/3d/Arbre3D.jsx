@@ -11,7 +11,7 @@ import * as THREE from 'three';
  * - Variations de couleurs
  * - Effets saisonniers spectaculaires
  */
-function Arbre3DAvance({ 
+function Arbre3D({ 
   position = [0, 0, 0], 
   arbreData, 
   hauteur = 6, 
@@ -634,5 +634,5 @@ function Arbre3DAvance({
 }
 
 // Optimisation : Éviter re-renders des arbres 3D
-export default memo(Arbre3DAvance);
+export default memo(Arbre3D);
 

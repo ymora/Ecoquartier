@@ -5,7 +5,6 @@ import './Disclaimer.css';
 function Disclaimer({ onClose, onOpenLogs }) {
   const isAlreadyAccepted = localStorage.getItem('disclaimer-accepted') === 'true';
   const [isVisible, setIsVisible] = useState(!isAlreadyAccepted); // Pas visible si déjà accepté
-  const [, setIsAccepted] = useState(isAlreadyAccepted);
 
   // Notifier la fermeture APRÈS un délai pour laisser le temps à l'utilisateur de voir le menu
   useEffect(() => {
@@ -34,7 +33,6 @@ function Disclaimer({ onClose, onOpenLogs }) {
 
   const handleAccept = () => {
     localStorage.setItem('disclaimer-accepted', 'true');
-    setIsAccepted(true);
     setIsVisible(false);
     if (onClose) onClose(); // Notifier la fermeture
   };
