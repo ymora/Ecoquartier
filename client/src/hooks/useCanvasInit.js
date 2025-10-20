@@ -46,10 +46,10 @@ export const useCanvasInit = ({
 
     fabricCanvasRef.current = canvas;
 
-    // ========== TRI AUTOMATIQUE PAR PROFONDEUR ==========
-    // Activer le tri automatique des objets par position Y (simulation de profondeur)
-    autoSortOnMove(canvas);
-    logger.info('Canvas', 'Tri automatique par profondeur activé');
+    // ========== TRI PAR PROFONDEUR ==========
+    // Le tri est géré manuellement dans useCanvasEvents pour éviter les doubles renderAll()
+    // autoSortOnMove(canvas) est désactivé
+    logger.info('Canvas', 'Tri par profondeur géré manuellement dans useCanvasEvents');
 
     // ========== ZOOM AVEC MOLETTE ==========
     canvas.on('mouse:wheel', (opt) => {

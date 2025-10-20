@@ -69,24 +69,21 @@ function getBottomPosition(obj) {
 /**
  * Réorganiser automatiquement les objets après un déplacement
  * @param {fabric.Canvas} canvas - Le canvas
+ * 
+ * NOTE: Cette fonction n'est PAS utilisée car le tri est géré manuellement
+ * dans useCanvasEvents pour éviter les appels multiples de renderAll()
  */
 export function autoSortOnMove(canvas) {
   if (!canvas) return;
   
-  // Écouter les déplacements d'objets
-  canvas.on('object:moved', () => {
-    trierObjetsParProfondeur(canvas);
-    canvas.renderAll();
-  });
+  // DÉSACTIVÉ : Le tri est fait manuellement dans les event handlers
+  // pour éviter les doubles appels de renderAll()
   
-  // Écouter les ajouts d'objets
-  canvas.on('object:added', () => {
-    // Petit délai pour que l'objet soit bien positionné
-    setTimeout(() => {
-      trierObjetsParProfondeur(canvas);
-      canvas.renderAll();
-    }, 10);
-  });
+  // Code original commenté :
+  // canvas.on('object:moved', () => {
+  //   trierObjetsParProfondeur(canvas);
+  //   canvas.renderAll(); // ← Double appel avec useCanvasEvents
+  // });
 }
 
 /**
@@ -122,19 +119,10 @@ export function forcerTriObjets(canvas) {
   // Les ombres doivent être juste au-dessus des zones
   const ombres = canvas.getObjects().filter(obj => obj.isOmbre);
   ombres.forEach(ombre => {
-    const proprietaire = canvas.getObjects().find(o => 
-      o.customType === 'maison' || 
-      o.customType === 'arbre-a-planter' || 
-      o.customType === 'arbre-existant'
-    );
-    if (proprietaire) {
-      const indexProprietaire = canvas.getObjects().indexOf(proprietaire);
-      if (indexProprietaire > 0) {
-        canvas.moveTo(ombre, indexProprietaire - 1);
-      }
-    }
+    canvas.sendObjectToBack(ombre);
   });
   
-  canvas.renderAll();
+  // Note: renderAll() n'est PAS appelé ici pour éviter les doubles appels
+  // L'appelant doit faire renderAll() après
 }
 

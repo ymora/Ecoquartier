@@ -87,7 +87,7 @@ export const useTimelineSync = ({
       }
     });
     
-    canvas.renderAll();
+    // Un seul appel de render (requestRenderAll fait déjà le renderAll)
     canvas.requestRenderAll();
     
     logger.info('Timeline', `✅ ${arbresPlantes.length} arbres redimensionnés (année ${anneeProjection})`);

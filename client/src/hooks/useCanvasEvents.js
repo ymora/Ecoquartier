@@ -103,10 +103,9 @@ export const useCanvasEvents = ({
         afficherTooltipValidation(e.target, canvas);
       }
       
-      if (e.target) {
-        canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter').forEach(arbre => {
-          validerPositionArbre(canvas, arbre);
-        });
+      // Valider uniquement l'objet modifié (pas tous les arbres)
+      if (e.target && e.target.customType === 'arbre-a-planter') {
+        validerPositionArbre(canvas, e.target);
       }
       
       // Réinitialiser la position de référence des clôtures
@@ -119,6 +118,7 @@ export const useCanvasEvents = ({
       // Forcer le tri par profondeur après modification
       forcerTriObjets(canvas);
       
+      // renderAll() est appelé UNE SEULE FOIS à la fin
       canvas.renderAll();
       logger.debug('ObjectModified', 'Objet modifié, validation et tri OK');
     };
