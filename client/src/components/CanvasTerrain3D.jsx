@@ -30,9 +30,8 @@ function CanvasTerrain3D({
 }) {
   const [objetSelectionne, setObjetSelectionne] = useState(null);
   const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote, coupe
-  const [afficherSousTerre, setAfficherSousTerre] = useState(true);
   const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
-  const [solTransparent, setSolTransparent] = useState(false); // Rendre le sol transparent pour voir les racines
+  const [solTransparent, setSolTransparent] = useState(false); // Sol transparent = voir racines, fondations, citernes, canalisations
   const [heureJournee, setHeureJournee] = useState('midi'); // Heure de la journée pour les ombres
   const orbitControlsRef = useRef();
   
@@ -341,19 +340,10 @@ function CanvasTerrain3D({
         <label className="checkbox-3d">
           <input 
             type="checkbox" 
-            checked={afficherSousTerre}
-            onChange={(e) => setAfficherSousTerre(e.target.checked)}
-          />
-          <span>👁️ Afficher racines et fondations</span>
-        </label>
-        
-        <label className="checkbox-3d">
-          <input 
-            type="checkbox" 
             checked={solTransparent}
             onChange={(e) => setSolTransparent(e.target.checked)}
           />
-          <span>🔍 Sol transparent (voir sous terre)</span>
+          <span>🔍 Voir sous terre (racines, fondations, citernes)</span>
         </label>
         
         <label className="checkbox-3d">
@@ -429,8 +419,8 @@ function CanvasTerrain3D({
           />
         ))}
         
-        {/* Canalisations */}
-        {afficherSousTerre && data3D?.canalisations?.map((canal, idx) => (
+        {/* Canalisations - Visibles uniquement si sol transparent */}
+        {solTransparent && data3D?.canalisations?.map((canal, idx) => (
           <Canalisation3D 
             key={`canal-${idx}`}
             {...canal}
@@ -493,7 +483,7 @@ function CanvasTerrain3D({
                     arbreData: arbre.arbreData,
                     hauteur: arbre.hauteur,
                     envergure: arbre.envergure,
-                    profondeurRacines: afficherSousTerre ? arbre.profondeurRacines : 0,
+                    profondeurRacines: solTransparent ? arbre.profondeurRacines : 0,
                     validationStatus: arbre.validationStatus || 'ok',
                     anneeProjection: anneeProjection,
                     saison: saison,
@@ -507,7 +497,7 @@ function CanvasTerrain3D({
                   arbreData={arbre.arbreData}
                   hauteur={arbre.hauteur}
                   envergure={arbre.envergure}
-                  profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
+                  profondeurRacines={solTransparent ? arbre.profondeurRacines : 0}
                   validationStatus={arbre.validationStatus || 'ok'}
                   anneeProjection={anneeProjection}
                   saison={saison}
@@ -545,7 +535,7 @@ function CanvasTerrain3D({
                     arbreData: arbre.arbreData,
                     hauteur: arbre.hauteur,
                     envergure: arbre.envergure,
-                    profondeurRacines: afficherSousTerre ? arbre.profondeurRacines : 0,
+                    profondeurRacines: solTransparent ? arbre.profondeurRacines : 0,
                     validationStatus: arbre.validationStatus || 'ok',
                     anneeProjection: 0,
                     saison: saison,
@@ -559,7 +549,7 @@ function CanvasTerrain3D({
                   arbreData={arbre.arbreData}
                   hauteur={arbre.hauteur}
                   envergure={arbre.envergure}
-                  profondeurRacines={afficherSousTerre ? arbre.profondeurRacines : 0}
+                  profondeurRacines={solTransparent ? arbre.profondeurRacines : 0}
                   validationStatus={arbre.validationStatus || 'ok'}
                   anneeProjection={0}
                   saison={saison}
