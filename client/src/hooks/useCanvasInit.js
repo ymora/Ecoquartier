@@ -75,8 +75,9 @@ export const useCanvasInit = ({
     const canvasElement = canvas.wrapperEl;
     
     const handleMouseDown = (evt) => {
-      // Clic gauche maintenu OU Alt + clic OU clic molette OU clic droit pour activer pan
-      if (evt.button === 0 || evt.altKey || evt.button === 1 || evt.button === 2) {
+      // Seulement pour le pan (Alt + clic OU clic molette OU clic droit)
+      // PAS pour le clic gauche normal (qui doit permettre de sélectionner/déplacer les objets)
+      if (evt.altKey || evt.button === 1 || evt.button === 2) {
         // Vérifier qu'on ne clique pas sur un objet Fabric.js
         const target = canvas.findTarget(evt);
         
