@@ -94,7 +94,7 @@ function Sol3D({
             </>
           )}
           
-          {/* Label de la couche - Toujours visible */}
+          {/* Label de la couche - Nom uniquement */}
           <Html position={[-largeur / 2 - 2, couche.positionY, 0]}>
             <div style={{ 
               background: transparent 
@@ -110,9 +110,6 @@ function Sol3D({
               boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
             }}>
               {icones[index] || '📦'} {couche.nom}
-              <div style={{ fontSize: '10px', marginTop: '2px', opacity: 0.9 }}>
-                ↕️ {couche.profondeur}cm ({(couche.profondeur / 100).toFixed(2)}m)
-              </div>
             </div>
           </Html>
         </group>

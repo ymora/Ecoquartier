@@ -131,7 +131,7 @@ function Soleil3D({
         );
       })}
       
-      {/* Label saison */}
+      {/* Label saison - Nom uniquement */}
       <Html position={[0, tailleSoleil + 1, 0]} center>
         <div style={{ 
           background: 'rgba(255, 255, 255, 0.95)', 
@@ -144,7 +144,7 @@ function Soleil3D({
           boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
           border: '1px solid rgba(255, 111, 0, 0.3)'
         }}>
-          {emoji} {nomsSaisons[saison]} • {Math.round(elevation)}°
+          {emoji} {nomsSaisons[saison]}
         </div>
       </Html>
       

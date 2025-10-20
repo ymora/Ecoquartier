@@ -40,7 +40,7 @@ function Canalisation3D({
         />
       </mesh>
       
-      {/* Label */}
+      {/* Label simplifié - Nom uniquement */}
       <Html position={[0, 0.5, 0]} center>
         <div style={{ 
           background: 'rgba(255,255,255,0.9)', 
@@ -51,7 +51,7 @@ function Canalisation3D({
           whiteSpace: 'nowrap',
           fontWeight: 'bold'
         }}>
-          {`🚰 ${profondeur}m prof.`}
+          🚰 Canalisation
         </div>
       </Html>
     </group>

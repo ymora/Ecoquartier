@@ -31,7 +31,7 @@ function Citerne3D({
         />
       </mesh>
       
-      {/* Label */}
+      {/* Label simplifié - Nom uniquement */}
       <Html position={[0, profondeurEnterree / 2 + 0.5, 0]} center>
         <div style={{ 
           background: 'white', 
@@ -45,20 +45,6 @@ function Citerne3D({
           border: '1px solid #00838f'
         }}>
           💧 Citerne
-        </div>
-      </Html>
-      
-      {/* Label profondeur */}
-      <Html position={[0, -0.3, 0]} center>
-        <div style={{ 
-          background: 'rgba(255,255,255,0.9)', 
-          padding: '2px 6px', 
-          borderRadius: '3px',
-          fontSize: '10px',
-          color: '#666',
-          whiteSpace: 'nowrap'
-        }}>
-          {`${profondeurEnterree}m prof. • ${volume}L`}
         </div>
       </Html>
     </group>
