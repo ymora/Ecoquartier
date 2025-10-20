@@ -12,6 +12,7 @@ import Cloture3D from './3d/Cloture3D';
 import ObjetDraggable3D from './3d/ObjetDraggable3D';
 import PanneauEdition3D from './PanneauEdition3D';
 import Soleil3D from './3d/Soleil3D';
+import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 import './CanvasTerrain3D.css';
 
@@ -31,6 +32,7 @@ function CanvasTerrain3D({
   const [afficherSousTerre, setAfficherSousTerre] = useState(true);
   const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
   const [solTransparent, setSolTransparent] = useState(false); // Rendre le sol transparent pour voir les racines
+  const [heureJournee, setHeureJournee] = useState('midi'); // Heure de la journée pour les ombres
   const orbitControlsRef = useRef();
   
   // Convertir les données 2D en 3D
@@ -361,6 +363,21 @@ function CanvasTerrain3D({
           />
           <span>✋ Mode déplacement d'objets</span>
         </label>
+        
+        <div className="control-group">
+          <label className="control-label">☀️ Heure de la journée (ombres)</label>
+          <select 
+            value={heureJournee}
+            onChange={(e) => setHeureJournee(e.target.value)}
+            className="select-3d"
+          >
+            <option value="lever">🌅 Lever du soleil (Est)</option>
+            <option value="matin">🌄 Matin (Sud-Est)</option>
+            <option value="midi">☀️ Midi (Sud)</option>
+            <option value="soir">🌆 Soir (Sud-Ouest)</option>
+            <option value="coucher">🌇 Coucher du soleil (Ouest)</option>
+          </select>
+        </div>
       </div>
       
       {/* Canvas 3D */}
@@ -368,20 +385,20 @@ function CanvasTerrain3D({
         {/* Ciel */}
         <Sky sunPosition={[100, 20, 100]} />
         
-        {/* Soleil 3D selon la saison */}
-        <Soleil3D saison={saison} distance={35} />
+        {/* Soleil 3D visuel selon la saison et l'heure */}
+        <Soleil3D saison={saison} heureJournee={heureJournee} distance={35} />
         
-        {/* Lumières */}
+        {/* Lumière ambiante (éclairage global) */}
         <ambientLight intensity={0.5} />
-        <directionalLight 
-          position={[10, 20, 10]} 
-          intensity={1}
-          castShadow
-          shadow-mapSize={[2048, 2048]}
-          shadow-camera-left={-20}
-          shadow-camera-right={20}
-          shadow-camera-top={20}
-          shadow-camera-bottom={-20}
+        
+        {/* Lumière directionnelle synchronisée avec le soleil (génère les ombres) */}
+        <LumiereDirectionnelle
+          saison={saison}
+          heureJournee={heureJournee}
+          orientation={orientation}
+          distance={50}
+          intensity={1.2}
+          shadowMapSize={2048}
         />
         
         {/* Sol avec couches - Taille adaptative */}

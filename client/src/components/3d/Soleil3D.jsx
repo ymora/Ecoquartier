@@ -12,9 +12,10 @@ import { Html } from '@react-three/drei';
  */
 function Soleil3D({ 
   saison = 'ete',
-  distance = 30 // Distance du centre de la scène
+  heureJournee = 'midi',
+  distance = 30
 }) {
-  // Angles solaires selon la saison (en degrés)
+  // Angles solaires selon la saison (élévation à midi)
   const anglesSolaires = {
     hiver: 18,
     printemps: 41,
@@ -22,14 +23,36 @@ function Soleil3D({
     ete: 64
   };
   
-  const angle = anglesSolaires[saison] || 41;
-  const angleRad = (angle * Math.PI) / 180;
+  // Azimut selon l'heure (angle horizontal, 0° = Sud)
+  const azimuthAngles = {
+    'lever': -90,    // Est
+    'matin': -45,    // Sud-Est
+    'midi': 0,       // Sud
+    'soir': 45,      // Sud-Ouest
+    'coucher': 90    // Ouest
+  };
   
-  // Position du soleil (toujours au SUD à midi)
-  // En Three.js : +Z = Sud, +Y = Haut, +X = Est
-  const x = 0; // Pas de décalage est-ouest (midi)
-  const y = distance * Math.sin(angleRad); // Hauteur selon angle
-  const z = distance * Math.cos(angleRad); // Distance au sud
+  // Élévation de base
+  const elevationBase = anglesSolaires[saison] || 41;
+  
+  // Ajuster l'élévation selon l'heure
+  let elevation = elevationBase;
+  if (heureJournee === 'lever' || heureJournee === 'coucher') {
+    elevation = elevation * 0.3; // Soleil très bas
+  } else if (heureJournee === 'matin' || heureJournee === 'soir') {
+    elevation = elevation * 0.7;
+  }
+  
+  const azimuth = azimuthAngles[heureJournee] || 0;
+  
+  // Conversion en radians
+  const elevationRad = (elevation * Math.PI) / 180;
+  const azimuthRad = (azimuth * Math.PI) / 180;
+  
+  // Position 3D du soleil
+  const x = distance * Math.cos(elevationRad) * Math.sin(azimuthRad);
+  const y = distance * Math.sin(elevationRad);
+  const z = distance * Math.cos(elevationRad) * Math.cos(azimuthRad);
   
   // Taille du soleil selon la saison (plus grand en été)
   const tailleSoleil = saison === 'ete' ? 2.5 : saison === 'hiver' ? 1.8 : 2.0;
@@ -121,7 +144,7 @@ function Soleil3D({
           boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
           border: '1px solid rgba(255, 111, 0, 0.3)'
         }}>
-          {emoji} {nomsSaisons[saison]} • {angle}°
+          {emoji} {nomsSaisons[saison]} • {Math.round(elevation)}°
         </div>
       </Html>
       
