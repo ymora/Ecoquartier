@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionnaire Modèles 3D - Haies Bessancourt</title>
+  <link rel="stylesheet" href="admin.css">
+  <style>
+    .models-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .models-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .models-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 2em;
+    }
+
+    .models-header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .nav-tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.3s;
+    }
+
+    .nav-tab:hover {
+      color: #667eea;
+      background: #f5f5f5;
+    }
+
+    .nav-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .upload-zone {
+      border: 3px dashed #667eea;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      background: #f8f9ff;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 30px;
+    }
+
+    .upload-zone:hover {
+      background: #f0f2ff;
+      border-color: #5568d3;
+    }
+
+    .upload-zone.dragover {
+      background: #e8ebff;
+      border-color: #4a5dc0;
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .category-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 30px 0;
+    }
+
+    .category-btn {
+      padding: 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 16px;
+    }
+
+    .category-btn:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    .category-btn.selected {
+      border-color: #667eea;
+      background: #667eea;
+      color: white;
+    }
+
+    .file-list {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+    }
+
+    .file-icon {
+      font-size: 24px;
+    }
+
+    .file-details {
+      flex: 1;
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .file-size {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .model-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+      transition: all 0.3s;
+    }
+
+    .model-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+
+    .model-preview {
+      width: 100%;
+      height: 200px;
+      background: #f5f5f5;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .model-info {
+      margin-bottom: 15px;
+    }
+
+    .model-name {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .model-meta {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s;
+    }
+
+    .conversion-log {
+      background: #1e1e1e;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+
+    .log-line {
+      margin: 5px 0;
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      color: #1e40af;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      border-left: 4px solid #10b981;
+      color: #065f46;
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      color: #92400e;
+    }
+  </style>
+</head>
+<body>
+  <div class="models-container">
+    <div class="models-header">
+      <h1>🌳 Gestionnaire de Modèles 3D</h1>
+      <p>Upload, conversion et gestion des modèles OBJ → GLB pour vos arbres</p>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="upload">📤 Upload & Conversion</button>
+      <button class="nav-tab" data-tab="library">📚 Bibliothèque</button>
+      <button class="nav-tab" data-tab="config">⚙️ Configuration</button>
+    </div>
+
+    <!-- TAB 1: Upload & Conversion -->
+    <div class="tab-content active" id="upload-tab">
+      <div class="alert alert-info">
+        <strong>ℹ️ Comment ça marche :</strong> Glissez vos fichiers OBJ/MTL, sélectionnez une catégorie (cerisier, erable, etc.), 
+        puis cliquez sur "Convertir en GLB" pour optimiser automatiquement vos modèles 3D pour le web.
+      </div>
+
+      <!-- Sélecteur de catégorie -->
+      <h3>1️⃣ Choisir une catégorie</h3>
+      <div class="category-selector">
+        <button class="category-btn selected" data-category="cerisier">
+          🌸 Cerisier
+        </button>
+        <button class="category-btn" data-category="erable">
+          🍁 Érable
+        </button>
+        <button class="category-btn" data-category="magnolia">
+          🌺 Magnolia
+        </button>
+        <button class="category-btn" data-category="prunus">
+          🌳 Prunus
+        </button>
+        <button class="category-btn" data-category="arbuste">
+          🌿 Arbuste
+        </button>
+        <button class="category-btn" data-category="autre">
+          📦 Autre
+        </button>
+      </div>
+
+      <!-- Zone d'upload -->
+      <h3>2️⃣ Uploader les fichiers OBJ/MTL</h3>
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">📁</div>
+        <h3>Glissez-déposez vos fichiers ici</h3>
+        <p>ou cliquez pour sélectionner</p>
+        <p style="font-size: 14px; color: #999; margin-top: 10px;">
+          Formats acceptés : .obj, .mtl (max 100 MB par fichier)
+        </p>
+      </div>
+      <input type="file" id="fileInput" multiple accept=".obj,.mtl" style="display: none;">
+
+      <!-- Liste des fichiers uploadés -->
+      <div id="fileList" class="file-list" style="display: none;">
+        <h3>📋 Fichiers prêts à convertir</h3>
+        <div id="files"></div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn btn-success" id="convertBtn">
+            🔄 Convertir en GLB
+          </button>
+          <button class="btn btn-secondary" id="clearBtn">
+            🗑️ Effacer tout
+          </button>
+        </div>
+      </div>
+
+      <!-- Barre de progression -->
+      <div id="progressContainer" style="display: none;">
+        <h3>⏳ Conversion en cours...</h3>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+        <p id="progressText" style="text-align: center; color: #666;">0%</p>
+      </div>
+
+      <!-- Log de conversion -->
+      <div id="conversionLog" class="conversion-log" style="display: none;">
+        <div id="logContent"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Bibliothèque -->
+    <div class="tab-content" id="library-tab">
+      <div class="alert alert-success">
+        <strong>✅ Modèles disponibles :</strong> <span id="modelCount">0</span> modèles GLB prêts à utiliser
+      </div>
+
+      <div class="models-grid" id="modelsGrid">
+        <!-- Sera rempli dynamiquement -->
+      </div>
+    </div>
+
+    <!-- TAB 3: Configuration -->
+    <div class="tab-content" id="config-tab">
+      <div class="alert alert-info">
+        <strong>⚙️ Configuration :</strong> Mappez vos modèles 3D aux arbres de la base de données
+      </div>
+
+      <div class="file-list">
+        <h3>🗺️ Mapping Arbres → Modèles</h3>
+        <p style="color: #666; margin-bottom: 20px;">
+          Associez chaque espèce d'arbre à un modèle 3D GLB
+        </p>
+        <div id="mappingList">
+          <!-- Sera rempli dynamiquement -->
+        </div>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <button class="btn btn-success" id="saveMappingBtn">
+          💾 Sauvegarder la configuration
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="models.js"></script>
+</body>
+</html>
+
