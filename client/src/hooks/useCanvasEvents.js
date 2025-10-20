@@ -115,8 +115,12 @@ export const useCanvasEvents = ({
       }
       
       afficherOmbreMaison(canvas);
+      
+      // Forcer le tri par profondeur après modification
+      forcerTriObjets(canvas);
+      
       canvas.renderAll();
-      logger.debug('ObjectModified', 'Objet modifié, validation OK');
+      logger.debug('ObjectModified', 'Objet modifié, validation et tri OK');
     };
 
     // Raccourcis clavier

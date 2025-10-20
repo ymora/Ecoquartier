@@ -120,8 +120,11 @@ export const useArbresPlacement = ({
         logger.debug('AjoutArbres', `✅ ${arbre.name} ajouté en position ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`);
       });
 
+      // Trier les objets par profondeur après ajout
+      forcerTriObjets(canvas);
+      
       canvas.renderAll();
-      logger.info('AjoutArbres', `✅ ${arbresAPlanter.length} arbres ajoutés avec succès`);
+      logger.info('AjoutArbres', `✅ ${arbresAPlanter.length} arbres ajoutés (triés par profondeur)`);
     }, 500);
 
   }, [arbresAPlanter]); // eslint-disable-line react-hooks/exhaustive-deps

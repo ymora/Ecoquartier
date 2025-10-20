@@ -5,6 +5,7 @@
 
 import * as fabric from 'fabric';
 import logger from '../logger';
+import { forcerTriObjets } from './depthSorting';
 
 /**
  * Exporter le plan actuel vers localStorage

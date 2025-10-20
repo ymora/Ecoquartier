@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
+import { autoSortOnMove, forcerTriObjets } from '../utils/canvas/depthSorting';
 
 /**
  * Hook pour initialiser le canvas Fabric.js
@@ -44,6 +45,11 @@ export const useCanvasInit = ({
     });
 
     fabricCanvasRef.current = canvas;
+
+    // ========== TRI AUTOMATIQUE PAR PROFONDEUR ==========
+    // Activer le tri automatique des objets par position Y (simulation de profondeur)
+    autoSortOnMove(canvas);
+    logger.info('Canvas', 'Tri automatique par profondeur activé');
 
     // ========== ZOOM AVEC MOLETTE ==========
     canvas.on('mouse:wheel', (opt) => {
