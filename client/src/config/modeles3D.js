@@ -25,30 +25,30 @@ export const MODELES_ARBRES = {
     nom: 'Cerisier (modèle réaliste)'
   },
   
-  // Format GLB (convertis depuis OBJ)
-  'tree-1': {
-    path: '/models/arbres/tree-1.glb',
+  // Format GLB - Cerisiers (convertis depuis upload/cerisier/)
+  'cerisier-tree-1': {
+    path: '/models/arbres/cerisier-tree-1.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Arbre 1 (GLB)'
+    nom: 'Cerisier 1'
   },
-  'tree-2': {
-    path: '/models/arbres/tree-2.glb',
+  'cerisier-tree-2': {
+    path: '/models/arbres/cerisier-tree-2.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Arbre 2 (GLB)'
+    nom: 'Cerisier 2'
   },
-  'tree-3': {
-    path: '/models/arbres/tree-3.glb',
+  'cerisier-tree-3': {
+    path: '/models/arbres/cerisier-tree-3.glb',
     type: 'glb',
     scale: 0.5,
     rotation: [0, 0, 0],
     hauteurReelle: 10,
-    nom: 'Arbre 3 (GLB)'
+    nom: 'Cerisier 3'
   }
 };
 
@@ -56,13 +56,13 @@ export const MODELES_ARBRES = {
 // Clé = ID de l'arbre dans arbustesData.js
 // Valeur = ID du modèle dans MODELES_ARBRES
 export const ARBRE_TO_MODEL = {
-  // Cerisiers
-  'cerisier-kanzan': 'cherry-tree-glb', // ou 'tree-1' pour utiliser vos OBJ
-  'cerisier-accolade': 'tree-1',
-  'cerisier-sunset': 'tree-2',
+  // Cerisiers (modèles depuis upload/cerisier/)
+  'cerisier-kanzan': 'cerisier-tree-1',
+  'cerisier-accolade': 'cerisier-tree-1',
+  'cerisier-sunset': 'cerisier-tree-2',
   
-  // Érables
-  'erable-japon': 'tree-3',
+  // Érables (ajouter vos modèles dans upload/erable/)
+  'erable-japon': 'cerisier-tree-3',
   
   // Par défaut, utiliser le rendu procédural
   // Ajouter d'autres mappings au fur et à mesure

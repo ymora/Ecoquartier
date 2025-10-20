@@ -1,40 +1,41 @@
-# Archive (anciens fichiers)
-archive/
-
-# Dossier de téléchargement temporaire
-downloads/
-
-# Admin
-node_modules/
-admin/temp/
-package-lock.json
-
-# Images originales (déjà copiées dans client/public)
-# Garder pour référence mais ne pas commit les doublons
-# Décommenter si vous voulez ignorer complètement:
-# images/
-
 # Logs
+logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Environnement
-.env
-.env.local
+node_modules
+dist
+dist-ssr
+*.local
 
-# OS
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
-desktop.ini
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Editor
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Fichiers 3D sources (trop gros pour GitHub)
+*.blend
+*.blend1
+*.max
+*.ma
+*.mb
 
-# Backup files
-*.bak
-*.backup
-*.tmp
+# Dossier upload (fichiers sources OBJ/MTL - optionnel)
+upload/**/*.obj
+upload/**/*.mtl
+# On garde les README
+!upload/**/README.md
 
+# On garde les formats web-optimisés
+# *.glb
+# *.gltf
