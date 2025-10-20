@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash, FaSearchPlus } from 'react-icons/fa';
 import FiabiliteBadge from './FiabiliteBadge';
 import CanvasTerrain from './CanvasTerrain';
@@ -187,25 +187,44 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
     });
   };
 
-  const criteres = [
-    { id: 'taille', key: 'tailleMaturite', label: 'Hauteur', icon: '📏', fiabilite: 'moyenne', defaultVisible: true },
-    { id: 'envergure', key: 'envergure', label: 'Largeur (envergure)', icon: '↔️', fiabilite: 'moyenne', defaultVisible: true },
-    { id: 'plantation', key: 'plantation.periode', label: 'Période de plantation', icon: '🌱', fiabilite: 'haute', defaultVisible: true },
-    { id: 'floraison', key: 'floraison.periode', label: 'Floraison', icon: '🌸', fiabilite: 'moyenne', defaultVisible: true },
-    { id: 'couleurFleurs', key: 'floraison.couleur', label: 'Couleur fleurs', icon: '🎨', fiabilite: 'haute', defaultVisible: true },
-    { id: 'parfum', key: 'floraison.parfum', label: 'Parfum', icon: '👃', fiabilite: 'haute', defaultVisible: false },
-    { id: 'fruits', key: 'fructification.periode', label: 'Fruits', icon: '🍇', fiabilite: 'moyenne', defaultVisible: false },
-    { id: 'feuillage', key: 'feuillage.type', label: 'Feuillage', icon: '🍃', fiabilite: 'haute', defaultVisible: true },
-    { id: 'automne', key: 'feuillage.couleurAutomne', label: 'Couleur automne', icon: '🍂', fiabilite: 'moyenne', defaultVisible: true },
-    { id: 'exposition', key: 'exposition', label: 'Exposition', icon: '☀️', fiabilite: 'haute', defaultVisible: true },
-    { id: 'rusticite', key: 'rusticite', label: 'Rusticité', icon: '❄️', fiabilite: 'moyenne', defaultVisible: false },
-    { id: 'solType', key: 'sol.type', label: 'Type de sol', icon: '🌍', fiabilite: 'haute', defaultVisible: false },
-    { id: 'solPh', key: 'sol.ph', label: 'pH du sol', icon: '🧪', fiabilite: 'haute', defaultVisible: false },
-    { id: 'croissance', key: 'croissance', label: 'Croissance', icon: '📈', fiabilite: 'moyenne', defaultVisible: false },
-    { id: 'arrosage', key: 'arrosage', label: 'Arrosage', icon: '💧', fiabilite: 'haute', defaultVisible: false },
-    { id: 'taillePeriode', key: 'taille.periode', label: 'Période de taille', icon: '✂️', fiabilite: 'haute', defaultVisible: true },
-    { id: 'tailleFreq', key: 'taille.frequence', label: 'Fréquence taille', icon: '🔄', fiabilite: 'haute', defaultVisible: false }
-  ];
+  // ========== CRITÈRES ORGANISÉS PAR THÈMES ==========
+  const criteresParTheme = {
+    dimensions: {
+      titre: '📐 Dimensions & Croissance',
+      criteres: [
+        { id: 'taille', key: 'tailleMaturite', label: 'Hauteur à maturité', icon: '📏', fiabilite: 'moyenne', defaultVisible: true },
+        { id: 'envergure', key: 'envergure', label: 'Largeur (envergure)', icon: '↔️', fiabilite: 'moyenne', defaultVisible: true },
+        { id: 'croissance', key: 'croissance', label: 'Vitesse de croissance', icon: '📈', fiabilite: 'moyenne', defaultVisible: true },
+      ]
+    },
+    esthetique: {
+      titre: '🎨 Aspects Visuels & Décoratifs',
+      criteres: [
+        { id: 'floraison', key: 'floraison.periode', label: 'Période de floraison', icon: '🌸', fiabilite: 'moyenne', defaultVisible: true },
+        { id: 'couleurFleurs', key: 'floraison.couleur', label: 'Couleur des fleurs', icon: '🎨', fiabilite: 'haute', defaultVisible: true },
+        { id: 'parfum', key: 'floraison.parfum', label: 'Parfum', icon: '👃', fiabilite: 'haute', defaultVisible: false },
+        { id: 'feuillage', key: 'feuillage.type', label: 'Type de feuillage', icon: '🍃', fiabilite: 'haute', defaultVisible: true },
+        { id: 'automne', key: 'feuillage.couleurAutomne', label: 'Couleurs d\'automne', icon: '🍂', fiabilite: 'moyenne', defaultVisible: true },
+        { id: 'fruits', key: 'fructification.periode', label: 'Fructification', icon: '🍇', fiabilite: 'moyenne', defaultVisible: false },
+      ]
+    },
+    culture: {
+      titre: '🌱 Plantation & Entretien',
+      criteres: [
+        { id: 'plantation', key: 'plantation.periode', label: 'Période de plantation', icon: '🌱', fiabilite: 'haute', defaultVisible: true },
+        { id: 'exposition', key: 'exposition', label: 'Exposition solaire', icon: '☀️', fiabilite: 'haute', defaultVisible: true },
+        { id: 'rusticite', key: 'rusticite', label: 'Rusticité (froid)', icon: '❄️', fiabilite: 'moyenne', defaultVisible: false },
+        { id: 'solType', key: 'sol.type', label: 'Type de sol', icon: '🌍', fiabilite: 'haute', defaultVisible: false },
+        { id: 'solPh', key: 'sol.ph', label: 'pH du sol', icon: '🧪', fiabilite: 'haute', defaultVisible: false },
+        { id: 'arrosage', key: 'arrosage', label: 'Besoins en eau', icon: '💧', fiabilite: 'haute', defaultVisible: false },
+        { id: 'taillePeriode', key: 'taille.periode', label: 'Période de taille', icon: '✂️', fiabilite: 'haute', defaultVisible: true },
+        { id: 'tailleFreq', key: 'taille.frequence', label: 'Fréquence de taille', icon: '🔄', fiabilite: 'haute', defaultVisible: false },
+      ]
+    }
+  };
+  
+  // Aplatir les critères pour compatibilité avec le code existant
+  const criteres = Object.values(criteresParTheme).flatMap(theme => theme.criteres);
   
   const sectionsSpeciales = [
     { id: 'images', label: 'Photos', icon: '📷', defaultVisible: true },
@@ -446,31 +465,48 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
             </tr>
             )}
 
-            {/* Lignes de critères */}
-            {criteres.map(critere => (
-              visibleCriteres[critere.id] && (
-                <tr key={critere.key} className="comparison-row">
-                  <td className="comparison-label-cell">
-                    <button 
-                      className="toggle-critere-btn"
-                      onClick={() => toggleCritere(critere.id)}
-                      aria-label="Masquer ce critère"
-                      title="Masquer"
-                    >
-                      <FaEyeSlash />
-                    </button>
-                    <span className="critere-icon">{critere.icon}</span>
-                    <strong>{critere.label}</strong>
-                    {critere.fiabilite && <FiabiliteBadge niveau={critere.fiabilite} compact />}
-                  </td>
-                  {selectedPlantes.map(plante => (
-                    <td key={plante.id} className="comparison-cell">
-                      {getValue(plante, critere.key)}
+            {/* Lignes de critères - Organisées par thèmes */}
+            {Object.entries(criteresParTheme).map(([themeKey, theme]) => {
+              // Vérifier si au moins un critère du thème est visible
+              const hasVisibleCriteres = theme.criteres.some(c => visibleCriteres[c.id]);
+              
+              return hasVisibleCriteres ? (
+                <React.Fragment key={themeKey}>
+                  {/* En-tête de thème */}
+                  <tr className="comparison-theme-header">
+                    <td colSpan={selectedPlantes.length + 1} className="theme-header-cell">
+                      <strong>{theme.titre}</strong>
                     </td>
+                  </tr>
+                  
+                  {/* Critères du thème */}
+                  {theme.criteres.map(critere => (
+                    visibleCriteres[critere.id] && (
+                      <tr key={critere.key} className="comparison-row">
+                        <td className="comparison-label-cell">
+                          <button 
+                            className="toggle-critere-btn"
+                            onClick={() => toggleCritere(critere.id)}
+                            aria-label="Masquer ce critère"
+                            title="Masquer"
+                          >
+                            <FaEyeSlash />
+                          </button>
+                          <span className="critere-icon">{critere.icon}</span>
+                          <strong>{critere.label}</strong>
+                          {critere.fiabilite && <FiabiliteBadge niveau={critere.fiabilite} compact />}
+                        </td>
+                        {selectedPlantes.map(plante => (
+                          <td key={plante.id} className="comparison-cell">
+                            {getValue(plante, critere.key)}
+                          </td>
+                        ))}
+                      </tr>
+                    )
                   ))}
-                </tr>
-              )
-            ))}
+                </React.Fragment>
+              ) : null;
+            })}
 
             {/* Toxicité */}
             {visibleCriteres['toxicite'] && (
