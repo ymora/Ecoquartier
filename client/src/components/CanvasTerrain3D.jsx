@@ -13,6 +13,8 @@ import ObjetDraggable3D from './3d/ObjetDraggable3D';
 import PanneauEdition3D from './PanneauEdition3D';
 import Soleil3D from './3d/Soleil3D';
 import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
+import CubeNavigation3D from './3d/CubeNavigation3D';
+import SelecteurHeure from './SelecteurHeure';
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 import './CanvasTerrain3D.css';
 
@@ -29,10 +31,11 @@ function CanvasTerrain3D({
   onObjetPositionChange = null
 }) {
   const [objetSelectionne, setObjetSelectionne] = useState(null);
-  const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote, coupe
+  const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote (coupe supprimée)
   const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
   const [solTransparent, setSolTransparent] = useState(false); // Sol transparent = voir racines, fondations, citernes, canalisations
   const [heureJournee, setHeureJournee] = useState('midi'); // Heure de la journée pour les ombres
+  const [selecteurHeureOpen, setSelecteurHeureOpen] = useState(false); // Modal sélecteur d'heure
   const orbitControlsRef = useRef();
   
   // Convertir les données 2D en 3D
@@ -304,38 +307,22 @@ function CanvasTerrain3D({
   
   return (
     <div className="canvas-terrain-3d">
+      {/* Cube de navigation 3D (style Fusion 360) */}
+      <div className="cube-navigation-3d">
+        <Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[1, 1, 1]} intensity={0.8} />
+          <CubeNavigation3D 
+            vueActuelle={vueMode}
+            onVueChange={setVueMode}
+            position={[0, 0, 0]}
+            size={0.8}
+          />
+        </Canvas>
+      </div>
+
       {/* Barre d'outils 3D */}
       <div className="toolbar-3d">
-        <div className="vue-selector">
-          <button 
-            className={vueMode === 'perspective' ? 'active' : ''}
-            onClick={() => setVueMode('perspective')}
-            title="Vue perspective"
-          >
-            🎮 Perspective
-          </button>
-          <button 
-            className={vueMode === 'dessus' ? 'active' : ''}
-            onClick={() => setVueMode('dessus')}
-            title="Vue de dessus"
-          >
-            🔝 Dessus
-          </button>
-          <button 
-            className={vueMode === 'cote' ? 'active' : ''}
-            onClick={() => setVueMode('cote')}
-            title="Vue de côté"
-          >
-            👉 Côté
-          </button>
-          <button 
-            className={vueMode === 'coupe' ? 'active' : ''}
-            onClick={() => setVueMode('coupe')}
-            title="Vue en coupe"
-          >
-            📐 Coupe
-          </button>
-        </div>
         
         <label className="checkbox-3d">
           <input 
@@ -357,43 +344,17 @@ function CanvasTerrain3D({
         
         <div className="control-group">
           <label className="control-label">☀️ Heure de la journée</label>
-          <div className="heure-selector">
-            <button 
-              className={`heure-btn ${heureJournee === 'lever' ? 'active' : ''}`}
-              onClick={() => setHeureJournee('lever')}
-              title="Lever du soleil (Est)"
-            >
-              🌅
-            </button>
-            <button 
-              className={`heure-btn ${heureJournee === 'matin' ? 'active' : ''}`}
-              onClick={() => setHeureJournee('matin')}
-              title="Matin (Sud-Est)"
-            >
-              🌄
-            </button>
-            <button 
-              className={`heure-btn ${heureJournee === 'midi' ? 'active' : ''}`}
-              onClick={() => setHeureJournee('midi')}
-              title="Midi (Sud)"
-            >
-              ☀️
-            </button>
-            <button 
-              className={`heure-btn ${heureJournee === 'soir' ? 'active' : ''}`}
-              onClick={() => setHeureJournee('soir')}
-              title="Soir (Sud-Ouest)"
-            >
-              🌆
-            </button>
-            <button 
-              className={`heure-btn ${heureJournee === 'coucher' ? 'active' : ''}`}
-              onClick={() => setHeureJournee('coucher')}
-              title="Coucher du soleil (Ouest)"
-            >
-              🌇
-            </button>
-          </div>
+          <button 
+            className="heure-modal-btn"
+            onClick={() => setSelecteurHeureOpen(true)}
+            title="Ouvrir le sélecteur d'heure"
+          >
+            {heureJournee === 'lever' && '🌅 Lever'}
+            {heureJournee === 'matin' && '🌄 Matin'}
+            {heureJournee === 'midi' && '☀️ Midi'}
+            {heureJournee === 'soir' && '🌆 Soir'}
+            {heureJournee === 'coucher' && '🌇 Coucher'}
+          </button>
         </div>
       </div>
       
@@ -624,6 +585,15 @@ function CanvasTerrain3D({
           onClose={() => setObjetSelectionne(null)}
         />
       )}
+
+      {/* Sélecteur d'heure modal */}
+      <SelecteurHeure
+        heureActuelle={heureJournee}
+        saison={saison}
+        onHeureChange={setHeureJournee}
+        isOpen={selecteurHeureOpen}
+        onClose={() => setSelecteurHeureOpen(false)}
+      />
     </div>
   );
 }

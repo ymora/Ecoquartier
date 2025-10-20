@@ -1,0 +1,120 @@
+/* Modal sélecteur d'heure */
+.selecteur-heure-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.selecteur-heure-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.selecteur-heure-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.selecteur-heure-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.selecteur-heure-body {
+  padding: 30px;
+  text-align: center;
+}
+
+/* Gauge container */
+.gauge-container {
+  margin: 20px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gauge-container svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Informations */
+.heure-info {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.heure-actuelle {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.heure-reelle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.saison-info {
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .selecteur-heure-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .selecteur-heure-body {
+    padding: 20px;
+  }
+  
+  .gauge-container svg {
+    width: 180px;
+    height: 108px;
+  }
+}
