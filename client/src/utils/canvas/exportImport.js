@@ -469,17 +469,17 @@ export const supprimerImageFond = (fabricCanvasRef, imageFondRef, setImageFondCh
  * Ajouter les mesures live sur les objets
  */
 export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
-  // Supprimer les anciens labels
+  // ✅ Mettre à jour les labels des Groups (ne recrée rien)
+  mettreAJourLabelsGroups(canvas, echelle);
+  
+  // Supprimer les anciens labels de mesures (bords)
   canvas.getObjects().forEach(obj => {
-    if (obj.measureLabel || obj.labelCentral) canvas.remove(obj);
+    if (obj.measureLabel) canvas.remove(obj);
   });
 
   canvas.getObjects().forEach(obj => {
-    if (obj.isGridLine || obj.measureLabel || obj.labelCentral || obj.isBoussole || obj.isSolIndicator || 
+    if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || 
         obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
-
-    // ✅ Mettre à jour les labels des Groups (ne recrée rien)
-    mettreAJourLabelsGroups(canvas, echelle);
 
     // Ajouter les mesures sur les bords pour maison/terrasse/pavés
     if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves') {
