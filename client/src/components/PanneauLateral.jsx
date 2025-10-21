@@ -141,12 +141,15 @@ function PanneauLateral({
                 min="3" 
                 max="15" 
                 step="0.5"
-                value={7}
+                value={canvas?.getObjects().find(obj => obj.customType === 'maison')?.hauteurBatiment || 7}
                 onChange={(e) => {
                   const maison = canvas?.getObjects().find(obj => obj.customType === 'maison');
                   if (maison) {
                     maison.set({ hauteurBatiment: parseFloat(e.target.value) });
                     canvas.requestRenderAll();
+                    if (onExporterPlan) {
+                      setTimeout(() => onExporterPlan(canvas), 100);
+                    }
                   }
                 }}
               />
@@ -158,12 +161,15 @@ function PanneauLateral({
                 min="0.5" 
                 max="3" 
                 step="0.1"
-                value={1.2}
+                value={canvas?.getObjects().find(obj => obj.customType === 'maison')?.profondeurFondations || 1.2}
                 onChange={(e) => {
                   const maison = canvas?.getObjects().find(obj => obj.customType === 'maison');
                   if (maison) {
                     maison.set({ profondeurFondations: parseFloat(e.target.value) });
                     canvas.requestRenderAll();
+                    if (onExporterPlan) {
+                      setTimeout(() => onExporterPlan(canvas), 100);
+                    }
                   }
                 }}
               />
