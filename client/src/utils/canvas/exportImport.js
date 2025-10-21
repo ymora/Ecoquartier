@@ -418,14 +418,81 @@ export const supprimerImageFond = (fabricCanvasRef, imageFondRef, setImageFondCh
  * Ajouter les mesures live sur les objets
  */
 export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
+  // Supprimer les anciens labels
   canvas.getObjects().forEach(obj => {
-    if (obj.measureLabel) canvas.remove(obj);
+    if (obj.measureLabel || obj.labelCentral) canvas.remove(obj);
   });
 
   canvas.getObjects().forEach(obj => {
-    if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || 
+    if (obj.isGridLine || obj.measureLabel || obj.labelCentral || obj.isBoussole || obj.isSolIndicator || 
         obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
 
+    // ✅ LABEL CENTRAL comme en 3D pour tous les objets
+    let labelText = '';
+    let labelColor = '#333';
+    let borderColor = '#ddd';
+    
+    if (obj.customType === 'maison') {
+      const w = (obj.getScaledWidth() / echelle).toFixed(1);
+      const h = (obj.getScaledHeight() / echelle).toFixed(1);
+      labelText = `🏠 Maison\n${w}×${h}m`;
+      borderColor = '#757575';
+    } else if (obj.customType === 'citerne') {
+      const d = (obj.diametre || 1.5).toFixed(1);
+      labelText = `💧 Citerne\nØ${d}m`;
+      borderColor = '#1976d2';
+    } else if (obj.customType === 'caisson-eau') {
+      const w = (obj.getScaledWidth() / echelle).toFixed(1);
+      const h = (obj.getScaledHeight() / echelle).toFixed(1);
+      labelText = `💧 Caisson\n${w}×${h}m`;
+      borderColor = '#1565c0';
+    } else if (obj.customType === 'paves') {
+      const w = (obj.getScaledWidth() / echelle).toFixed(1);
+      const h = (obj.getScaledHeight() / echelle).toFixed(1);
+      labelText = `🟩 Pavés\n${w}×${h}m`;
+      borderColor = '#7cb342';
+    } else if (obj.customType === 'terrasse') {
+      const w = (obj.getScaledWidth() / echelle).toFixed(1);
+      const h = (obj.getScaledHeight() / echelle).toFixed(1);
+      labelText = `🏡 Terrasse\n${w}×${h}m`;
+      borderColor = '#757575';
+    } else if (obj.customType === 'arbre-existant') {
+      const d = (obj.diametreArbre || 5).toFixed(1);
+      const ha = (obj.hauteurArbre || 8).toFixed(1);
+      labelText = `🌳 Arbre existant\n↕️${ha}m · ↔️${d}m`;
+      borderColor = '#388e3c';
+    } else if (obj.customType === 'arbre-a-planter') {
+      const nom = obj.arbreData?.name || 'Arbre';
+      labelText = `${nom}`;
+      borderColor = '#4caf50';
+    }
+    
+    if (labelText) {
+      const centerX = obj.left + (obj.getScaledWidth ? obj.getScaledWidth() / 2 : 0);
+      const centerY = obj.top + (obj.getScaledHeight ? obj.getScaledHeight() / 2 : 0);
+      
+      const labelCentral = new fabric.Text(labelText, {
+        left: centerX,
+        top: centerY,
+        fontSize: 9,
+        fill: labelColor,
+        fontWeight: '600',
+        textAlign: 'center',
+        originX: 'center',
+        originY: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        padding: 4,
+        selectable: false,
+        evented: false,
+        labelCentral: true,
+        stroke: borderColor,
+        strokeWidth: 1.5
+      });
+      
+      canvas.add(labelCentral);
+    }
+
+    // Ajouter aussi les mesures sur les bords pour maison/terrasse/pavés
     if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves') {
       const w = obj.getScaledWidth() / echelle;
       const h = obj.getScaledHeight() / echelle;
