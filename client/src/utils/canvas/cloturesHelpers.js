@@ -204,6 +204,7 @@ export const trouverCloturesConnectees = (cloture, canvas) => {
 
 /**
  * Mettre à jour une clôture avec de nouvelles coordonnées
+ * ✅ FIXE : Gestion correcte des coordonnées absolues
  */
 export const updateClotureCoords = (cloture, x1, y1, x2, y2) => {
   // Si c'est un Group
@@ -211,28 +212,39 @@ export const updateClotureCoords = (cloture, x1, y1, x2, y2) => {
     const ligne = cloture._objects[0]; // Première ligne du group
     const label = cloture._objects[1]; // Label
     
-    // Mettre à jour la ligne
-    ligne.set({
-      x1: x1 - cloture.left,
-      y1: y1 - cloture.top,
-      x2: x2 - cloture.left,
-      y2: y2 - cloture.top
-    });
-    
-    // Mettre à jour le label au centre
-    if (label) {
-      label.set({
-        left: (x1 + x2) / 2 - cloture.left,
-        top: (y1 + y2) / 2 - cloture.top - 10
-      });
-    }
-    
-    // Mettre à jour les propriétés du group
+    // ✅ FIXE : Stocker d'abord les coordonnées absolues
     cloture.x1 = x1;
     cloture.y1 = y1;
     cloture.x2 = x2;
     cloture.y2 = y2;
     
+    // Calculer le nouveau centre du groupe
+    const newLeft = Math.min(x1, x2);
+    const newTop = Math.min(y1, y2);
+    
+    // Mettre à jour le groupe
+    cloture.set({
+      left: newLeft,
+      top: newTop
+    });
+    
+    // Mettre à jour la ligne avec coordonnées RELATIVES au groupe
+    ligne.set({
+      x1: x1 - newLeft,
+      y1: y1 - newTop,
+      x2: x2 - newLeft,
+      y2: y2 - newTop
+    });
+    
+    // Mettre à jour le label au centre
+    if (label) {
+      label.set({
+        left: (x1 + x2) / 2 - newLeft,
+        top: (y1 + y2) / 2 - newTop - 10
+      });
+    }
+    
+    cloture.dirty = true;
     cloture.setCoords();
   } else {
     // Si c'est une Line simple
@@ -292,54 +304,48 @@ export const ajusterCloturesConnectees = (cloture, canvas) => {
 
 /**
  * Gérer le déplacement d'une clôture avec ses connexions et snap
+ * ✅ FIXE : Simplification du calcul de delta
  */
 export const deplacerClotureAvecConnexions = (cloture, canvas) => {
-  // Calculer le delta depuis la dernière position
-  if (!cloture._lastPos) {
-    cloture._lastPos = { x: cloture.left, y: cloture.top };
+  const points = getCloturePoints(cloture);
+  
+  // ✅ FIXE : Pas besoin de delta, on utilise directement les points actuels
+  // Les points x1, y1, x2, y2 sont déjà à jour grâce à Fabric.js
+  
+  // Vérifier le snap pour chaque extrémité
+  const snap1 = trouverPointSnapProche(points.x1, points.y1, cloture, canvas);
+  const snap2 = trouverPointSnapProche(points.x2, points.y2, cloture, canvas);
+  
+  let newX1 = points.x1;
+  let newY1 = points.y1;
+  let newX2 = points.x2;
+  let newY2 = points.y2;
+  
+  // Appliquer le snap si proche
+  if (snap1 && snap1.distance < SNAP_TOLERANCE) {
+    newX1 = snap1.x;
+    newY1 = snap1.y;
+    afficherSnapIndicateur(canvas, snap1.x, snap1.y);
   }
   
-  const deltaX = cloture.left - cloture._lastPos.x;
-  const deltaY = cloture.top - cloture._lastPos.y;
+  if (snap2 && snap2.distance < SNAP_TOLERANCE) {
+    newX2 = snap2.x;
+    newY2 = snap2.y;
+    afficherSnapIndicateur(canvas, snap2.x, snap2.y);
+  }
   
-  if (deltaX !== 0 || deltaY !== 0) {
-    const points = getCloturePoints(cloture);
-    
-    // Vérifier le snap pour chaque extrémité
-    const snap1 = trouverPointSnapProche(points.x1, points.y1, cloture, canvas);
-    const snap2 = trouverPointSnapProche(points.x2, points.y2, cloture, canvas);
-    
-    let newX1 = points.x1 + deltaX;
-    let newY1 = points.y1 + deltaY;
-    let newX2 = points.x2 + deltaX;
-    let newY2 = points.y2 + deltaY;
-    
-    // Appliquer le snap si proche
-    if (snap1 && snap1.distance < SNAP_TOLERANCE) {
-      newX1 = snap1.x;
-      newY1 = snap1.y;
-      afficherSnapIndicateur(canvas, snap1.x, snap1.y);
-    }
-    
-    if (snap2 && snap2.distance < SNAP_TOLERANCE) {
-      newX2 = snap2.x;
-      newY2 = snap2.y;
-      afficherSnapIndicateur(canvas, snap2.x, snap2.y);
-    }
-    
-    // Si aucun snap, masquer l'indicateur
-    if ((!snap1 || snap1.distance >= SNAP_TOLERANCE) && 
-        (!snap2 || snap2.distance >= SNAP_TOLERANCE)) {
-      masquerSnapIndicateur(canvas);
-    }
-    
-    // Mettre à jour les coordonnées
+  // Si aucun snap, masquer l'indicateur
+  if ((!snap1 || snap1.distance >= SNAP_TOLERANCE) && 
+      (!snap2 || snap2.distance >= SNAP_TOLERANCE)) {
+    masquerSnapIndicateur(canvas);
+  }
+  
+  // ✅ Mettre à jour les coordonnées seulement si changement
+  if (newX1 !== points.x1 || newY1 !== points.y1 || newX2 !== points.x2 || newY2 !== points.y2) {
     updateClotureCoords(cloture, newX1, newY1, newX2, newY2);
     
     // Ajuster les clôtures connectées (elles s'étirent automatiquement)
     ajusterCloturesConnectees(cloture, canvas);
-    
-    cloture._lastPos = { x: cloture.left, y: cloture.top };
   }
 };
 

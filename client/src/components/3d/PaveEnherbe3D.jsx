@@ -220,14 +220,12 @@ function PaveEnherbe3D({
         </instancedMesh>
       )}
       
-      {/* Texture d'herbe au sol (entre les pavés) - Base verte */}
+      {/* Texture d'herbe au sol (entre les pavés) - Base verte OPAQUE */}
       <mesh position={[0, 0.005, 0]} receiveShadow>
         <boxGeometry args={[largeur, 0.01, profondeur]} />
         <meshStandardMaterial 
           color="#689f38"
           roughness={0.95}
-          transparent
-          opacity={0.6}
         />
       </mesh>
     </group>

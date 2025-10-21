@@ -37,7 +37,7 @@ function Sol3D({
   
   return (
     <group position={[centreX, 0, centreZ]}>
-      {/* SOL SURFACE (herbe verte) - Transparent si mode activé */}
+      {/* SOL SURFACE (herbe verte) - ✅ TOUJOURS OPAQUE pour voir les pavés enherbés */}
       <mesh 
         rotation={[-Math.PI / 2, 0, 0]} 
         position={[0, 0.07, 0]} 
@@ -47,22 +47,19 @@ function Sol3D({
         <meshStandardMaterial 
           color="#8bc34a"
           roughness={0.9}
-          transparent={transparent}
-          opacity={transparent ? 0.15 : 1.0}
-          depthWrite={!transparent}
         />
       </mesh>
       
       {/* COUCHES DE SOL (dynamique) */}
       {couches.map((couche, index) => (
         <group key={index}>
-          {/* Couche de sol */}
+          {/* Couche de sol - ✅ Transparence augmentée pour voir les racines */}
           <mesh position={[0, couche.positionY, 0]}>
             <boxGeometry args={[largeur, couche.profondeurM, hauteur]} />
             <meshStandardMaterial 
               color={couche.couleur}
               transparent 
-              opacity={transparent ? 0.15 - index * 0.03 : 0.85 - index * 0.1}
+              opacity={transparent ? 0.25 - index * 0.05 : 0.85 - index * 0.1}
               roughness={0.95}
               metalness={index * 0.05}
               depthWrite={!transparent}
