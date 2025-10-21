@@ -8,6 +8,57 @@ import logger from '../logger';
 import { forcerTriObjets } from './depthSorting';
 
 /**
+ * Mettre à jour les labels des Groups après redimensionnement
+ * ✅ Modifie le texte existant, ne recrée rien
+ */
+export const mettreAJourLabelsGroups = (canvas, echelle) => {
+  if (!canvas) return;
+  
+  canvas.getObjects().forEach(obj => {
+    // Uniquement les Groups avec un label
+    if (!obj._objects || obj._objects.length < 2) return;
+    if (obj.isGridLine || obj.isBoussole || obj.isImageFond) return;
+    
+    const label = obj._objects[1]; // Le label est le 2ème élément du Group
+    if (!label || label.type !== 'text') return;
+    
+    let newText = '';
+    
+    if (obj.customType === 'maison') {
+      const w = (obj.getScaledWidth() / echelle).toFixed(1);
+      const h = (obj.getScaledHeight() / echelle).toFixed(1);
+      newText = `🏠 Maison\n${w}×${h}m`;
+    } else if (obj.customType === 'terrasse') {
+      const w = (obj.getScaledWidth() / echelle).toFixed(1);
+      const h = (obj.getScaledHeight() / echelle).toFixed(1);
+      newText = `🏡 Terrasse\n${w}×${h}m`;
+    } else if (obj.customType === 'paves') {
+      const w = (obj.getScaledWidth() / echelle).toFixed(1);
+      const h = (obj.getScaledHeight() / echelle).toFixed(1);
+      newText = `🟩 Pavés\n${w}×${h}m`;
+    } else if (obj.customType === 'citerne') {
+      const d = (obj.diametre || 1.5).toFixed(1);
+      newText = `💧 Citerne\nØ${d}m`;
+    } else if (obj.customType === 'caisson-eau') {
+      const w = (obj.getScaledWidth() / echelle).toFixed(1);
+      const h = (obj.getScaledHeight() / echelle).toFixed(1);
+      newText = `💧 Caisson\n${w}×${h}m`;
+    } else if (obj.customType === 'arbre-existant') {
+      const d = (obj.diametreArbre || 5).toFixed(1);
+      const ha = (obj.hauteurArbre || 8).toFixed(1);
+      newText = `🌳 Arbre existant\n↕️${ha}m · ↔️${d}m`;
+    } else if (obj.customType === 'arbre-a-planter') {
+      newText = obj.arbreData?.name || 'Arbre';
+    }
+    
+    if (newText && label.text !== newText) {
+      label.set({ text: newText });
+      obj.dirty = true;
+    }
+  });
+};
+
+/**
  * Logger les positions du plan en format COPIABLE
  * ✅ Permet de copier-coller pour créer un plan par défaut
  */
@@ -427,8 +478,8 @@ export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
     if (obj.isGridLine || obj.measureLabel || obj.labelCentral || obj.isBoussole || obj.isSolIndicator || 
         obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
 
-    // ✅ Les labels centraux sont maintenant intégrés aux Groups lors de la création
-    // Pas besoin de les ajouter ici (évite boucle infinie)
+    // ✅ Mettre à jour les labels des Groups (ne recrée rien)
+    mettreAJourLabelsGroups(canvas, echelle);
 
     // Ajouter les mesures sur les bords pour maison/terrasse/pavés
     if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves') {
