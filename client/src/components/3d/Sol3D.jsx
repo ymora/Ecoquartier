@@ -90,30 +90,58 @@ function Sol3D({
               </mesh>
             </>
           )}
-          
-          {/* ✅ Label de la couche - Positionnement FIXE pour éviter superposition */}
-          <Html position={[-largeur / 2 - 2, -index * 0.8, 0]}>
-            <div style={{ 
-              background: transparent 
-                ? 'rgba(0, 0, 0, 0.8)'  // Fond foncé en mode transparent pour contraste
-                : `rgba(${index === 0 ? '121,85,72' : index === 1 ? '161,136,127' : '189,189,189'},0.95)`, 
-              padding: '6px 10px', 
-              borderRadius: '6px',
-              fontSize: '11px',
-              color: 'white',
-              fontWeight: 'bold',
-              whiteSpace: 'nowrap',
-              border: `2px solid ${couche.couleur}`,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-            }}>
-              {icones[index] || '📦'} {couche.nom}
-              <div style={{ fontSize: '9px', opacity: 0.8, marginTop: '2px' }}>
-                {couche.profondeur} cm
-              </div>
-            </div>
-          </Html>
         </group>
       ))}
+      
+      {/* ✅ UN SEUL Label pour TOUTES les couches - Évite superposition */}
+      <Html position={[-largeur / 2 - 2, -0.5, 0]}>
+        <div style={{ 
+          background: transparent ? 'rgba(0, 0, 0, 0.85)' : 'rgba(121, 85, 72, 0.95)', 
+          padding: '8px 12px', 
+          borderRadius: '8px',
+          fontSize: '10px',
+          color: 'white',
+          fontWeight: 'bold',
+          border: '2px solid #8d6e63',
+          boxShadow: '0 3px 10px rgba(0,0,0,0.4)',
+          lineHeight: '1.4'
+        }}>
+          <div style={{ fontSize: '11px', marginBottom: '4px', borderBottom: '1px solid rgba(255,255,255,0.3)', paddingBottom: '4px' }}>
+            🌍 Composition du sol
+          </div>
+          {couches.map((couche, index) => (
+            <div key={index} style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              gap: '8px',
+              padding: '2px 0',
+              fontSize: '10px'
+            }}>
+              <span style={{ opacity: 0.9 }}>
+                {icones[index] || '📦'} {couche.nom}
+              </span>
+              <span style={{ 
+                color: '#ffd54f', 
+                fontWeight: 'bold',
+                minWidth: '40px',
+                textAlign: 'right'
+              }}>
+                {couche.profondeur}cm
+              </span>
+            </div>
+          ))}
+          <div style={{ 
+            marginTop: '4px', 
+            paddingTop: '4px', 
+            borderTop: '1px solid rgba(255,255,255,0.3)',
+            fontSize: '9px',
+            color: '#ffd54f',
+            fontWeight: 'bold'
+          }}>
+            Total: {(profondeurCumulee * 100).toFixed(0)}cm
+          </div>
+        </div>
+      </Html>
       
       {/* Ligne de référence niveau 0 (sous l'herbe) - Masquée si transparent */}
       {!transparent && (
