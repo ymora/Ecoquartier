@@ -128,25 +128,20 @@ function GLBModel({ modelPath, position, scale, hauteurMaturite = 7, envergure =
         envergure={envergureActuelle}
       />
       
-      {/* Label avec nom et hauteur au sommet */}
+      {/* Label avec nom, hauteur ET envergure au sommet */}
       <Html position={[position[0] + 0.5, hauteurFinale + 0.3, position[2]]} center>
         <div style={{
           background: 'rgba(255, 255, 255, 0.95)',
-          padding: '4px 10px',
-          borderRadius: '6px',
-          fontSize: '11px',
+          padding: '4px 8px',
+          borderRadius: '12px',
+          fontSize: '9px',
           fontWeight: '600',
           color: '#333',
           whiteSpace: 'nowrap',
-          border: '1px solid #ddd',
+          border: '1.5px solid #4caf50',
           boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
         }}>
-          <div style={{ marginBottom: '2px', fontWeight: '700', color: '#2e7d32' }}>
-            {arbreData?.name || 'Arbre'}
-          </div>
-          <div style={{ fontSize: '10px', color: '#666' }}>
-            ↕️ {hauteurFinale.toFixed(1)}m
-          </div>
+          {arbreData?.name || 'Arbre'} · ↕️ {hauteurFinale.toFixed(1)}m · ↔️ {envergureActuelle.toFixed(1)}m
         </div>
       </Html>
     </group>
