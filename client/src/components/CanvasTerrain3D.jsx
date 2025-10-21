@@ -10,6 +10,7 @@ import Canalisation3D from './3d/Canalisation3D';
 import Citerne3D from './3d/Citerne3D';
 import Cloture3D from './3d/Cloture3D';
 import ObjetDraggable3D from './3d/ObjetDraggable3D';
+import PaveEnherbe3D from './3d/PaveEnherbe3D';
 // PanneauEdition3D supprimé - pas nécessaire
 import Soleil3D from './3d/Soleil3D';
 import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
@@ -452,27 +453,40 @@ function CanvasTerrain3D({
           />
         ))}
         
-        {/* Terrasses/Pavés enherbés */}
+        {/* Terrasses/Pavés enherbés ultra-réalistes */}
         {data3D?.terrasses?.map((terrasse, idx) => (
-          <mesh 
-            key={`terrasse-${idx}`}
-            position={[
-              terrasse.position[0] + terrasse.largeur / 2,
-              terrasse.hauteur / 2,
-              terrasse.position[2] + terrasse.profondeur / 2
-            ]}
-            receiveShadow
-            castShadow
-          >
-            <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
-            <meshStandardMaterial 
-              color={terrasse.type === 'pave-enherbe' ? '#7cb342' : '#9e9e9e'}
-              roughness={terrasse.type === 'pave-enherbe' ? 0.9 : 0.7}
-              metalness={0}
-              emissive={terrasse.type === 'pave-enherbe' ? '#2e7d32' : '#000000'}
-              emissiveIntensity={terrasse.type === 'pave-enherbe' ? 0.1 : 0}
+          terrasse.type === 'pave-enherbe' ? (
+            // ✅ Pavés enherbés ultra-réalistes avec herbe qui bouge au vent
+            <PaveEnherbe3D
+              key={`pave-${idx}`}
+              position={[
+                terrasse.position[0],
+                0,
+                terrasse.position[2]
+              ]}
+              largeur={terrasse.largeur}
+              profondeur={terrasse.profondeur}
             />
-          </mesh>
+          ) : (
+            // Terrasse classique (béton gris)
+            <mesh 
+              key={`terrasse-${idx}`}
+              position={[
+                terrasse.position[0] + terrasse.largeur / 2,
+                terrasse.hauteur / 2,
+                terrasse.position[2] + terrasse.profondeur / 2
+              ]}
+              receiveShadow
+              castShadow
+            >
+              <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
+              <meshStandardMaterial 
+                color="#9e9e9e"
+                roughness={0.7}
+                metalness={0.2}
+              />
+            </mesh>
+          )
         ))}
         
         {/* Arbres à planter (draggable si mode activé) */}
