@@ -41,52 +41,19 @@ const pointsProches = (x1, y1, x2, y2, tolerance = SNAP_TOLERANCE) => {
 
 /**
  * Afficher les indicateurs de connexion
+ * ✅ DÉSACTIVÉ : Points verts retirés (confus et système ne marche pas parfaitement)
+ * On garde seulement le snap bleu temporaire lors du déplacement
  */
 export const afficherIndicateursConnexion = (canvas) => {
-  // Supprimer les anciens indicateurs
+  // Supprimer les anciens indicateurs (nettoyage)
   canvas.getObjects().forEach(obj => {
     if (obj.isConnectionIndicator) {
       canvas.remove(obj);
     }
   });
   
-  const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
-  const pointsConnexion = new Map(); // key: "x,y", value: nombre de clôtures connectées
-  
-  // Identifier tous les points de connexion
-  clotures.forEach(cloture => {
-    const points = getCloturePoints(cloture);
-    
-    const key1 = `${Math.round(points.x1)},${Math.round(points.y1)}`;
-    const key2 = `${Math.round(points.x2)},${Math.round(points.y2)}`;
-    
-    pointsConnexion.set(key1, (pointsConnexion.get(key1) || 0) + 1);
-    pointsConnexion.set(key2, (pointsConnexion.get(key2) || 0) + 1);
-  });
-  
-  // Afficher les indicateurs pour les points connectés (2+ clôtures)
-  pointsConnexion.forEach((count, key) => {
-    if (count >= 2) {
-      const [x, y] = key.split(',').map(Number);
-      
-      const circle = new fabric.Circle({
-        left: x,
-        top: y,
-        radius: CONNECTION_INDICATOR_RADIUS,
-        fill: '#4caf50',
-        stroke: 'white',
-        strokeWidth: 2,
-        originX: 'center',
-        originY: 'center',
-        selectable: false,
-        evented: false,
-        isConnectionIndicator: true
-      });
-      
-      canvas.add(circle);
-      canvas.bringObjectToFront(circle);
-    }
-  });
+  // ✅ Ne plus afficher de points verts permanents
+  // Le snap visuel (points bleus) suffit pendant le déplacement
   
   canvas.renderAll();
 };
@@ -119,7 +86,8 @@ export const trouverPointSnapProche = (x, y, cloture, canvas) => {
 };
 
 /**
- * Afficher l'indicateur de snap temporaire
+ * Afficher l'indicateur de snap temporaire (AMÉLIORÉ)
+ * ✅ Cercle bleu VISIBLE pour guider l'utilisateur
  */
 export const afficherSnapIndicateur = (canvas, x, y) => {
   // Supprimer l'ancien indicateur
@@ -129,23 +97,24 @@ export const afficherSnapIndicateur = (canvas, x, y) => {
     }
   });
   
-  // Créer le nouvel indicateur (cercle pulsant)
-  const circle = new fabric.Circle({
+  // ✅ Indicateur plus VISIBLE : fond bleu + cercle pulsant
+  const circleFond = new fabric.Circle({
     left: x,
     top: y,
-    radius: CONNECTION_INDICATOR_RADIUS + 4,
-    fill: 'transparent',
-    stroke: '#2196f3',
+    radius: CONNECTION_INDICATOR_RADIUS + 6,
+    fill: '#2196f3',
+    stroke: 'white',
     strokeWidth: 3,
     originX: 'center',
     originY: 'center',
     selectable: false,
     evented: false,
-    isSnapIndicator: true
+    isSnapIndicator: true,
+    opacity: 0.7
   });
   
-  canvas.add(circle);
-  canvas.bringObjectToFront(circle);
+  canvas.add(circleFond);
+  canvas.bringObjectToFront(circleFond);
   canvas.renderAll();
 };
 
