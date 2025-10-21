@@ -99,7 +99,7 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
   };
 
   objets.forEach(obj => {
-    if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || 
+    if (obj.isGridLine || obj.measureLabel || obj.labelCentral || obj.isBoussole || obj.isSolIndicator || 
         obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
 
     if (obj.customType === 'maison') {
@@ -484,12 +484,15 @@ export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
         padding: 4,
         selectable: false,
         evented: false,
-        labelCentral: true,
+        labelCentral: true, // ✅ Marquer comme label pour l'exclure des exports
+        excludeFromExport: true, // ✅ Ne pas exporter
         stroke: borderColor,
         strokeWidth: 1.5
       });
       
+      // ✅ Ne PAS déclencher d'événements pour éviter boucle infinie
       canvas.add(labelCentral);
+      labelCentral.set({ evented: false, selectable: false });
     }
 
     // Ajouter aussi les mesures sur les bords pour maison/terrasse/pavés
