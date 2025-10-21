@@ -13,33 +13,39 @@ import logger from '../logger';
 export const creerMaison = (canvas, echelle) => {
   if (!canvas) return;
   
-  const maison = new fabric.Rect({
-    left: 300,
-    top: 200,
+  const maisonRect = new fabric.Rect({
+    left: 0,
+    top: 0,
     width: 10 * echelle,
     height: 10 * echelle,
-    fill: '#ffb74d',
-    stroke: '#f57c00',
+    fill: '#bdbdbd',
+    stroke: '#757575',
     strokeWidth: 3,
-    customType: 'maison',
-    profondeurFondations: 1.2, // 1.2m profondeur par défaut
-    hauteurBatiment: 7 // 7m hauteur par défaut
+    originX: 'center',
+    originY: 'center'
   });
 
-  const label = new fabric.Text('🏠 Maison\n10m × 10m\nH: 7m\nFond: 1.2m', {
-    left: 300 + (5 * echelle),
-    top: 200 + (5 * echelle),
-    fontSize: 11,
-    fontWeight: 'bold',
-    fill: '#fff',
+  // ✅ Label central comme en 3D
+  const label = new fabric.Text('🏠 Maison\n10.0×10.0m', {
+    left: 0,
+    top: 0,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#333',
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 4,
+    stroke: '#757575',
+    strokeWidth: 1.5
   });
 
-  const group = new fabric.Group([maison, label], {
+  const group = new fabric.Group([maisonRect, label], {
+    left: 300,
+    top: 200,
     customType: 'maison',
     profondeurFondations: 1.2,
     hauteurBatiment: 7
@@ -49,8 +55,7 @@ export const creerMaison = (canvas, echelle) => {
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  // Debug désactivé pour performance
-  // logger.debug('Objets', 'Maison ajoutée', { profondeur: 1.2, hauteur: 7 });
+  logger.debug('Objets', 'Maison ajoutée avec label');
 };
 
 /**
@@ -180,24 +185,47 @@ export const creerCloture = (canvas, pointsClotureRef) => {
 export const creerTerrasse = (canvas, echelle) => {
   if (!canvas) return;
   
-  const terrasse = new fabric.Rect({
-    left: 150,
-    top: 150,
+  const terrasseRect = new fabric.Rect({
+    left: 0,
+    top: 0,
     width: 5 * echelle,
     height: 4 * echelle,
-    fill: '#ffecb3',
-    stroke: '#f57c00',
+    fill: 'rgba(158, 158, 158, 0.4)',
+    stroke: '#757575',
     strokeWidth: 2,
-    strokeDashArray: [5, 5],
+    originX: 'center',
+    originY: 'center'
+  });
+  
+  // ✅ Label central
+  const label = new fabric.Text('🏡 Terrasse\n5.0×4.0m', {
+    left: 0,
+    top: 0,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#333',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 4,
+    stroke: '#757575',
+    strokeWidth: 1.5
+  });
+
+  const group = new fabric.Group([terrasseRect, label], {
+    left: 150,
+    top: 150,
     customType: 'terrasse'
   });
 
-  canvas.add(terrasse);
-  canvas.setActiveObject(terrasse);
+  canvas.add(group);
+  canvas.setActiveObject(group);
   canvas.renderAll();
   
-  // Debug désactivé pour performance
-  // logger.debug('Objets', 'Terrasse ajoutée');
+  logger.debug('Objets', 'Terrasse ajoutée avec label');
 };
 
 /**
@@ -206,24 +234,47 @@ export const creerTerrasse = (canvas, echelle) => {
 export const creerPaves = (canvas, echelle) => {
   if (!canvas) return;
   
-  const paves = new fabric.Rect({
-    left: 500,
-    top: 500,
+  const pavesRect = new fabric.Rect({
+    left: 0,
+    top: 0,
     width: 5 * echelle,
     height: 5 * echelle,
-    fill: '#c5e1a5',
+    fill: 'rgba(139, 195, 74, 0.3)',
     stroke: '#7cb342',
     strokeWidth: 2,
-    strokeDashArray: [3, 3],
+    originX: 'center',
+    originY: 'center'
+  });
+  
+  // ✅ Label central
+  const label = new fabric.Text('🟩 Pavés\n5.0×5.0m', {
+    left: 0,
+    top: 0,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#333',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 4,
+    stroke: '#7cb342',
+    strokeWidth: 1.5
+  });
+
+  const group = new fabric.Group([pavesRect, label], {
+    left: 500,
+    top: 500,
     customType: 'paves'
   });
 
-  canvas.add(paves);
-  canvas.setActiveObject(paves);
+  canvas.add(group);
+  canvas.setActiveObject(group);
   canvas.renderAll();
   
-  // Debug désactivé pour performance
-  // logger.debug('Objets', 'Pavés enherbés ajoutés');
+  logger.debug('Objets', 'Pavés enherbés ajoutés avec label');
 };
 
 /**

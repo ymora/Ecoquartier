@@ -427,10 +427,10 @@ export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
     if (obj.isGridLine || obj.measureLabel || obj.labelCentral || obj.isBoussole || obj.isSolIndicator || 
         obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
 
-    // ✅ LABELS CENTRAUX DÉSACTIVÉS temporairement (cause boucle infinie)
-    // Les labels seront dans le tooltip au survol comme avant
+    // ✅ Les labels centraux sont maintenant intégrés aux Groups lors de la création
+    // Pas besoin de les ajouter ici (évite boucle infinie)
 
-    // Ajouter aussi les mesures sur les bords pour maison/terrasse/pavés
+    // Ajouter les mesures sur les bords pour maison/terrasse/pavés
     if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves') {
       const w = obj.getScaledWidth() / echelle;
       const h = obj.getScaledHeight() / echelle;
