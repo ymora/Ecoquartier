@@ -261,7 +261,7 @@ function CanvasTerrain3D({
       });
     }
     
-    // Calculer les dimensions du terrain avec marge de 5m
+    // ✅ Calculer les dimensions du terrain avec marge de 5m
     const marge = 5;
     if (minX !== Infinity) {
       data3D.bounds = {
@@ -271,12 +271,12 @@ function CanvasTerrain3D({
         maxZ: Math.ceil(maxZ) + marge
       };
     } else {
-      // Pas d'objets : utiliser dimensions par défaut
+      // Pas d'objets : terrain minimal 20×20m
       data3D.bounds = {
-        minX: 0,
-        maxX: dimensions.largeur,
-        minZ: 0,
-        maxZ: dimensions.hauteur
+        minX: -10,
+        maxX: 10,
+        minZ: -10,
+        maxZ: 10
       };
     }
     

@@ -123,34 +123,12 @@ function PanneauLateral({
         />
       ) : ongletActif === 'config' ? (
         <div className="panneau-outils-content">
-          {/* DIMENSIONS DU TERRAIN - Sans limites */}
-          <div className="section-title">📐 Terrain</div>
-          <div className="dimensions-grid">
-            <div className="dimension-control">
-              <label>Largeur (m)</label>
-              <input 
-                type="number" 
-                min="5" 
-                step="1"
-                value={dimensions?.largeur || 30}
-                onChange={(e) => onDimensionsChange?.({ ...dimensions, largeur: parseInt(e.target.value) })}
-              />
+          {/* ✅ TERRAIN AUTO-CALCULÉ - Plus d'inputs */}
+          <div className="terrain-info" style={{ fontSize: '0.7rem', padding: '0.5rem', marginBottom: '0.75rem', background: '#e3f2fd', borderRadius: '6px', textAlign: 'center' }}>
+            📐 Terrain auto-adaptatif
+            <div style={{ fontSize: '0.65rem', opacity: 0.8, marginTop: '3px' }}>
+              Taille = objets les plus éloignés +5m
             </div>
-            <div className="dimension-control">
-              <label>Profondeur (m)</label>
-              <input 
-                type="number" 
-                min="5" 
-                step="1"
-                value={dimensions?.hauteur || 30}
-                onChange={(e) => onDimensionsChange?.({ ...dimensions, hauteur: parseInt(e.target.value) })}
-              />
-            </div>
-          </div>
-          
-          <div className="terrain-info" style={{ fontSize: '0.65rem', padding: '0.3rem' }}>
-            📊 Surface : {((dimensions?.largeur || 30) * (dimensions?.hauteur || 30)).toFixed(0)} m²
-            <div style={{ opacity: 0.7, marginTop: '2px' }}>Vue auto-ajustée : objets +2m</div>
           </div>
           
           {/* MAISON (Hauteur et Fondations) */}
