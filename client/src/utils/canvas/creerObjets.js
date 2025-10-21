@@ -227,35 +227,6 @@ export const creerPaves = (canvas, echelle) => {
 };
 
 /**
- * Créer une citerne (ronde)
- */
-export const creerCiterne = (canvas, echelle) => {
-  if (!canvas) return;
-
-  const diametre = 1.5 * echelle;
-  
-  const citerne = new fabric.Circle({
-    left: 250,
-    top: 250,
-    radius: diametre / 2,
-    fill: 'rgba(33, 150, 243, 0.3)',
-    stroke: '#1976d2',
-    strokeWidth: 3,
-    originX: 'center',
-    originY: 'center',
-    customType: 'citerne',
-    profondeur: 2.5,
-    diametre: 1.5
-  });
-
-  canvas.add(citerne);
-  canvas.setActiveObject(citerne);
-  canvas.renderAll();
-  
-  logger.debug('Objets', 'Citerne ajoutée (Ø1.5m)');
-};
-
-/**
  * Créer un caisson rectangulaire d'eau de pluie
  */
 export const creerCaissonEau = (canvas, echelle) => {
