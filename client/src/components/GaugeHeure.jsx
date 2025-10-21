@@ -70,7 +70,7 @@ function GaugeHeure({
     
     const rect = gaugeRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + 35; // ✅ Position ajustée du centre de l'arc (y=35 dans le viewBox)
+    const centerY = rect.top + 42; // ✅ Position ajustée du centre de l'arc (y=42 dans le viewBox)
     
     const mouseX = clientX - centerX;
     const mouseY = centerY - clientY; // Y vers le haut
@@ -150,10 +150,10 @@ function GaugeHeure({
         className="gauge-heure-container"
         onMouseDown={handleMouseDown}
       >
-        <svg width="180" height="40" viewBox="0 0 180 40">
-          {/* Arc de base - à peine plus grand que les traits */}
+        <svg width="200" height="50" viewBox="0 0 200 50">
+          {/* Arc de base - descendu pour être complètement visible */}
           <path
-            d="M 50 35 A 25 25 0 0 1 130 35"
+            d="M 60 42 A 25 25 0 0 1 140 42"
             fill="none"
             stroke="#bdbdbd"
             strokeWidth="6"
@@ -170,7 +170,7 @@ function GaugeHeure({
           </defs>
           
           <path
-            d="M 50 35 A 25 25 0 0 1 130 35"
+            d="M 60 42 A 25 25 0 0 1 140 42"
             fill="none"
             stroke="url(#sunGradient)"
             strokeWidth="5"
@@ -183,10 +183,10 @@ function GaugeHeure({
           {/* Marques intermédiaires */}
           {[45, 90, 135].map((deg) => {
             const rad = (deg * Math.PI) / 180;
-            const x1 = 90 + 27 * Math.cos(Math.PI - rad);
-            const y1 = 35 - 27 * Math.sin(Math.PI - rad);
-            const x2 = 90 + 23 * Math.cos(Math.PI - rad);
-            const y2 = 35 - 23 * Math.sin(Math.PI - rad);
+            const x1 = 100 + 27 * Math.cos(Math.PI - rad);
+            const y1 = 42 - 27 * Math.sin(Math.PI - rad);
+            const x2 = 100 + 23 * Math.cos(Math.PI - rad);
+            const y2 = 42 - 23 * Math.sin(Math.PI - rad);
             return (
               <line
                 key={deg}
@@ -200,12 +200,20 @@ function GaugeHeure({
             );
           })}
           
+          {/* Labels aux extrémités */}
+          <text x="55" y="48" fontSize="9" fill="#666" textAnchor="middle" fontWeight="600">
+            🌅 Lever
+          </text>
+          <text x="145" y="48" fontSize="9" fill="#666" textAnchor="middle" fontWeight="600">
+            Coucher 🌇
+          </text>
+          
           {/* Aiguille */}
           <line
-            x1="90"
-            y1="35"
-            x2={90 + 22 * Math.cos(Math.PI - (angle * Math.PI) / 180)}
-            y2={35 - 22 * Math.sin(Math.PI - (angle * Math.PI) / 180)}
+            x1="100"
+            y1="42"
+            x2={100 + 22 * Math.cos(Math.PI - (angle * Math.PI) / 180)}
+            y2={42 - 22 * Math.sin(Math.PI - (angle * Math.PI) / 180)}
             stroke="#333"
             strokeWidth="2.5"
             strokeLinecap="round"
@@ -213,7 +221,7 @@ function GaugeHeure({
           />
           
           {/* Centre de l'aiguille */}
-          <circle cx="90" cy="35" r="3" fill="#333" />
+          <circle cx="100" cy="42" r="3" fill="#333" />
         </svg>
       </div>
       
