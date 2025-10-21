@@ -1,5 +1,3 @@
-import { Html } from '@react-three/drei';
-
 function Canalisation3D({ 
   x1 = 0, 
   y1 = 0, 
@@ -19,41 +17,20 @@ function Canalisation3D({
   
   return (
     <group position={[centerX, -profondeur, centerY]}>
-      {/* Tuyau horizontal */}
-      <mesh rotation={[0, 0, angle]} castShadow>
+      {/* ✅ Tuyau HORIZONTAL sous terre (rotation corrigée) */}
+      <mesh rotation={[0, angle, Math.PI / 2]} castShadow>
         <cylinderGeometry args={[diametre / 2, diametre / 2, longueur, 12]} />
         <meshStandardMaterial 
           color="#2196f3"
           roughness={0.3}
           metalness={0.7}
+          emissive="#1565c0"
+          emissiveIntensity={0.2}
         />
       </mesh>
       
-      {/* Tranchée (wireframe pour voir à travers) */}
-      <mesh rotation={[0, angle, 0]}>
-        <boxGeometry args={[longueur, 0.3, 0.5]} />
-        <meshStandardMaterial 
-          color="#607d8b"
-          transparent 
-          opacity={0.2}
-          wireframe
-        />
-      </mesh>
-      
-      {/* Label simplifié - Nom uniquement */}
-      <Html position={[0, 0.5, 0]} center>
-        <div style={{ 
-          background: 'rgba(255,255,255,0.9)', 
-          padding: '3px 8px', 
-          borderRadius: '4px',
-          fontSize: '10px',
-          color: '#1976d2',
-          whiteSpace: 'nowrap',
-          fontWeight: 'bold'
-        }}>
-          🚰 Canalisation
-        </div>
-      </Html>
+      {/* ✅ Pas de tranchée - tuyau seul suffit */}
+      {/* ✅ Pas de label - canalisation reconnaissable par sa couleur bleue */}
     </group>
   );
 }

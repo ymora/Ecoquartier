@@ -70,6 +70,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   cursor: grab;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -169,6 +170,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   cursor: grab;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -659,19 +661,30 @@
   opacity: 1 !important;
 }
 
+/* ✅ Conteneur timeline OPTIMISÉ : plus large, moins haut, dimensions fixes */
 .timeline-row {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: flex-start;
+  min-height: 120px;
+  max-height: 120px;
+  height: 120px;
+  padding: 0.5rem 0;
 }
 
+/* ✅ Sections plus larges pour que tout rentre sans déborder */
 .timeline-section {
-  flex: 1;
+  min-width: 260px;
+  max-width: 260px;
+  width: 260px;
 }
 
 .timeline-section.saison-section {
   border-left: 2px solid #e0e0e0;
-  padding-left: 2rem;
+  padding-left: 1.5rem;
+  min-width: 280px;
+  max-width: 280px;
+  width: 280px;
 }
 
 .timeline-croissance label {
@@ -795,6 +808,7 @@
   overflow: hidden;
   animation: panelSlideIn 0.3s ease;
   cursor: move; /* Indique qu'on peut le déplacer */
+  -webkit-user-select: none;
   user-select: none; /* Éviter sélection texte pendant drag */
 }
 
@@ -937,6 +951,7 @@
   transform: translateX(-50%);
   pointer-events: all;
   cursor: move;
+  -webkit-user-select: none;
   user-select: none;
 }
 

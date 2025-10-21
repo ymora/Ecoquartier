@@ -1,11 +1,18 @@
-/* Jauge d'heure compacte intégrée dans le panneau latéral */
+/* ✅ Jauge d'heure OPTIMISÉE : compacte, dimensions fixes, complètement visible */
 .gauge-heure-container {
-  margin: 0.5rem auto 0.3rem; /* Plus d'espace en haut pour éviter le chevauchement */
+  margin: 0.3rem auto 0.2rem;
   cursor: grab;
+  -webkit-user-select: none;
   user-select: none;
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 45px;
+  max-height: 45px;
+  height: 45px;
+  min-width: 200px;
+  max-width: 200px;
+  width: 200px;
 }
 
 .gauge-heure-container:active {
@@ -16,16 +23,22 @@
   display: block;
 }
 
-/* Informations compactes */
+/* ✅ Informations ultra-compactes */
 .heure-info-compact {
   text-align: center;
-  margin-top: 0.15rem;
+  margin-top: 0.1rem;
+  min-height: 24px;
+  max-height: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .heure-actuelle-compact {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #333;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0;
 }
 
 .heure-actuelle-compact strong {
