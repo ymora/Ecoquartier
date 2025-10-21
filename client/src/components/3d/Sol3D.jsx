@@ -97,17 +97,19 @@ function Sol3D({
       <Html position={[-largeur / 2 - 1.5, -0.2, 0]}>
         <div style={{ 
           background: 'rgba(255, 255, 255, 0.95)', 
-          padding: '4px 8px', 
+          padding: '5px 10px', 
           borderRadius: '8px',
-          fontSize: '9px',
+          fontSize: '10px',
           color: '#333',
           fontWeight: '600',
           border: '1.5px solid #8d6e63',
           boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-          lineHeight: '1.3'
+          lineHeight: '1.4',
+          minWidth: '140px',
+          textAlign: 'left'
         }}>
-          <div>{icones[0]} {couches[0]?.nom} {couches[0]?.profondeur}cm</div>
-          {couches[1] && <div>{icones[1]} {couches[1]?.nom} {couches[1]?.profondeur}cm</div>}
+          <div style={{ whiteSpace: 'nowrap' }}>{icones[0]} {couches[0]?.nom} {couches[0]?.profondeur}cm</div>
+          {couches[1] && <div style={{ whiteSpace: 'nowrap' }}>{icones[1]} {couches[1]?.nom} {couches[1]?.profondeur}cm</div>}
         </div>
       </Html>
       
