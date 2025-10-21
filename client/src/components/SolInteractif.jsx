@@ -77,17 +77,44 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
     setEditValue(couchesSol[index].profondeur.toString());
   };
   
-  // Valider l'édition
+  // ✅ Limite totale du sol à 3.0m (300cm)
+  const PROFONDEUR_MAX_TOTALE = 300;
+  
+  // Valider l'édition avec limite 3m
   const handleBlur = () => {
     if (editingIndex !== null && editValue !== '') {
       const nouvellesCouches = [...couchesSol];
-      nouvellesCouches[editingIndex].profondeur = Math.max(5, Math.min(200, parseInt(editValue) || 5));
+      const nouvelleProfondeur = Math.max(5, Math.min(200, parseInt(editValue) || 5));
+      
+      // Vérifier que le total ne dépasse pas 300cm
+      const totalSansActuelle = nouvellesCouches.reduce((sum, c, idx) => 
+        idx === editingIndex ? sum : sum + c.profondeur, 0);
+      const profondeurFinale = Math.min(nouvelleProfondeur, PROFONDEUR_MAX_TOTALE - totalSansActuelle);
+      
+      nouvellesCouches[editingIndex].profondeur = profondeurFinale;
       if (onCouchesSolChange) {
         onCouchesSolChange(nouvellesCouches);
       }
     }
     setEditingIndex(null);
     setEditValue('');
+  };
+  
+  // ✅ Boutons +/- plus simples
+  const ajusterCouche = (index, delta) => {
+    const nouvellesCouches = [...couchesSol];
+    const nouvelleProfondeur = Math.max(5, nouvellesCouches[index].profondeur + delta);
+    
+    // Vérifier la limite totale
+    const totalSansActuelle = nouvellesCouches.reduce((sum, c, idx) => 
+      idx === index ? sum : sum + c.profondeur, 0);
+    
+    if (totalSansActuelle + nouvelleProfondeur <= PROFONDEUR_MAX_TOTALE) {
+      nouvellesCouches[index].profondeur = nouvelleProfondeur;
+      if (onCouchesSolChange) {
+        onCouchesSolChange(nouvellesCouches);
+      }
+    }
   };
   
   // Valider avec Entrée
@@ -101,64 +128,74 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
   };
   
   return (
-    <div 
-      className="sol-interactif-container"
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
-      <div className="sol-visualisation" ref={containerRef}>
-        {couchesSol.map((couche, index) => {
-          const hauteurPourcent = (couche.profondeur / profondeurTotale) * 100;
-          return (
-            <div key={index}>
-              <div 
-                className="sol-couche-rect"
-                style={{ 
-                  backgroundColor: couche.couleur,
-                  height: `${hauteurPourcent}%`
-                }}
+    <div className="sol-interactif-container">
+      {/* ✅ Info profondeur totale avec limite */}
+      <div className="sol-total-info" style={{
+        textAlign: 'center',
+        fontSize: '0.75rem',
+        padding: '0.4rem',
+        background: profondeurTotale > PROFONDEUR_MAX_TOTALE ? '#ffebee' : '#e8f5e9',
+        color: profondeurTotale > PROFONDEUR_MAX_TOTALE ? '#c62828' : '#2e7d32',
+        fontWeight: 'bold',
+        borderRadius: '4px',
+        marginBottom: '0.5rem'
+      }}>
+        📏 Total: {(profondeurTotale / 100).toFixed(2)}m / 3.00m max
+        {profondeurTotale > PROFONDEUR_MAX_TOTALE && ' ⚠️ DÉPASSÉ'}
+      </div>
+      
+      {/* ✅ Contrôles simplifiés par couche */}
+      <div className="sol-couches-controles">
+        {couchesSol.map((couche, index) => (
+          <div key={index} className="sol-couche-controle">
+            <div 
+              className="sol-couche-couleur" 
+              style={{ backgroundColor: couche.couleur }}
+            ></div>
+            
+            <div className="sol-couche-nom">{couche.nom}</div>
+            
+            <div className="sol-couche-buttons">
+              <button
+                className="btn-sol-mini"
+                onClick={() => ajusterCouche(index, -10)}
+                title="−10cm"
+                disabled={couche.profondeur <= 10}
               >
-                <div className="sol-couche-label">
-                  <strong>{couche.nom}</strong>
-                  {editingIndex === index ? (
-                    <input
-                      type="number"
-                      className="sol-couche-edit"
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      onBlur={handleBlur}
-                      onKeyDown={handleKeyDown}
-                      autoFocus
-                      min="5"
-                      max="200"
-                    />
-                  ) : (
-                    <span 
-                      className="sol-couche-prof clickable"
-                      onClick={() => handleClickValue(index)}
-                      title="Cliquer pour modifier"
-                    >
-                      {couche.profondeur}cm
-                    </span>
-                  )}
-                </div>
-              </div>
+                −−
+              </button>
+              <button
+                className="btn-sol-mini"
+                onClick={() => ajusterCouche(index, -5)}
+                title="−5cm"
+                disabled={couche.profondeur <= 5}
+              >
+                −
+              </button>
               
-              {/* Ligne draggable entre les couches */}
-              {index < couchesSol.length - 1 && (
-                <div 
-                  className={`sol-separateur ${isDragging && dragIndex === index ? 'dragging' : ''}`}
-                  onMouseDown={(e) => handleMouseDown(e, index)}
-                  title="Glisser pour ajuster"
-                >
-                  <div className="sol-separateur-ligne"></div>
-                  <div className="sol-separateur-handle">⋮</div>
-                </div>
-              )}
+              <span className="sol-couche-valeur">
+                {couche.profondeur}cm
+              </span>
+              
+              <button
+                className="btn-sol-mini"
+                onClick={() => ajusterCouche(index, +5)}
+                title="+5cm"
+                disabled={profondeurTotale >= PROFONDEUR_MAX_TOTALE}
+              >
+                +
+              </button>
+              <button
+                className="btn-sol-mini"
+                onClick={() => ajusterCouche(index, +10)}
+                title="+10cm"
+                disabled={profondeurTotale >= PROFONDEUR_MAX_TOTALE}
+              >
+                ++
+              </button>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );
