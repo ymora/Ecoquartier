@@ -652,37 +652,35 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           </Suspense>
         )}
         
-        {/* Vue 2D (cachée si mode 3D) */}
-        {!mode3D && (
-          <>
-            {/* Panneau de validation latéral fixe */}
-            <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
-            </div>
-            
-            {/* Canvas plein écran */}
-            <div className="canvas-wrapper" style={{ flex: 1, position: 'relative' }}>
-              <canvas id="canvas-terrain" ref={canvasRef}></canvas>
+        {/* Vue 2D (cachée si mode 3D, mais toujours montée pour Fabric.js) */}
+        <div style={{ flex: 1, position: 'relative', display: mode3D ? 'none' : 'block' }}>
+          {/* Panneau de validation latéral fixe */}
+          <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
+          </div>
+          
+          {/* Canvas plein écran */}
+          <div className="canvas-wrapper" style={{ width: '100%', height: '100%', position: 'relative' }}>
+            <canvas id="canvas-terrain" ref={canvasRef}></canvas>
 
-              {/* Menu contextuel en bulle */}
-              <div className="context-menu" ref={contextMenuRef}>
-                <button 
-                  className="context-btn context-lock"
-                  onClick={toggleVerrouObjetActif}
-                  title="Verrouiller/Déverrouiller"
-                >
-                  🔒
-                </button>
-                <button 
-                  className="context-btn context-delete"
-                  onClick={supprimerObjetActif}
-                  title="Supprimer"
-                >
-                  🗑️
-                </button>
-              </div>
+            {/* Menu contextuel en bulle */}
+            <div className="context-menu" ref={contextMenuRef}>
+              <button 
+                className="context-btn context-lock"
+                onClick={toggleVerrouObjetActif}
+                title="Verrouiller/Déverrouiller"
+              >
+                🔒
+              </button>
+              <button 
+                className="context-btn context-delete"
+                onClick={supprimerObjetActif}
+                title="Supprimer"
+              >
+                🗑️
+              </button>
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
 
       {/* Timeline de croissance (slider temporel) - EN DEHORS DES CONTENEURS 2D/3D */}
