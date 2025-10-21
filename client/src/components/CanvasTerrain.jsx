@@ -261,6 +261,31 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // ========== HOOKS PERSONNALISÉS ==========
   
+  // Fonction pour charger le plan sauvegardé
+  const chargerPlanSauvegarde = useCallback(() => {
+    if (!fabricCanvasRef.current) return;
+    
+    const saved = localStorage.getItem('planTerrain');
+    if (!saved) return;
+    
+    try {
+      const planData = JSON.parse(saved);
+      // Charger le plan dans le canvas
+      const { chargerPlanSauvegarde: chargerUtils } = require('../utils/canvas/exportImport');
+      chargerUtils(fabricCanvasRef.current, echelle, ajouterMesuresLive);
+      
+      // Mettre à jour les dimensions si elles sont dans le plan
+      if (planData.largeur && planData.hauteur && onDimensionsChange) {
+        onDimensionsChange({ largeur: planData.largeur, hauteur: planData.hauteur });
+      }
+      if (planData.orientation && onOrientationChange) {
+        onOrientationChange(planData.orientation);
+      }
+    } catch (error) {
+      console.error('Erreur chargement plan:', error);
+    }
+  }, [echelle, onDimensionsChange, onOrientationChange]);
+
   // Initialisation du canvas
   useCanvasInit({
     canvasRef,
@@ -268,7 +293,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     echelle,
     ajouterGrille,
     ajouterIndicateurSud,
-    chargerPlanDemo
+    chargerPlanDemo,
+    chargerPlanSauvegarde // ✅ Ajout du chargement automatique
   });
 
   // Event listeners du canvas

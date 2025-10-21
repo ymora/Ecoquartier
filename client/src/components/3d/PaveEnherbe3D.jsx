@@ -19,7 +19,7 @@ function PaveEnherbe3D({
   const TAILLE_PAVE = 0.12; // 12 cm
   const EPAISSEUR_PAVE = 0.05; // 5 cm
   const ESPACEMENT_HERBE = 0.03; // 3 cm entre les pavés
-  const HAUTEUR_HERBE = 0.08; // 8 cm de hauteur d'herbe
+  const HAUTEUR_HERBE = 0.07; // 7 cm de hauteur d'herbe (5-10 cm)
   
   // Calculer le nombre de pavés selon les dimensions
   const nbPavesX = Math.floor(largeur / (TAILLE_PAVE + ESPACEMENT_HERBE));
@@ -66,13 +66,15 @@ function PaveEnherbe3D({
             const herbePosX = paveX + TAILLE_PAVE + Math.random() * ESPACEMENT_HERBE;
             const herbePosZ = paveZ + Math.random() * TAILLE_PAVE;
             
-            positions.push(herbePosX, HAUTEUR_HERBE / 2, herbePosZ);
+            // ✅ Position au SOL (y=0), l'herbe pousse vers le haut
+            positions.push(herbePosX, 0, herbePosZ);
             
-            // Variation de taille
-            const scale = 0.8 + Math.random() * 0.4;
-            scales.push(scale, scale, scale);
+            // Variation de taille (hauteur)
+            const scaleX = 0.6 + Math.random() * 0.4; // Largeur du brin
+            const scaleY = 0.7 + Math.random() * 0.6; // Hauteur variable
+            scales.push(scaleX, scaleY, scaleX);
             
-            // Rotation aléatoire
+            // Rotation aléatoire autour de l'axe Y
             rotations.push(0, Math.random() * Math.PI * 2, 0);
             
             // Phase aléatoire pour animation
@@ -157,12 +159,16 @@ function PaveEnherbe3D({
       const phase = instancesHerbe.phases[i];
       const baseRotY = instancesHerbe.rotations[i * 3 + 1];
       
-      // ✅ Vent plus visible : oscillation amplifiée
-      const windX = Math.sin(time * 1.5 + phase) * 0.3; // Inclinaison max 0.3 rad
-      const windZ = Math.cos(time * 1.2 + phase * 0.7) * 0.2;
+      // ✅ Vent qui fait balancer l'herbe : inclinaison en X et Z
+      const windX = Math.sin(time * 2 + phase) * 0.4; // Balancement avant-arrière
+      const windZ = Math.cos(time * 1.8 + phase * 0.7) * 0.35; // Balancement latéral
       
       rotation.set(windX, baseRotY, windZ);
       quaternion.setFromEuler(rotation);
+      
+      // ✅ Position légèrement décalée pour l'effet de balancement depuis la base
+      const offsetY = Math.abs(Math.sin(windX)) * scale.y * HAUTEUR_HERBE * 0.1;
+      position.y += offsetY;
       
       // Composer la matrice
       matrix.compose(position, quaternion, scale);
@@ -200,7 +206,7 @@ function PaveEnherbe3D({
         </mesh>
       ))}
       
-      {/* Herbe entre les pavés (instancing pour performance) */}
+      {/* ✅ Herbe entre les pavés : BRINS VERTICAUX qui bougent au vent */}
       {instancesHerbe && instancesHerbe.count > 0 && (
         <instancedMesh 
           ref={herbeGroupRef}
@@ -208,15 +214,14 @@ function PaveEnherbe3D({
           castShadow
           frustumCulled={false}
         >
-          {/* Géométrie d'un brin d'herbe (fine lame plus large) */}
-          <planeGeometry args={[0.012, HAUTEUR_HERBE]} />
+          {/* ✅ Géométrie verticale : cylindre fin pour brin d'herbe */}
+          <cylinderGeometry args={[0.001, 0.0015, HAUTEUR_HERBE, 3, 1]} />
           <meshStandardMaterial 
             color="#7cb342"
-            roughness={0.9}
+            roughness={0.85}
             metalness={0}
-            side={THREE.DoubleSide}
             emissive="#558b2f"
-            emissiveIntensity={0.15}
+            emissiveIntensity={0.2}
           />
         </instancedMesh>
       )}
