@@ -89,11 +89,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [imageFondChargee, setImageFondChargee] = useState(false);
   const [opaciteImage, setOpaciteImage] = useState(0.5);
   const [anneeProjection, setAnneeProjection] = useState(0);
-  const [ombreVisible, setOmbreVisible] = useState(false);
   const [timelineVisible, setTimelineVisible] = useState(true);
   const [saison, setSaison] = useState('ete');
   const [heureJournee, setHeureJournee] = useState(90); // Angle de 0° (matin) à 180° (soir), 90° = midi
-  const [snapMagnetiqueActif, setSnapMagnetiqueActif] = useState(true);
   const [mode3D, setMode3D] = useState(false);
   const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D
   const syncTimerRef = useRef(null); // Timer pour throttle de la sync
@@ -628,12 +626,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             onCouchesSolChange={setCouchesSol}
         dimensions={dimensions}
         onDimensionsChange={onDimensionsChange}
-        ombreVisible={ombreVisible}
-        onToggleOmbre={() => setOmbreVisible(!ombreVisible)}
         timelineVisible={timelineVisible}
         onToggleTimeline={() => setTimelineVisible(!timelineVisible)}
-        snapMagnetiqueActif={snapMagnetiqueActif}
-        onToggleSnapMagnetique={() => setSnapMagnetiqueActif(!snapMagnetiqueActif)}
         imageFondChargee={imageFondChargee}
         opaciteImage={opaciteImage}
         onAjouterMaison={ajouterMaison}

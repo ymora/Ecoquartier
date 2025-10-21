@@ -15,7 +15,6 @@ import {
 export const useCanvasEvents = ({
   fabricCanvasRef,
   echelle,
-  snapMagnetiqueActif,
   afficherMenuContextuel,
   cacherMenuContextuel,
   cacherTooltipValidation,

@@ -13,12 +13,8 @@ function PanneauLateral({
   onCouchesSolChange,
   dimensions,
   onDimensionsChange,
-  ombreVisible,
-  onToggleOmbre,
   timelineVisible,
   onToggleTimeline,
-  snapMagnetiqueActif,
-  onToggleSnapMagnetique,
   imageFondChargee,
   opaciteImage,
   onAjouterMaison,
@@ -409,25 +405,11 @@ function PanneauLateral({
           <div className="section-title">👁️ Affichage</div>
           <div className="outils-grid">
             <button 
-              className={`btn-outil ${ombreVisible ? 'btn-active' : ''}`} 
-              onClick={onToggleOmbre} 
-              title="Ombre maison selon saison"
-            >
-              🌗
-            </button>
-            <button 
               className={`btn-outil ${timelineVisible ? 'btn-active' : ''}`} 
               onClick={onToggleTimeline} 
               title={timelineVisible ? "Masquer la timeline" : "Afficher la timeline"}
             >
               {timelineVisible ? '📅' : '📅'}
-            </button>
-            <button 
-              className={`btn-outil ${snapMagnetiqueActif ? 'btn-active' : ''}`} 
-              onClick={onToggleSnapMagnetique} 
-              title="Alignement magnétique"
-            >
-              🧲
             </button>
           </div>
           
