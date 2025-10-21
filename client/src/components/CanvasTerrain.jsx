@@ -599,27 +599,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           </button>
         </div>
 
-      {/* Vue 3D (montée en lazy load, cachée si mode 2D) */}
-      {mode3D && (
-        <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '1.5rem' }}>🔄 Chargement 3D...</div>}>
-          <div style={{ display: mode3D ? 'block' : 'none', width: '100%', height: '100%' }}>
-            <CanvasTerrain3D
-              dimensions={dimensions}
-              planData={planDataSync}
-              arbresAPlanter={arbresAPlanter}
-              anneeProjection={anneeProjection}
-              saison={saison}
-              heureJournee={heureJournee}
-              couchesSol={couchesSol}
-              onObjetPositionChange={handleObjetPositionChange3D}
-            />
-          </div>
-        </Suspense>
-      )}
-      
-      {/* Vue 2D (toujours montée, cachée si mode 3D) */}
-      <div style={{ display: mode3D ? 'none' : 'flex', width: '100%', height: 'calc(100% - 160px)' }}>
-        {/* Panneau latéral avec outils et stats */}
+      {/* Layout avec panneau latéral + vue principale */}
+      <div style={{ display: 'flex', width: '100%', height: 'calc(100% - 160px)' }}>
+        {/* Panneau latéral avec outils et stats - TOUJOURS VISIBLE */}
         <PanneauLateral
             canvas={fabricCanvasRef.current} 
         arbresAPlanter={arbresAPlanter}
@@ -652,32 +634,55 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onExporterPlan={exporterPlan}
         />
 
-      {/* Panneau de validation latéral fixe */}
-      <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
+        {/* Vue 3D Suspense */}
+        {mode3D && (
+          <Suspense fallback={<div className="loading-3d">🌳 Chargement 3D...</div>}>
+            <div style={{ flex: 1, position: 'relative' }}>
+              <CanvasTerrain3D 
+                dimensions={dimensions}
+                planData={planDataSync}
+                arbresAPlanter={arbresAPlanter}
+                anneeProjection={anneeProjection}
+                saison={saison}
+                heureJournee={heureJournee}
+                couchesSol={couchesSol}
+                onObjetPositionChange={handleObjetPositionChange3D}
+              />
+            </div>
+          </Suspense>
+        )}
+        
+        {/* Vue 2D (cachée si mode 3D) */}
+        {!mode3D && (
+          <>
+            {/* Panneau de validation latéral fixe */}
+            <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
             </div>
             
-      {/* Canvas plein écran */}
-      <div className="canvas-wrapper">
-        <canvas id="canvas-terrain" ref={canvasRef}></canvas>
+            {/* Canvas plein écran */}
+            <div className="canvas-wrapper">
+              <canvas id="canvas-terrain" ref={canvasRef}></canvas>
 
-        {/* Menu contextuel en bulle */}
-        <div className="context-menu" ref={contextMenuRef}>
-          <button 
-            className="context-btn context-lock"
-            onClick={toggleVerrouObjetActif}
-            title="Verrouiller/Déverrouiller"
-          >
-            🔒
-          </button>
-          <button 
-            className="context-btn context-delete"
-            onClick={supprimerObjetActif}
-            title="Supprimer"
-          >
-            🗑️
-          </button>
+              {/* Menu contextuel en bulle */}
+              <div className="context-menu" ref={contextMenuRef}>
+                <button 
+                  className="context-btn context-lock"
+                  onClick={toggleVerrouObjetActif}
+                  title="Verrouiller/Déverrouiller"
+                >
+                  🔒
+                </button>
+                <button 
+                  className="context-btn context-delete"
+                  onClick={supprimerObjetActif}
+                  title="Supprimer"
+                >
+                  🗑️
+                </button>
+              </div>
             </div>
-      </div>
+          </>
+        )}
       </div>
 
       {/* Timeline de croissance (slider temporel) - EN DEHORS DES CONTENEURS 2D/3D */}
