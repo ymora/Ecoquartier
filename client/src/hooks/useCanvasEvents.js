@@ -264,7 +264,6 @@ export const useCanvasEvents = ({
     };
 
     // Attacher tous les event listeners
-    canvas.on('object:moving', handleMoving);
     canvas.on('object:moving', handleMovingGuides);
     canvas.on('object:moving', handleMovingWithValidation);
     canvas.on('object:modified', handleModified);
