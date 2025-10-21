@@ -24,26 +24,57 @@ const loggerPositionsPlanCopiable = (planData, echelle) => {
   let code = `// Plan généré le ${new Date().toLocaleString('fr-FR')}\n`;
   code += `// Dimensions: ${planData.largeur}m × ${planData.hauteur}m, Orientation: ${planData.orientation}\n\n`;
   
+  // MAISON
   if (planData.maison) {
     code += `  // MAISON\n  const maison = new fabric.Rect({left: ${(planData.maison.left * echelle).toFixed(1)}, top: ${(planData.maison.top * echelle).toFixed(1)}, width: ${(planData.maison.width * echelle).toFixed(1)}, height: ${(planData.maison.height * echelle).toFixed(1)}, fill: '#bdbdbd', stroke: '#757575', strokeWidth: 3, customType: 'maison', profondeurFondations: ${planData.maison.profondeurFondations || 1.2}, hauteurBatiment: ${planData.maison.hauteurBatiment || 7}});\n  canvas.add(maison);\n\n`;
   }
   
+  // CITERNES
   planData.citernes.forEach((c, i) => {
     code += `  // Citerne ${i+1}\n  canvas.add(new fabric.Circle({left: ${(c.left * echelle).toFixed(1)}, top: ${(c.top * echelle).toFixed(1)}, radius: ${((c.diametre || 1.5) * echelle / 2).toFixed(1)}, fill: 'rgba(33,150,243,0.3)', stroke: '#1976d2', strokeWidth: 3, customType: 'citerne', profondeur: ${c.profondeur || 2.5}, diametre: ${c.diametre || 1.5}, originX: 'center', originY: 'center'}));\n\n`;
   });
   
+  // TERRASSES
+  planData.terrasses.forEach((t, i) => {
+    code += `  // Terrasse ${i+1}\n  canvas.add(new fabric.Rect({left: ${(t.left * echelle).toFixed(1)}, top: ${(t.top * echelle).toFixed(1)}, width: ${(t.width * echelle).toFixed(1)}, height: ${(t.height * echelle).toFixed(1)}, fill: 'rgba(158,158,158,0.4)', stroke: '#757575', strokeWidth: 2, customType: 'terrasse'}));\n\n`;
+  });
+  
+  // PAVÉS ENHERBÉS
   planData.paves.forEach((p, i) => {
     code += `  // Pavé enherbé ${i+1}\n  canvas.add(new fabric.Rect({left: ${(p.left * echelle).toFixed(1)}, top: ${(p.top * echelle).toFixed(1)}, width: ${(p.width * echelle).toFixed(1)}, height: ${(p.height * echelle).toFixed(1)}, fill: 'rgba(139,195,74,0.3)', stroke: '#7cb342', strokeWidth: 2, customType: 'paves'}));\n\n`;
   });
   
+  // CLÔTURES
+  planData.clotures.forEach((c, i) => {
+    code += `  // Clôture ${i+1}\n  // const cloture${i} = creerClotureGroup(${c.x1.toFixed(1)}, ${c.y1.toFixed(1)}, ${c.x2.toFixed(1)}, ${c.y2.toFixed(1)});\n  // canvas.add(cloture${i});\n\n`;
+  });
+  
+  // CANALISATIONS
+  planData.canalisations.forEach((c, i) => {
+    code += `  // Canalisation ${i+1}\n  // const canal${i} = creerCanalisationGroup(${c.x1.toFixed(1)}, ${c.y1.toFixed(1)}, ${c.x2.toFixed(1)}, ${c.y2.toFixed(1)}, ${c.profondeur || 0.6});\n  // canvas.add(canal${i});\n\n`;
+  });
+  
+  // ARBRES EXISTANTS
+  planData.arbresExistants.forEach((a, i) => {
+    code += `  // Arbre existant ${i+1}\n  canvas.add(new fabric.Circle({left: ${(a.left * echelle).toFixed(1)}, top: ${(a.top * echelle).toFixed(1)}, radius: ${(a.radius * echelle).toFixed(1)}, fill: 'rgba(76,175,80,0.3)', stroke: '#388e3c', strokeWidth: 3, customType: 'arbre-existant', originX: 'center', originY: 'center'}));\n\n`;
+  });
+  
+  // ARBRES À PLANTER (commentaires)
   planData.arbresAPlanter.forEach((a, i) => {
     code += `  // ${a.arbreData?.name || 'Arbre'} (${a.arbreData?.id}) - Position: ${(a.left * echelle).toFixed(1)},${(a.top * echelle).toFixed(1)} px | ${a.left.toFixed(2)},${a.top.toFixed(2)} m\n`;
   });
   
   console.log('%c' + code, 'color: #2196f3; font-family: monospace; font-size: 11px');
   console.log('');
-  console.log('%c✅ Objets:', 'font-weight: bold');
-  console.log(`  🏠 Maison: ${planData.maison ? '✅' : '❌'} | 💧 Citernes: ${planData.citernes.length} | 🟩 Pavés: ${planData.paves.length} | 🌳 Arbres: ${planData.arbresAPlanter.length}`);
+  console.log('%c✅ Résumé:', 'font-weight: bold; font-size: 12px');
+  console.log(`  🏠 Maison: ${planData.maison ? '✅' : '❌'}`);
+  console.log(`  💧 Citernes: ${planData.citernes.length}`);
+  console.log(`  🏡 Terrasses: ${planData.terrasses.length}`);
+  console.log(`  🟩 Pavés enherbés: ${planData.paves.length}`);
+  console.log(`  🚧 Clôtures: ${planData.clotures.length}`);
+  console.log(`  🚰 Canalisations: ${planData.canalisations.length}`);
+  console.log(`  🌲 Arbres existants: ${planData.arbresExistants.length}`);
+  console.log(`  🌳 Arbres à planter: ${planData.arbresAPlanter.length}`);
 };
 
 /**
