@@ -9,8 +9,8 @@ function Sol3D({
   transparent = false,
   couchesSol = [
     { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63' },
-    { nom: 'Sous-sol', profondeur: 200, couleur: '#a1887f' },
-    { nom: 'Marne', profondeur: 250, couleur: '#bdbdbd' }
+    { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd' },
+    { nom: 'Sous-sol', profondeur: 200, couleur: '#a1887f' }
   ]
 }) {
   // Icônes par couche
