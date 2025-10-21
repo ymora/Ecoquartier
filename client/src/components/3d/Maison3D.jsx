@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 function Maison3D({ 
@@ -108,22 +107,7 @@ function Maison3D({
         <meshStandardMaterial color="#8b4513" roughness={0.8} />
       </mesh>
       
-      {/* Label simplifié */}
-      <Html position={[0, hauteur + hauteurToit + 0.5, 0]} center>
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.95)', 
-          padding: '4px 10px', 
-          borderRadius: '5px',
-          fontSize: '12px',
-          fontWeight: '600',
-          color: '#ff6f00',
-          whiteSpace: 'nowrap',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-          border: '1px solid rgba(255, 111, 0, 0.3)'
-        }}>
-          🏠 Maison
-        </div>
-      </Html>
+      {/* ✅ Pas de label - la maison est reconnaissable visuellement */}
     </group>
   );
 }
