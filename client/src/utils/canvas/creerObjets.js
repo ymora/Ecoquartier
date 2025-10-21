@@ -233,6 +233,7 @@ export const creerArbreExistant = (canvas, echelle) => {
   if (!canvas) return;
   
   const rayon = 2.5 * echelle;
+  const diametre = 5.0; // ✅ FIX: Définir le diamètre (5m par défaut)
   
   const cercle = new fabric.Circle({
     left: 0,
@@ -260,7 +261,11 @@ export const creerArbreExistant = (canvas, echelle) => {
   const group = new fabric.Group([cercle, emoji], {
     left: 250,
     top: 250,
-    customType: 'arbre-existant'
+    customType: 'arbre-existant',
+    // ✅ Dimensions éditables (3 dimensions)
+    diametreArbre: diametre, // Largeur de la couronne
+    hauteurArbre: 8, // Hauteur de l'arbre
+    profondeurRacines: 2.5 // Profondeur des racines
   });
   
   // Stocker les informations pour le tooltip

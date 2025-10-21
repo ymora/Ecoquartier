@@ -1,6 +1,7 @@
 /* Conteneur du sol interactif */
 .sol-interactif-container {
   width: 100%;
+  -webkit-user-select: none;
   user-select: none;
 }
 

@@ -47,7 +47,8 @@ function PanneauLateral({
     const handleSelection = (e) => {
       const obj = e.selected?.[0];
       if (obj && (obj.customType === 'maison' || obj.customType === 'citerne' || 
-                  obj.customType === 'canalisation' || obj.customType === 'cloture')) {
+                  obj.customType === 'canalisation' || obj.customType === 'cloture' ||
+                  obj.customType === 'arbre-existant')) {
         setObjetSelectionne(obj);
       } else {
         setObjetSelectionne(null);
@@ -211,6 +212,7 @@ function PanneauLateral({
                 {objetSelectionne.customType === 'citerne' && '💧 Citerne'}
                 {objetSelectionne.customType === 'canalisation' && '🚰 Canalisation'}
                 {objetSelectionne.customType === 'cloture' && '🚧 Clôture'}
+                {objetSelectionne.customType === 'arbre-existant' && '🌳 Arbre existant'}
               </div>
               
               {objetSelectionne.customType === 'maison' && (
@@ -321,6 +323,58 @@ function PanneauLateral({
                         title="Épaisseur fixe non modifiable"
                       />
                     </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* ✅ Arbre existant : 3 dimensions éditables */}
+              {objetSelectionne.customType === 'arbre-existant' && (
+                <div className="objet-controls">
+                  <div className="dimension-control">
+                    <label>Ø Couronne (m)</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      max="15" 
+                      step="0.5"
+                      value={objetSelectionne.diametreArbre || 5}
+                      onChange={(e) => {
+                        const newDiam = parseFloat(e.target.value);
+                        const newRadius = (newDiam / 2) * canvas.getZoom() * 20; // Approximation échelle
+                        objetSelectionne.set({ diametreArbre: newDiam });
+                        // Redimensionner le cercle
+                        if (objetSelectionne._objects && objetSelectionne._objects[0]) {
+                          objetSelectionne._objects[0].set({ radius: newRadius });
+                        }
+                        objetSelectionne.setCoords();
+                        canvas.requestRenderAll();
+                        if (onExporterPlan) {
+                          setTimeout(() => onExporterPlan(canvas), 100);
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="dimension-control">
+                    <label>Hauteur (m)</label>
+                    <input 
+                      type="number" 
+                      min="2" 
+                      max="30" 
+                      step="0.5"
+                      value={objetSelectionne.hauteurArbre || 8}
+                      onChange={(e) => updateObjetProp('hauteurArbre', e.target.value)}
+                    />
+                  </div>
+                  <div className="dimension-control">
+                    <label>Prof. racines (m)</label>
+                    <input 
+                      type="number" 
+                      min="0.5" 
+                      max="5" 
+                      step="0.5"
+                      value={objetSelectionne.profondeurRacines || 2.5}
+                      onChange={(e) => updateObjetProp('profondeurRacines', e.target.value)}
+                    />
                   </div>
                 </div>
               )}
