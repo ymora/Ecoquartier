@@ -113,9 +113,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     return calculerTailleUtils(arbre, annee, echelle);
   };
   
-  // Affichage
+  // ✅ Ombre toujours active (pas de toggle)
   const afficherOmbreMaison = (canvas) => {
-    afficherOmbreUtils(canvas, echelle, ombreVisible, saison, orientation);
+    afficherOmbreUtils(canvas, echelle, true, saison, orientation);
   };
   
   const afficherCercleTronc = (canvas, arbreGroup) => {
@@ -210,15 +210,22 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     supprimerImageUtils(fabricCanvasRef, imageFondRef, setImageFondChargee);
   };
   
-  // Navigation canvas
+  // Navigation canvas 2D et 3D
   const resetZoom = () => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
-    
-    // Réinitialiser zoom et position
-    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-    canvas.requestRenderAll();
-    logger.info('Canvas', 'Zoom réinitialisé (100%)');
+    if (mode3D) {
+      // ✅ Réinitialiser caméra 3D
+      // La caméra 3D se réinitialise via le bouton dans CanvasTerrain3D
+      window.dispatchEvent(new CustomEvent('reset3DCamera'));
+      logger.info('3D', 'Caméra 3D réinitialisée');
+    } else {
+      // Réinitialiser zoom 2D
+      const canvas = fabricCanvasRef.current;
+      if (!canvas) return;
+      
+      canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+      canvas.requestRenderAll();
+      logger.info('Canvas', 'Zoom 2D réinitialisé (100%)');
+    }
   };
   
   // Actions canvas
@@ -318,12 +325,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   useCanvasEvents({
     fabricCanvasRef,
     echelle,
-    snapMagnetiqueActif,
     afficherMenuContextuel,
     cacherMenuContextuel,
     cacherTooltipValidation,
     validerPositionArbre,
-    revaliderTous, // Ajouté pour validation globale
+    revaliderTous,
     afficherTooltipValidation,
     cacherCercleTronc,
     exporterPlan,
@@ -357,7 +363,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (canvas) afficherOmbreMaison(canvas);
-  }, [ombreVisible, saison, orientation]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [saison, orientation]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Rendre les panneaux déplaçables
   useEffect(() => {
