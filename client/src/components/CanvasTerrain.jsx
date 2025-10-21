@@ -660,7 +660,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             </div>
             
             {/* Canvas plein écran */}
-            <div className="canvas-wrapper">
+            <div className="canvas-wrapper" style={{ flex: 1, position: 'relative' }}>
               <canvas id="canvas-terrain" ref={canvasRef}></canvas>
 
               {/* Menu contextuel en bulle */}
