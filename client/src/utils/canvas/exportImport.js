@@ -96,6 +96,9 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
 
   localStorage.setItem('planTerrain', JSON.stringify(planData));
   onPlanComplete(planData);
+  
+  // ✅ LOG COPIABLE pour créer plan par défaut
+  loggerPositionsPlanCopiable(planData, echelle);
 };
 
 /**
