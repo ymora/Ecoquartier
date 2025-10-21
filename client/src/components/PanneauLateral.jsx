@@ -34,7 +34,8 @@ function PanneauLateral({
   onChargerImageFond,
   onAjusterOpaciteImage,
   onSupprimerImageFond,
-  onResetZoom
+  onResetZoom,
+  onExporterPlan // ✅ Ajout pour sauvegarder après modification
 }) {
   const [ongletActif, setOngletActif] = useState('config');
   const [objetSelectionne, setObjetSelectionne] = useState(null);
@@ -68,10 +69,20 @@ function PanneauLateral({
     };
   }, [canvas]);
   
+  // ✅ FIXE : Mise à jour avec sauvegarde du plan
   const updateObjetProp = (prop, value) => {
-    if (objetSelectionne) {
-      objetSelectionne.set({ [prop]: parseFloat(value) });
+    if (objetSelectionne && canvas) {
+      const numValue = parseFloat(value);
+      if (isNaN(numValue)) return;
+      
+      objetSelectionne.set({ [prop]: numValue });
+      objetSelectionne.setCoords();
       canvas.requestRenderAll();
+      
+      // ✅ Déclencher la sauvegarde du plan
+      if (onExporterPlan) {
+        setTimeout(() => onExporterPlan(canvas), 100);
+      }
     }
   };
 

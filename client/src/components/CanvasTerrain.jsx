@@ -649,7 +649,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onAjusterOpaciteImage={ajusterOpaciteImage}
         onSupprimerImageFond={supprimerImageFond}
         onResetZoom={resetZoom}
-      />
+        onExporterPlan={exporterPlan}
+        />
 
       {/* Panneau de validation latéral fixe */}
       <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
