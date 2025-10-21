@@ -581,7 +581,7 @@ function CanvasTerrain3D({
           enableRotate={!modeDeplacement}
           enabled={!modeDeplacement} // Désactiver OrbitControls en mode déplacement
           minPolarAngle={0}
-          maxPolarAngle={Math.PI / 2 - 0.1} // Empêcher de passer sous le sol
+          maxPolarAngle={Math.PI} // ✅ Permet de voir par dessous (fondations, racines)
           target={[terrainCentreX, 0, terrainCentreZ]}
           minDistance={5} // Distance minimale (5m)
           maxDistance={200} // Distance maximale (200m)
