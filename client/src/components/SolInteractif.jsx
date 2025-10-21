@@ -132,19 +132,19 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
       {/* ✅ Info profondeur totale avec limite */}
       <div className="sol-total-info" style={{
         textAlign: 'center',
-        fontSize: '0.75rem',
+        fontSize: '0.7rem',
         padding: '0.4rem',
         background: profondeurTotale > PROFONDEUR_MAX_TOTALE ? '#ffebee' : '#e8f5e9',
         color: profondeurTotale > PROFONDEUR_MAX_TOTALE ? '#c62828' : '#2e7d32',
-        fontWeight: 'bold',
+        fontWeight: '600',
         borderRadius: '4px',
         marginBottom: '0.5rem'
       }}>
         📏 Total: {(profondeurTotale / 100).toFixed(2)}m / 3.00m max
-        {profondeurTotale > PROFONDEUR_MAX_TOTALE && ' ⚠️ DÉPASSÉ'}
+        {profondeurTotale > PROFONDEUR_MAX_TOTALE && ' ⚠️'}
       </div>
       
-      {/* ✅ Contrôles simplifiés par couche */}
+      {/* ✅ Inputs harmonisés avec flèches natives */}
       <div className="sol-couches-controles">
         {couchesSol.map((couche, index) => (
           <div key={index} className="sol-couche-controle">
@@ -155,45 +155,29 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
             
             <div className="sol-couche-nom">{couche.nom}</div>
             
-            <div className="sol-couche-buttons">
-              <button
-                className="btn-sol-mini"
-                onClick={() => ajusterCouche(index, -10)}
-                title="−10cm"
-                disabled={couche.profondeur <= 10}
-              >
-                −−
-              </button>
-              <button
-                className="btn-sol-mini"
-                onClick={() => ajusterCouche(index, -5)}
-                title="−5cm"
-                disabled={couche.profondeur <= 5}
-              >
-                −
-              </button>
-              
-              <span className="sol-couche-valeur">
-                {couche.profondeur}cm
-              </span>
-              
-              <button
-                className="btn-sol-mini"
-                onClick={() => ajusterCouche(index, +5)}
-                title="+5cm"
-                disabled={profondeurTotale >= PROFONDEUR_MAX_TOTALE}
-              >
-                +
-              </button>
-              <button
-                className="btn-sol-mini"
-                onClick={() => ajusterCouche(index, +10)}
-                title="+10cm"
-                disabled={profondeurTotale >= PROFONDEUR_MAX_TOTALE}
-              >
-                ++
-              </button>
-            </div>
+            <input
+              type="number"
+              className="sol-couche-input"
+              min="5"
+              max={PROFONDEUR_MAX_TOTALE}
+              step="5"
+              value={couche.profondeur}
+              onChange={(e) => {
+                const nouvellesCouches = [...couchesSol];
+                const nouvelleProfondeur = Math.max(5, parseInt(e.target.value) || 5);
+                
+                // Vérifier la limite totale
+                const totalSansActuelle = nouvellesCouches.reduce((sum, c, idx) => 
+                  idx === index ? sum : sum + c.profondeur, 0);
+                
+                if (totalSansActuelle + nouvelleProfondeur <= PROFONDEUR_MAX_TOTALE) {
+                  nouvellesCouches[index].profondeur = nouvelleProfondeur;
+                  if (onCouchesSolChange) {
+                    onCouchesSolChange(nouvellesCouches);
+                  }
+                }
+              }}
+            />
           </div>
         ))}
       </div>
