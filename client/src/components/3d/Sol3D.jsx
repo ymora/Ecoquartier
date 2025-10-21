@@ -93,53 +93,25 @@ function Sol3D({
         </group>
       ))}
       
-      {/* ✅ UN SEUL Label pour TOUTES les couches - Évite superposition */}
-      <Html position={[-largeur / 2 - 2, -0.5, 0]}>
+      {/* ✅ Label compact comme les arbres - Minimal */}
+      <Html position={[-largeur / 2 - 1.5, -0.3, 0]}>
         <div style={{ 
-          background: transparent ? 'rgba(0, 0, 0, 0.85)' : 'rgba(121, 85, 72, 0.95)', 
-          padding: '8px 12px', 
-          borderRadius: '8px',
-          fontSize: '10px',
-          color: 'white',
-          fontWeight: 'bold',
-          border: '2px solid #8d6e63',
-          boxShadow: '0 3px 10px rgba(0,0,0,0.4)',
-          lineHeight: '1.4'
+          background: 'rgba(255, 255, 255, 0.95)', 
+          padding: '4px 8px', 
+          borderRadius: '12px',
+          fontSize: '9px',
+          color: '#333',
+          fontWeight: '600',
+          border: '1.5px solid #8d6e63',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+          whiteSpace: 'nowrap'
         }}>
-          <div style={{ fontSize: '11px', marginBottom: '4px', borderBottom: '1px solid rgba(255,255,255,0.3)', paddingBottom: '4px' }}>
-            🌍 Composition du sol
-          </div>
           {couches.map((couche, index) => (
-            <div key={index} style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              gap: '8px',
-              padding: '2px 0',
-              fontSize: '10px'
-            }}>
-              <span style={{ opacity: 0.9 }}>
-                {icones[index] || '📦'} {couche.nom}
-              </span>
-              <span style={{ 
-                color: '#ffd54f', 
-                fontWeight: 'bold',
-                minWidth: '40px',
-                textAlign: 'right'
-              }}>
-                {couche.profondeur}cm
-              </span>
-            </div>
+            <span key={index}>
+              {icones[index]} {couche.profondeur}cm
+              {index < couches.length - 1 && ' · '}
+            </span>
           ))}
-          <div style={{ 
-            marginTop: '4px', 
-            paddingTop: '4px', 
-            borderTop: '1px solid rgba(255,255,255,0.3)',
-            fontSize: '9px',
-            color: '#ffd54f',
-            fontWeight: 'bold'
-          }}>
-            Total: {(profondeurCumulee * 100).toFixed(0)}cm
-          </div>
         </div>
       </Html>
       

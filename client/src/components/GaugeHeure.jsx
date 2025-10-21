@@ -70,7 +70,7 @@ function GaugeHeure({
     
     const rect = gaugeRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + 42; // ✅ Position ajustée du centre de l'arc (y=42 dans le viewBox)
+    const centerY = rect.top + 44; // ✅ Position ajustée du centre de l'arc (y=44 dans le viewBox)
     
     const mouseX = clientX - centerX;
     const mouseY = centerY - clientY; // Y vers le haut
@@ -153,7 +153,7 @@ function GaugeHeure({
         <svg width="200" height="50" viewBox="0 0 200 50">
           {/* Arc de base - descendu pour être complètement visible */}
           <path
-            d="M 60 42 A 25 25 0 0 1 140 42"
+            d="M 60 44 A 25 25 0 0 1 140 44"
             fill="none"
             stroke="#bdbdbd"
             strokeWidth="6"
@@ -170,7 +170,7 @@ function GaugeHeure({
           </defs>
           
           <path
-            d="M 60 42 A 25 25 0 0 1 140 42"
+            d="M 60 44 A 25 25 0 0 1 140 44"
             fill="none"
             stroke="url(#sunGradient)"
             strokeWidth="5"
@@ -184,9 +184,9 @@ function GaugeHeure({
           {[45, 90, 135].map((deg) => {
             const rad = (deg * Math.PI) / 180;
             const x1 = 100 + 27 * Math.cos(Math.PI - rad);
-            const y1 = 42 - 27 * Math.sin(Math.PI - rad);
+            const y1 = 44 - 27 * Math.sin(Math.PI - rad);
             const x2 = 100 + 23 * Math.cos(Math.PI - rad);
-            const y2 = 42 - 23 * Math.sin(Math.PI - rad);
+            const y2 = 44 - 23 * Math.sin(Math.PI - rad);
             return (
               <line
                 key={deg}
@@ -211,9 +211,9 @@ function GaugeHeure({
           {/* Aiguille */}
           <line
             x1="100"
-            y1="42"
+            y1="44"
             x2={100 + 22 * Math.cos(Math.PI - (angle * Math.PI) / 180)}
-            y2={42 - 22 * Math.sin(Math.PI - (angle * Math.PI) / 180)}
+            y2={44 - 22 * Math.sin(Math.PI - (angle * Math.PI) / 180)}
             stroke="#333"
             strokeWidth="2.5"
             strokeLinecap="round"
@@ -221,7 +221,7 @@ function GaugeHeure({
           />
           
           {/* Centre de l'aiguille */}
-          <circle cx="100" cy="42" r="3" fill="#333" />
+          <circle cx="100" cy="44" r="3" fill="#333" />
         </svg>
       </div>
       
