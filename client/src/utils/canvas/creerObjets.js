@@ -227,6 +227,68 @@ export const creerPaves = (canvas, echelle) => {
 };
 
 /**
+ * Créer une citerne (ronde)
+ */
+export const creerCiterne = (canvas, echelle) => {
+  if (!canvas) return;
+
+  const diametre = 1.5 * echelle;
+  
+  const citerne = new fabric.Circle({
+    left: 250,
+    top: 250,
+    radius: diametre / 2,
+    fill: 'rgba(33, 150, 243, 0.3)',
+    stroke: '#1976d2',
+    strokeWidth: 3,
+    originX: 'center',
+    originY: 'center',
+    customType: 'citerne',
+    profondeur: 2.5,
+    diametre: 1.5
+  });
+
+  canvas.add(citerne);
+  canvas.setActiveObject(citerne);
+  canvas.renderAll();
+  
+  logger.debug('Objets', 'Citerne ajoutée (Ø1.5m)');
+};
+
+/**
+ * Créer un caisson rectangulaire d'eau de pluie
+ */
+export const creerCaissonEau = (canvas, echelle) => {
+  if (!canvas) return;
+
+  const largeur = 3 * echelle; // 3m par défaut
+  const longueur = 5 * echelle; // 5m par défaut
+  
+  const caisson = new fabric.Rect({
+    left: 300,
+    top: 300,
+    width: largeur,
+    height: longueur,
+    fill: 'rgba(33, 150, 243, 0.3)',
+    stroke: '#1565c0',
+    strokeWidth: 3,
+    strokeDashArray: [5, 3],
+    customType: 'caisson-eau',
+    profondeur: 2.5, // Profondeur sous terre
+    largeurCaisson: 3, // En mètres
+    longueurCaisson: 5, // En mètres
+    hasControls: true,
+    lockRotation: true
+  });
+
+  canvas.add(caisson);
+  canvas.setActiveObject(caisson);
+  canvas.renderAll();
+  
+  logger.debug('Objets', 'Caisson eau ajouté (3m × 5m)');
+};
+
+/**
  * Créer un arbre existant
  */
 export const creerArbreExistant = (canvas, echelle) => {

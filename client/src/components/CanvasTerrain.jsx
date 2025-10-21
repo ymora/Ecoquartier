@@ -181,6 +181,25 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     chargerPlanDemoUtils(fabricCanvasRef.current, echelle, ajouterGrille);
   };
   
+  const chargerPlanParDefaut = () => {
+    if (!fabricCanvasRef.current) return;
+    
+    // Effacer le localStorage pour forcer le plan par défaut
+    localStorage.removeItem('planTerrain');
+    
+    // Charger le plan par défaut
+    chargerPlanDemoUtils(fabricCanvasRef.current, echelle, ajouterGrille);
+    
+    // Notification
+    const notification = document.createElement('div');
+    notification.textContent = '🔄 Plan par défaut chargé';
+    notification.style.cssText = 'position: fixed; top: 80px; right: 20px; background: #ff9800; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 2000);
+    
+    logger.info('Plan', '✅ Plan par défaut rechargé');
+  };
+  
   const chargerImageFond = () => {
     chargerImageUtils(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille);
   };
@@ -627,6 +646,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onVerrouillerSelection={verrouillerSelection}
         onSupprimerSelection={supprimerSelection}
         onEffacerTout={effacerTout}
+        onChargerPlanParDefaut={chargerPlanParDefaut}
         onChargerImageFond={chargerImageFond}
         onAjusterOpaciteImage={ajusterOpaciteImage}
         onSupprimerImageFond={supprimerImageFond}

@@ -31,6 +31,7 @@ function PanneauLateral({
   onVerrouillerSelection,
   onSupprimerSelection,
   onEffacerTout,
+  onChargerPlanParDefaut,
   onChargerImageFond,
   onAjusterOpaciteImage,
   onSupprimerImageFond,
@@ -469,6 +470,7 @@ function PanneauLateral({
             <button className="btn-outil btn-lock" onClick={onVerrouillerSelection} title="Verrouiller">🔒</button>
             <button className="btn-outil btn-danger" onClick={onSupprimerSelection} title="Supprimer">🗑️</button>
             <button className="btn-outil btn-danger" onClick={onEffacerTout} title="Effacer tout">⚠️</button>
+            <button className="btn-outil" onClick={onChargerPlanParDefaut} title="Charger plan par défaut personnalisé" style={{background: '#ff9800', color: 'white'}}>🔄 Plan défaut</button>
           </div>
           
           {/* IMAGE DE FOND */}
