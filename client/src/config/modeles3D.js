@@ -90,11 +90,12 @@ export const MODELES_ARBRES = {
 // NOTE: Modèles activés temporairement pour test (même si lourds)
 // Chargement lent attendu (12 MB par arbre)
 export const ARBRE_TO_MODEL = {
-  // ACTIVÉ pour test (attention : chargement lent, 12 MB par modèle)
-  // Utiliser les vrais IDs de arbustesData.js
+  // ✅ TOUS LES CERISIERS utilisent le MÊME modèle avancé (cerisier-tree-1)
   'prunus-kanzan': 'cerisier-tree-1',
   'prunus-accolade': 'cerisier-tree-1',
-  'prunus-sunset-boulevard': 'cerisier-tree-2',
+  'prunus-sunset-boulevard': 'cerisier-tree-1', // ✅ Uniformisé avec les autres cerisiers
+  
+  // Érable japonais utilise le modèle tree-3
   'erable-japonais': 'cerisier-tree-3',
 };
 
