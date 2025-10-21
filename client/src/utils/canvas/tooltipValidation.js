@@ -4,6 +4,7 @@
  */
 
 import * as fabric from 'fabric';
+import { getIconePourStatut } from '../validation';
 
 /**
  * Afficher le tooltip de validation pour un arbre
@@ -15,23 +16,29 @@ export const afficherTooltipValidation = (arbreGroup, canvas, validationTooltipR
   const messages = arbreGroup.validationMessages || [];
   const status = arbreGroup.validationStatus || 'ok';
   const arbre = arbreGroup.arbreData;
+  const tailles = arbreGroup.tailles;
+  const iconeType = arbreGroup.iconeType || '';
   
-  let classe = 'validation-ok';
-  let icone = '✅';
-  if (status === 'error') {
-    classe = 'validation-error';
-    icone = '❌';
-  } else if (status === 'warning') {
-    classe = 'validation-warning';
-    icone = '⚠️';
-  }
+  // 4 paliers de validation (utilise le système centralisé)
+  const icone = getIconePourStatut(status);
+  const classe = `validation-${status}`;
   
-  // Tooltip simplifié : SEULEMENT les problèmes
+  // Tooltip complet : nom + dimensions + validation
   let html = `<div class="panel-validation-header ${classe}">`;
   html += `<strong>${icone} ${arbre?.name || 'Arbre'}</strong>`;
   html += `</div>`;
   
-  // Afficher SEULEMENT les messages de problème (pas les OK)
+  // Informations de dimensions (si disponibles)
+  if (tailles) {
+    html += `<div class="panel-validation-dimensions">`;
+    html += `<div style="font-size: 11px; color: #424242; padding: 6px 8px; background: rgba(255,255,255,0.5); border-radius: 4px; margin-bottom: 6px;">`;
+    html += `📏 <strong>Plantation:</strong> ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m<br>`;
+    html += `🌳 <strong>Tronc:</strong> ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
+    html += `</div>`;
+    html += `</div>`;
+  }
+  
+  // Afficher les messages de validation
   if (messages.length > 0 && status !== 'ok') {
     html += `<div class="panel-validation-messages">`;
     messages.forEach(msg => {

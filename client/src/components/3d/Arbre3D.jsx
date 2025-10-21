@@ -1,6 +1,7 @@
 import { useRef, useMemo, memo } from 'react';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
+import HaloPulsant from './HaloPulsant';
 
 /**
  * Composant Arbre 3D Ultra-Réaliste
@@ -177,7 +178,6 @@ function Arbre3D({
   };
   
   const infosSaison = getInfosSaison();
-  const couleurValidation = validationStatus === 'error' ? '#f44336' : validationStatus === 'warning' ? '#ff9800' : '#2e7d32';
   
   // ========== CRÉATION DES FLEURS EN INSTANCING ==========
   
@@ -423,9 +423,9 @@ function Arbre3D({
           
           <mesh position={[-envergureActuelle * 0.2, hauteurActuelle + envergureActuelle * 0.25, -envergureActuelle * 0.15]} castShadow receiveShadow>
             <sphereGeometry args={[envergureActuelle / 3.5, 16, 12]} />
-            <meshStandardMaterial 
+        <meshStandardMaterial 
               color={infosSaison.feuillage}
-              transparent 
+          transparent 
               opacity={0.45 * infosSaison.densite}
               roughness={0.85}
             />
@@ -456,8 +456,8 @@ function Arbre3D({
                   color="#8d6e63"
                   roughness={0.8}
                   metalness={0.05}
-                />
-              </mesh>
+        />
+      </mesh>
             );
           })}
         </>
@@ -524,7 +524,7 @@ function Arbre3D({
                 rotation={[Math.random() * Math.PI / 3, angle, Math.random() * Math.PI / 6]}
               >
                 <cylinderGeometry args={[0.02, 0.01, profondeur * 0.6, 4]} />
-                <meshStandardMaterial 
+        <meshStandardMaterial 
                   color={validationStatus === 'error' ? '#ff4444' : '#8B4513'}
                   transparent 
                   opacity={0.5}
@@ -535,70 +535,12 @@ function Arbre3D({
         </>
       )}
       
-      {/* INDICATEURS VISUELS DE VALIDATION */}
-      
-      {/* Cercle au sol - Couleur selon validation */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
-        <ringGeometry args={[envergureActuelle / 2 - 0.1, envergureActuelle / 2 + 0.1, 64]} />
-        <meshBasicMaterial 
-          color={couleurValidation}
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
-      
-      {/* Halo pulsant si problème */}
-      {validationStatus === 'error' && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
-          <ringGeometry args={[envergureActuelle / 2 + 0.2, envergureActuelle / 2 + 0.5, 64]} />
-          <meshBasicMaterial 
-            color="#ff0000"
-            transparent
-            opacity={0.6}
-          />
-        </mesh>
-      )}
-      
-      {validationStatus === 'warning' && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
-          <ringGeometry args={[envergureActuelle / 2 + 0.2, envergureActuelle / 2 + 0.4, 64]} />
-          <meshBasicMaterial 
-            color="#ff9800"
-            transparent
-            opacity={0.5}
-          />
-        </mesh>
-      )}
-      
-      {/* Symbole d'alerte pulsant */}
-      {validationStatus === 'error' && (
-        <Html position={[0, hauteurActuelle + envergureActuelle * 0.6, 0]} center>
-          <div style={{ 
-            fontSize: '32px',
-            animation: 'pulse 1.5s ease-in-out infinite',
-            textShadow: '0 0 10px rgba(255,0,0,0.8)'
-          }}>
-            ⚠️
-          </div>
-        </Html>
-      )}
-      
-      {/* Label nom discret */}
-      <Html position={[0, hauteurActuelle + envergureActuelle * 0.5 + 0.2, 0]} center>
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.9)', 
-          padding: '2px 6px', 
-          borderRadius: '3px',
-          fontSize: '9px',
-          fontWeight: '500',
-          color: '#424242',
-          whiteSpace: 'nowrap',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          border: 'none'
-        }}>
-          {arbreData?.name || 'Arbre'}
-        </div>
-      </Html>
+      {/* INDICATEURS VISUELS DE VALIDATION - HALO PULSANT ANIMÉ */}
+      <HaloPulsant 
+        status={validationStatus}
+        position={[0, 0, 0]}
+        envergure={envergureActuelle}
+      />
       
       {/* Particules de feuilles qui tombent en automne */}
       {infosSaison.typeRendu === 'feuillage-automne' && (
@@ -618,16 +560,38 @@ function Arbre3D({
               ]}
             >
               <planeGeometry args={[0.08, 0.12]} />
-              <meshStandardMaterial 
+          <meshStandardMaterial 
                 color={infosSaison.feuillage}
-                transparent
+            transparent 
                 opacity={0.7}
                 side={THREE.DoubleSide}
-              />
-            </mesh>
+          />
+        </mesh>
           ))}
         </>
       )}
+      
+      {/* Label avec nom et hauteur au sommet */}
+      <Html position={[0, hauteurActuelle + 0.3, 0]} center>
+        <div style={{ 
+          background: 'rgba(255, 255, 255, 0.95)',
+          padding: '4px 10px',
+          borderRadius: '6px',
+          fontSize: '11px',
+          fontWeight: '600',
+          color: '#333',
+          whiteSpace: 'nowrap',
+          border: '1px solid #ddd',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+        }}>
+          <div style={{ marginBottom: '2px', fontWeight: '700', color: '#2e7d32' }}>
+          {arbreData?.name || 'Arbre'}
+          </div>
+          <div style={{ fontSize: '10px', color: '#666' }}>
+            ↕️ {hauteurActuelle.toFixed(1)}m
+          </div>
+        </div>
+      </Html>
       
     </group>
   );

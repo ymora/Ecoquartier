@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import logger from '../utils/logger';
+import { forcerTriObjets } from '../utils/canvas/depthSorting';
 import { afficherGuideTemporaire } from '../utils/canvas/affichage';
 import { 
   deplacerClotureAvecConnexions,
@@ -19,6 +20,7 @@ export const useCanvasEvents = ({
   cacherMenuContextuel,
   cacherTooltipValidation,
   validerPositionArbre,
+  revaliderTous, // Nouvelle fonction pour re-valider tous les arbres
   afficherTooltipValidation,
   cacherCercleTronc,
   exporterPlan,
@@ -103,9 +105,10 @@ export const useCanvasEvents = ({
         afficherTooltipValidation(e.target, canvas);
       }
       
-      // Valider uniquement l'objet modifié (pas tous les arbres)
-      if (e.target && e.target.customType === 'arbre-a-planter') {
-        validerPositionArbre(canvas, e.target);
+      // RE-VALIDER TOUS LES ARBRES après TOUT déplacement
+      // Cela permet de détecter tous les conflits (arbres, maison, canalisations, etc.)
+      if (revaliderTous) {
+        revaliderTous(canvas);
       }
       
       // Réinitialiser la position de référence des clôtures

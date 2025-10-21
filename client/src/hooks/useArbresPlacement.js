@@ -73,36 +73,9 @@ export const useArbresPlacement = ({
           evented: false
         });
 
-        const labelNom = new fabric.Text(arbre.name, {
-          fontSize: 10,
-          fontWeight: 'bold',
-          originX: 'center',
-          originY: 'center',
-          top: hauteur * 0.25,
-          fill: '#1b5e20',
-          backgroundColor: 'rgba(255, 255, 255, 0.85)',
-          padding: 3,
-          selectable: false,
-          evented: false
-        });
+        // Labels supprimés : toutes les infos sont maintenant dans le tooltip au survol
 
-        const labelDimensions = new fabric.Text(
-          `Plantation: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`,
-          {
-            fontSize: 9,
-            originX: 'center',
-            originY: 'center',
-            top: hauteur * 0.38,
-            fill: '#424242',
-            textAlign: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.75)',
-            padding: 2,
-            selectable: false,
-            evented: false
-          }
-        );
-
-        const arbreGroup = new fabric.Group([ellipse, emoji, labelNom, labelDimensions], {
+        const arbreGroup = new fabric.Group([ellipse, emoji], {
           left: position.x,
           top: position.y,
           originX: 'center',
@@ -116,8 +89,17 @@ export const useArbresPlacement = ({
         });
 
         arbreGroup.arbreData = arbre;
+        // Stocker les dimensions pour le tooltip
+        arbreGroup.tailles = tailles;
+        arbreGroup.iconeType = iconeType;
         canvas.add(arbreGroup);
-        validerPositionArbre(canvas, arbreGroup);
+        
+        // Valider avec protection contre les erreurs
+        try {
+          validerPositionArbre(canvas, arbreGroup);
+        } catch (error) {
+          logger.error('AjoutArbres', `Erreur validation ${arbre.name}:`, error);
+        }
         
         // Debug désactivé pour performance (boucle)
         // logger.debug('AjoutArbres', `✅ ${arbre.name} ajouté en position ${position.x.toFixed(0)}, ${position.y.toFixed(0)}`);

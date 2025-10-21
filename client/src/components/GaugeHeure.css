@@ -1,0 +1,40 @@
+/* Jauge d'heure compacte intégrée dans le panneau latéral */
+.gauge-heure-container {
+  margin: 0.5rem auto 0.3rem; /* Plus d'espace en haut pour éviter le chevauchement */
+  cursor: grab;
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gauge-heure-container:active {
+  cursor: grabbing;
+}
+
+.gauge-heure-container svg {
+  display: block;
+}
+
+/* Informations compactes */
+.heure-info-compact {
+  text-align: center;
+  margin-top: 0.15rem;
+}
+
+.heure-actuelle-compact {
+  font-size: 0.85rem;
+  color: #333;
+  margin-bottom: 0.2rem;
+}
+
+.heure-actuelle-compact strong {
+  font-weight: 600;
+}
+
+.heure-reelle-compact {
+  font-size: 0.7rem;
+  color: #666;
+  font-style: italic;
+}
+

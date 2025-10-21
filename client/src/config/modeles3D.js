@@ -8,6 +8,12 @@
  * 
  * LIMITE DE TAILLE: 5 MB recommandé (10 MB max)
  * Si > 10 MB : Le modèle ne sera pas chargé (trop lent)
+ * 
+ * SYSTÈME AUTOMATIQUE:
+ * - Le système mesure automatiquement la hauteur du modèle Blender
+ * - Lit la taille à maturité depuis arbustesData.js (tailleMaturite)
+ * - Calcule automatiquement le scale pour que l'arbre atteigne la bonne hauteur
+ * - Pas besoin d'ajuster manuellement ! Tout est automatique ✅
  */
 
 // Types de modèles disponibles
@@ -30,62 +36,50 @@ export const MODELES_ARBRES = {
   'cerisier-tree-1': {
     path: '/models/cerisier/cerisier-tree-1.glb',
     type: 'glb',
-    scale: 0.5,
     rotation: [0, 0, 0],
-    hauteurReelle: 10,
     nom: 'Cerisier Modèle 1',
-    disabled: false  // ✅ Activé pour test (12 MB - chargement lent)
+    disabled: false
   },
   'cerisier-tree-2': {
     path: '/models/cerisier/cerisier-tree-2.glb',
     type: 'glb',
-    scale: 0.5,
     rotation: [0, 0, 0],
-    hauteurReelle: 10,
     nom: 'Cerisier Modèle 2',
-    disabled: false  // ✅ Activé pour test (12 MB - chargement lent)
+    disabled: false
   },
   'cerisier-tree-3': {
     path: '/models/cerisier/cerisier-tree-3.glb',
     type: 'glb',
-    scale: 0.5,
     rotation: [0, 0, 0],
-    hauteurReelle: 10,
-    nom: 'Cerisier Modèle 3',
-    disabled: false  // ✅ Activé pour test (12 MB - chargement lent)
+    nom: 'Cerisier Modèle 3 (Érable)',
+    disabled: false
   },
   
   // Modèle générique léger (à ajouter)
   'cerisier-general': {
     path: '/models/cerisier/cerisier-general.glb',
     type: 'glb',
-    scale: 0.5,
     rotation: [0, 0, 0],
-    hauteurReelle: 8,
     nom: 'Cerisier (Générique)',
-    disabled: true  // N'existe pas encore
+    disabled: true
   },
   
   // === ÉRABLES ===
   'erable-general': {
     path: '/models/erable/erable-general.glb',
     type: 'glb',
-    scale: 0.5,
     rotation: [0, 0, 0],
-    hauteurReelle: 8,
     nom: 'Érable (Générique)',
-    disabled: true  // À ajouter
+    disabled: true
   },
   
   // === MAGNOLIAS ===
   'magnolia-general': {
     path: '/models/magnolia/magnolia-general.glb',
     type: 'glb',
-    scale: 0.5,
     rotation: [0, 0, 0],
-    hauteurReelle: 10,
     nom: 'Magnolia (Générique)',
-    disabled: true  // À ajouter
+    disabled: true
   }
 };
 
@@ -97,10 +91,11 @@ export const MODELES_ARBRES = {
 // Chargement lent attendu (12 MB par arbre)
 export const ARBRE_TO_MODEL = {
   // ACTIVÉ pour test (attention : chargement lent, 12 MB par modèle)
-  'cerisier-kanzan': 'cerisier-tree-1',
-  'cerisier-accolade': 'cerisier-tree-1',
-  'cerisier-sunset': 'cerisier-tree-2',
-  'erable-japon': 'cerisier-tree-3',
+  // Utiliser les vrais IDs de arbustesData.js
+  'prunus-kanzan': 'cerisier-tree-1',
+  'prunus-accolade': 'cerisier-tree-1',
+  'prunus-sunset-boulevard': 'cerisier-tree-2',
+  'erable-japonais': 'cerisier-tree-3',
 };
 
 /**

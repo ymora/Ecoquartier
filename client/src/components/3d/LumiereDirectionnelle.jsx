@@ -2,7 +2,7 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 /**
- * Lumière directionnelle dynamique selon la saison et l'heure
+ * Lumière directionnelle dynamique selon la saison et l'angle fluide
  * Génère des ombres réalistes basées sur la position astronomique du soleil
  * 
  * Latitude Bessancourt : 49°N
@@ -10,7 +10,8 @@ import { useFrame } from '@react-three/fiber';
  */
 function LumiereDirectionnelle({ 
   saison = 'ete',
-  heureJournee = 'midi', // 'lever', 'matin', 'midi', 'soir', 'coucher'
+  angleJournee = 90, // Angle de 0° (matin) à 180° (soir)
+  heureJournee = null, // DEPRECATED: gardé pour compatibilité
   orientation = 'nord-haut', // 'nord-haut', 'sud-haut', 'est-haut', 'ouest-haut'
   distance = 50,
   intensity = 1.2,
@@ -28,28 +29,22 @@ function LumiereDirectionnelle({
       ete: 64         // 21 juin - soleil très haut
     };
     
-    // Azimut selon l'heure (angle horizontal, 0° = Sud)
-    const azimuthAngles = {
-      'lever': -90,    // Est (lever du soleil)
-      'matin': -45,    // Sud-Est
-      'midi': 0,       // Sud (midi solaire)
-      'soir': 45,      // Sud-Ouest
-      'coucher': 90    // Ouest (coucher du soleil)
-    };
+    // Élévation maximale à midi selon la saison
+    const elevationMax = elevationAngles[saison] || 41;
     
-    // Élévation (hauteur du soleil)
-    const elevationBase = elevationAngles[saison] || 41;
+    // Convertir l'angle de la journée (0-180°) en azimut et élévation
+    // angleJournee: 0° = lever (Est), 90° = midi (Sud), 180° = coucher (Ouest)
     
-    // Ajuster l'élévation selon l'heure (plus bas matin/soir)
-    let elevation = elevationBase;
-    if (heureJournee === 'lever' || heureJournee === 'coucher') {
-      elevation = elevation * 0.3; // 30% de la hauteur max au lever/coucher
-    } else if (heureJournee === 'matin' || heureJournee === 'soir') {
-      elevation = elevation * 0.7; // 70% de la hauteur max
-    }
+    // Azimut : -90° (Est) → 0° (Sud) → +90° (Ouest)
+    const azimuth = (angleJournee - 90) * 1; // Linéaire de -90 à +90
     
-    // Azimut (rotation horizontale)
-    const azimuth = azimuthAngles[heureJournee] || 0;
+    // Élévation : courbe parabolique (bas au lever/coucher, haut à midi)
+    const angleNormalized = (angleJournee / 180) * Math.PI; // 0 à π
+    const elevationFactor = Math.sin(angleNormalized); // 0 → 1 → 0
+    
+    // Élévation minimale (lever/coucher) = 5°, maximale (midi) = elevationMax
+    const elevationMin = 5;
+    const elevation = elevationMin + (elevationMax - elevationMin) * elevationFactor;
     
     // Ajustement selon l'orientation du terrain
     const orientationOffsets = {
@@ -76,7 +71,7 @@ function LumiereDirectionnelle({
       elevation: elevation,
       azimuth: azimuthAjuste
     };
-  }, [saison, heureJournee, orientation, distance]);
+  }, [saison, angleJournee, orientation, distance]);
   
   // Intensité lumineuse selon la saison et l'heure
   const lightIntensity = useMemo(() => {
@@ -87,24 +82,24 @@ function LumiereDirectionnelle({
       baseIntensity *= 0.8;
     }
     
-    // Réduction au lever/coucher (lumière rasante)
-    if (heureJournee === 'lever' || heureJournee === 'coucher') {
-      baseIntensity *= 0.6;
-    } else if (heureJournee === 'matin' || heureJournee === 'soir') {
-      baseIntensity *= 0.85;
-    }
+    // Réduction basée sur l'élévation du soleil (plus bas = moins d'intensité)
+    const angleNormalized = (angleJournee / 180) * Math.PI;
+    const elevationFactor = Math.sin(angleNormalized); // 0 → 1 → 0
+    const intensityMultiplier = 0.6 + 0.4 * elevationFactor; // 0.6 à 1.0
+    baseIntensity *= intensityMultiplier;
     
     return baseIntensity;
-  }, [saison, heureJournee, intensity]);
+  }, [saison, angleJournee, intensity]);
   
-  // Couleur de la lumière selon l'heure (température de couleur)
+  // Couleur de la lumière selon l'angle (température de couleur)
   const lightColor = useMemo(() => {
-    if (heureJournee === 'lever') return '#FFD4A3'; // Orange chaud lever
-    if (heureJournee === 'coucher') return '#FF9A56'; // Orange rougeâtre coucher
-    if (heureJournee === 'matin') return '#FFF5E6'; // Blanc chaud matin
-    if (heureJournee === 'soir') return '#FFE4B5'; // Blanc orangé soir
-    return '#FFFFFF'; // Blanc neutre midi
-  }, [heureJournee]);
+    // Transition fluide de orange (lever/coucher) à blanc (midi)
+    if (angleJournee < 30) return '#FFD4A3'; // Orange chaud lever
+    if (angleJournee < 60) return '#FFF5E6'; // Blanc chaud matin
+    if (angleJournee < 120) return '#FFFFFF'; // Blanc neutre milieu journée
+    if (angleJournee < 150) return '#FFE4B5'; // Blanc orangé soir
+    return '#FF9A56'; // Orange rougeâtre coucher
+  }, [angleJournee]);
   
   return (
     <directionalLight

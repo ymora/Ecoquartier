@@ -1,212 +1,106 @@
 /**
  * canvasValidation.js
- * Validation des positions d'arbres et affichage visuel
+ * Validation 2D avec le système centralisé
+ * SIMPLIFIÉ : Utilise le système unifié depuis utils/validation
  */
 
 import * as fabric from 'fabric';
 import logger from '../logger';
-import { calculerDistanceRectangle, calculerDistanceCercle, calculerDistanceLigne, trouverPointPlusProcheMaison, trouverPointPlusProcheLigne } from './canvasHelpers';
+import { calculerDistanceRectangle, trouverPointPlusProcheMaison, trouverPointPlusProcheLigne } from './canvasHelpers';
+import { validerArbre2D, getCouleursPourStatut } from '../validation';
 
 /**
- * Valider la position d'un arbre et changer sa couleur
+ * Re-valider TOUS les arbres pour la validation globale
+ * Appelé après TOUT déplacement (arbre, maison, canalisation, clôture, etc.)
+ * SYSTÈME OPTIMISÉ : détecte tous les conflits d'un coup
  */
-export const validerPositionArbre = (canvas, arbreGroup, echelle, couchesSol, orientation) => {
-  const arbre = arbreGroup.arbreData;
-  if (!arbre) return;
-  
-  // Debug désactivé pour performance (appelé à chaque modification)
-  // logger.debug('Validation', `Validation arbre: ${arbre.name}`, { arbreId: arbre.id });
-  
-  // Extraire les distances minimales depuis les données réglementaires
-  const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
-  const distanceCanalisations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.canalisations?.split('m')[0] || '4');
-  const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
-  const distanceEntreArbres = parseFloat(arbre.reglementation?.distancesLegales?.entreArbres?.distance?.split('m')[0] || '5');
-  const distanceTerrasse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.terrasse?.split('m')[0] || '3');
-  // const distancePiscine = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.piscine?.split('m')[0] || '4'); // Future feature
-  
-  // Données supplémentaires pour validation
-  const systemeRacinaire = arbre.reglementation?.systemeRacinaire?.agressivite || 'Modérée';
-  const exposition = arbre.exposition || '';
-  
-  // IMPORTANT : Déclarer profondeurRacines ICI (utilisée dans les validations 3D)
-  const profondeurRacines = parseFloat(arbre.reglementation?.systemeRacinaire?.profondeur?.split('-')[0] || '1');
-  
-  const problemes = [];
-  const avertissements = [];
-  const conseils = [];
-  
-  const x = arbreGroup.left;
-  const y = arbreGroup.top;
-  
-  // Vérifier maison/fondations
-  const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
-  if (maison) {
-    const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
-    const profondeurFondations = maison.profondeurFondations || 1.2;
-    
-    if (profondeurRacines > profondeurFondations && distMaison < distanceFondations) {
-      problemes.push(`🏠 Racines ${profondeurRacines}m > fondations ${profondeurFondations}m (${distMaison.toFixed(1)}m)`);
-    } else if (distMaison < distanceFondations) {
-      problemes.push(`🏠 ${distMaison.toFixed(1)}m < ${distanceFondations}m minimum`);
-    } else if (distMaison < distanceFondations + 1) {
-      avertissements.push(`🏠 ${distMaison.toFixed(1)}m (min ${distanceFondations}m)`);
-    }
-  }
-  
-  // Vérifier canalisations
-  const canalisations = canvas.getObjects().filter(obj => obj.customType === 'canalisation');
-  for (const canal of canalisations) {
-    const distCanal = calculerDistanceLigne(x, y, canal) / echelle;
-    const profondeurCanal = canal.profondeur || 0.6;
-    
-    if (profondeurRacines > profondeurCanal && distCanal < distanceCanalisations) {
-      problemes.push(`🚰 Racines ${profondeurRacines}m > canal ${profondeurCanal}m (${distCanal.toFixed(1)}m)`);
-    } else if (distCanal < distanceCanalisations) {
-      problemes.push(`🚰 ${distCanal.toFixed(1)}m < ${distanceCanalisations}m minimum`);
-    }
-  }
-  
-  // Vérifier clôtures/limites
-  const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
-  const diametreTronc = 0.15; // 15cm estimation
-  const rayonTronc = diametreTronc / 2;
-  
-  for (const cloture of clotures) {
-    const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
-    
-    if (distCloture < rayonTronc) {
-      problemes.push(`⚖️ Tronc dépasse limite (${distCloture.toFixed(1)}m)`);
-    } else if (distCloture < distanceCloture) {
-      problemes.push(`⚖️ ${distCloture.toFixed(1)}m < ${distanceCloture}m légal (CC Art.671)`);
-    } else if (distCloture < distanceCloture + 0.5) {
-      avertissements.push(`⚠️ Limite ${distCloture.toFixed(1)}m (min ${distanceCloture}m)`);
-    }
-  }
-  
-  // Vérifier citernes/fosses septiques (CERCLE - mesure depuis le BORD)
-  const citernes = canvas.getObjects().filter(obj => obj.customType === 'citerne');
-  const distanceFosseSeptique = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fossesSeptiques?.split('m')[0] || '6');
-  
-  for (const citerne of citernes) {
-    // CORRECTION : Utiliser calculerDistanceCercle pour mesurer depuis le BORD
-    const distCiterne = calculerDistanceCercle(x, y, citerne) / echelle;
-    const profondeurCiterne = citerne.profondeur || 2.5;
-    
-    // Si les racines atteignent la profondeur de la citerne
-    if (profondeurRacines > profondeurCiterne && distCiterne < distanceFosseSeptique) {
-      problemes.push(`💧 Racines atteignent citerne (${distCiterne.toFixed(1)}m < ${distanceFosseSeptique}m)`);
-    } else if (distCiterne < distanceFosseSeptique) {
-      problemes.push(`💧 Trop proche citerne (${distCiterne.toFixed(1)}m < ${distanceFosseSeptique}m)`);
-    }
-  }
-  
-  // Vérifier terrasses/pavés (inclut aussi les zones minéralisées)
-  const terrasses = canvas.getObjects().filter(obj => obj.customType === 'paves' || obj.customType === 'terrasse');
-  for (const terrasse of terrasses) {
-    const distTerrasse = calculerDistanceRectangle(x, y, terrasse) / echelle;
-    
-    // Racines agressives = problème si trop proche
-    if (systemeRacinaire === 'Élevée' || systemeRacinaire === 'Forte') {
-      if (distTerrasse < distanceTerrasse + 1) {
-        problemes.push(`🟩 ${distTerrasse.toFixed(1)}m < ${distanceTerrasse + 1}m (racines ${systemeRacinaire.toLowerCase()})`);
-      }
-    } else if (distTerrasse < distanceTerrasse) {
-      avertissements.push(`🟩 ${distTerrasse.toFixed(1)}m pavés (min ${distanceTerrasse}m)`);
-    } else if (distTerrasse < distanceTerrasse + 0.5) {
-      avertissements.push(`⚠️ ${distTerrasse.toFixed(1)}m pavés (proche limite)`);
-    }
-  }
-  
-  // Vérifier autres arbres
-  const autresArbres = canvas.getObjects().filter(obj => 
-    (obj.customType === 'arbre-a-planter' || obj.customType === 'arbre-existant') && obj !== arbreGroup
+export const revaliderTousLesArbres = (canvas, echelle, couchesSol, orientation) => {
+  const arbres = canvas.getObjects().filter(obj => 
+    obj.customType === 'arbre-a-planter' || obj.customType === 'arbre-existant'
   );
-  for (const autreArbre of autresArbres) {
-    const dx = (x - autreArbre.left) / echelle;
-    const dy = (y - autreArbre.top) / echelle;
-    const distArbre = Math.sqrt(dx * dx + dy * dy);
-    if (distArbre < distanceEntreArbres) {
-      avertissements.push(`🌳 ${distArbre.toFixed(1)}m autre arbre (min ${distanceEntreArbres}m)`);
+  
+  // PHASE 1 : Réinitialiser tous les arbres à 'ok' (vert)
+  arbres.forEach(arbre => {
+    const ellipse = arbre._objects ? arbre._objects[0] : null;
+    if (ellipse) {
+      const couleurs = getCouleursPourStatut('ok');
+      ellipse.set({
+        fill: couleurs.fill,
+        stroke: couleurs.stroke
+      });
+      arbre.validationStatus = 'ok';
+      arbre.validationMessages = [];
+      arbre.validationConseils = [];
+      arbre.pourcentageCritique = 100;
     }
-  }
+  });
   
-  // Vérifier la compatibilité avec le sol (profondeurRacines déjà déclarée en haut)
-  const profondeurTerreVegetale = couchesSol[0].profondeur / 100; // Convertir cm en m
-  const typeSolProfondeur = couchesSol[1].type;
+  // PHASE 2 : Valider chaque arbre et marquer les problèmes
+  arbres.forEach(arbre => {
+    validerPositionArbre(canvas, arbre, echelle, couchesSol, orientation);
+  });
   
-  if (profondeurRacines > profondeurTerreVegetale) {
-    if (typeSolProfondeur === 'calcaire' && arbre.sol?.ph?.includes('acide')) {
-      avertissements.push(`🌍 Sol calcaire en profondeur (${couchesSol[1].profondeur}cm) : cet arbre préfère sol acide (pH ${arbre.sol.ph})`);
-    } else if (typeSolProfondeur === 'rocheux' && profondeurRacines > 1) {
-      problemes.push(`⛰️ Sol rocheux à ${profondeurTerreVegetale}m : racines atteignent ${profondeurRacines}m (croissance limitée)`);
-    } else if (typeSolProfondeur === 'argileux' && arbre.sol?.type?.includes('drainé')) {
-      avertissements.push(`🌍 Sol argileux en profondeur : drainage peut être insuffisant pour cet arbre`);
-    }
-  }
-  
-  // Ajouter des conseils basés sur les caractéristiques de l'arbre
-  if (systemeRacinaire === 'Élevée' || systemeRacinaire === 'Forte') {
-    conseils.push(`⚠️ Système racinaire ${systemeRacinaire.toLowerCase()} : privilégier éloignement maximal des infrastructures`);
-  }
-  
-  if (exposition.includes('Soleil') && orientation === 'nord-bas') {
-    conseils.push(`☀️ Cet arbre aime le soleil : le placer au sud du terrain pour exposition maximale`);
-  }
-  
-  if (arbre.arrosage?.includes('Régulier') || arbre.arrosage?.includes('Abondant')) {
-    conseils.push(`💧 Arrosage ${arbre.arrosage.split('.')[0].toLowerCase()} : éviter trop loin du point d'eau`);
-  }
-  
-  if (arbre.sol?.humidite?.includes('Frais') || arbre.sol?.humidite?.includes('Humide')) {
-    conseils.push(`💧 Préfère sol frais : éviter zones sèches ou en hauteur`);
-  }
-  
-  // Conseil sur la composition du sol
-  conseils.push(`🌍 Sol actuel : ${profondeurTerreVegetale}m de terre végétale, puis ${couchesSol[1].nom.toLowerCase()}`);
-  
-  // Changer la couleur de l'ellipse (accès direct via _objects)
-  const ellipse = arbreGroup._objects ? arbreGroup._objects[0] : null;
-  
-  if (!ellipse) {
-    logger.error('Validation', `Impossible d'accéder à l'ellipse de ${arbre.name}`);
-    return;
-  }
-  
-  if (problemes.length > 0) {
-    ellipse.set({
-      fill: 'rgba(244, 67, 54, 0.4)', // Rouge
-      stroke: '#c62828'
-    });
-    arbreGroup.validationStatus = 'error';
-    arbreGroup.validationMessages = problemes;
-    arbreGroup.validationConseils = conseils;
-  } else if (avertissements.length > 0) {
-    ellipse.set({
-      fill: 'rgba(255, 152, 0, 0.4)', // Orange
-      stroke: '#e65100'
-    });
-    arbreGroup.validationStatus = 'warning';
-    arbreGroup.validationMessages = avertissements;
-    arbreGroup.validationConseils = conseils;
-  } else {
-    ellipse.set({
-      fill: 'rgba(129, 199, 132, 0.4)', // Vert
-      stroke: '#2e7d32'
-    });
-    arbreGroup.validationStatus = 'ok';
-    arbreGroup.validationMessages = ['✅ Position conforme à toutes les règles'];
-    arbreGroup.validationConseils = conseils;
-  }
-  
-  // Forcer le rendu du groupe
-  arbreGroup.dirty = true;
-  arbreGroup.setCoords();
   canvas.renderAll();
 };
 
 /**
+ * Valider la position d'un arbre et changer sa couleur
+ * SIMPLIFIÉ : Utilise le système centralisé
+ */
+export const validerPositionArbre = (canvas, arbreGroup, echelle, couchesSol, orientation) => {
+  try {
+    const arbre = arbreGroup.arbreData;
+    if (!arbre) {
+      logger.warn('Validation', 'Arbre sans arbreData, validation ignorée');
+      return;
+    }
+    
+    // Utiliser le système centralisé de validation
+    const resultat = validerArbre2D(arbreGroup, canvas, echelle, {
+      couchesSol,
+      orientation
+    });
+    
+    // Appliquer les couleurs selon le statut
+    const ellipse = arbreGroup._objects ? arbreGroup._objects[0] : null;
+    if (!ellipse) {
+      logger.error('Validation', `Impossible d'accéder à l'ellipse de ${arbre.name}`);
+      return;
+    }
+    
+    const couleurs = getCouleursPourStatut(resultat.status);
+    ellipse.set({
+      fill: couleurs.fill,
+      stroke: couleurs.stroke
+    });
+    
+    // Stocker les résultats sur l'arbre
+    arbreGroup.validationStatus = resultat.status;
+    arbreGroup.validationMessages = resultat.messages;
+    arbreGroup.validationConseils = resultat.conseils;
+    arbreGroup.pourcentageCritique = resultat.pourcentageMin;
+    
+    // Forcer le rendu du groupe
+    arbreGroup.dirty = true;
+    arbreGroup.setCoords();
+    // Ne PAS appeler renderAll() ici - sera fait par revaliderTousLesArbres()
+  } catch (error) {
+    logger.error('Validation', 'Erreur lors de la validation:', error);
+    // En cas d'erreur, mettre l'arbre en vert par défaut pour ne pas bloquer
+    const ellipse = arbreGroup._objects ? arbreGroup._objects[0] : null;
+    if (ellipse) {
+      const couleurs = getCouleursPourStatut('ok');
+      ellipse.set({
+        fill: couleurs.fill,
+        stroke: couleurs.stroke
+      });
+    }
+  }
+};
+
+/**
  * Afficher les lignes de mesure pour les distances problématiques
+ * INCHANGÉ : Logique d'affichage des lignes
  */
 export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
   // Supprimer les anciennes lignes de mesure
@@ -222,13 +116,16 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
   const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
   const distanceCanalisations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.canalisations?.split('m')[0] || '4');
   const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
+  const distanceFosseSeptique = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fossesSeptiques?.split('m')[0] || '6');
+  const distanceTerrasse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.terrasse?.split('m')[0] || '3');
+  const distanceEntreArbres = parseFloat(arbre.reglementation?.distancesLegales?.entreArbres?.distance?.split('m')[0] || '5');
+  const systemeRacinaire = arbre.reglementation?.systemeRacinaire?.agressivite || 'Modérée';
   
   // Vérifier maison
   const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
   if (maison) {
     const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
     if (distMaison < distanceFondations) {
-      // Trouver le point le plus proche sur la maison
       const pointProche = trouverPointPlusProcheMaison(x, y, maison);
       ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distMaison, distanceFondations, '🏠');
     }
@@ -244,21 +141,19 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     }
   }
   
-  // Vérifier clôtures (LIMITE DE PROPRIÉTÉ = VOISINAGE)
+  // Vérifier clôtures
   const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
   for (const cloture of clotures) {
     const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
     if (distCloture < distanceCloture || distCloture < 0.15) {
       const pointProche = trouverPointPlusProcheLigne(x, y, cloture);
-      // Message spécifique pour la distance légale voisinage
       const iconeLegal = distCloture < distanceCloture ? '⚖️' : '🚧';
       ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCloture, distanceCloture, iconeLegal);
     }
   }
   
-  // Vérifier citernes/fosses
+  // Vérifier citernes
   const citernes = canvas.getObjects().filter(obj => obj.customType === 'citerne');
-  const distanceFosseSeptique = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fossesSeptiques?.split('m')[0] || '6');
   for (const citerne of citernes) {
     const distCiterne = calculerDistanceRectangle(x, y, citerne) / echelle;
     if (distCiterne < distanceFosseSeptique) {
@@ -267,20 +162,46 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     }
   }
   
-  // Vérifier pavés/terrasses (AJOUT LIGNES DE MESURE)
-  const terrassesAffichage = canvas.getObjects().filter(obj => obj.customType === 'paves' || obj.customType === 'terrasse');
-  const distanceTerrasse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.terrasse?.split('m')[0] || '3');
-  const systemeRacinaireAffichage = arbre.reglementation?.systemeRacinaire?.agressivite || 'Modérée';
+  // Vérifier terrasses
+  const terrasses = canvas.getObjects().filter(obj => obj.customType === 'paves' || obj.customType === 'terrasse');
+  const distMinTerrasse = (systemeRacinaire === 'Élevée' || systemeRacinaire === 'Forte') 
+    ? distanceTerrasse + 1 
+    : distanceTerrasse;
   
-  for (const terrasse of terrassesAffichage) {
+  for (const terrasse of terrasses) {
     const distTer = calculerDistanceRectangle(x, y, terrasse) / echelle;
-    const distMinTerrasse = (systemeRacinaireAffichage === 'Élevée' || systemeRacinaireAffichage === 'Forte') 
-      ? distanceTerrasse + 1 
-      : distanceTerrasse;
-    
     if (distTer < distMinTerrasse) {
       const pointProche = trouverPointPlusProcheMaison(x, y, terrasse);
       ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distTer, distMinTerrasse, '🟩');
+    }
+  }
+  
+  // Vérifier autres arbres
+  const autresArbres = canvas.getObjects().filter(obj => 
+    (obj.customType === 'arbre-a-planter' || obj.customType === 'arbre-existant') && obj !== arbreGroup
+  );
+  
+  for (const autreArbre of autresArbres) {
+    const dx = (x - autreArbre.left) / echelle;
+    const dy = (y - autreArbre.top) / echelle;
+    const distArbre = Math.sqrt(dx * dx + dy * dy);
+    
+    // Distance min applicable (contrainte bidirectionnelle)
+    const autreArbreData = autreArbre.arbreData;
+    const distanceAutreArbre = autreArbreData?.reglementation?.distancesLegales?.entreArbres?.distance 
+      ? parseFloat(autreArbreData.reglementation.distancesLegales.entreArbres.distance.split('m')[0])
+      : 5;
+    const distanceMinApplicable = Math.max(distanceEntreArbres, distanceAutreArbre);
+    
+    if (distArbre < distanceMinApplicable) {
+      ajouterLigneMesureProbleme(
+        canvas, 
+        x, y, 
+        autreArbre.left, autreArbre.top, 
+        distArbre, 
+        distanceMinApplicable, 
+        '🌳'
+      );
     }
   }
   
@@ -323,3 +244,12 @@ const ajouterLigneMesureProbleme = (canvas, x1, y1, x2, y2, distActuelle, distMi
   canvas.add(label);
 };
 
+/**
+ * Wrapper pour compatibilité avec l'ancien code
+ */
+function calculerDistanceLigne(x, y, ligne) {
+  const pointProche = trouverPointPlusProcheLigne(x, y, ligne);
+  const dx = x - pointProche.x;
+  const dy = y - pointProche.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}

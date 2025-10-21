@@ -1,6 +1,9 @@
-import React, { memo, Suspense } from 'react';
-import { useGLTF } from '@react-three/drei';
+import React, { memo, Suspense, useEffect, useMemo, useRef } from 'react';
+import { useGLTF, Html } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 import Arbre3D from './Arbre3D';
+import HaloPulsant from './HaloPulsant';
 
 /**
  * Composant pour charger et afficher des modèles 3D réels (GLB)
@@ -17,10 +20,15 @@ import Arbre3D from './Arbre3D';
 function Arbre3DModel({ 
   position = [0, 0, 0], 
   modelPath,
-  scale = 1,
+  hauteurMaturite = 7, // Hauteur à maturité en mètres (depuis arbustesData.hauteurMaturite)
+  scale = 0.2, // Échelle de base du modèle (à ajuster selon les logs)
   rotation = [0, 0, 0],
   onClick,
   anneeProjection = 20,
+  saison = 'ete',
+  arbreData = null,
+  envergure = 5, // Envergure pour le cercle de validation
+  validationStatus = 'ok', // 'ok', 'warning', 'error'
   fallbackProps = {}
 }) {
   // Vérifier que le chemin existe
@@ -35,43 +43,113 @@ function Arbre3DModel({
           modelPath={modelPath}
           position={position}
           scale={scale}
+          hauteurMaturite={hauteurMaturite}
+          envergure={envergure}
+          validationStatus={validationStatus}
           rotation={rotation}
           onClick={onClick}
           anneeProjection={anneeProjection}
+          saison={saison}
+          arbreData={arbreData}
         />
       </ErrorBoundary>
     </Suspense>
   );
 }
 
-// Composant interne pour charger le GLB
-function GLBModel({ modelPath, position, scale, rotation, onClick, anneeProjection }) {
+// Composant interne pour charger le GLB - SANS modification de couleur
+// Les modèles GLB gardent leur apparence originale
+function GLBModel({ modelPath, position, scale, hauteurMaturite = 7, envergure = 5, validationStatus = 'ok', rotation, onClick, anneeProjection, saison = 'ete', arbreData }) {
   const { scene } = useGLTF(modelPath);
+  const groupRef = useRef();
   
-  // Calculer l'échelle selon l'année de projection
+  // Cloner et configurer la scène une seule fois
+  const { clonedScene, hauteurModele } = useMemo(() => {
+    const cloned = scene.clone();
+    
+    // Activer les ombres pour tous les mesh
+    cloned.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    
+    // Mesurer la hauteur RÉELLE du modèle Blender
+    cloned.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(cloned);
+    const hauteurMesuree = box.max.y - box.min.y;
+    
+    return { clonedScene: cloned, hauteurModele: hauteurMesuree };
+  }, [scene]);
+  
+  // CALCUL AUTOMATIQUE DU SCALE pour que l'arbre atteigne hauteurMaturite
+  // 1. Calculer le scale nécessaire pour atteindre hauteurMaturite
+  const scaleNecessaire = hauteurMaturite / hauteurModele;
+  
+  // 2. Appliquer la croissance selon anneeProjection
   const progression = Math.min(anneeProjection / 20, 1);
-  const scaleJeune = 0.3; // 30% à la plantation
-  const scaleFinal = scaleJeune + (1 - scaleJeune) * progression;
-  const finalScale = scale * scaleFinal;
+  const scaleJeune = 0.15; // 15% de la hauteur à maturité (jeune plant)
+  const scaleProgression = scaleJeune + (1 - scaleJeune) * progression;
   
-  const clonedScene = scene.clone();
+  // 3. Scale final = scale nécessaire × progression de croissance
+  const finalScale = scaleNecessaire * scaleProgression;
+  const hauteurFinale = hauteurModele * finalScale;
   
-  // Activer les ombres pour tous les mesh
-  clonedScene.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
-    }
+  // Log de debug
+  console.log(`[3D AUTO] ${arbreData?.name || 'Arbre'}:`, {
+    hauteurModeleBlender: hauteurModele.toFixed(2) + ' unités',
+    hauteurMaturiteFiche: hauteurMaturite + 'm',
+    annee: anneeProjection,
+    progression: (progression * 100).toFixed(0) + '%',
+    scaleCalcule: scaleNecessaire.toFixed(4),
+    scaleFinal: finalScale.toFixed(4),
+    hauteurActuelle: hauteurFinale.toFixed(2) + 'm',
+    hauteurAttendue: (hauteurMaturite * scaleProgression).toFixed(2) + 'm'
   });
   
+  // Calculer l'envergure actuelle selon la progression
+  const envergureActuelle = envergure * scaleProgression;
+  
   return (
-    <primitive 
-      object={clonedScene}
-      position={position}
-      scale={[finalScale, finalScale, finalScale]}
-      rotation={rotation}
-      onClick={onClick}
-    />
+    <group ref={groupRef}>
+      <primitive 
+        object={clonedScene}
+        position={position}
+        scale={[finalScale, finalScale, finalScale]}
+        rotation={rotation}
+        onClick={onClick}
+      />
+      
+      {/* HALO PULSANT ANIMÉ - Remplace le cercle statique */}
+      <HaloPulsant 
+        status={validationStatus}
+        position={position}
+        envergure={envergureActuelle}
+      />
+      
+      {/* Label avec nom et hauteur au sommet */}
+      <Html position={[position[0] + 0.5, hauteurFinale + 0.3, position[2]]} center>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          padding: '4px 10px',
+          borderRadius: '6px',
+          fontSize: '11px',
+          fontWeight: '600',
+          color: '#333',
+          whiteSpace: 'nowrap',
+          border: '1px solid #ddd',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+        }}>
+          <div style={{ marginBottom: '2px', fontWeight: '700', color: '#2e7d32' }}>
+            {arbreData?.name || 'Arbre'}
+          </div>
+          <div style={{ fontSize: '10px', color: '#666' }}>
+            ↕️ {hauteurFinale.toFixed(1)}m
+          </div>
+        </div>
+      </Html>
+    </group>
   );
 }
 

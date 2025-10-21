@@ -22,30 +22,11 @@
   height: 100%;
 }
 
-/* Cube de navigation 3D (style Fusion 360) */
-.cube-navigation-3d {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 120px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 200;
-  overflow: hidden;
-}
-
-.cube-navigation-3d canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
 /* Barre d'outils 3D */
 .toolbar-3d {
   position: absolute;
   top: 20px;
-  left: 160px; /* Décalé pour laisser place au cube */
+  left: 20px;
   background: rgba(255, 255, 255, 0.95);
   padding: 15px;
   border-radius: 12px;

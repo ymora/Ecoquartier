@@ -10,19 +10,42 @@ import Canalisation3D from './3d/Canalisation3D';
 import Citerne3D from './3d/Citerne3D';
 import Cloture3D from './3d/Cloture3D';
 import ObjetDraggable3D from './3d/ObjetDraggable3D';
-import PanneauEdition3D from './PanneauEdition3D';
+// PanneauEdition3D supprimé - pas nécessaire
 import Soleil3D from './3d/Soleil3D';
 import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
-import CubeNavigation3D from './3d/CubeNavigation3D';
-import SelecteurHeure from './SelecteurHeure';
+// GrilleReference, SelecteurHeure et CubeNavigation3D ne sont plus nécessaires
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
+import { validerArbres3D } from '../utils/validation3D';
 import './CanvasTerrain3D.css';
+
+// Fonction utilitaire pour parser la taille à maturité depuis arbustesData
+// Ex: "6-10 m" → 8 (moyenne), "4 m" → 4
+function parseHauteur(tailleMaturite) {
+  if (!tailleMaturite) return 7; // Valeur par défaut
+  
+  const match = tailleMaturite.match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
+  if (match) {
+    // Format "6-10 m" → prendre la moyenne
+    const min = parseFloat(match[1]);
+    const max = parseFloat(match[2]);
+    return (min + max) / 2;
+  }
+  
+  // Format "4 m" → prendre la valeur
+  const singleMatch = tailleMaturite.match(/(\d+(?:\.\d+)?)/);
+  if (singleMatch) {
+    return parseFloat(singleMatch[1]);
+  }
+  
+  return 7; // Défaut
+}
 
 function CanvasTerrain3D({ 
   dimensions = { largeur: 30, hauteur: 30 },
   planData = null,
   anneeProjection = 0,
   saison = 'ete', // Saison pour le soleil ET le feuillage des arbres
+  heureJournee = 90, // Angle de la journée pour les ombres (0° = matin, 180° = soir)
   orientation = 'nord-haut', // Orientation du terrain pour les ombres
   couchesSol = [
     { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
@@ -30,12 +53,11 @@ function CanvasTerrain3D({
   ],
   onObjetPositionChange = null
 }) {
-  const [objetSelectionne, setObjetSelectionne] = useState(null);
+  // Passer l'angle directement au soleil pour un mouvement fluide
+  // heureJournee est maintenant un angle de 0° (matin) à 180° (soir)
   const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote (coupe supprimée)
   const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
   const [solTransparent, setSolTransparent] = useState(false); // Sol transparent = voir racines, fondations, citernes, canalisations
-  const [heureJournee, setHeureJournee] = useState('midi'); // Heure de la journée pour les ombres
-  const [selecteurHeureOpen, setSelecteurHeureOpen] = useState(false); // Modal sélecteur d'heure
   const orbitControlsRef = useRef();
   
   // Convertir les données 2D en 3D
@@ -244,6 +266,41 @@ function CanvasTerrain3D({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur]);
   
+  // Valider tous les arbres en 3D pour avoir les statuts à jour
+  const validationMap3D = useMemo(() => {
+    // Combiner arbres à planter + arbres existants pour la validation globale
+    const tousLesArbres = [
+      ...(data3D.arbres || []),
+      ...(data3D.arbresExistants || [])
+    ];
+    
+    if (tousLesArbres.length === 0) return { arbres: new Map(), arbresExistants: new Map() };
+    
+    const validationComplete = validerArbres3D(
+      tousLesArbres,
+      data3D.maison,
+      data3D.canalisations,
+      data3D.citernes,
+      data3D.clotures,
+      data3D.terrasses
+    );
+    
+    // Séparer les validations pour arbres à planter vs existants
+    const nbArbresPlantes = data3D.arbres?.length || 0;
+    const arbresMap = new Map();
+    const existantsMap = new Map();
+    
+    validationComplete.forEach((val, idx) => {
+      if (idx < nbArbresPlantes) {
+        arbresMap.set(idx, val);
+      } else {
+        existantsMap.set(idx - nbArbresPlantes, val);
+      }
+    });
+    
+    return { arbres: arbresMap, arbresExistants: existantsMap };
+  }, [data3D]);
+  
   // Calculer les dimensions du terrain adaptatif (mémorisé)
   const terrainDimensions = useMemo(() => ({
     largeur: data3D.bounds.maxX - data3D.bounds.minX,
@@ -277,26 +334,11 @@ function CanvasTerrain3D({
   }, [terrainLargeur, terrainHauteur, terrainCentreX, terrainCentreZ]);
   
   const handleObjetClick = useCallback((objet) => {
-    setObjetSelectionne(objet);
+    // Modal d'édition supprimé - clic désactivé
+    // setObjetSelectionne(objet);
   }, []);
   
-  const handleProprieteChange = useCallback((propriete, valeur) => {
-    // Mettre à jour l'objet sélectionné
-    setObjetSelectionne(prev => prev ? {
-      ...prev,
-      [propriete]: valeur
-    } : prev);
-    
-    // Propager au planData si callback fourni
-    if (onObjetPositionChange && objetSelectionne) {
-      onObjetPositionChange({
-        type: objetSelectionne.type,
-        propriete,
-        valeur,
-        objet: objetSelectionne
-      });
-    }
-  }, [objetSelectionne, onObjetPositionChange]);
+  // handleProprieteChange supprimé - modal d'édition non nécessaire
   
   // Callback pour le drag end d'un objet (mémorisé)
   const handleObjetDragEnd = useCallback((dragData) => {
@@ -307,20 +349,6 @@ function CanvasTerrain3D({
   
   return (
     <div className="canvas-terrain-3d">
-      {/* Cube de navigation 3D (style Fusion 360) */}
-      <div className="cube-navigation-3d">
-        <Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[1, 1, 1]} intensity={0.8} />
-          <CubeNavigation3D 
-            vueActuelle={vueMode}
-            onVueChange={setVueMode}
-            position={[0, 0, 0]}
-            size={0.8}
-          />
-        </Canvas>
-      </div>
-
       {/* Barre d'outils 3D */}
       <div className="toolbar-3d">
         
@@ -341,21 +369,6 @@ function CanvasTerrain3D({
           />
           <span>✋ Mode déplacement d'objets</span>
         </label>
-        
-        <div className="control-group">
-          <label className="control-label">☀️ Heure de la journée</label>
-          <button 
-            className="heure-modal-btn"
-            onClick={() => setSelecteurHeureOpen(true)}
-            title="Ouvrir le sélecteur d'heure"
-          >
-            {heureJournee === 'lever' && '🌅 Lever'}
-            {heureJournee === 'matin' && '🌄 Matin'}
-            {heureJournee === 'midi' && '☀️ Midi'}
-            {heureJournee === 'soir' && '🌆 Soir'}
-            {heureJournee === 'coucher' && '🌇 Coucher'}
-          </button>
-        </div>
       </div>
       
       {/* Canvas 3D */}
@@ -363,8 +376,8 @@ function CanvasTerrain3D({
         {/* Ciel */}
         <Sky sunPosition={[100, 20, 100]} />
         
-        {/* Soleil 3D visuel selon la saison et l'heure */}
-        <Soleil3D saison={saison} heureJournee={heureJournee} distance={35} />
+        {/* Soleil 3D visuel selon la saison et l'angle fluide */}
+        <Soleil3D saison={saison} angleJournee={heureJournee} distance={60} />
         
         {/* Lumière ambiante (éclairage global) */}
         <ambientLight intensity={0.5} />
@@ -372,7 +385,7 @@ function CanvasTerrain3D({
         {/* Lumière directionnelle synchronisée avec le soleil (génère les ombres) */}
         <LumiereDirectionnelle
           saison={saison}
-          heureJournee={heureJournee}
+          angleJournee={heureJournee}
           orientation={orientation}
           distance={50}
           intensity={1.2}
@@ -448,6 +461,14 @@ function CanvasTerrain3D({
           // Vérifier si un modèle 3D réel existe
           const model3D = arbre.arbreData?.id ? getModelPourArbre(arbre.arbreData.id) : null;
           
+          // Récupérer le statut de validation 3D
+          const validation3D = validationMap3D.arbres.get(idx) || { status: 'ok', messages: [] };
+          const validationStatus = validation3D.status;
+          
+          if (model3D) {
+            console.log(`[3D] Utilisation modèle GLB pour ${arbre.arbreData.id}:`, model3D.path);
+          }
+          
           return (
             <ObjetDraggable3D
               key={`arbre-plante-${idx}`}
@@ -462,9 +483,13 @@ function CanvasTerrain3D({
                 <Arbre3DModel
                   position={[0, 0, 0]}
                   modelPath={model3D.path}
-                  scale={model3D.scale * (arbre.hauteur / model3D.hauteurReelle)}
+                  hauteurMaturite={parseHauteur(arbre.arbreData?.tailleMaturite)}
+                  envergure={arbre.envergure}
+                  validationStatus={validationStatus}
                   rotation={model3D.rotation}
                   anneeProjection={anneeProjection}
+                  saison={saison}
+                  arbreData={arbre.arbreData}
                   onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
                   fallbackProps={{
                     arbreData: arbre.arbreData,
@@ -485,7 +510,7 @@ function CanvasTerrain3D({
                   hauteur={arbre.hauteur}
                   envergure={arbre.envergure}
                   profondeurRacines={solTransparent ? arbre.profondeurRacines : 0}
-                  validationStatus={arbre.validationStatus || 'ok'}
+                  validationStatus={validationStatus}
                   anneeProjection={anneeProjection}
                   saison={saison}
                   onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
@@ -499,6 +524,10 @@ function CanvasTerrain3D({
         {data3D?.arbresExistants?.map((arbre, idx) => {
           // Vérifier si un modèle 3D réel existe
           const model3D = arbre.arbreData?.id ? getModelPourArbre(arbre.arbreData.id) : null;
+          
+          // Récupérer le statut de validation 3D
+          const validation3D = validationMap3D.arbresExistants.get(idx) || { status: 'ok', messages: [] };
+          const validationStatus = validation3D.status;
           
           return (
             <ObjetDraggable3D
@@ -514,9 +543,13 @@ function CanvasTerrain3D({
                 <Arbre3DModel
                   position={[0, 0, 0]}
                   modelPath={model3D.path}
-                  scale={model3D.scale * (arbre.hauteur / model3D.hauteurReelle)}
+                  hauteurMaturite={parseHauteur(arbre.arbreData?.tailleMaturite)}
+                  envergure={arbre.envergure}
+                  validationStatus={validationStatus}
                   rotation={model3D.rotation}
                   anneeProjection={20} // Arbres existants = matures
+                  saison={saison}
+                  arbreData={arbre.arbreData}
                   onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
                   fallbackProps={{
                     arbreData: arbre.arbreData,
@@ -537,7 +570,7 @@ function CanvasTerrain3D({
                   hauteur={arbre.hauteur}
                   envergure={arbre.envergure}
                   profondeurRacines={solTransparent ? arbre.profondeurRacines : 0}
-                  validationStatus={arbre.validationStatus || 'ok'}
+                  validationStatus={validationStatus}
                   anneeProjection={0}
                   saison={saison}
                   onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
@@ -577,23 +610,7 @@ function CanvasTerrain3D({
         />
       </Canvas>
       
-      {/* Panneau d'édition (si objet sélectionné) */}
-      {objetSelectionne && (
-        <PanneauEdition3D
-          objet={objetSelectionne}
-          onChange={handleProprieteChange}
-          onClose={() => setObjetSelectionne(null)}
-        />
-      )}
-
-      {/* Sélecteur d'heure modal */}
-      <SelecteurHeure
-        heureActuelle={heureJournee}
-        saison={saison}
-        onHeureChange={setHeureJournee}
-        isOpen={selecteurHeureOpen}
-        onClose={() => setSelecteurHeureOpen(false)}
-      />
+      {/* Panneau d'édition supprimé - pas nécessaire */}
     </div>
   );
 }

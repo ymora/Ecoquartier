@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react';
 import { FaMap, FaCube } from 'react-icons/fa';
 import PanneauLateral from './PanneauLateral';
+import GaugeHeure from './GaugeHeure';
 import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 
@@ -30,7 +31,8 @@ import { calculerTailleSelonAnnee as calculerTailleUtils } from '../utils/canvas
 
 import {
   validerPositionArbre as validerPositionUtils,
-  afficherLignesMesure as afficherLignesMesureUtils
+  afficherLignesMesure as afficherLignesMesureUtils,
+  revaliderTousLesArbres
 } from '../utils/canvas/canvasValidation';
 
 import {
@@ -90,6 +92,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [ombreVisible, setOmbreVisible] = useState(false);
   const [timelineVisible, setTimelineVisible] = useState(true);
   const [saison, setSaison] = useState('ete');
+  const [heureJournee, setHeureJournee] = useState(90); // Angle de 0° (matin) à 180° (soir), 90° = midi
   const [snapMagnetiqueActif, setSnapMagnetiqueActif] = useState(true);
   const [mode3D, setMode3D] = useState(false);
   const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D
@@ -99,7 +102,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   
   // Validation
   const validerPositionArbre = (canvas, arbreGroup) => {
-    return validerPositionUtils(canvas, arbreGroup, echelle, couchesSol, orientation);
+    validerPositionUtils(canvas, arbreGroup, echelle, couchesSol, orientation);
+  };
+  
+  // Re-validation globale (à appeler après tout déplacement)
+  const revaliderTous = (canvas) => {
+    revaliderTousLesArbres(canvas, echelle, couchesSol, orientation);
   };
   
   // Croissance
@@ -220,13 +228,34 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   
   
   // Création d'objets
-  const ajouterMaison = () => creerMaison(fabricCanvasRef.current, echelle);
-  const ajouterCanalisation = () => creerCanalisation(fabricCanvasRef.current);
-  const ajouterCiterne = () => creerCiterne(fabricCanvasRef.current, echelle);
-  const ajouterCloture = () => creerCloture(fabricCanvasRef.current, pointsClotureRef);
-  const ajouterTerrasse = () => creerTerrasse(fabricCanvasRef.current, echelle);
-  const ajouterPaves = () => creerPaves(fabricCanvasRef.current, echelle);
-  const ajouterArbreExistant = () => creerArbreExistant(fabricCanvasRef.current, echelle);
+  const ajouterMaison = () => {
+    creerMaison(fabricCanvasRef.current, echelle);
+    revaliderTous(fabricCanvasRef.current);
+  };
+  const ajouterCanalisation = () => {
+    creerCanalisation(fabricCanvasRef.current);
+    revaliderTous(fabricCanvasRef.current);
+  };
+  const ajouterCiterne = () => {
+    creerCiterne(fabricCanvasRef.current, echelle);
+    revaliderTous(fabricCanvasRef.current);
+  };
+  const ajouterCloture = () => {
+    creerCloture(fabricCanvasRef.current, pointsClotureRef);
+    revaliderTous(fabricCanvasRef.current);
+  };
+  const ajouterTerrasse = () => {
+    creerTerrasse(fabricCanvasRef.current, echelle);
+    revaliderTous(fabricCanvasRef.current);
+  };
+  const ajouterPaves = () => {
+    creerPaves(fabricCanvasRef.current, echelle);
+    revaliderTous(fabricCanvasRef.current);
+  };
+  const ajouterArbreExistant = () => {
+    creerArbreExistant(fabricCanvasRef.current, echelle);
+    revaliderTous(fabricCanvasRef.current);
+  };
   const ajouterGrille = (canvas) => creerGrille(canvas, echelle);
   const ajouterIndicateurSud = (canvas) => creerIndicateurSud(canvas, orientation, onOrientationChange, echelle);
 
@@ -251,6 +280,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     cacherMenuContextuel,
     cacherTooltipValidation,
     validerPositionArbre,
+    revaliderTous, // Ajouté pour validation globale
     afficherTooltipValidation,
     cacherCercleTronc,
     exporterPlan,
@@ -379,16 +409,33 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const canvas = fabricCanvasRef.current;
     const echelle3D = ECHELLE_PIXELS_PAR_METRE;
     
+    // Filtrer uniquement les objets visibles et valides
+    const objetValide = (obj) => {
+      return obj && 
+             obj.visible !== false && 
+             obj.left !== undefined && 
+             obj.top !== undefined &&
+             !isNaN(obj.left) && 
+             !isNaN(obj.top);
+    };
+    
     const extractedData = {
-      maison: canvas.getObjects().find(o => o.customType === 'maison'),
-      citernes: canvas.getObjects().filter(o => o.customType === 'citerne'),
-      canalisations: canvas.getObjects().filter(o => o.customType === 'canalisation'),
-      clotures: canvas.getObjects().filter(o => o.customType === 'cloture'),
-      terrasses: canvas.getObjects().filter(o => o.customType === 'paves'),
-      arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter'),
-      arbresExistants: canvas.getObjects().filter(o => o.customType === 'arbre-existant'),
+      maison: canvas.getObjects().find(o => o.customType === 'maison' && objetValide(o)),
+      citernes: canvas.getObjects().filter(o => o.customType === 'citerne' && objetValide(o)),
+      canalisations: canvas.getObjects().filter(o => o.customType === 'canalisation' && objetValide(o)),
+      clotures: canvas.getObjects().filter(o => o.customType === 'cloture' && objetValide(o)),
+      terrasses: canvas.getObjects().filter(o => (o.customType === 'paves' || o.customType === 'terrasse') && objetValide(o)),
+      arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter' && objetValide(o)),
+      arbresExistants: canvas.getObjects().filter(o => o.customType === 'arbre-existant' && objetValide(o)),
       echelle: echelle3D
     };
+    
+    // Log pour débugger la synchronisation
+    console.log('🔄 Sync 2D→3D:', {
+      terrasses: extractedData.terrasses.length,
+      arbres: extractedData.arbres.length,
+      citernes: extractedData.citernes.length
+    });
     
     setPlanDataSync(extractedData);
   }, []);
@@ -536,6 +583,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
               arbresAPlanter={arbresAPlanter}
               anneeProjection={anneeProjection}
               saison={saison}
+              heureJournee={heureJournee}
               couchesSol={couchesSol}
               onObjetPositionChange={handleObjetPositionChange3D}
             />
@@ -612,7 +660,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           <div className="timeline-section">
             <label>
               <span className="timeline-icon">📅</span>
-              <strong>Projection temporelle {mode3D ? '(3D)' : '(2D)'}</strong>
+              <strong>Projection temporelle</strong>
             </label>
             <div className="timeline-slider-container">
               <span className="timeline-label">Aujourd'hui</span>
@@ -640,10 +688,16 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             </div>
           </div>
           
+          <GaugeHeure 
+            heureActuelle={heureJournee}
+            saison={saison}
+            onHeureChange={setHeureJournee}
+          />
+          
           <div className="timeline-section saison-section">
             <label>
               <span className="timeline-icon">☀️</span>
-              <strong>Saison {mode3D ? '(soleil 3D + feuillage)' : '(ombre 2D)'}</strong>
+              <strong>Saison</strong>
             </label>
               <div className="saison-buttons">
                 <button 

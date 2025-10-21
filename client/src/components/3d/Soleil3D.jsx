@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Html } from '@react-three/drei';
 
 /**
- * Composant Soleil 3D avec position selon la saison
+ * Composant Soleil 3D avec position selon la saison et l'angle fluide
  * Latitude Bessancourt : 49°N
  * 
  * Angles solaires à midi (azimut sud) :
@@ -12,7 +12,8 @@ import { Html } from '@react-three/drei';
  */
 function Soleil3D({ 
   saison = 'ete',
-  heureJournee = 'midi',
+  angleJournee = 90, // Angle de 0° (matin) à 180° (soir)
+  heureJournee = null, // DEPRECATED: gardé pour compatibilité
   distance = 30
 }) {
   // Angles solaires selon la saison (élévation à midi)
@@ -23,27 +24,23 @@ function Soleil3D({
     ete: 64
   };
   
-  // Azimut selon l'heure (angle horizontal, 0° = Sud)
-  const azimuthAngles = {
-    'lever': -90,    // Est
-    'matin': -45,    // Sud-Est
-    'midi': 0,       // Sud
-    'soir': 45,      // Sud-Ouest
-    'coucher': 90    // Ouest
-  };
+  // Élévation maximale à midi selon la saison
+  const elevationMax = anglesSolaires[saison] || 41;
   
-  // Élévation de base
-  const elevationBase = anglesSolaires[saison] || 41;
+  // Convertir l'angle de la journée (0-180°) en azimut et élévation
+  // angleJournee: 0° = lever (Est), 90° = midi (Sud), 180° = coucher (Ouest)
   
-  // Ajuster l'élévation selon l'heure
-  let elevation = elevationBase;
-  if (heureJournee === 'lever' || heureJournee === 'coucher') {
-    elevation = elevation * 0.3; // Soleil très bas
-  } else if (heureJournee === 'matin' || heureJournee === 'soir') {
-    elevation = elevation * 0.7;
-  }
+  // Azimut : -90° (Est) → 0° (Sud) → +90° (Ouest)
+  const azimuth = (angleJournee - 90) * 1; // Linéaire de -90 à +90
   
-  const azimuth = azimuthAngles[heureJournee] || 0;
+  // Élévation : courbe parabolique (bas au lever/coucher, haut à midi)
+  // Utiliser une courbe en sin pour simuler la trajectoire du soleil
+  const angleNormalized = (angleJournee / 180) * Math.PI; // 0 à π
+  const elevationFactor = Math.sin(angleNormalized); // 0 → 1 → 0
+  
+  // Élévation minimale (lever/coucher) = 5°, maximale (midi) = elevationMax
+  const elevationMin = 5;
+  const elevation = elevationMin + (elevationMax - elevationMin) * elevationFactor;
   
   // Conversion en radians
   const elevationRad = (elevation * Math.PI) / 180;
@@ -54,8 +51,8 @@ function Soleil3D({
   const y = distance * Math.sin(elevationRad);
   const z = distance * Math.cos(elevationRad) * Math.cos(azimuthRad);
   
-  // Taille du soleil selon la saison (plus grand en été)
-  const tailleSoleil = saison === 'ete' ? 2.5 : saison === 'hiver' ? 1.8 : 2.0;
+  // Taille du soleil uniforme et réaliste
+  const tailleSoleil = 3.5;
   
   // Couleur selon la saison
   const couleursSoleil = {
@@ -90,10 +87,12 @@ function Soleil3D({
       {/* Soleil (sphère lumineuse) */}
       <mesh>
         <sphereGeometry args={[tailleSoleil, 32, 32]} />
-        <meshBasicMaterial 
+        <meshStandardMaterial 
           color={couleur}
           emissive={couleur}
           emissiveIntensity={0.8}
+          roughness={0.2}
+          metalness={0.0}
         />
       </mesh>
       

@@ -255,26 +255,25 @@ export const creerArbreExistant = (canvas, echelle) => {
     evented: false
   });
 
-  const label = new fabric.Text('Arbre existant\n⌀ 5m', {
-    left: 0,
-    top: rayon + 10,
-    fontSize: 11,
-    fontWeight: 'bold',
-    fill: '#1b5e20',
-    textAlign: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 4,
-    originX: 'center',
-    originY: 'top',
-    selectable: false,
-    evented: false
-  });
+  // Label supprimé : toutes les infos sont dans le tooltip au survol
 
-  const group = new fabric.Group([cercle, emoji, label], {
+  const group = new fabric.Group([cercle, emoji], {
     left: 250,
     top: 250,
     customType: 'arbre-existant'
   });
+  
+  // Stocker les informations pour le tooltip
+  group.arbreData = {
+    name: 'Arbre existant',
+    description: 'Arbre déjà présent sur le terrain'
+  };
+  group.tailles = {
+    envergureActuelle: diametre,
+    hauteurActuelle: 8, // Estimation pour un arbre mature
+    diametreTroncActuel: 0.4 // 40cm estimation
+  };
+  group.iconeType = '(mature)';
 
   canvas.add(group);
   canvas.setActiveObject(group);
