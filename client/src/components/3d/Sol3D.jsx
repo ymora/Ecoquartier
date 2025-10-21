@@ -91,15 +91,15 @@ function Sol3D({
             </>
           )}
           
-          {/* Label de la couche - Nom uniquement */}
-          <Html position={[-largeur / 2 - 2, couche.positionY, 0]}>
+          {/* ✅ Label de la couche - Positionnement FIXE pour éviter superposition */}
+          <Html position={[-largeur / 2 - 2, -index * 0.8, 0]}>
             <div style={{ 
               background: transparent 
                 ? 'rgba(0, 0, 0, 0.8)'  // Fond foncé en mode transparent pour contraste
                 : `rgba(${index === 0 ? '121,85,72' : index === 1 ? '161,136,127' : '189,189,189'},0.95)`, 
               padding: '6px 10px', 
               borderRadius: '6px',
-              fontSize: '12px',
+              fontSize: '11px',
               color: 'white',
               fontWeight: 'bold',
               whiteSpace: 'nowrap',
@@ -107,6 +107,9 @@ function Sol3D({
               boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
             }}>
               {icones[index] || '📦'} {couche.nom}
+              <div style={{ fontSize: '9px', opacity: 0.8, marginTop: '2px' }}>
+                {couche.profondeur} cm
+              </div>
             </div>
           </Html>
         </group>
