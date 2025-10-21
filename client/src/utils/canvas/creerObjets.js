@@ -283,31 +283,54 @@ export const creerPaves = (canvas, echelle) => {
 export const creerCaissonEau = (canvas, echelle) => {
   if (!canvas) return;
 
-  const largeur = 3 * echelle; // 3m par défaut
-  const longueur = 5 * echelle; // 5m par défaut
+  const largeur = 3 * echelle;
+  const longueur = 5 * echelle;
   
-  const caisson = new fabric.Rect({
-    left: 300,
-    top: 300,
+  const caissonRect = new fabric.Rect({
+    left: 0,
+    top: 0,
     width: largeur,
     height: longueur,
     fill: 'rgba(33, 150, 243, 0.3)',
     stroke: '#1565c0',
     strokeWidth: 3,
     strokeDashArray: [5, 3],
-    customType: 'caisson-eau',
-    profondeur: 2.5, // Profondeur sous terre
-    largeurCaisson: 3, // En mètres
-    longueurCaisson: 5, // En mètres
-    hasControls: true,
-    lockRotation: true
+    originX: 'center',
+    originY: 'center'
+  });
+  
+  // ✅ Label central
+  const label = new fabric.Text('💧 Caisson\n3.0×5.0m', {
+    left: 0,
+    top: 0,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#333',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 4,
+    stroke: '#1565c0',
+    strokeWidth: 1.5
   });
 
-  canvas.add(caisson);
-  canvas.setActiveObject(caisson);
+  const group = new fabric.Group([caissonRect, label], {
+    left: 300,
+    top: 300,
+    customType: 'caisson-eau',
+    profondeur: 2.5,
+    largeurCaisson: 3,
+    longueurCaisson: 5
+  });
+
+  canvas.add(group);
+  canvas.setActiveObject(group);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Caisson eau ajouté (3m × 5m)');
+  logger.debug('Objets', 'Caisson eau ajouté avec label');
 };
 
 /**
@@ -330,19 +353,24 @@ export const creerArbreExistant = (canvas, echelle) => {
     originY: 'center'
   });
 
-  const emoji = new fabric.Text('🌳', {
+  const label = new fabric.Text('🌳 Arbre existant\n↕️8.0m · ↔️5.0m', {
     left: 0,
     top: 0,
-    fontSize: rayon * 0.6,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#333',
+    textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 4,
+    stroke: '#388e3c',
+    strokeWidth: 1.5
   });
 
-  // Label supprimé : toutes les infos sont dans le tooltip au survol
-
-  const group = new fabric.Group([cercle, emoji], {
+  const group = new fabric.Group([cercle, label], {
     left: 250,
     top: 250,
     customType: 'arbre-existant',
