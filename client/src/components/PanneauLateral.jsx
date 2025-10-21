@@ -409,7 +409,14 @@ function PanneauLateral({
               onClick={onToggleTimeline} 
               title={timelineVisible ? "Masquer la timeline" : "Afficher la timeline"}
             >
-              {timelineVisible ? '📅' : '📅'}
+              📅
+            </button>
+            <button 
+              className="btn-outil" 
+              onClick={onResetZoom} 
+              title="Réinitialiser zoom et caméra (2D/3D)"
+            >
+              🔍
             </button>
           </div>
           
@@ -417,18 +424,8 @@ function PanneauLateral({
           <div className="section-title">🔍 Navigation</div>
           <div className="navigation-aide">
             <div className="aide-ligne">🖱️ <strong>Molette</strong> : Zoom</div>
-            <div className="aide-ligne">🖱️ <strong>Clic maintenu</strong> : Déplacer vue</div>
-            <div className="aide-ligne">🔄 <strong>Sélectionner objet</strong> : Faire pivoter</div>
-          </div>
-          <div className="outils-grid">
-            <button 
-              className="btn-outil" 
-              onClick={onResetZoom} 
-              title="Réinitialiser zoom et position"
-              style={{ gridColumn: 'span 3' }}
-            >
-              🔍 Réinitialiser vue
-            </button>
+            <div className="aide-ligne">⌨️ <strong>Clic droit</strong> : Déplacer vue</div>
+            <div className="aide-ligne">⌨️ <strong>Suppr</strong> : Supprimer sélection</div>
           </div>
           
           {/* ACTIONS */}
