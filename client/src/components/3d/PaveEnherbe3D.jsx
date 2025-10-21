@@ -127,7 +127,7 @@ function PaveEnherbe3D({
   
   // Animation de l'herbe au vent
   useFrame((state) => {
-    if (!herbeGroupRef.current) return;
+    if (!herbeGroupRef.current || !instancesHerbe || instancesHerbe.count === 0) return;
     
     const time = state.clock.getElapsedTime();
     const instancedMesh = herbeGroupRef.current;
@@ -157,9 +157,9 @@ function PaveEnherbe3D({
       const phase = instancesHerbe.phases[i];
       const baseRotY = instancesHerbe.rotations[i * 3 + 1];
       
-      // Vent : oscillation légère en X et Z
-      const windX = Math.sin(time * 2 + phase) * 0.15; // Inclinaison max 0.15 rad
-      const windZ = Math.cos(time * 1.5 + phase * 0.7) * 0.1;
+      // ✅ Vent plus visible : oscillation amplifiée
+      const windX = Math.sin(time * 1.5 + phase) * 0.3; // Inclinaison max 0.3 rad
+      const windZ = Math.cos(time * 1.2 + phase * 0.7) * 0.2;
       
       rotation.set(windX, baseRotY, windZ);
       quaternion.setFromEuler(rotation);
@@ -201,21 +201,22 @@ function PaveEnherbe3D({
       ))}
       
       {/* Herbe entre les pavés (instancing pour performance) */}
-      {instancesHerbe.count > 0 && (
+      {instancesHerbe && instancesHerbe.count > 0 && (
         <instancedMesh 
           ref={herbeGroupRef}
           args={[null, null, instancesHerbe.count]}
           castShadow
+          frustumCulled={false}
         >
-          {/* Géométrie d'un brin d'herbe (fine lame) */}
-          <planeGeometry args={[0.008, HAUTEUR_HERBE]} />
+          {/* Géométrie d'un brin d'herbe (fine lame plus large) */}
+          <planeGeometry args={[0.012, HAUTEUR_HERBE]} />
           <meshStandardMaterial 
             color="#7cb342"
             roughness={0.9}
             metalness={0}
             side={THREE.DoubleSide}
             emissive="#558b2f"
-            emissiveIntensity={0.1}
+            emissiveIntensity={0.15}
           />
         </instancedMesh>
       )}
