@@ -70,7 +70,7 @@ function GaugeHeure({
     
     const rect = gaugeRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + 32; // Position du centre de l'arc (y=32 dans le viewBox)
+    const centerY = rect.top + 40; // ✅ Position ajustée du centre de l'arc (y=40 dans le viewBox)
     
     const mouseX = clientX - centerX;
     const mouseY = centerY - clientY; // Y vers le haut
@@ -144,16 +144,16 @@ function GaugeHeure({
         <strong>Heure du jour</strong>
       </label>
       
-      {/* Demi-jauge horizontale fluide - COMPACTE */}
+      {/* Demi-jauge horizontale fluide - RÉDUITE ET VISIBLE */}
       <div 
         ref={gaugeRef}
         className="gauge-heure-container"
         onMouseDown={handleMouseDown}
       >
-        <svg width="180" height="36" viewBox="0 0 180 36">
-          {/* Arc de la jauge optimisé */}
+        <svg width="180" height="45" viewBox="0 0 180 45">
+          {/* Arc de la jauge avec rayon réduit pour visibilité complète */}
           <path
-            d="M 20 32 A 52 52 0 0 1 160 32"
+            d="M 30 40 A 35 35 0 0 1 150 40"
             fill="none"
             stroke="#e0e0e0"
             strokeWidth="4"
@@ -170,23 +170,23 @@ function GaugeHeure({
           </defs>
           
           <path
-            d="M 20 32 A 52 52 0 0 1 160 32"
+            d="M 30 40 A 35 35 0 0 1 150 40"
             fill="none"
             stroke="url(#sunGradient)"
             strokeWidth="3"
             strokeLinecap="round"
-            strokeDasharray={`${angle * 1.67} 330`}
+            strokeDasharray={`${angle * 1.12} 220`}
             strokeDashoffset="0"
             opacity="0.7"
           />
           
-          {/* Marques intermédiaires discrètes - uniquement celles sur l'arc */}
+          {/* Marques intermédiaires discrètes */}
           {[45, 90, 135].map((deg) => {
             const rad = (deg * Math.PI) / 180;
-            const x1 = 90 + 52 * Math.cos(Math.PI - rad);
-            const y1 = 32 - 52 * Math.sin(Math.PI - rad);
-            const x2 = 90 + 47 * Math.cos(Math.PI - rad);
-            const y2 = 32 - 47 * Math.sin(Math.PI - rad);
+            const x1 = 90 + 35 * Math.cos(Math.PI - rad);
+            const y1 = 40 - 35 * Math.sin(Math.PI - rad);
+            const x2 = 90 + 31 * Math.cos(Math.PI - rad);
+            const y2 = 40 - 31 * Math.sin(Math.PI - rad);
             return (
               <line
                 key={deg}
@@ -203,9 +203,9 @@ function GaugeHeure({
           {/* Aiguille */}
           <line
             x1="90"
-            y1="32"
-            x2={90 + 44 * Math.cos(Math.PI - (angle * Math.PI) / 180)}
-            y2={32 - 44 * Math.sin(Math.PI - (angle * Math.PI) / 180)}
+            y1="40"
+            x2={90 + 30 * Math.cos(Math.PI - (angle * Math.PI) / 180)}
+            y2={40 - 30 * Math.sin(Math.PI - (angle * Math.PI) / 180)}
             stroke="#333"
             strokeWidth="2"
             strokeLinecap="round"
@@ -213,7 +213,7 @@ function GaugeHeure({
           />
           
           {/* Centre de l'aiguille */}
-          <circle cx="90" cy="32" r="2.5" fill="#333" />
+          <circle cx="90" cy="40" r="2.5" fill="#333" />
         </svg>
       </div>
       
