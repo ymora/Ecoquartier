@@ -57,7 +57,7 @@ function CanvasTerrain3D({
   // heureJournee est maintenant un angle de 0° (matin) à 180° (soir)
   const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote (coupe supprimée)
   const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
-  const [solTransparent, setSolTransparent] = useState(false); // Sol transparent = voir racines, fondations, citernes, canalisations
+  const [solTransparent, setSolTransparent] = useState(true); // ✅ Sol transparent TOUJOURS ACTIF = voir racines, fondations, citernes, canalisations
   const orbitControlsRef = useRef();
   
   // Convertir les données 2D en 3D
@@ -352,14 +352,7 @@ function CanvasTerrain3D({
       {/* Barre d'outils 3D */}
       <div className="toolbar-3d">
         
-        <label className="checkbox-3d">
-          <input 
-            type="checkbox" 
-            checked={solTransparent}
-            onChange={(e) => setSolTransparent(e.target.checked)}
-          />
-          <span>🔍 Voir sous terre (racines, fondations, citernes)</span>
-        </label>
+        {/* ✅ Vue sous terre TOUJOURS ACTIVE - racines, fondations, citernes et canalisations toujours visibles */}
         
         <label className="checkbox-3d">
           <input 
