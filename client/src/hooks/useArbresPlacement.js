@@ -38,9 +38,29 @@ export const useArbresPlacement = ({
       }
       
       logger.warn('AjoutArbres', `🔄 Liste changée: ${arbresExistants.length} → ${arbresAPlanter.length} arbres`);
-      arbresExistants.forEach(a => canvas.remove(a));
+      
+      // ✅ FIXE : Supprimer SEULEMENT les arbres qui ne sont plus dans la liste
+      const idsAPlanterSet = new Set(arbresAPlanter.map(a => a.id));
+      arbresExistants.forEach(arbreExistant => {
+        const idExistant = arbreExistant.arbreData?.id;
+        if (!idsAPlanterSet.has(idExistant)) {
+          // Cet arbre n'est plus dans la liste → le supprimer
+          canvas.remove(arbreExistant);
+          logger.info('AjoutArbres', `🗑️ Arbre ${arbreExistant.arbreData?.name} retiré`);
+        }
+      });
+      
+      // ✅ Ajouter SEULEMENT les nouveaux arbres
+      const idsExistantsSet = new Set(arbresExistants.map(a => a.arbreData?.id));
 
       arbresAPlanter.forEach((arbre, index) => {
+        // Si l'arbre existe déjà, ne rien faire
+        if (idsExistantsSet.has(arbre.id)) {
+          logger.info('AjoutArbres', `⏭️ ${arbre.name} déjà présent, conservé en place`);
+          return;
+        }
+        
+        logger.info('AjoutArbres', `➕ Ajout nouveau: ${arbre.name}`);
         // Debug désactivé pour performance (boucle)
         // logger.debug('AjoutArbres', `Ajout arbre ${index + 1}/${arbresAPlanter.length}: ${arbre.name}`);
         
