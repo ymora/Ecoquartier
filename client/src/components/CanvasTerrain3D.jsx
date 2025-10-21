@@ -168,18 +168,38 @@ function CanvasTerrain3D({
       });
     }
     
-    // Terrasses/Pavés
+    // Terrasses/Pavés - ✅ Support des DEUX types
+    data3D.terrasses = [];
+    
+    // Terrasses classiques
     if (planData.terrasses && planData.terrasses.length > 0) {
-      data3D.terrasses = planData.terrasses.map(t => {
+      planData.terrasses.forEach(t => {
         const terrasseWidth = t.getScaledWidth ? t.getScaledWidth() : t.width;
         const terrasseHeight = t.getScaledHeight ? t.getScaledHeight() : t.height;
         
-        return {
+        data3D.terrasses.push({
           position: [t.left / echelle, 0, t.top / echelle],
           largeur: terrasseWidth / echelle,
           profondeur: terrasseHeight / echelle,
-          hauteur: 0.1 // 10cm d'épaisseur
-        };
+          hauteur: 0.1, // 10cm d'épaisseur
+          type: 'terrasse'
+        });
+      });
+    }
+    
+    // Pavés enherbés (customType='paves' en 2D)
+    if (planData.paves && planData.paves.length > 0) {
+      planData.paves.forEach(p => {
+        const paveWidth = p.getScaledWidth ? p.getScaledWidth() : p.width;
+        const paveHeight = p.getScaledHeight ? p.getScaledHeight() : p.height;
+        
+        data3D.terrasses.push({
+          position: [p.left / echelle, 0, p.top / echelle],
+          largeur: paveWidth / echelle,
+          profondeur: paveHeight / echelle,
+          hauteur: 0.05, // 5cm d'épaisseur (plus fin que terrasse)
+          type: 'pave-enherbe'
+        });
       });
     }
     
@@ -341,9 +361,13 @@ function CanvasTerrain3D({
   // handleProprieteChange supprimé - modal d'édition non nécessaire
   
   // Callback pour le drag end d'un objet (mémorisé)
+  // ✅ FIXE : Ajouter un délai pour éviter le figement dû au re-render
   const handleObjetDragEnd = useCallback((dragData) => {
     if (onObjetPositionChange) {
-      onObjetPositionChange(dragData);
+      // ✅ Appel asynchrone pour éviter le figement du drag
+      setTimeout(() => {
+        onObjetPositionChange(dragData);
+      }, 100); // 100ms de délai pour laisser l'animation se terminer
     }
   }, [onObjetPositionChange]);
   
@@ -428,7 +452,7 @@ function CanvasTerrain3D({
           />
         ))}
         
-        {/* Terrasses/Pavés */}
+        {/* Terrasses/Pavés enherbés */}
         {data3D?.terrasses?.map((terrasse, idx) => (
           <mesh 
             key={`terrasse-${idx}`}
@@ -442,9 +466,11 @@ function CanvasTerrain3D({
           >
             <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
             <meshStandardMaterial 
-              color="#9e9e9e"
-              roughness={0.7}
-              metalness={0.2}
+              color={terrasse.type === 'pave-enherbe' ? '#7cb342' : '#9e9e9e'}
+              roughness={terrasse.type === 'pave-enherbe' ? 0.9 : 0.7}
+              metalness={0}
+              emissive={terrasse.type === 'pave-enherbe' ? '#2e7d32' : '#000000'}
+              emissiveIntensity={terrasse.type === 'pave-enherbe' ? 0.1 : 0}
             />
           </mesh>
         ))}
@@ -464,7 +490,7 @@ function CanvasTerrain3D({
           
           return (
             <ObjetDraggable3D
-              key={`arbre-plante-${idx}`}
+              key={arbre.arbreData?.id ? `arbre-${arbre.arbreData.id}-${idx}` : `arbre-plante-${idx}`}
               position={arbre.position}
               type="arbre-a-planter"
               enabled={modeDeplacement}
