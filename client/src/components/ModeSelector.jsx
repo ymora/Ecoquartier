@@ -2,10 +2,11 @@ import { FaEye, FaExchangeAlt, FaMapMarkedAlt } from 'react-icons/fa';
 import './ModeSelector.css';
 
 function ModeSelector({ modeActuel, onModeChange }) {
+  // Ordre et angles personnalisés : Fiche à gauche, Comparer à droite, Plan en bas
   const modes = [
-    { id: 'normal', label: 'Fiches', icon: FaEye, color: '#2e7d32' },
-    { id: 'comparaison', label: 'Comparer', icon: FaExchangeAlt, color: '#1976d2' },
-    { id: 'planification', label: 'Planifier', icon: FaMapMarkedAlt, color: '#f57c00' }
+    { id: 'normal', label: 'Fiches', icon: FaEye, color: '#2e7d32', angleStart: 120 }, // Gauche (centré sur 180°)
+    { id: 'comparaison', label: 'Comparer', icon: FaExchangeAlt, color: '#1976d2', angleStart: -60 }, // Droite (centré sur 0°)
+    { id: 'planification', label: 'Planifier', icon: FaMapMarkedAlt, color: '#f57c00', angleStart: 30 } // Bas (centré sur 90°)
   ];
 
   return (
@@ -13,7 +14,7 @@ function ModeSelector({ modeActuel, onModeChange }) {
       <svg viewBox="0 0 100 100" className="circle-svg">
         {/* Segments du cercle */}
         {modes.map((mode, index) => {
-          const startAngle = index * 120 - 90;
+          const startAngle = mode.angleStart;
           const endAngle = startAngle + 120;
           const largeArcFlag = 0;
           
@@ -38,7 +39,7 @@ function ModeSelector({ modeActuel, onModeChange }) {
         
         {/* Lignes de séparation en noir */}
         {modes.map((mode, index) => {
-          const angle = index * 120 - 90;
+          const angle = mode.angleStart;
           const x = 50 + 48 * Math.cos((angle * Math.PI) / 180);
           const y = 50 + 48 * Math.sin((angle * Math.PI) / 180);
           return (
@@ -59,8 +60,7 @@ function ModeSelector({ modeActuel, onModeChange }) {
       {modes.map((mode, index) => {
         const Icon = mode.icon;
         // Calculer l'angle du milieu de chaque segment de 120°
-        const startAngle = index * 120 - 90;
-        const middleAngle = startAngle + 60; // Milieu du segment
+        const middleAngle = mode.angleStart + 60; // Milieu du segment
         const radians = (middleAngle * Math.PI) / 180;
         const x = 50 + 28 * Math.cos(radians);
         const y = 50 + 28 * Math.sin(radians);
