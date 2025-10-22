@@ -19,7 +19,12 @@ import {
   creerTerrasse,
   creerPaves,
   creerGrille,
-  creerIndicateurSud
+  creerIndicateurSud,
+  creerMaisonObjet,
+  creerTerrasseObjet,
+  creerPavesObjet,
+  creerCiterneObjet,
+  creerCaissonEauObjet
 } from '../utils/canvas/creerObjets';
 
 import {
@@ -303,19 +308,14 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     let nouvelObjet = null;
     
     if (typeObjet === 'maison') {
-      const { creerMaisonObjet } = require('../utils/canvas/creerObjets');
       nouvelObjet = creerMaisonObjet(echelle);
     } else if (typeObjet === 'terrasse') {
-      const { creerTerrasseObjet } = require('../utils/canvas/creerObjets');
       nouvelObjet = creerTerrasseObjet(echelle);
     } else if (typeObjet === 'paves') {
-      const { creerPavesObjet } = require('../utils/canvas/creerObjets');
       nouvelObjet = creerPavesObjet(echelle);
     } else if (typeObjet === 'citerne') {
-      const { creerCiterneObjet } = require('../utils/canvas/creerObjets');
       nouvelObjet = creerCiterneObjet(echelle);
     } else if (typeObjet === 'caisson-eau') {
-      const { creerCaissonEauObjet } = require('../utils/canvas/creerObjets');
       nouvelObjet = creerCaissonEauObjet(echelle);
     }
     
