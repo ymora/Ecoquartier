@@ -43,7 +43,9 @@ export const creerMaisonObjet = (echelle) => {
   const group = new fabric.Group([maisonRect, labelIcone], {
     customType: 'maison',
     profondeurFondations: 1.2,
-    hauteurBatiment: 7
+    hauteurBatiment: 7,
+    originX: 'center',
+    originY: 'center'
   });
 
   return group;
@@ -130,7 +132,9 @@ export const creerCiterneObjet = (echelle) => {
   const group = new fabric.Group([citerne, labelIcone], {
     customType: 'citerne',
     diametre: diametre,
-    profondeur: profondeur
+    profondeur: profondeur,
+    originX: 'center',
+    originY: 'center'
   });
 
   return group;
@@ -231,7 +235,9 @@ export const creerTerrasseObjet = (echelle) => {
   const group = new fabric.Group([terrasseRect, labelIcone], {
     customType: 'terrasse',
     hauteurDalle: 0.15,
-    profondeurFondation: 0.3
+    profondeurFondation: 0.3,
+    originX: 'center',
+    originY: 'center'
   });
 
   return group;
@@ -286,7 +292,9 @@ export const creerPavesObjet = (echelle) => {
   const group = new fabric.Group([pavesRect, labelIcone], {
     customType: 'paves',
     hauteurPaves: 0.08,
-    profondeurGravier: 0.15
+    profondeurGravier: 0.15,
+    originX: 'center',
+    originY: 'center'
   });
 
   return group;
@@ -348,7 +356,9 @@ export const creerCaissonEauObjet = (echelle) => {
     profondeurEnterree: 1.0,
     largeurCaisson: largeurMetres,
     profondeurCaisson: profondeurMetres,
-    hauteurCaisson: hauteurMetres
+    hauteurCaisson: hauteurMetres,
+    originX: 'center',
+    originY: 'center'
   });
 
   return group;

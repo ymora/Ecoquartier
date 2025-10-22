@@ -5,12 +5,16 @@
 
 /**
  * Calculer la distance entre un point et un rectangle
+ * Prend en compte originX/Y: 'center'
  */
 export const calculerDistanceRectangle = (px, py, rect) => {
-  const rx = rect.left;
-  const ry = rect.top;
   const rw = rect.getScaledWidth();
   const rh = rect.getScaledHeight();
+  
+  // Si l'objet est centré (originX/Y: 'center'), left/top = centre
+  const isCentered = rect.originX === 'center' || rect.originY === 'center';
+  const rx = isCentered ? rect.left - rw / 2 : rect.left;
+  const ry = isCentered ? rect.top - rh / 2 : rect.top;
   
   const dx = Math.max(rx - px, 0, px - (rx + rw));
   const dy = Math.max(ry - py, 0, py - (ry + rh));
@@ -89,12 +93,16 @@ export const calculerDistanceLigne = (px, py, ligneOuGroup) => {
 
 /**
  * Trouver le point le plus proche sur un rectangle
+ * Prend en compte originX/Y: 'center'
  */
 export const trouverPointPlusProcheMaison = (px, py, rect) => {
-  const rx = rect.left;
-  const ry = rect.top;
   const rw = rect.getScaledWidth();
   const rh = rect.getScaledHeight();
+  
+  // Si l'objet est centré (originX/Y: 'center'), left/top = centre
+  const isCentered = rect.originX === 'center' || rect.originY === 'center';
+  const rx = isCentered ? rect.left - rw / 2 : rect.left;
+  const ry = isCentered ? rect.top - rh / 2 : rect.top;
   
   const closestX = Math.max(rx, Math.min(px, rx + rw));
   const closestY = Math.max(ry, Math.min(py, ry + rh));

@@ -19,6 +19,10 @@ export const revaliderTousLesArbres = (canvas, echelle, couchesSol, orientation)
     obj.customType === 'arbre-a-planter' || obj.customType === 'arbre-existant'
   );
   
+  // Supprimer TOUTES les anciennes lignes de mesure
+  const lignesAnciennes = canvas.getObjects().filter(obj => obj.isLigneMesure);
+  lignesAnciennes.forEach(obj => canvas.remove(obj));
+  
   // PHASE 1 : Réinitialiser tous les arbres à 'ok' (vert)
   arbres.forEach(arbre => {
     const ellipse = arbre._objects ? arbre._objects[0] : null;
@@ -38,6 +42,14 @@ export const revaliderTousLesArbres = (canvas, echelle, couchesSol, orientation)
   // PHASE 2 : Valider chaque arbre et marquer les problèmes
   arbres.forEach(arbre => {
     validerPositionArbre(canvas, arbre, echelle, couchesSol, orientation);
+  });
+  
+  // PHASE 3 : Afficher les lignes de mesure pour TOUS les arbres problématiques
+  arbres.forEach(arbre => {
+    // Afficher les lignes seulement si l'arbre a des problèmes
+    if (arbre.validationStatus && arbre.validationStatus !== 'ok') {
+      afficherLignesMesure(canvas, arbre, echelle);
+    }
   });
   
   canvas.renderAll();
@@ -103,11 +115,18 @@ export const validerPositionArbre = (canvas, arbreGroup, echelle, couchesSol, or
  * INCHANGÉ : Logique d'affichage des lignes
  */
 export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
-  // Supprimer les anciennes lignes de mesure
-  canvas.getObjects().filter(obj => obj.isLigneMesure).forEach(obj => canvas.remove(obj));
+  // NE PAS supprimer les lignes des autres arbres ici
+  // On supprime uniquement les lignes de CET arbre
+  const anciennes = canvas.getObjects().filter(obj => obj.isLigneMesure && obj.arbreId === arbreGroup.id);
+  anciennes.forEach(obj => canvas.remove(obj));
   
   const arbre = arbreGroup.arbreData;
-  if (!arbre) return;
+  if (!arbre) {
+    logger.warn('LignesMesure', 'Aucun arbreData trouvé');
+    return;
+  }
+  
+  logger.info('LignesMesure', `Affichage des lignes de mesure pour ${arbre.name}`);
   
   const x = arbreGroup.left;
   const y = arbreGroup.top;
@@ -127,7 +146,7 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
     if (distMaison < distanceFondations) {
       const pointProche = trouverPointPlusProcheMaison(x, y, maison);
-      ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distMaison, distanceFondations, '🏠');
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distMaison, distanceFondations, '🏠');
     }
   }
   
@@ -137,7 +156,7 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     const distCanal = calculerDistanceLigne(x, y, canal) / echelle;
     if (distCanal < distanceCanalisations) {
       const pointProche = trouverPointPlusProcheLigne(x, y, canal);
-      ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCanal, distanceCanalisations, '🚰');
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distCanal, distanceCanalisations, '🚰');
     }
   }
   
@@ -148,7 +167,7 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     if (distCloture < distanceCloture || distCloture < 0.15) {
       const pointProche = trouverPointPlusProcheLigne(x, y, cloture);
       const iconeLegal = distCloture < distanceCloture ? '⚖️' : '🚧';
-      ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCloture, distanceCloture, iconeLegal);
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distCloture, distanceCloture, iconeLegal);
     }
   }
   
@@ -158,7 +177,7 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     const distCiterne = calculerDistanceRectangle(x, y, citerne) / echelle;
     if (distCiterne < distanceFosseSeptique) {
       const pointProche = trouverPointPlusProcheMaison(x, y, citerne);
-      ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distCiterne, distanceFosseSeptique, '💧');
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distCiterne, distanceFosseSeptique, '💧');
     }
   }
   
@@ -172,7 +191,7 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     const distTer = calculerDistanceRectangle(x, y, terrasse) / echelle;
     if (distTer < distMinTerrasse) {
       const pointProche = trouverPointPlusProcheMaison(x, y, terrasse);
-      ajouterLigneMesureProbleme(canvas, x, y, pointProche.x, pointProche.y, distTer, distMinTerrasse, '🟩');
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distTer, distMinTerrasse, '🟩');
     }
   }
   
@@ -195,7 +214,8 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
     
     if (distArbre < distanceMinApplicable) {
       ajouterLigneMesureProbleme(
-        canvas, 
+        canvas,
+        arbreGroup,
         x, y, 
         autreArbre.left, autreArbre.top, 
         distArbre, 
@@ -211,17 +231,21 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
 /**
  * Ajouter une ligne de mesure problématique
  */
-const ajouterLigneMesureProbleme = (canvas, x1, y1, x2, y2, distActuelle, distMin, icone) => {
+const ajouterLigneMesureProbleme = (canvas, arbreGroup, x1, y1, x2, y2, distActuelle, distMin, icone) => {
+  logger.info('LignesMesure', `➕ Ajout ligne: ${icone} ${distActuelle.toFixed(1)}m < ${distMin}m`);
+  
   // Ligne pointillée rouge
   const ligne = new fabric.Line([x1, y1, x2, y2], {
     stroke: '#d32f2f',
-    strokeWidth: 2,
+    strokeWidth: 3,
     strokeDashArray: [8, 4],
     selectable: false,
     evented: false,
-    isLigneMesure: true
+    isLigneMesure: true,
+    arbreId: arbreGroup.id // Lier à l'arbre
   });
   canvas.add(ligne);
+  canvas.bringToFront(ligne);
   
   // Label de distance au milieu
   const midX = (x1 + x2) / 2;
@@ -239,9 +263,11 @@ const ajouterLigneMesureProbleme = (canvas, x1, y1, x2, y2, distActuelle, distMi
     originY: 'center',
     selectable: false,
     evented: false,
-    isLigneMesure: true
+    isLigneMesure: true,
+    arbreId: arbreGroup.id // Lier à l'arbre
   });
   canvas.add(label);
+  canvas.bringToFront(label);
 };
 
 /**
