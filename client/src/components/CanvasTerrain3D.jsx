@@ -73,7 +73,6 @@ function CanvasTerrain3D({
       citernes: [],
       clotures: [],
       terrasses: [],
-      arbresExistants: [],
       bounds: { minX: 0, maxX: 0, minZ: 0, maxZ: 0 } // Limites des objets
     };
     
@@ -290,25 +289,6 @@ function CanvasTerrain3D({
       });
     }
     
-    // Arbres existants
-    if (planData.arbresExistants && planData.arbresExistants.length > 0) {
-      data3D.arbresExistants = planData.arbresExistants.map(a => {
-        const posX = a.left / echelle;
-        const posZ = a.top / echelle;
-        const env = a.envergure || 6;
-        
-        updateBounds(posX - env/2, posZ - env/2, env, env);
-        
-        return {
-          position: [posX, 0, posZ],
-          arbreData: { name: 'Arbre existant' },
-          hauteur: a.hauteur || 8,
-          envergure: env,
-          profondeurRacines: 2,
-          validationStatus: 'ok'
-        };
-      });
-    }
     
     // ✅ Calculer les dimensions du terrain avec marge de 5m
     const marge = 5;
@@ -338,13 +318,9 @@ function CanvasTerrain3D({
   
   // Valider tous les arbres en 3D pour avoir les statuts à jour
   const validationMap3D = useMemo(() => {
-    // Combiner arbres à planter + arbres existants pour la validation globale
-    const tousLesArbres = [
-      ...(data3D.arbres || []),
-      ...(data3D.arbresExistants || [])
-    ];
+    const tousLesArbres = data3D.arbres || [];
     
-    if (tousLesArbres.length === 0) return { arbres: new Map(), arbresExistants: new Map() };
+    if (tousLesArbres.length === 0) return { arbres: new Map() };
     
     const validationComplete = validerArbres3D(
       tousLesArbres,
@@ -355,20 +331,13 @@ function CanvasTerrain3D({
       data3D.terrasses
     );
     
-    // Séparer les validations pour arbres à planter vs existants
-    const nbArbresPlantes = data3D.arbres?.length || 0;
+    // Mapper les validations aux arbres
     const arbresMap = new Map();
-    const existantsMap = new Map();
-    
     validationComplete.forEach((val, idx) => {
-      if (idx < nbArbresPlantes) {
-        arbresMap.set(idx, val);
-      } else {
-        existantsMap.set(idx - nbArbresPlantes, val);
-      }
+      arbresMap.set(idx, val);
     });
     
-    return { arbres: arbresMap, arbresExistants: existantsMap };
+    return { arbres: arbresMap };
   }, [data3D]);
   
   // Calculer les dimensions du terrain adaptatif (mémorisé)
@@ -621,65 +590,6 @@ function CanvasTerrain3D({
           );
         })}
         
-        {/* Arbres existants (draggable si mode activé) */}
-        {data3D?.arbresExistants?.map((arbre, idx) => {
-          // Vérifier si un modèle 3D réel existe
-          const model3D = arbre.arbreData?.id ? getModelPourArbre(arbre.arbreData.id) : null;
-          
-          // Récupérer le statut de validation 3D
-          const validation3D = validationMap3D.arbresExistants.get(idx) || { status: 'ok', messages: [] };
-          const validationStatus = validation3D.status;
-          
-          return (
-            <ObjetDraggable3D
-              key={`arbre-existant-${idx}`}
-              position={arbre.position}
-              type="arbre-existant"
-              enabled={modeDeplacement}
-              onDragEnd={handleObjetDragEnd}
-              maisonBounds={maisonBounds}
-            >
-              {model3D ? (
-                /* Modèle 3D réel (GLB) avec fallback automatique */
-                <Arbre3DModel
-                  position={[0, 0, 0]}
-                  modelPath={model3D.path}
-                  hauteurMaturite={parseHauteur(arbre.arbreData?.tailleMaturite)}
-                  envergure={arbre.envergure}
-                  validationStatus={validationStatus}
-                  rotation={model3D.rotation}
-                  anneeProjection={20} // Arbres existants = matures
-                  saison={saison}
-                  arbreData={arbre.arbreData}
-                  onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
-                  fallbackProps={{
-                    arbreData: arbre.arbreData,
-                    hauteur: arbre.hauteur,
-                    envergure: arbre.envergure,
-                    profondeurRacines: solTransparent ? arbre.profondeurRacines : 0,
-                    validationStatus: arbre.validationStatus || 'ok',
-                    anneeProjection: 0,
-                    saison: saison,
-                    onClick: () => handleObjetClick({ type: 'arbre-existant', ...arbre })
-                  }}
-                />
-              ) : (
-                /* Arbre procédural (pas de modèle GLB) */
-                <Arbre3D
-                  position={[0, 0, 0]}
-                  arbreData={arbre.arbreData}
-                  hauteur={arbre.hauteur}
-                  envergure={arbre.envergure}
-                  profondeurRacines={solTransparent ? arbre.profondeurRacines : 0}
-                  validationStatus={validationStatus}
-                  anneeProjection={0}
-                  saison={saison}
-                  onClick={() => handleObjetClick({ type: 'arbre-existant', ...arbre })}
-                />
-              )}
-            </ObjetDraggable3D>
-          );
-        })}
         
         {/* Caméra contrôlable */}
         <OrbitControls 

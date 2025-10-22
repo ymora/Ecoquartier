@@ -362,8 +362,23 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   };
   
   const retirerArbrePlante = (index) => {
+    const arbreARetirer = arbresAPlanter[index];
     setArbresAPlanter(prev => prev.filter((_, i) => i !== index));
-    logger.info('Arbres', 'Arbre retiré de la liste');
+    
+    // Supprimer aussi l'arbre du canvas
+    if (fabricCanvasRef.current && arbreARetirer) {
+      const canvas = fabricCanvasRef.current;
+      const arbresCanvas = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
+      
+      // Trouver l'arbre correspondant sur le canvas
+      const arbreCanvas = arbresCanvas.find(a => a.arbreData?.id === arbreARetirer.id);
+      if (arbreCanvas) {
+        canvas.remove(arbreCanvas);
+        canvas.renderAll();
+        exporterPlan(canvas);
+        logger.info('Arbres', `${arbreARetirer.name} retiré du plan et de la liste`);
+      }
+    }
   };
   
   // Synchroniser avec les arbres externes si fournis
@@ -543,7 +558,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       clotures: canvas.getObjects().filter(o => o.customType === 'cloture' && objetValide(o)),
       terrasses: canvas.getObjects().filter(o => (o.customType === 'paves' || o.customType === 'terrasse') && objetValide(o)),
       arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter' && objetValide(o)),
-      arbresExistants: canvas.getObjects().filter(o => o.customType === 'arbre-existant' && objetValide(o)),
       echelle: echelle3D
     };
     

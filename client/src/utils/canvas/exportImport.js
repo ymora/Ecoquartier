@@ -19,6 +19,9 @@ export const mettreAJourLabelsGroups = (canvas, echelle) => {
     if (!obj._objects || obj._objects.length < 2) return;
     if (obj.isGridLine || obj.isBoussole || obj.isImageFond) return;
     
+    // Debug: vérifier la structure
+    // logger.debug('Labels', `Obj ${obj.customType}: ${obj._objects.length} éléments`);
+    
     // Structure : [forme, icône, labelDimensions] (3 éléments)
     // ou [forme, icône] (2 éléments - besoin de créer labelDimensions)
     // ou [ellipse, emoji, nomLabel, dimensionsLabel] (4 éléments pour arbres)
@@ -64,10 +67,6 @@ export const mettreAJourLabelsGroups = (canvas, echelle) => {
       const hauteur = (obj.hauteurCaisson || 1).toFixed(1);
       const volume = (largeur * profondeur * hauteur).toFixed(1);
       newText = `${largeur}×${profondeur}×${hauteur}m · ${volume}m³`;
-    } else if (obj.customType === 'arbre-existant') {
-      const d = (obj.diametreArbre || 5).toFixed(1);
-      const ha = (obj.hauteurArbre || 8).toFixed(1);
-      newText = `↕️${ha}m · ↔️${d}m`;
     }
     
     // Créer ou mettre à jour le label
@@ -86,8 +85,7 @@ export const mettreAJourLabelsGroups = (canvas, echelle) => {
                      obj.customType === 'terrasse' ? '#757575' :
                      obj.customType === 'paves' ? '#7cb342' :
                      obj.customType === 'citerne' ? '#1976d2' :
-                     obj.customType === 'caisson-eau' ? '#1565c0' :
-                     obj.customType === 'arbre-existant' ? '#388e3c' : '#757575';
+                     obj.customType === 'caisson-eau' ? '#1565c0' : '#757575';
       
       const labelDim = new fabric.Text(newText, {
         left: 0,
@@ -194,10 +192,6 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
     code += `  // Canalisation ${i+1}\n  // const canal${i} = creerCanalisationGroup(${c.x1.toFixed(1)}, ${c.y1.toFixed(1)}, ${c.x2.toFixed(1)}, ${c.y2.toFixed(1)}, ${c.profondeur || 0.6}, ${c.diametreCanalisation || 0.1});\n  // canvas.add(canal${i});\n\n`;
   });
   
-  // ARBRES EXISTANTS
-  planData.arbresExistants.forEach((a, i) => {
-    code += `  // Arbre existant ${i+1}\n  canvas.add(new fabric.Circle({left: ${(a.left * echelle).toFixed(1)}, top: ${(a.top * echelle).toFixed(1)}, radius: ${(a.radius * echelle).toFixed(1)}, fill: 'rgba(76,175,80,0.3)', stroke: '#388e3c', strokeWidth: 3, customType: 'arbre-existant', originX: 'center', originY: 'center'}));\n\n`;
-  });
   
   // ARBRES À PLANTER (commentaires)
   planData.arbresAPlanter.forEach((a, i) => {
@@ -214,7 +208,6 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
   console.log(`  🟩 Pavés enherbés: ${planData.paves.length}`);
   console.log(`  🚧 Clôtures: ${planData.clotures.length}`);
   console.log(`  🚰 Canalisations: ${planData.canalisations.length}`);
-  console.log(`  🌲 Arbres existants: ${planData.arbresExistants.length}`);
   console.log(`  🌳 Arbres à planter: ${planData.arbresAPlanter.length}`);
   }, 1000); // Attendre 1 seconde après la dernière modification
 };
@@ -232,7 +225,6 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
     timestamp: Date.now(),
     maison: null,
     canalisations: [],
-    arbresExistants: [],
     arbresAPlanter: [],
     terrasses: [],
     paves: [],
@@ -272,13 +264,6 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         y2: obj.y2,
         hauteurCloture: obj.hauteurCloture || 1.5,
         epaisseur: obj.epaisseur || 0.05
-      });
-    } else if (obj.customType === 'arbre-existant') {
-      planData.arbresExistants.push({
-        left: obj.left / echelle,
-        top: obj.top / echelle,
-        radius: (obj.radius * obj.scaleX) / echelle,
-        angle: obj.angle || 0
       });
     } else if (obj.customType === 'arbre-a-planter') {
       planData.arbresAPlanter.push({

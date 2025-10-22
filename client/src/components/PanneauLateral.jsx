@@ -43,6 +43,7 @@ function PanneauLateral({
   const [batimentsOuvert, setBatimentsOuvert] = useState(false);
   const [reseauxOuvert, setReseauxOuvert] = useState(false);
   const [actionsOuvert, setActionsOuvert] = useState(false);
+  const [surPlanOuvert, setSurPlanOuvert] = useState(true); // Ouvert par défaut
   
   // Séparer arbres et arbustes
   const arbres = plantesData.filter(p => p.type === 'arbre');
@@ -877,7 +878,7 @@ function PanneauLateral({
           
             {/* ARBUSTES */}
             <div style={{ marginBottom: '0.5rem' }}>
-              <button
+            <button 
                 onClick={() => setArbustesOuvert(!arbustesOuvert)}
                 style={{
                   width: '100%',
@@ -897,7 +898,7 @@ function PanneauLateral({
               >
                 <span>🌿 Arbustes ({arbustes.length})</span>
                 <span style={{ fontSize: '1rem' }}>{arbustesOuvert ? '▼' : '▶'}</span>
-              </button>
+            </button>
               {arbustesOuvert && (
                 <div style={{ 
                   maxHeight: '250px', 
@@ -924,7 +925,7 @@ function PanneauLateral({
                       <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                         {plante.name}
                       </span>
-                      <button
+            <button 
                         onClick={() => onAjouterArbrePlante && onAjouterArbrePlante(plante)}
                         style={{
                           background: '#8bc34a',
@@ -946,7 +947,7 @@ function PanneauLateral({
                         title={`Ajouter ${plante.name}`}
                       >
                         ➕
-                      </button>
+            </button>
                     </div>
                   ))}
                 </div>
@@ -955,69 +956,166 @@ function PanneauLateral({
           
           </div>
           
-          {/* Liste des arbres ajoutés - VISIBLE EN DEHORS DES ACCORDÉONS */}
-          {arbresAPlanter.length > 0 && (
-            <div style={{ marginBottom: '0.5rem' }}>
-              <div style={{
-                padding: '0.5rem',
-                background: '#e8f5e9',
-                borderRadius: '4px',
-                border: '1px solid #4caf50'
-              }}>
-                <div style={{ 
-                  fontSize: '0.75rem', 
-                  fontWeight: 'bold', 
-                  color: '#2e7d32',
-                  marginBottom: '0.3rem'
-                }}>
-                  🌳 Sur le plan ({arbresAPlanter.length})
-                </div>
-                <div style={{ 
-                  maxHeight: '150px', 
-                  overflowY: 'auto'
-                }}>
-                  {arbresAPlanter.map((arbre, index) => (
-                    <div 
-                      key={`arbre-${arbre.id}-${index}`}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '0.3rem',
-                        marginBottom: '0.2rem',
-                        background: 'white',
-                        borderRadius: '3px',
-                        fontSize: '0.75rem',
-                        border: '1px solid #c8e6c9'
-                      }}
-                    >
-                      <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
-                        {arbre.name}
-                      </span>
-          <button 
-                        onClick={() => onRetirerArbrePlante && onRetirerArbrePlante(index)}
+          {/* Liste des éléments sur le plan - ACCORDÉON */}
+          {(canvas && canvas.getObjects) && (() => {
+            const objetsCanvas = canvas.getObjects().filter(obj => 
+              obj.customType && 
+              obj.customType !== 'arbre-a-planter' && // Les arbres à planter sont gérés séparément
+              obj.customType !== 'arbre-existant' && // Arbres existants supprimés
+              !obj.isGridLine && 
+              !obj.isBoussole && 
+              !obj.isImageFond &&
+              !obj.measureLabel &&
+              !obj.isLigneMesure
+            );
+            
+            const nbObjets = objetsCanvas.length + arbresAPlanter.length;
+            
+            if (nbObjets === 0) return null;
+            
+            return (
+              <div style={{ marginBottom: '0.5rem' }}>
+                <button
+                  onClick={() => setSurPlanOuvert(!surPlanOuvert)}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem',
+                    background: surPlanOuvert ? '#4caf50' : 'white',
+                    color: surPlanOuvert ? 'white' : '#333',
+                    border: '1px solid #4caf50',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span>📦 Sur le plan ({nbObjets})</span>
+                  <span style={{ fontSize: '1rem' }}>{surPlanOuvert ? '▼' : '▶'}</span>
+                </button>
+                {surPlanOuvert && (
+                  <div style={{ 
+                    marginTop: '0.3rem',
+                    background: 'white',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd'
+                  }}>
+                    <div style={{ 
+                      maxHeight: '200px', 
+                      overflowY: 'auto'
+                    }}>
+                    {/* Arbres à planter */}
+                    {arbresAPlanter.map((arbre, index) => (
+                      <div 
+                        key={`arbre-${arbre.id}-${index}`}
                         style={{
-                          background: '#f44336',
-                          color: 'white',
-                          border: 'none',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '0.3rem',
+                          marginBottom: '0.2rem',
+                          background: 'white',
                           borderRadius: '3px',
-                          padding: '0.2rem 0.4rem',
-                          cursor: 'pointer',
-                          fontSize: '0.7rem',
-                          transition: 'transform 0.2s'
+                          fontSize: '0.75rem',
+                          border: '1px solid #c8e6c9'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        title="Retirer cet arbre"
                       >
-                        🗑️
+                        <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
+                          🌸 {arbre.name}
+                        </span>
+                        <button 
+                          onClick={() => onRetirerArbrePlante && onRetirerArbrePlante(index)}
+                          style={{
+                            background: '#f44336',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '3px',
+                            padding: '0.2rem 0.4rem',
+                            cursor: 'pointer',
+                            fontSize: '0.7rem',
+                            transition: 'transform 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                          title="Retirer cet arbre"
+                        >
+                          🗑️
+                        </button>
+          </div>
+                    ))}
+                    
+                    {/* Autres objets du canvas */}
+                    {objetsCanvas.map((obj, index) => {
+                      const icone = 
+                        obj.customType === 'maison' ? '🏠' :
+                        obj.customType === 'terrasse' ? '🪵' :
+                        obj.customType === 'paves' ? '🌿' :
+                        obj.customType === 'citerne' ? '💧' :
+                        obj.customType === 'caisson-eau' ? '💦' :
+                        obj.customType === 'canalisation' ? '🚰' :
+                        obj.customType === 'cloture' ? '🚧' : '📦';
+                      
+                      const nom = 
+                        obj.customType === 'maison' ? 'Maison' :
+                        obj.customType === 'terrasse' ? 'Terrasse' :
+                        obj.customType === 'paves' ? 'Pavés enherbés' :
+                        obj.customType === 'citerne' ? 'Citerne' :
+                        obj.customType === 'caisson-eau' ? 'Caisson eau' :
+                        obj.customType === 'canalisation' ? 'Canalisation' :
+                        obj.customType === 'cloture' ? 'Clôture' : `Type: ${obj.customType || 'inconnu'}`;
+                      
+                      return (
+                        <div 
+                          key={`objet-${obj.customType}-${index}`}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '0.3rem',
+                            marginBottom: '0.2rem',
+                            background: 'white',
+                            borderRadius: '3px',
+                            fontSize: '0.75rem',
+                            border: '1px solid #e0e0e0'
+                          }}
+                        >
+                          <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
+                            {icone} {nom}
+                          </span>
+          <button 
+                            onClick={() => {
+                              canvas.remove(obj);
+                              canvas.renderAll();
+                              onExporterPlan && onExporterPlan(canvas);
+                            }}
+                            style={{
+                              background: '#f44336',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '3px',
+                              padding: '0.2rem 0.4rem',
+                              cursor: 'pointer',
+                              fontSize: '0.7rem',
+                              transition: 'transform 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                            title={`Supprimer ${nom}`}
+                          >
+                            🗑️
           </button>
               </div>
-                  ))}
-                </div>
+                      );
+                    })}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
           
           {/* ACTIONS */}
           <div style={{ marginBottom: '0.5rem' }}>
