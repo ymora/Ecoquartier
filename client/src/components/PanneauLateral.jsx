@@ -22,7 +22,6 @@ function PanneauLateral({
   onAjouterCiterne,
   onAjouterCaissonEau,
   onAjouterCloture,
-  onAjouterArbreExistant,
   onVerrouillerSelection,
   onSupprimerSelection,
   onEffacerTout,
@@ -39,6 +38,15 @@ function PanneauLateral({
   const [ongletActif, setOngletActif] = useState('outils');
   const [objetSelectionne, setObjetSelectionne] = useState(null);
   const [arbreSelectionne, setArbreSelectionne] = useState(plantesData[0].id);
+  const [arbresOuvert, setArbresOuvert] = useState(false);
+  const [arbustesOuvert, setArbustesOuvert] = useState(false);
+  const [batimentsOuvert, setBatimentsOuvert] = useState(false);
+  const [reseauxOuvert, setReseauxOuvert] = useState(false);
+  const [actionsOuvert, setActionsOuvert] = useState(false);
+  
+  // Séparer arbres et arbustes
+  const arbres = plantesData.filter(p => p.type === 'arbre');
+  const arbustes = plantesData.filter(p => !p.type || p.type === 'arbuste');
   
   // Gérer la sélection d'objets
   useEffect(() => {
@@ -48,7 +56,7 @@ function PanneauLateral({
       const obj = e.selected?.[0];
       if (obj && (obj.customType === 'maison' || obj.customType === 'citerne' || 
                   obj.customType === 'caisson-eau' || obj.customType === 'canalisation' || 
-                  obj.customType === 'cloture' || obj.customType === 'arbre-existant')) {
+                  obj.customType === 'cloture')) {
         setObjetSelectionne(obj);
       } else {
         setObjetSelectionne(null);
@@ -180,14 +188,13 @@ function PanneauLateral({
               <div className="section-title">🎯 Objet sélectionné</div>
               <div className="info-box" style={{ background: '#fff3e0', borderColor: '#ff9800' }}>
                 <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                  {objetSelectionne.customType === 'maison' && '🏠 Maison'}
-                  {objetSelectionne.customType === 'citerne' && '💧 Citerne'}
+                {objetSelectionne.customType === 'maison' && '🏠 Maison'}
+                {objetSelectionne.customType === 'citerne' && '💧 Citerne'}
                   {objetSelectionne.customType === 'caisson-eau' && '🟦 Caisson eau'}
-                  {objetSelectionne.customType === 'canalisation' && '🚰 Canalisation'}
-                  {objetSelectionne.customType === 'cloture' && '🚧 Clôture'}
+                {objetSelectionne.customType === 'canalisation' && '🚰 Canalisation'}
+                {objetSelectionne.customType === 'cloture' && '🚧 Clôture'}
                   {objetSelectionne.customType === 'terrasse' && '🏡 Terrasse'}
                   {objetSelectionne.customType === 'paves' && '🟩 Pavés'}
-                  {objetSelectionne.customType === 'arbre-existant' && '🌳 Arbre existant'}
                 </div>
               </div>
               
@@ -519,214 +526,634 @@ function PanneauLateral({
         </div>
       ) : ongletActif === 'outils' ? (
         <div className="panneau-outils-content">
-          {/* STRUCTURES */}
-          <div className="section-title">🏗️ Structures</div>
-          <div className="outils-stack">
-            <button className="btn-outil-full" onClick={onAjouterMaison} title="Maison 10×10m, Hauteur 7m">
-              🏠 Maison
+          {/* IMAGE DE FOND */}
+          <div style={{ marginBottom: '0.5rem' }}>
+            <button
+              className="btn-outil-full"
+              onClick={onChargerImageFond}
+              title="Charger plan cadastral, photo aérienne..."
+              style={{
+                background: imageFondChargee ? '#4caf50' : '#2196f3',
+                color: 'white',
+                fontWeight: 'bold'
+              }}
+            >
+              📷 {imageFondChargee ? 'Image chargée' : 'Charger plan de fond'}
             </button>
-            <button className="btn-outil-full" onClick={onAjouterTerrasse} title="Terrasse 4×3m">
-              🏡 Terrasse
-            </button>
-            <button className="btn-outil-full" onClick={onAjouterPaves} title="Pavés 5×5m">
-              🟩 Pavés
-            </button>
-          </div>
-          
-          {/* RÉSEAUX */}
-          <div className="section-title">🔧 Réseaux enterrés</div>
-          <div className="outils-stack">
-            <button className="btn-outil-full" onClick={onAjouterCanalisation} title="Canalisation (prof. 0.6m)">
-              🚰 Canalisation
-            </button>
-            <button className="btn-outil-full" onClick={onAjouterCiterne} title="Citerne Ø1.5m (prof. 2.5m)">
-              💧 Citerne
-            </button>
-            <button className="btn-outil-full" onClick={onAjouterCaissonEau} title="Caisson rétention 5×3×1m (15m³)">
-              🟦 Caisson eau
-            </button>
-            <button className="btn-outil-full" onClick={onAjouterCloture} title="Clôture limite propriété">
-              🚧 Clôture
-            </button>
-          </div>
-          
-          {/* VÉGÉTATION */}
-          <div className="section-title">🌳 Végétation</div>
-          <div className="outils-stack">
-            <button className="btn-outil-full" onClick={onAjouterArbreExistant} title="Arbre déjà présent">
-              🌳 Arbre existant
-            </button>
-          </div>
-          
-          {/* ARBRES À PLANTER */}
-          <div className="section-title">🌸 Arbres à planter ({arbresAPlanter.length})</div>
-          <div style={{ padding: '0.5rem', background: '#f5f5f5', borderRadius: '6px', marginBottom: '0.5rem' }}>
-            <div style={{ 
-              maxHeight: '300px', 
-              overflowY: 'auto',
-              marginBottom: '0.5rem',
-              background: 'white',
-              borderRadius: '4px',
-              border: '1px solid #ddd'
-            }}>
-              {plantesData.map(plante => (
-                <div 
-                  key={plante.id}
+            {imageFondChargee && (
+              <div style={{ 
+                marginTop: '0.3rem',
+                background: 'white',
+                borderRadius: '4px',
+                border: '1px solid #ddd',
+                padding: '0.5rem'
+              }}>
+                <label style={{ fontSize: '0.75rem', color: '#1976d2', fontWeight: 'bold', display: 'block', marginBottom: '0.3rem' }}>
+                  Opacité: {Math.round(opaciteImage * 100)}%
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={opaciteImage}
+                  onChange={(e) => onAjusterOpaciteImage(parseFloat(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+                <button
+                  onClick={onSupprimerImageFond}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
+                    width: '100%',
+                    marginTop: '0.3rem',
                     padding: '0.4rem',
+                    background: '#f44336',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  🗑️ Supprimer image
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {/* STRUCTURES */}
+          <div style={{ marginBottom: '0.5rem' }}>
+            <button
+              onClick={() => setBatimentsOuvert(!batimentsOuvert)}
+              style={{
+                width: '100%',
+                padding: '0.6rem',
+                background: batimentsOuvert ? '#ff9800' : 'white',
+                color: batimentsOuvert ? 'white' : '#333',
+                border: '1px solid #ff9800',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span>🏗️ Structures (3)</span>
+              <span style={{ fontSize: '1rem' }}>{batimentsOuvert ? '▼' : '▶'}</span>
+            </button>
+            {batimentsOuvert && (
+              <div style={{ 
+                marginTop: '0.3rem',
+                background: 'white',
+                borderRadius: '4px',
+                border: '1px solid #ddd'
+              }}>
+                <button 
+                  onClick={onAjouterMaison} 
+                  title="Maison 10×10m, Hauteur 7m"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
-                    {plante.name}
-                  </span>
-                  <button
-                    onClick={() => onAjouterArbrePlante && onAjouterArbrePlante(plante)}
-                    style={{
-                      background: '#4caf50',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '28px',
-                      height: '28px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      fontSize: '1rem',
-                      fontWeight: 'bold',
-                      transition: 'transform 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                    title={`Ajouter ${plante.name}`}
-                  >
-                    ➕
-                  </button>
-                </div>
-              ))}
-            </div>
-            
-            {/* Liste des arbres ajoutés */}
-            {arbresAPlanter.length > 0 && (
-              <div style={{ 
-                maxHeight: '200px', 
-                overflowY: 'auto', 
-                background: 'white', 
-                padding: '0.3rem',
-                borderRadius: '4px',
-                border: '1px solid #ddd'
-              }}>
-                {arbresAPlanter.map((arbre, index) => (
-                  <div 
-                    key={`arbre-${arbre.id}-${index}`}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '0.3rem',
-                      marginBottom: '0.2rem',
-                      background: '#e8f5e9',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem'
-                    }}
-                  >
-                    <span style={{ flex: 1, fontWeight: '500' }}>
-                      {arbre.name}
-                    </span>
-                    <button 
-                      onClick={() => onRetirerArbrePlante && onRetirerArbrePlante(index)}
-                      style={{
-                        background: '#f44336',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '3px',
-                        padding: '0.2rem 0.4rem',
-                        cursor: 'pointer',
-                        fontSize: '0.7rem'
-                      }}
-                      title="Retirer cet arbre"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                ))}
+              🏠 Maison
+            </button>
+                <button 
+                  onClick={onAjouterTerrasse} 
+                  title="Terrasse 4×3m"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🏡 Terrasse
+            </button>
+                <button 
+                  onClick={onAjouterPaves} 
+                  title="Pavés 5×5m"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🟩 Pavés
+            </button>
               </div>
             )}
           </div>
           
-          {/* AFFICHAGE */}
-          <div className="section-title">👁️ Affichage</div>
-          <div className="outils-stack">
-            <button 
-              className="btn-outil-full" 
-              onClick={onResetZoom} 
-              title="Réinitialiser zoom et caméra (2D/3D)"
+          {/* RÉSEAUX */}
+          <div style={{ marginBottom: '0.5rem' }}>
+            <button
+              onClick={() => setReseauxOuvert(!reseauxOuvert)}
+              style={{
+                width: '100%',
+                padding: '0.6rem',
+                background: reseauxOuvert ? '#2196f3' : 'white',
+                color: reseauxOuvert ? 'white' : '#333',
+                border: '1px solid #2196f3',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'all 0.2s'
+              }}
             >
-              📷 Réinitialiser caméra
+              <span>🔧 Réseaux enterrés (4)</span>
+              <span style={{ fontSize: '1rem' }}>{reseauxOuvert ? '▼' : '▶'}</span>
+            </button>
+            {reseauxOuvert && (
+              <div style={{ 
+                marginTop: '0.3rem',
+                background: 'white',
+                borderRadius: '4px',
+                border: '1px solid #ddd'
+              }}>
+                <button 
+                  onClick={onAjouterCanalisation} 
+                  title="Canalisation (prof. 0.6m)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🚰 Canalisation
+            </button>
+                <button 
+                  onClick={onAjouterCiterne} 
+                  title="Citerne Ø1.5m (prof. 2.5m)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              💧 Citerne
+            </button>
+                <button 
+                  onClick={onAjouterCaissonEau} 
+                  title="Caisson rétention 5×3×1m (15m³)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  🟦 Caisson eau
+                </button>
+                <button 
+                  onClick={onAjouterCloture} 
+                  title="Clôture limite propriété"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🚧 Clôture
             </button>
           </div>
+            )}
+          </div>
+          
+          {/* ARBRES ET ARBUSTES À PLANTER */}
+          <div style={{ marginBottom: '0.5rem' }}>
+            
+            {/* ARBRES */}
+            <div style={{ marginBottom: '0.5rem' }}>
+            <button 
+                onClick={() => setArbresOuvert(!arbresOuvert)}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem',
+                  background: arbresOuvert ? '#4caf50' : 'white',
+                  color: arbresOuvert ? 'white' : '#333',
+                  border: '1px solid #4caf50',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>🌳 Arbres ({arbres.length})</span>
+                <span style={{ fontSize: '1rem' }}>{arbresOuvert ? '▼' : '▶'}</span>
+            </button>
+              {arbresOuvert && (
+                <div style={{ 
+                  maxHeight: '250px', 
+                  overflowY: 'auto',
+                  marginTop: '0.3rem',
+                  background: 'white',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd'
+                }}>
+                  {arbres.map(plante => (
+                    <div 
+                      key={plante.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0.4rem',
+                        borderBottom: '1px solid #f0f0f0',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                    >
+                      <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                        {plante.name}
+                      </span>
+            <button 
+                        onClick={() => onAjouterArbrePlante && onAjouterArbrePlante(plante)}
+                        style={{
+                          background: '#4caf50',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '28px',
+                          height: '28px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          fontSize: '1rem',
+                          fontWeight: 'bold',
+                          transition: 'transform 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        title={`Ajouter ${plante.name}`}
+                      >
+                        ➕
+            </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+          </div>
+          
+            {/* ARBUSTES */}
+            <div style={{ marginBottom: '0.5rem' }}>
+              <button
+                onClick={() => setArbustesOuvert(!arbustesOuvert)}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem',
+                  background: arbustesOuvert ? '#8bc34a' : 'white',
+                  color: arbustesOuvert ? 'white' : '#333',
+                  border: '1px solid #8bc34a',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>🌿 Arbustes ({arbustes.length})</span>
+                <span style={{ fontSize: '1rem' }}>{arbustesOuvert ? '▼' : '▶'}</span>
+              </button>
+              {arbustesOuvert && (
+                <div style={{ 
+                  maxHeight: '250px', 
+                  overflowY: 'auto',
+                  marginTop: '0.3rem',
+                  background: 'white',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd'
+                }}>
+                  {arbustes.map(plante => (
+                    <div 
+                      key={plante.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0.4rem',
+                        borderBottom: '1px solid #f0f0f0',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                    >
+                      <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                        {plante.name}
+                      </span>
+                      <button
+                        onClick={() => onAjouterArbrePlante && onAjouterArbrePlante(plante)}
+                        style={{
+                          background: '#8bc34a',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '28px',
+                          height: '28px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          fontSize: '1rem',
+                          fontWeight: 'bold',
+                          transition: 'transform 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        title={`Ajouter ${plante.name}`}
+                      >
+                        ➕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+          </div>
+          
+          </div>
+          
+          {/* Liste des arbres ajoutés - VISIBLE EN DEHORS DES ACCORDÉONS */}
+          {arbresAPlanter.length > 0 && (
+            <div style={{ marginBottom: '0.5rem' }}>
+              <div style={{
+                padding: '0.5rem',
+                background: '#e8f5e9',
+                borderRadius: '4px',
+                border: '1px solid #4caf50'
+              }}>
+                <div style={{ 
+                  fontSize: '0.75rem', 
+                  fontWeight: 'bold', 
+                  color: '#2e7d32',
+                  marginBottom: '0.3rem'
+                }}>
+                  🌳 Sur le plan ({arbresAPlanter.length})
+                </div>
+                <div style={{ 
+                  maxHeight: '150px', 
+                  overflowY: 'auto'
+                }}>
+                  {arbresAPlanter.map((arbre, index) => (
+                    <div 
+                      key={`arbre-${arbre.id}-${index}`}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '0.3rem',
+                        marginBottom: '0.2rem',
+                        background: 'white',
+                        borderRadius: '3px',
+                        fontSize: '0.75rem',
+                        border: '1px solid #c8e6c9'
+                      }}
+                    >
+                      <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
+                        {arbre.name}
+                      </span>
+          <button 
+                        onClick={() => onRetirerArbrePlante && onRetirerArbrePlante(index)}
+                        style={{
+                          background: '#f44336',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '3px',
+                          padding: '0.2rem 0.4rem',
+                          cursor: 'pointer',
+                          fontSize: '0.7rem',
+                          transition: 'transform 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        title="Retirer cet arbre"
+                      >
+                        🗑️
+          </button>
+              </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* ACTIONS */}
-          <div className="section-title">⚡ Actions</div>
-          <div className="outils-stack">
-            <button className="btn-outil-full" onClick={onVerrouillerSelection} title="Verrouiller">
-              🔒 Verrouiller sélection
-            </button>
-            <button className="btn-outil-full btn-danger-full" onClick={onSupprimerSelection} title="Supprimer">
-              🗑️ Supprimer sélection
-            </button>
-            <button className="btn-outil-full btn-danger-full" onClick={onEffacerTout} title="Effacer tout">
-              ⚠️ Effacer tout
-            </button>
-            <button className="btn-outil-full btn-warning-full" onClick={onChargerPlanParDefaut} title="Charger plan par défaut personnalisé">
-              🔄 Plan défaut
-            </button>
-            <button className="btn-outil-full btn-purple-full" onClick={onGenererLogCopiable} title="Générer log dans console (F12) pour créer config par défaut">
-              📋 Log console
-            </button>
-          </div>
-          
-          {/* IMAGE DE FOND */}
-          <div className="section-title">📷 Plan de fond</div>
-          <div className="outils-stack">
-            <button 
-              className="btn-outil-full" 
-              onClick={onChargerImageFond} 
-              title="Charger plan cadastral, photo aérienne..."
+          <div style={{ marginBottom: '0.5rem' }}>
+              <button 
+              onClick={() => setActionsOuvert(!actionsOuvert)}
+              style={{
+                width: '100%',
+                padding: '0.6rem',
+                background: actionsOuvert ? '#9c27b0' : 'white',
+                color: actionsOuvert ? 'white' : '#333',
+                border: '1px solid #9c27b0',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'all 0.2s'
+              }}
             >
-              📷 Charger image
-            </button>
-            {imageFondChargee && (
-              <>
-                <div style={{ padding: '0.5rem', background: '#e3f2fd', borderRadius: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', color: '#1976d2', fontWeight: 'bold' }}>
-                    Opacité : {Math.round(opaciteImage * 100)}%
-                  </label>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="1" 
-                    step="0.05"
-                    value={opaciteImage}
-                    onChange={(e) => onAjusterOpaciteImage(parseFloat(e.target.value))}
-                    style={{ width: '100%' }}
-                  />
-                </div>
+              <span>⚡ Actions & Plan (5)</span>
+              <span style={{ fontSize: '1rem' }}>{actionsOuvert ? '▼' : '▶'}</span>
+              </button>
+            {actionsOuvert && (
+              <div style={{ 
+                marginTop: '0.3rem',
+                background: 'white',
+                borderRadius: '4px',
+                border: '1px solid #ddd'
+              }}>
                 <button 
-                  className="btn-outil-full btn-danger-full" 
-                  onClick={onSupprimerImageFond} 
-                  title="Retirer image"
+                  onClick={onVerrouillerSelection} 
+                  title="Verrouiller"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-                  🗑️ Retirer image
+                  🔒 Verrouiller sélection
                 </button>
-              </>
+                <button 
+                  onClick={onSupprimerSelection} 
+                  title="Supprimer"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#f44336',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#ffebee'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  🗑️ Supprimer sélection
+                </button>
+                <button 
+                  onClick={onEffacerTout} 
+                  title="Effacer tout"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#f44336',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#ffebee'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  ⚠️ Effacer tout
+                </button>
+                <button 
+                  onClick={onChargerPlanParDefaut} 
+                  title="Charger plan par défaut personnalisé"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#ff9800',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#fff3e0'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  🔄 Plan défaut
+                </button>
+                <button 
+                  onClick={onGenererLogCopiable} 
+                  title="Générer log dans console (F12) pour créer config par défaut"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#9c27b0',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f3e5f5'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  📋 Log console
+                </button>
+              </div>
             )}
           </div>
         </div>

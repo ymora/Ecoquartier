@@ -616,6 +616,19 @@
   background: #e8f5e9;
   position: relative;
   overflow: hidden;
+  padding: 10px;
+}
+
+/* Masquer complètement les scrollbars dans le canvas wrapper */
+.canvas-wrapper::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.canvas-wrapper {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* Layout desktop : panneau à gauche, canvas à droite */
@@ -640,7 +653,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   border: 3px solid var(--accent-primary);
-  margin-right: 10px;
 }
 
 /* Timeline de croissance - DÉPLAÇABLE avec contour */

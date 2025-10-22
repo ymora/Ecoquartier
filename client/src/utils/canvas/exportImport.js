@@ -9,7 +9,7 @@ import { forcerTriObjets } from './depthSorting';
 
 /**
  * Mettre à jour les labels des Groups après redimensionnement
- * ✅ Modifie le texte existant, ne recrée rien
+ * ✅ Modifie le texte existant ou crée les labels s'ils n'existent pas
  */
 export const mettreAJourLabelsGroups = (canvas, echelle) => {
   if (!canvas) return;
@@ -19,20 +19,25 @@ export const mettreAJourLabelsGroups = (canvas, echelle) => {
     if (!obj._objects || obj._objects.length < 2) return;
     if (obj.isGridLine || obj.isBoussole || obj.isImageFond) return;
     
-    // Structure : [forme, labelNom, labelDimensions] (3 éléments)
+    // Structure : [forme, icône, labelDimensions] (3 éléments)
+    // ou [forme, icône] (2 éléments - besoin de créer labelDimensions)
     // ou [ellipse, emoji, nomLabel, dimensionsLabel] (4 éléments pour arbres)
     
     let labelDimensions = null;
+    let needsCreation = false;
     
     if (obj._objects.length === 3) {
-      // Format standard : forme + nom + dimensions
+      // Format standard : forme + icône + dimensions
       labelDimensions = obj._objects[2];
     } else if (obj._objects.length === 4 && obj.customType === 'arbre-a-planter') {
       // Format arbre : ellipse + emoji + nom + dimensions
       labelDimensions = obj._objects[3];
+    } else if (obj._objects.length === 2 && obj.customType && obj.customType !== 'arbre-a-planter') {
+      // Format sans dimensions : forme + icône uniquement - il faut créer le label
+      needsCreation = true;
     }
     
-    if (!labelDimensions || labelDimensions.type !== 'text') return;
+    if (!needsCreation && (!labelDimensions || labelDimensions.type !== 'text')) return;
     
     let newText = '';
     
@@ -65,7 +70,45 @@ export const mettreAJourLabelsGroups = (canvas, echelle) => {
       newText = `↕️${ha}m · ↔️${d}m`;
     }
     
-    if (newText && labelDimensions.text !== newText) {
+    // Créer ou mettre à jour le label
+    if (needsCreation && newText) {
+      // Créer un nouveau label de dimensions
+      const forme = obj._objects[0];
+      let posY = 0;
+      
+      if (forme.type === 'rect') {
+        posY = -(obj.getScaledHeight() / 2) - 15;
+      } else if (forme.type === 'circle') {
+        posY = -(forme.radius * (forme.scaleX || 1)) - 18;
+      }
+      
+      const couleur = obj.customType === 'maison' ? '#757575' :
+                     obj.customType === 'terrasse' ? '#757575' :
+                     obj.customType === 'paves' ? '#7cb342' :
+                     obj.customType === 'citerne' ? '#1976d2' :
+                     obj.customType === 'caisson-eau' ? '#1565c0' :
+                     obj.customType === 'arbre-existant' ? '#388e3c' : '#757575';
+      
+      const labelDim = new fabric.Text(newText, {
+        left: 0,
+        top: posY,
+        fontSize: obj.customType === 'caisson-eau' || obj.customType === 'citerne' ? 9 : 10,
+        fontWeight: '600',
+        fill: couleur,
+        textAlign: 'center',
+        originX: 'center',
+        originY: 'center',
+        selectable: false,
+        evented: false,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        padding: 2
+      });
+      
+      obj.add(labelDim);
+      obj.dirty = true;
+      obj.setCoords();
+    } else if (newText && labelDimensions && labelDimensions.text !== newText) {
+      // Mettre à jour le label existant
       labelDimensions.set({ text: newText });
       obj.dirty = true;
     }
@@ -87,17 +130,30 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
   }
   
   loggerTimeout = setTimeout(() => {
-    console.clear();
+  console.clear();
   
   console.log('%c═══════════════════════════════════════════════════════', 'color: #4caf50; font-weight: bold');
   console.log('%c📋 POSITIONS DU PLAN - FORMAT COPIABLE', 'color: #4caf50; font-weight: bold; font-size: 16px');
   console.log('%c═══════════════════════════════════════════════════════', 'color: #4caf50; font-weight: bold');
   console.log('');
+  
+  // Calculer la position du sud
+  const positionSud = 
+    planData.orientation === 'nord-haut' ? 'bas ⬇️' : 
+    planData.orientation === 'nord-bas' ? 'haut ⬆️' : 
+    planData.orientation === 'nord-gauche' ? 'droite ➡️' : 
+    'gauche ⬅️';
+  
+  console.log(`%c🧭 Orientation du plan: ${planData.orientation}`, 'color: #2196f3; font-weight: bold; font-size: 14px');
+  console.log(`%c☀️ Position du SUD: ${positionSud}`, 'color: #ff9800; font-weight: bold; font-size: 14px; background: #fff3e0; padding: 4px 8px; border-radius: 4px');
+  console.log(`%c📐 Dimensions terrain: ${planData.largeur}m × ${planData.hauteur}m`, 'color: #4caf50; font-weight: bold');
+  console.log('');
   console.log('%c💡 Copiez le code bleu ci-dessous pour planDemo.js', 'color: #ff9800; font-weight: bold');
   console.log('');
   
   let code = `// Plan généré le ${new Date().toLocaleString('fr-FR')}\n`;
-  code += `// Dimensions: ${planData.largeur}m × ${planData.hauteur}m, Orientation: ${planData.orientation}\n\n`;
+  code += `// Dimensions: ${planData.largeur}m × ${planData.hauteur}m, Orientation: ${planData.orientation}\n`;
+  code += `// Position sud (boussole): ${positionSud}\n\n`;
   
   // MAISON
   if (planData.maison) {
@@ -282,155 +338,13 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
 
 /**
  * Charger un plan depuis localStorage
+ * ⚠️ FONCTION OBSOLÈTE - Le chargement se fait maintenant automatiquement
+ * Cette fonction n'est plus utilisée car le plan se recharge automatiquement
+ * depuis localStorage à chaque modification
  */
 export const chargerPlanSauvegarde = (canvas, echelle, ajouterMesuresLive) => {
-  if (!canvas) return;
-
-  const saved = localStorage.getItem('planTerrain');
-  if (!saved) {
-    logger.warn('ChargerPlan', 'Aucun plan sauvegardé');
-    return;
-  }
-
-  try {
-    const planData = JSON.parse(saved);
-    
-    const objets = canvas.getObjects().filter(obj => 
-      !obj.isGridLine && !obj.isBoussole && !obj.isDimensionBox && !obj.isAideButton && 
-      !obj.measureLabel && !obj.alignmentGuide && !obj.isImageFond
-    );
-    objets.forEach(obj => canvas.remove(obj));
-    
-    // Maison
-    if (planData.maison) {
-      const maison = new fabric.Rect({
-        left: planData.maison.left * echelle,
-        top: planData.maison.top * echelle,
-        width: planData.maison.width * echelle,
-        height: planData.maison.height * echelle,
-        fill: '#bdbdbd',
-        stroke: '#424242',
-        strokeWidth: 2,
-        customType: 'maison',
-        profondeurFondations: planData.maison.profondeurFondations || 1.2,
-        hauteurBatiment: planData.maison.hauteurBatiment || 7
-      });
-      const label = new fabric.Text('🏠', {
-        left: (planData.maison.left + planData.maison.width / 2) * echelle,
-        top: (planData.maison.top + planData.maison.height / 2) * echelle,
-        fontSize: 32,
-        originX: 'center',
-        originY: 'center',
-        selectable: false,
-        evented: false
-      });
-      const group = new fabric.Group([maison, label], { 
-        customType: 'maison',
-        profondeurFondations: planData.maison.profondeurFondations || 1.2,
-        hauteurBatiment: planData.maison.hauteurBatiment || 7
-      });
-      canvas.add(group);
-    }
-    
-    // Canalisations
-    if (planData.canalisations) {
-      planData.canalisations.forEach(canal => {
-        const line = new fabric.Line([
-          canal.x1 || 50, canal.y1 || 50,
-          canal.x2 || 200, canal.y2 || 50
-        ], {
-          stroke: '#757575',
-          strokeWidth: 3,
-          strokeLineCap: 'round',
-          customType: 'canalisation',
-          profondeur: canal.profondeur || 0.6
-        });
-        canvas.add(line);
-      });
-    }
-    
-    // Clôtures
-    if (planData.clotures) {
-      planData.clotures.forEach(cloture => {
-        const line = new fabric.Line([cloture.x1, cloture.y1, cloture.x2, cloture.y2], {
-          stroke: '#ffd54f',
-          strokeWidth: 3,
-          strokeDashArray: [10, 5],
-          strokeLineCap: 'round',
-          customType: 'cloture'
-        });
-        canvas.add(line);
-      });
-    }
-    
-    // Arbres existants
-    if (planData.arbresExistants) {
-      planData.arbresExistants.forEach(arbre => {
-        const circle = new fabric.Circle({
-          left: arbre.left * echelle,
-          top: arbre.top * echelle,
-          radius: arbre.radius * echelle,
-          fill: 'rgba(76, 175, 80, 0.3)',
-          stroke: '#2e7d32',
-          strokeWidth: 2,
-          customType: 'arbre-existant'
-        });
-        const label = new fabric.Text('🌳', {
-          left: arbre.left * echelle,
-          top: arbre.top * echelle,
-          fontSize: 24,
-          originX: 'center',
-          originY: 'center',
-          selectable: false,
-          evented: false
-        });
-        const group = new fabric.Group([circle, label], { customType: 'arbre-existant' });
-        canvas.add(group);
-      });
-    }
-    
-    // Terrasses et pavés
-    if (planData.terrasses) {
-      planData.terrasses.forEach(terrasse => {
-        const rect = new fabric.Rect({
-          left: terrasse.left * echelle,
-          top: terrasse.top * echelle,
-          width: terrasse.width * echelle,
-          height: terrasse.height * echelle,
-          fill: '#ffecb3',
-          stroke: '#f57c00',
-          strokeWidth: 2,
-          strokeDashArray: [5, 5],
-          customType: 'terrasse'
-        });
-        canvas.add(rect);
-      });
-    }
-    
-    if (planData.paves) {
-      planData.paves.forEach(pave => {
-        const rect = new fabric.Rect({
-          left: pave.left * echelle,
-          top: pave.top * echelle,
-          width: pave.width * echelle,
-          height: pave.height * echelle,
-          fill: '#c5e1a5',
-          stroke: '#7cb342',
-          strokeWidth: 2,
-          customType: 'paves'
-        });
-        canvas.add(rect);
-      });
-    }
-    
-    canvas.renderAll();
-    ajouterMesuresLive(canvas);
-    logger.info('ImportPlan', 'Plan chargé avec succès');
-    
-  } catch (error) {
-    logger.error('ImageFond', 'Erreur chargement image', error);
-    logger.error('ImportPlan', 'Erreur lors du chargement du plan');
-  }
+  logger.warn('ImportPlan', 'chargerPlanSauvegarde est obsolète - utiliser le système automatique');
+  // Ne fait plus rien - le plan se charge automatiquement
 };
 
 /**
@@ -471,20 +385,28 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           selectable: true,
           hasControls: true,
           hasBorders: true,
-          isImageFond: true
+          isImageFond: true,
+          evented: true
         });
         
         canvas.add(img);
+        
+        // Ordre de profondeur: grille (tout derrière) -> image fond -> objets
+        const allObjects = canvas.getObjects();
+        const gridLines = allObjects.filter(o => o.isGridLine);
+        
+        // Envoyer l'image tout au fond
         canvas.sendObjectToBack(img);
+        
+        // Envoyer les lignes de grille encore plus au fond
+        gridLines.forEach(line => canvas.sendObjectToBack(line));
         
         imageFondRef.current = img;
         setImageFondChargee(true);
         
         canvas.renderAll();
-        ajouterGrille(canvas);
-        canvas.requestRenderAll();
         
-        logger.info('ImageFond', '✅ Image chargée');
+        logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scale.toFixed(2)})`);
       });
     };
     reader.readAsDataURL(file);
@@ -515,10 +437,10 @@ export const supprimerImageFond = (fabricCanvasRef, imageFondRef, setImageFondCh
   }
   
   // Suppression directe sans confirmation
-  canvas.remove(imageFondRef.current);
-  imageFondRef.current = null;
-  setImageFondChargee(false);
-  canvas.renderAll();
+    canvas.remove(imageFondRef.current);
+    imageFondRef.current = null;
+    setImageFondChargee(false);
+    canvas.renderAll();
   logger.info('ImageFond', 'Image de fond supprimée');
 };
 
@@ -526,90 +448,12 @@ export const supprimerImageFond = (fabricCanvasRef, imageFondRef, setImageFondCh
  * Ajouter les mesures live sur les objets
  */
 export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
-  // ✅ Mettre à jour les labels des Groups (ne recrée rien)
+  // ✅ Mettre à jour les labels des Groups (crée automatiquement les dimensions si absentes)
   mettreAJourLabelsGroups(canvas, echelle);
   
-  // Supprimer les anciens labels de mesures (bords)
+  // Supprimer les anciens labels de mesures externes (ne sont plus utilisés)
   canvas.getObjects().forEach(obj => {
     if (obj.measureLabel) canvas.remove(obj);
-  });
-
-  canvas.getObjects().forEach(obj => {
-    if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || 
-        obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
-
-    // Ajouter les mesures sur les bords pour maison/terrasse/pavés
-    if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves') {
-      const w = obj.getScaledWidth() / echelle;
-      const h = obj.getScaledHeight() / echelle;
-      
-      const wText = w % 1 === 0 ? w : w.toFixed(1);
-      const hText = h % 1 === 0 ? h : h.toFixed(1);
-      
-      const labelW = new fabric.Text(`${wText}m`, {
-        left: obj.left + obj.getScaledWidth() / 2,
-        top: obj.top - 15,
-        fontSize: 12,
-        fill: '#1976d2',
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        originX: 'center',
-        selectable: true,
-        hasControls: false,
-        hasBorders: false,
-        lockMovementX: true,
-        lockMovementY: true,
-        hoverCursor: 'pointer',
-        measureLabel: true,
-        measureType: 'width',
-        targetObject: obj
-      });
-
-      labelW.on('mousedown', () => {
-        const newValue = prompt('Nouvelle largeur (en m) :', w);
-        if (newValue && !isNaN(newValue)) {
-          const newWidth = parseFloat(newValue) * echelle;
-          obj.set({ width: newWidth, scaleX: 1 });
-          canvas.renderAll();
-          ajouterMesuresLive(canvas, echelle, exporterPlanCallback);
-          exporterPlanCallback(canvas);
-        }
-      });
-
-      canvas.add(labelW);
-
-      const labelH = new fabric.Text(`${hText}m`, {
-        left: obj.left + obj.getScaledWidth() + 10,
-        top: obj.top + obj.getScaledHeight() / 2,
-        fontSize: 12,
-        fill: '#1976d2',
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        originY: 'center',
-        selectable: true,
-        hasControls: false,
-        hasBorders: false,
-        lockMovementX: true,
-        lockMovementY: true,
-        hoverCursor: 'pointer',
-        measureLabel: true,
-        measureType: 'height',
-        targetObject: obj
-      });
-
-      labelH.on('mousedown', () => {
-        const newValue = prompt('Nouvelle hauteur (en m) :', h);
-        if (newValue && !isNaN(newValue)) {
-          const newHeight = parseFloat(newValue) * echelle;
-          obj.set({ height: newHeight, scaleY: 1 });
-          canvas.renderAll();
-          ajouterMesuresLive(canvas, echelle, exporterPlanCallback);
-          exporterPlanCallback(canvas);
-        }
-      });
-
-      canvas.add(labelH);
-    }
   });
   
   canvas.renderAll();

@@ -7,9 +7,13 @@ function Maison3D({
   profondeur = 8, 
   hauteur = 7,
   profondeurFondations = 1.2,
+  angle = 0,
   onClick
 }) {
   const hauteurToit = 2.5;
+  
+  // Convertir l'angle en radians (THREE.js utilise des radians)
+  const angleRad = (angle * Math.PI) / 180;
   
   // Créer un toit à 2 pans réaliste
   const createToitGeometry = () => {
@@ -37,7 +41,7 @@ function Maison3D({
   const profondeurTotaleSousSol = hauteurFondationsSemelles + hauteurMursSousSol; // 2.5m total
   
   return (
-    <group position={position} onClick={onClick}>
+    <group position={position} rotation={[0, angleRad, 0]} onClick={onClick}>
       {/* FONDATIONS / SEMELLES sous terre (40cm, plus larges que la maison) */}
       <mesh position={[0, -profondeurTotaleSousSol + hauteurFondationsSemelles / 2, 0]}>
         <boxGeometry args={[largeur + 1, hauteurFondationsSemelles, profondeur + 1]} />

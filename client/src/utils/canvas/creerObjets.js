@@ -8,11 +8,9 @@ import * as fabric from 'fabric';
 import logger from '../logger';
 
 /**
- * Créer une maison
+ * Créer un objet maison (retourne l'objet sans l'ajouter au canvas)
  */
-export const creerMaison = (canvas, echelle) => {
-  if (!canvas) return;
-  
+export const creerMaisonObjet = (echelle) => {
   const largeur = 10;
   const hauteur = 10;
   
@@ -30,51 +28,38 @@ export const creerMaison = (canvas, echelle) => {
     evented: false
   });
 
-  // Label nom au centre
-  const labelNom = new fabric.Text('🏠 Maison', {
+  const tailleIcone = Math.min(largeur * echelle, hauteur * echelle) * 0.4;
+  const labelIcone = new fabric.Text('🏠', {
     left: 0,
     top: 0,
-    fontSize: 12,
-    fontWeight: 'bold',
-    fill: '#333',
+    fontSize: Math.max(tailleIcone, 24),
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 3
+    evented: false
   });
 
-  // Label dimensions à l'extérieur (en haut)
-  const labelDimensions = new fabric.Text(`${largeur}×${hauteur}m`, {
-    left: 0,
-    top: -(hauteur * echelle / 2) - 15,
-    fontSize: 10,
-    fontWeight: '600',
-    fill: '#757575',
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 2
-  });
-
-  const group = new fabric.Group([maisonRect, labelNom, labelDimensions], {
-    left: 300,
-    top: 200,
+  const group = new fabric.Group([maisonRect, labelIcone], {
     customType: 'maison',
     profondeurFondations: 1.2,
     hauteurBatiment: 7
   });
 
+  return group;
+};
+
+/**
+ * Créer une maison (ancienne méthode - pour compatibilité)
+ */
+export const creerMaison = (canvas, echelle) => {
+  if (!canvas) return;
+  const group = creerMaisonObjet(echelle);
+  group.set({ left: 300, top: 200 });
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
-  
-  logger.info('Objets', 'Maison ajoutée avec labels');
+  logger.info('Objets', 'Maison ajoutée');
 };
 
 /**
@@ -109,17 +94,12 @@ export const creerCanalisation = (canvas) => {
 };
 
 /**
- * Créer une citerne/fosse septique
+ * Créer un objet citerne (retourne l'objet sans l'ajouter au canvas)
  */
-export const creerCiterne = (canvas, echelle) => {
-  if (!canvas) return;
-  
-  const diametre = 1.5; // Diamètre par défaut en mètres
-  const profondeur = 2.5; // Profondeur par défaut en mètres
+export const creerCiterneObjet = (echelle) => {
+  const diametre = 1.5;
+  const profondeur = 2.5;
   const rayon = (diametre * echelle) / 2;
-  
-  // Calculer le volume (cylindre) : π × r² × h
-  const volume = (Math.PI * Math.pow(diametre / 2, 2) * profondeur).toFixed(1);
   
   const citerne = new fabric.Circle({
     left: 0,
@@ -135,51 +115,38 @@ export const creerCiterne = (canvas, echelle) => {
     evented: false
   });
 
-  // Label nom au centre UNIQUEMENT
-  const labelNom = new fabric.Text('💧 Citerne', {
+  const tailleIcone = rayon * 0.8;
+  const labelIcone = new fabric.Text('💧', {
     left: 0,
     top: 0,
-    fontSize: 12,
-    fontWeight: 'bold',
-    fill: '#333',
+    fontSize: Math.max(tailleIcone, 24),
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 3
+    evented: false
   });
 
-  // Label dimensions + volume à l'extérieur (en haut)
-  const labelDimensions = new fabric.Text(`Ø${diametre}m · ${volume}m³\nProf: ${profondeur}m`, {
-    left: 0,
-    top: -rayon - 20,
-    fontSize: 9,
-    fontWeight: '600',
-    fill: '#1976d2',
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 2
-  });
-
-  const group = new fabric.Group([citerne, labelNom, labelDimensions], {
-    left: 400,
-    top: 400,
+  const group = new fabric.Group([citerne, labelIcone], {
     customType: 'citerne',
     diametre: diametre,
     profondeur: profondeur
   });
 
+  return group;
+};
+
+/**
+ * Créer une citerne/fosse septique (ancienne méthode - pour compatibilité)
+ */
+export const creerCiterne = (canvas, echelle) => {
+  if (!canvas) return;
+  const group = creerCiterneObjet(echelle);
+  group.set({ left: 400, top: 400 });
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
-  
-  logger.info('Objets', `Citerne ajoutée: Ø${diametre}m, prof. ${profondeur}m`);
+  logger.info('Objets', 'Citerne ajoutée');
 };
 
 /**
@@ -229,11 +196,9 @@ export const creerCloture = (canvas, pointsClotureRef) => {
 };
 
 /**
- * Créer une terrasse
+ * Créer un objet terrasse (retourne l'objet sans l'ajouter au canvas)
  */
-export const creerTerrasse = (canvas, echelle) => {
-  if (!canvas) return;
-  
+export const creerTerrasseObjet = (echelle) => {
   const largeur = 5;
   const hauteur = 4;
   
@@ -251,59 +216,44 @@ export const creerTerrasse = (canvas, echelle) => {
     evented: false
   });
   
-  // Label nom au centre
-  const labelNom = new fabric.Text('🏡 Terrasse', {
+  const tailleIcone = Math.min(largeur * echelle, hauteur * echelle) * 0.4;
+  const labelIcone = new fabric.Text('🪵', {
     left: 0,
     top: 0,
-    fontSize: 12,
-    fontWeight: 'bold',
-    fill: '#333',
+    fontSize: Math.max(tailleIcone, 24),
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 3
+    evented: false
   });
 
-  // Label dimensions à l'extérieur (en haut)
-  const labelDimensions = new fabric.Text(`${largeur}×${hauteur}m`, {
-    left: 0,
-    top: -(hauteur * echelle / 2) - 15,
-    fontSize: 10,
-    fontWeight: '600',
-    fill: '#757575',
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 2
-  });
-
-  const group = new fabric.Group([terrasseRect, labelNom, labelDimensions], {
-    left: 150,
-    top: 150,
+  const group = new fabric.Group([terrasseRect, labelIcone], {
     customType: 'terrasse',
-    hauteurDalle: 0.15, // 15cm
-    profondeurFondation: 0.3 // 30cm
+    hauteurDalle: 0.15,
+    profondeurFondation: 0.3
   });
 
-  canvas.add(group);
-  canvas.setActiveObject(group);
-  canvas.renderAll();
-  
-  logger.info('Objets', 'Terrasse ajoutée avec labels');
+  return group;
 };
 
 /**
- * Créer des pavés enherbés
+ * Créer une terrasse (ancienne méthode - pour compatibilité)
  */
-export const creerPaves = (canvas, echelle) => {
+export const creerTerrasse = (canvas, echelle) => {
   if (!canvas) return;
-  
+  const group = creerTerrasseObjet(echelle);
+  group.set({ left: 150, top: 150 });
+  canvas.add(group);
+  canvas.setActiveObject(group);
+  canvas.renderAll();
+  logger.info('Objets', 'Terrasse ajoutée');
+};
+
+/**
+ * Créer un objet pavés (retourne l'objet sans l'ajouter au canvas)
+ */
+export const creerPavesObjet = (echelle) => {
   const largeur = 5;
   const hauteur = 5;
   
@@ -321,63 +271,47 @@ export const creerPaves = (canvas, echelle) => {
     evented: false
   });
   
-  // Label nom au centre
-  const labelNom = new fabric.Text('🟩 Pavés', {
+  const tailleIcone = Math.min(largeur * echelle, hauteur * echelle) * 0.4;
+  const labelIcone = new fabric.Text('🌿', {
     left: 0,
     top: 0,
-    fontSize: 12,
-    fontWeight: 'bold',
-    fill: '#333',
+    fontSize: Math.max(tailleIcone, 24),
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 3
+    evented: false
   });
 
-  // Label dimensions à l'extérieur (en haut)
-  const labelDimensions = new fabric.Text(`${largeur}×${hauteur}m`, {
-    left: 0,
-    top: -(hauteur * echelle / 2) - 15,
-    fontSize: 10,
-    fontWeight: '600',
-    fill: '#7cb342',
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 2
-  });
-
-  const group = new fabric.Group([pavesRect, labelNom, labelDimensions], {
-    left: 500,
-    top: 500,
+  const group = new fabric.Group([pavesRect, labelIcone], {
     customType: 'paves',
-    hauteurPaves: 0.08, // 8cm
-    profondeurGravier: 0.15 // 15cm
+    hauteurPaves: 0.08,
+    profondeurGravier: 0.15
   });
 
-  canvas.add(group);
-  canvas.setActiveObject(group);
-  canvas.renderAll();
-  
-  logger.info('Objets', 'Pavés enherbés ajoutés avec labels');
+  return group;
 };
 
 /**
- * Créer un caisson rectangulaire de rétention d'eau
- * Volume = largeur × profondeur × hauteur
+ * Créer des pavés enherbés (ancienne méthode - pour compatibilité)
  */
-export const creerCaissonEau = (canvas, echelle) => {
+export const creerPaves = (canvas, echelle) => {
   if (!canvas) return;
+  const group = creerPavesObjet(echelle);
+  group.set({ left: 500, top: 500 });
+  canvas.add(group);
+  canvas.setActiveObject(group);
+  canvas.renderAll();
+  logger.info('Objets', 'Pavés enherbés ajoutés');
+};
 
-  const largeurMetres = 5; // 5m par défaut
-  const profondeurMetres = 3; // 3m par défaut (dimension horizontale)
-  const hauteurMetres = 1; // 1m par défaut (pour 15m³)
+/**
+ * Créer un objet caisson d'eau (retourne l'objet sans l'ajouter au canvas)
+ */
+export const creerCaissonEauObjet = (echelle) => {
+  const largeurMetres = 5;
+  const profondeurMetres = 3;
+  const hauteurMetres = 1;
   
   const largeur = largeurMetres * echelle;
   const profondeur = profondeurMetres * echelle;
@@ -397,55 +331,40 @@ export const creerCaissonEau = (canvas, echelle) => {
     evented: false
   });
   
-  const volume = (largeurMetres * profondeurMetres * hauteurMetres).toFixed(1);
-  
-  // Label nom au centre UNIQUEMENT
-  const labelNom = new fabric.Text('🟦 Caisson', {
+  const tailleIcone = Math.min(largeur, profondeur) * 0.4;
+  const labelIcone = new fabric.Text('💦', {
     left: 0,
     top: 0,
-    fontSize: 12,
-    fontWeight: 'bold',
-    fill: '#333',
+    fontSize: Math.max(tailleIcone, 24),
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 3
+    evented: false
   });
 
-  // Label dimensions + volume à l'extérieur (en haut)
-  const labelDimensions = new fabric.Text(`${largeurMetres}×${profondeurMetres}×${hauteurMetres}m · ${volume}m³`, {
-    left: 0,
-    top: -(profondeur / 2) - 15,
-    fontSize: 9,
-    fontWeight: '600',
-    fill: '#1565c0',
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 2
-  });
-
-  const group = new fabric.Group([caissonRect, labelNom, labelDimensions], {
-    left: 300,
-    top: 300,
+  const group = new fabric.Group([caissonRect, labelIcone], {
     customType: 'caisson-eau',
-    profondeurEnterree: 1.0, // 1m sous la surface
+    profondeurEnterree: 1.0,
     largeurCaisson: largeurMetres,
     profondeurCaisson: profondeurMetres,
     hauteurCaisson: hauteurMetres
   });
 
+  return group;
+};
+
+/**
+ * Créer un caisson rectangulaire de rétention d'eau (ancienne méthode - pour compatibilité)
+ */
+export const creerCaissonEau = (canvas, echelle) => {
+  if (!canvas) return;
+  const group = creerCaissonEauObjet(echelle);
+  group.set({ left: 300, top: 300 });
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
-  
-  logger.info('Objets', `Caisson rétention ajouté: ${largeurMetres}×${profondeurMetres}×${hauteurMetres}m = ${volume}m³ (prof. 1m)`);
+  logger.info('Objets', 'Caisson rétention ajouté');
 };
 
 /**
@@ -472,20 +391,17 @@ export const creerArbreExistant = (canvas, echelle) => {
     evented: false
   });
 
-  // Label nom au centre
-  const labelNom = new fabric.Text('🌳 Arbre existant', {
+  // Icône au centre (taille adaptative)
+  const tailleIcone = rayon * 0.8;
+  const labelIcone = new fabric.Text('🌳', {
     left: 0,
     top: 0,
-    fontSize: 11,
-    fontWeight: 'bold',
-    fill: '#333',
+    fontSize: Math.max(tailleIcone, 24),
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 3
+    evented: false
   });
 
   // Label dimensions à l'extérieur (en haut)
@@ -504,7 +420,7 @@ export const creerArbreExistant = (canvas, echelle) => {
     padding: 2
   });
 
-  const group = new fabric.Group([cercle, labelNom, labelDimensions], {
+  const group = new fabric.Group([cercle, labelIcone, labelDimensions], {
     left: 250,
     top: 250,
     customType: 'arbre-existant',

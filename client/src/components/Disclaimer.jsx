@@ -75,9 +75,8 @@ function Disclaimer({ onClose, onOpenLogs }) {
       <div className="disclaimer-overlay">
         <div className="disclaimer-modal">
           <div className="disclaimer-header">
-            <FaExclamationTriangle className="disclaimer-icon" />
-            <h2>Informations Légales et Avertissements</h2>
-            <p className="disclaimer-subtitle">Veuillez prendre connaissance des informations ci-dessous avant d'utiliser ce site</p>
+            <h2>Les Haies de l'Écocartier de Bessancourt</h2>
+            <p className="disclaimer-subtitle">Guide des arbustes pour haies champêtres</p>
           </div>
 
         <div className="disclaimer-content">

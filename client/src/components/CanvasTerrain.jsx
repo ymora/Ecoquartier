@@ -18,7 +18,6 @@ import {
   creerCloture,
   creerTerrasse,
   creerPaves,
-  creerArbreExistant,
   creerGrille,
   creerIndicateurSud
 } from '../utils/canvas/creerObjets';
@@ -98,6 +97,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D
   const syncTimerRef = useRef(null); // Timer pour throttle de la sync
   const [arbresAPlanter, setArbresAPlanter] = useState(arbresAPlanterExterne); // Gestion interne des arbres
+  const [objetEnPlacement, setObjetEnPlacement] = useState(null); // Objet en cours de placement
 
   // ========== WRAPPERS POUR ADAPTER LES SIGNATURES ==========
   
@@ -182,11 +182,28 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const chargerPlanParDefaut = () => {
     if (!fabricCanvasRef.current) return;
     
+    // Nettoyer complètement le canvas (sauf grille, boussole, etc.)
+    const canvas = fabricCanvasRef.current;
+    const objets = canvas.getObjects().filter(obj => 
+      !obj.isGridLine && 
+      !obj.isBoussole && 
+      !obj.isSolIndicator &&
+      !obj.alignmentGuide &&
+      !obj.isDimensionBox &&
+      !obj.isAideButton &&
+      !obj.isImageFond &&
+      !obj.measureLabel
+    );
+    objets.forEach(obj => canvas.remove(obj));
+    
     // Effacer le localStorage pour forcer le plan par défaut
     localStorage.removeItem('planTerrain');
     
+    // Réinitialiser la liste des arbres
+    setArbresAPlanter([]);
+    
     // Charger le plan par défaut
-    chargerPlanDemoUtils(fabricCanvasRef.current, echelle, ajouterGrille);
+    chargerPlanDemoUtils(canvas, echelle, ajouterGrille);
     
     // Notification
     const notification = document.createElement('div');
@@ -195,7 +212,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     document.body.appendChild(notification);
     setTimeout(() => notification.remove(), 2000);
     
-    logger.info('Plan', '✅ Plan par défaut rechargé');
+    logger.info('Plan', '✅ Plan par défaut rechargé (canvas nettoyé, arbres réinitialisés)');
   };
   
   const genererLogCopiable = () => {
@@ -277,39 +294,66 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   }, [echelle]);
   
   
-  // Création d'objets
-  const ajouterMaison = () => {
-    creerMaison(fabricCanvasRef.current, echelle);
-    revaliderTous(fabricCanvasRef.current);
-  };
+  // Création d'objets en mode placement
+  const preparerPlacement = useCallback((typeObjet) => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    
+    // Créer l'objet selon le type
+    let nouvelObjet = null;
+    
+    if (typeObjet === 'maison') {
+      const { creerMaisonObjet } = require('../utils/canvas/creerObjets');
+      nouvelObjet = creerMaisonObjet(echelle);
+    } else if (typeObjet === 'terrasse') {
+      const { creerTerrasseObjet } = require('../utils/canvas/creerObjets');
+      nouvelObjet = creerTerrasseObjet(echelle);
+    } else if (typeObjet === 'paves') {
+      const { creerPavesObjet } = require('../utils/canvas/creerObjets');
+      nouvelObjet = creerPavesObjet(echelle);
+    } else if (typeObjet === 'citerne') {
+      const { creerCiterneObjet } = require('../utils/canvas/creerObjets');
+      nouvelObjet = creerCiterneObjet(echelle);
+    } else if (typeObjet === 'caisson-eau') {
+      const { creerCaissonEauObjet } = require('../utils/canvas/creerObjets');
+      nouvelObjet = creerCaissonEauObjet(echelle);
+    }
+    
+    if (nouvelObjet) {
+      // Positionner au centre de la vue
+      const vpt = canvas.viewportTransform;
+      const centerX = (canvas.width / 2 - vpt[4]) / vpt[0];
+      const centerY = (canvas.height / 2 - vpt[5]) / vpt[3];
+      
+      nouvelObjet.set({
+        left: centerX,
+        top: centerY,
+        opacity: 0.7 // Semi-transparent pendant le placement
+      });
+      
+      canvas.add(nouvelObjet);
+      canvas.setActiveObject(nouvelObjet);
+      setObjetEnPlacement(nouvelObjet);
+      canvas.renderAll();
+      
+      logger.info('Placement', `${typeObjet} en cours de placement - cliquez pour déposer`);
+    }
+  }, [echelle]);
+  
+  // Fonctions d'ajout simplifiées
+  const ajouterMaison = () => preparerPlacement('maison');
   const ajouterCanalisation = () => {
     creerCanalisation(fabricCanvasRef.current);
     revaliderTous(fabricCanvasRef.current);
   };
-  const ajouterCiterne = () => {
-    creerCiterne(fabricCanvasRef.current, echelle);
-    revaliderTous(fabricCanvasRef.current);
-  };
-  const ajouterCaissonEau = () => {
-    creerCaissonEau(fabricCanvasRef.current, echelle);
-    revaliderTous(fabricCanvasRef.current);
-  };
+  const ajouterCiterne = () => preparerPlacement('citerne');
+  const ajouterCaissonEau = () => preparerPlacement('caisson-eau');
   const ajouterCloture = () => {
     creerCloture(fabricCanvasRef.current, pointsClotureRef);
     revaliderTous(fabricCanvasRef.current);
   };
-  const ajouterTerrasse = () => {
-    creerTerrasse(fabricCanvasRef.current, echelle);
-    revaliderTous(fabricCanvasRef.current);
-  };
-  const ajouterPaves = () => {
-    creerPaves(fabricCanvasRef.current, echelle);
-    revaliderTous(fabricCanvasRef.current);
-  };
-  const ajouterArbreExistant = () => {
-    creerArbreExistant(fabricCanvasRef.current, echelle);
-    revaliderTous(fabricCanvasRef.current);
-  };
+  const ajouterTerrasse = () => preparerPlacement('terrasse');
+  const ajouterPaves = () => preparerPlacement('paves');
   
   const ajouterArbrePlante = (plante) => {
     // Ajouter l'arbre à la liste
@@ -333,30 +377,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // ========== HOOKS PERSONNALISÉS ==========
   
-  // Fonction pour charger le plan sauvegardé
+  // Fonction pour charger le plan sauvegardé - OBSOLÈTE
+  // Le plan se charge maintenant automatiquement via le système de persistance
   const chargerPlanSauvegarde = useCallback(() => {
-    if (!fabricCanvasRef.current) return;
-    
-    const saved = localStorage.getItem('planTerrain');
-    if (!saved) return;
-    
-    try {
-      const planData = JSON.parse(saved);
-      // Charger le plan dans le canvas
-      const { chargerPlanSauvegarde: chargerUtils } = require('../utils/canvas/exportImport');
-      chargerUtils(fabricCanvasRef.current, echelle, ajouterMesuresLive);
-      
-      // Mettre à jour les dimensions si elles sont dans le plan
-      if (planData.largeur && planData.hauteur && onDimensionsChange) {
-        onDimensionsChange({ largeur: planData.largeur, hauteur: planData.hauteur });
-      }
-      if (planData.orientation && onOrientationChange) {
-        onOrientationChange(planData.orientation);
-      }
-    } catch (error) {
-      logger.error('Canvas', 'Erreur chargement plan', error);
-    }
-  }, [echelle, onDimensionsChange, onOrientationChange]);
+    // Fonction vide - le chargement est automatique
+  }, []);
 
   // Initialisation du canvas
   useCanvasInit({
@@ -642,6 +667,59 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     // Resynchroniser vers la 3D après un court délai
     setTimeout(() => throttledSync(), 150);
   }, [throttledSync]);
+  
+  // Gérer le placement interactif d'objets
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !objetEnPlacement) return;
+    
+    const canvas = fabricCanvasRef.current;
+    let firstClick = true; // Ignorer le premier clic (celui qui a créé l'objet)
+    
+    // Suivre la souris
+    const handleMouseMove = (e) => {
+      const pointer = canvas.getPointer(e.e);
+      objetEnPlacement.set({
+        left: pointer.x,
+        top: pointer.y
+      });
+      canvas.renderAll();
+    };
+    
+    // Déposer l'objet au clic
+    const handleMouseDown = (e) => {
+      if (firstClick) {
+        firstClick = false;
+        return;
+      }
+      
+      // Finaliser le placement
+      objetEnPlacement.set({ opacity: 1 });
+      setObjetEnPlacement(null);
+      exporterPlan(canvas);
+      revaliderTous(canvas);
+      logger.info('Placement', 'Objet déposé avec succès');
+    };
+    
+    // Annuler avec Escape
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        canvas.remove(objetEnPlacement);
+        setObjetEnPlacement(null);
+        canvas.renderAll();
+        logger.info('Placement', 'Placement annulé (Echap)');
+      }
+    };
+    
+    canvas.on('mouse:move', handleMouseMove);
+    canvas.on('mouse:down', handleMouseDown);
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      canvas.off('mouse:move', handleMouseMove);
+      canvas.off('mouse:down', handleMouseDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [objetEnPlacement, exporterPlan, revaliderTous]);
 
   // ========== JSX ==========
 
@@ -781,6 +859,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           >
           <FaCube /> 3D
           </button>
+          <button 
+          onClick={resetZoom}
+          title="Réinitialiser la caméra (2D/3D)"
+          >
+          📷
+          </button>
         </div>
 
       {/* Layout avec panneau latéral + vue principale */}
@@ -802,7 +886,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onAjouterCiterne={ajouterCiterne}
         onAjouterCaissonEau={ajouterCaissonEau}
         onAjouterCloture={ajouterCloture}
-        onAjouterArbreExistant={ajouterArbreExistant}
         onVerrouillerSelection={verrouillerSelection}
         onSupprimerSelection={supprimerSelection}
         onEffacerTout={effacerTout}

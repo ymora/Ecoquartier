@@ -83,7 +83,6 @@ export const useTimelineSync = ({
         
         // ✅ Forcer le recalcul complet du groupe pour affichage correct
         arbreGroup.dirty = true;
-        arbreGroup.addWithUpdate(); // Recalcule les bounds du groupe
         arbreGroup.setCoords(); // Met à jour les coordonnées pour la sélection
         validerPositionArbre(canvas, arbreGroup);
         
