@@ -7,111 +7,6 @@ import * as fabric from 'fabric';
 import logger from '../logger';
 import { forcerTriObjets } from './depthSorting';
 
-/**
- * Mettre à jour les labels des Groups après redimensionnement
- * ✅ Modifie le texte existant ou crée les labels s'ils n'existent pas
- */
-export const mettreAJourLabelsGroups = (canvas, echelle) => {
-  if (!canvas) return;
-  
-  canvas.getObjects().forEach(obj => {
-    // Uniquement les Groups avec labels
-    if (!obj._objects || obj._objects.length < 2) return;
-    if (obj.isGridLine || obj.isBoussole || obj.isImageFond) return;
-    
-    // Debug: vérifier la structure
-    // logger.debug('Labels', `Obj ${obj.customType}: ${obj._objects.length} éléments`);
-    
-    // Structure : [forme, icône, labelDimensions] (3 éléments)
-    // ou [forme, icône] (2 éléments - besoin de créer labelDimensions)
-    // ou [ellipse, emoji, nomLabel, dimensionsLabel] (4 éléments pour arbres)
-    
-    let labelDimensions = null;
-    let needsCreation = false;
-    
-    if (obj._objects.length === 3) {
-      // Format standard : forme + icône + dimensions
-      labelDimensions = obj._objects[2];
-    } else if (obj._objects.length === 4 && obj.customType === 'arbre-a-planter') {
-      // Format arbre : ellipse + emoji + nom + dimensions
-      labelDimensions = obj._objects[3];
-    } else if (obj._objects.length === 2 && obj.customType && obj.customType !== 'arbre-a-planter') {
-      // Format sans dimensions : forme + icône uniquement - il faut créer le label
-      needsCreation = true;
-    }
-    
-    if (!needsCreation && (!labelDimensions || labelDimensions.type !== 'text')) return;
-    
-    let newText = '';
-    
-    if (obj.customType === 'maison') {
-      const w = (obj.getScaledWidth() / echelle).toFixed(1);
-      const h = (obj.getScaledHeight() / echelle).toFixed(1);
-      newText = `${w}×${h}m`;
-    } else if (obj.customType === 'terrasse') {
-      const w = (obj.getScaledWidth() / echelle).toFixed(1);
-      const h = (obj.getScaledHeight() / echelle).toFixed(1);
-      newText = `${w}×${h}m`;
-    } else if (obj.customType === 'paves') {
-      const w = (obj.getScaledWidth() / echelle).toFixed(1);
-      const h = (obj.getScaledHeight() / echelle).toFixed(1);
-      newText = `${w}×${h}m`;
-    } else if (obj.customType === 'citerne') {
-      const d = (obj.diametre || 1.5).toFixed(1);
-      const p = (obj.profondeur || 2.5).toFixed(1);
-      const volume = (Math.PI * Math.pow(d / 2, 2) * p).toFixed(1);
-      newText = `Ø${d}m · ${volume}m³\nProf: ${p}m`;
-    } else if (obj.customType === 'caisson-eau') {
-      const largeur = (obj.largeurCaisson || 5).toFixed(1);
-      const profondeur = (obj.profondeurCaisson || 3).toFixed(1);
-      const hauteur = (obj.hauteurCaisson || 1).toFixed(1);
-      const volume = (largeur * profondeur * hauteur).toFixed(1);
-      newText = `${largeur}×${profondeur}×${hauteur}m · ${volume}m³`;
-    }
-    
-    // Créer ou mettre à jour le label
-    if (needsCreation && newText) {
-      // Créer un nouveau label de dimensions
-      const forme = obj._objects[0];
-      let posY = 0;
-      
-      if (forme.type === 'rect') {
-        posY = -(obj.getScaledHeight() / 2) - 15;
-      } else if (forme.type === 'circle') {
-        posY = -(forme.radius * (forme.scaleX || 1)) - 18;
-      }
-      
-      const couleur = obj.customType === 'maison' ? '#757575' :
-                     obj.customType === 'terrasse' ? '#757575' :
-                     obj.customType === 'paves' ? '#7cb342' :
-                     obj.customType === 'citerne' ? '#1976d2' :
-                     obj.customType === 'caisson-eau' ? '#1565c0' : '#757575';
-      
-      const labelDim = new fabric.Text(newText, {
-        left: 0,
-        top: posY,
-        fontSize: obj.customType === 'caisson-eau' || obj.customType === 'citerne' ? 9 : 10,
-        fontWeight: '600',
-        fill: couleur,
-        textAlign: 'center',
-        originX: 'center',
-        originY: 'center',
-        selectable: false,
-        evented: false,
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        padding: 2
-      });
-      
-      obj.add(labelDim);
-      obj.dirty = true;
-      obj.setCoords();
-    } else if (newText && labelDimensions && labelDimensions.text !== newText) {
-      // Mettre à jour le label existant
-      labelDimensions.set({ text: newText });
-      obj.dirty = true;
-    }
-  });
-};
 
 // Timer pour throttle du logger
 let loggerTimeout = null;
@@ -433,12 +328,93 @@ export const supprimerImageFond = (fabricCanvasRef, imageFondRef, setImageFondCh
  * Ajouter les mesures live sur les objets
  */
 export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
-  // ✅ Mettre à jour les labels des Groups (crée automatiquement les dimensions si absentes)
-  mettreAJourLabelsGroups(canvas, echelle);
-  
-  // Supprimer les anciens labels de mesures externes (ne sont plus utilisés)
+  // Supprimer les anciens labels de mesures
   canvas.getObjects().forEach(obj => {
     if (obj.measureLabel) canvas.remove(obj);
+  });
+
+  canvas.getObjects().forEach(obj => {
+    if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isSolIndicator || 
+        obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
+
+    // Ajouter les mesures sur les bords pour tous les objets rectangulaires
+    if (obj.customType === 'maison' || obj.customType === 'terrasse' || obj.customType === 'paves' || obj.customType === 'caisson-eau') {
+      const w = obj.getScaledWidth() / echelle;
+      const h = obj.getScaledHeight() / echelle;
+      
+      const wText = w.toFixed(1);
+      const hText = h.toFixed(1);
+      
+      // Label LARGEUR (en haut, centré le long de la ligne supérieure)
+      const labelW = new fabric.Text(`${wText}m`, {
+        left: obj.left,
+        top: obj.top - obj.getScaledHeight() / 2 - 20, // Plus éloigné de la ligne
+        fontSize: 11,
+        fill: '#1976d2',
+        fontWeight: 'bold',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        originX: 'center',
+        originY: 'bottom', // Aligné par le bas pour être au-dessus de la ligne
+        selectable: false,
+        hasControls: false,
+        hasBorders: false,
+        lockMovementX: true,
+        lockMovementY: true,
+        measureLabel: true,
+        measureType: 'width',
+        targetObject: obj
+      });
+
+      canvas.add(labelW);
+
+      // Label HAUTEUR (à droite, centré le long de la ligne droite)
+      const labelH = new fabric.Text(`${hText}m`, {
+        left: obj.left + obj.getScaledWidth() / 2 + 15, // Plus éloigné de la ligne
+        top: obj.top,
+        fontSize: 11,
+        fill: '#1976d2',
+        fontWeight: 'bold',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        originX: 'left', // Aligné par la gauche pour être à droite de la ligne
+        originY: 'center',
+        selectable: false,
+        hasControls: false,
+        hasBorders: false,
+        lockMovementX: true,
+        lockMovementY: true,
+        measureLabel: true,
+        measureType: 'height',
+        targetObject: obj
+      });
+
+      canvas.add(labelH);
+    } else if (obj.customType === 'citerne') {
+      // Pour les citernes circulaires
+      const d = (obj.diametre || 1.5).toFixed(1);
+      const p = (obj.profondeur || 2.5).toFixed(1);
+      const volume = (Math.PI * Math.pow(d / 2, 2) * p).toFixed(1);
+      
+      const rayon = obj._objects[0].radius * (obj.scaleX || 1);
+      
+      const labelCiterne = new fabric.Text(`Ø${d}m · ${volume}m³\nProf: ${p}m`, {
+        left: obj.left,
+        top: obj.top - rayon - 25, // Plus éloigné du cercle
+        fontSize: 9,
+        fill: '#1976d2',
+        fontWeight: 'bold',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        originX: 'center',
+        originY: 'bottom', // Aligné par le bas
+        textAlign: 'center',
+        selectable: false,
+        hasControls: false,
+        hasBorders: false,
+        measureLabel: true,
+        targetObject: obj
+      });
+
+      canvas.add(labelCiterne);
+    }
   });
   
   canvas.renderAll();

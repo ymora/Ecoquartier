@@ -31,22 +31,7 @@ function Citerne3D({
         />
       </mesh>
       
-      {/* Label simplifié - Nom uniquement */}
-      <Html position={[0, profondeurEnterree / 2 + 0.5, 0]} center>
-        <div style={{ 
-          background: 'white', 
-          padding: '4px 10px', 
-          borderRadius: '4px',
-          fontSize: '12px',
-          fontWeight: 'bold',
-          color: '#00838f',
-          whiteSpace: 'nowrap',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-          border: '1px solid #00838f'
-        }}>
-          💧 Citerne
-        </div>
-      </Html>
+      {/* Pas de label en 3D - l'objet se reconnaît visuellement */}
     </group>
   );
 }

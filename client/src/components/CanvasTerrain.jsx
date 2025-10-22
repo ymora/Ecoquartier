@@ -381,12 +381,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     }
   };
   
-  // Synchroniser avec les arbres externes si fournis
-  useEffect(() => {
-    if (arbresAPlanterExterne.length > 0 && arbresAPlanter.length === 0) {
-      setArbresAPlanter(arbresAPlanterExterne);
-    }
-  }, [arbresAPlanterExterne, arbresAPlanter.length]);
+  // Plus de synchronisation automatique - l'utilisateur gère la liste manuellement
   const ajouterGrille = (canvas) => creerGrille(canvas, echelle);
   const ajouterIndicateurSud = (canvas) => creerIndicateurSud(canvas, orientation, onOrientationChange, echelle);
 

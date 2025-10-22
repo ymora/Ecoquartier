@@ -30,8 +30,8 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   objets.forEach(obj => canvas.remove(obj));
   
   // ========== MAISON avec LABELS ==========
-  const largeurMaison = 10.23;
-  const hauteurMaison = 11.21;
+  const largeurMaison = 10.305;
+  const hauteurMaison = 11.285;
   
   const maisonRect = new fabric.Rect({
     left: 0,
@@ -64,7 +64,9 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
     top: -163.0,
     customType: 'maison',
     profondeurFondations: 1.2,
-    hauteurBatiment: 7
+    hauteurBatiment: 7,
+    originX: 'center',
+    originY: 'center'
   });
   canvas.add(maisonGroup);
   
@@ -102,19 +104,21 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const caissonGroup = new fabric.Group([caissonRect, caissonIcone], {
-    left: 540.9,
-    top: 316.8,
+    left: 440.0,
+    top: 162.0,
     customType: 'caisson-eau',
     largeurCaisson: largeurCaisson,
     profondeurCaisson: profondeurCaisson,
     hauteurCaisson: hauteurCaisson,
-    profondeurEnterree: 1.0
+    profondeurEnterree: 1.0,
+    originX: 'center',
+    originY: 'center'
   });
   canvas.add(caissonGroup);
   
-  // ========== TERRASSE 1 avec LABELS (ROTATED 90°) ==========
-  const largeurTerrasse1 = 6.52;
-  const hauteurTerrasse1 = 5.11;
+  // ========== TERRASSE 1 avec LABELS ==========
+  const largeurTerrasse1 = 2.01;
+  const hauteurTerrasse1 = 2.32;
   
   const terrasse1Rect = new fabric.Rect({
     left: 0,
@@ -143,18 +147,19 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const terrasse1Group = new fabric.Group([terrasse1Rect, terrasse1Icone], {
-    left: 692.5,
-    top: -214.7,
+    left: 246.2,
+    top: -433.6,
     customType: 'terrasse',
     hauteurDalle: 0.15,
     profondeurFondation: 0.3,
-    angle: 90
+    originX: 'center',
+    originY: 'center'
   });
   canvas.add(terrasse1Group);
   
-  // ========== TERRASSE 2 avec LABELS ==========
-  const largeurTerrasse2 = 1.96;
-  const hauteurTerrasse2 = 2.27;
+  // ========== TERRASSE 2 avec LABELS (ROTATED 90°) ==========
+  const largeurTerrasse2 = 6.57;
+  const hauteurTerrasse2 = 5.16;
   
   const terrasse2Rect = new fabric.Rect({
     left: 0,
@@ -183,17 +188,20 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const terrasse2Group = new fabric.Group([terrasse2Rect, terrasse2Icone], {
-    left: 411.8,
-    top: -234.3,
+    left: 388.7,
+    top: -350.8,
     customType: 'terrasse',
     hauteurDalle: 0.15,
-    profondeurFondation: 0.3
+    profondeurFondation: 0.3,
+    angle: 90,
+    originX: 'center',
+    originY: 'center'
   });
   canvas.add(terrasse2Group);
   
   // ========== TERRASSE 3 avec LABELS ==========
-  const largeurTerrasse3 = 7.27;
-  const hauteurTerrasse3 = 5.11;
+  const largeurTerrasse3 = 7.32;
+  const hauteurTerrasse3 = 5.16;
   
   const terrasse3Rect = new fabric.Rect({
     left: 0,
@@ -222,17 +230,19 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const terrasse3Group = new fabric.Group([terrasse3Rect, terrasse3Icone], {
-    left: 123.4,
-    top: -347.8,
+    left: 59.9,
+    top: -491.0,
     customType: 'terrasse',
     hauteurDalle: 0.15,
-    profondeurFondation: 0.3
+    profondeurFondation: 0.3,
+    originX: 'center',
+    originY: 'center'
   });
   canvas.add(terrasse3Group);
   
   // ========== PAVÉ ENHERBÉ 1 avec LABELS ==========
-  const largeurPaves = 6.13;
-  const hauteurPaves = 8.10;
+  const largeurPaves = 6.18;
+  const hauteurPaves = 8.15;
   
   const pavesRect = new fabric.Rect({
     left: 0,
@@ -261,11 +271,13 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const pavesGroup = new fabric.Group([pavesRect, pavesIcone], {
-    left: 80.4,
-    top: 264.5,
+    left: -0.5,
+    top: 225.8,
     customType: 'paves',
     hauteurPaves: 0.08,
-    profondeurGravier: 0.15
+    profondeurGravier: 0.15,
+    originX: 'center',
+    originY: 'center'
   });
   canvas.add(pavesGroup);
   
