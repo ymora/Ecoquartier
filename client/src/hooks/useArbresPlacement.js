@@ -26,7 +26,9 @@ export const useArbresPlacement = ({
     
     logger.info('AjoutArbres', `Ajout de ${arbresAPlanter.length} arbres`);
     
-    setTimeout(() => {
+    // Utiliser requestAnimationFrame pour attendre que le canvas soit prêt
+    // Plus propre qu'un setTimeout arbitraire
+    requestAnimationFrame(() => {
       const arbresExistants = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
       
       const idsExistants = arbresExistants.map(a => a.arbreData?.id).sort().join(',');
@@ -93,9 +95,42 @@ export const useArbresPlacement = ({
           evented: false
         });
 
-        // Labels supprimés : toutes les infos sont maintenant dans le tooltip au survol
+        // Label avec nom de l'arbre
+        const nomLabel = new fabric.Text(arbre.name, {
+          fontSize: Math.min(largeur, hauteur) * 0.08,
+          originX: 'center',
+          originY: 'center',
+          top: hauteur * 0.25,
+          fill: '#1b5e20',
+          fontWeight: 'bold',
+          selectable: false,
+          evented: false
+        });
 
-        const arbreGroup = new fabric.Group([ellipse, emoji], {
+        // Label avec dimensions
+        let texte;
+        if (anneeProjection === 0) {
+          texte = `Plantation: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
+        } else if (anneeProjection >= tailles.anneesMaturite) {
+          texte = `Maturité (${tailles.anneesMaturite}+ ans): ${tailles.envergureMax}m × ${tailles.hauteurMax}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType}`;
+        } else {
+          const progH = Math.round(tailles.pourcentageHauteur * 100);
+          const progE = Math.round(tailles.pourcentageEnvergure * 100);
+          texte = `${anneeProjection} an${anneeProjection > 1 ? 's' : ''}: ${tailles.envergureActuelle.toFixed(1)}m × ${tailles.hauteurActuelle.toFixed(1)}m\nTronc: ⌀${(tailles.diametreTroncActuel * 100).toFixed(0)}cm ${iconeType} (H:${progH}% E:${progE}%)`;
+        }
+
+        const dimensionsLabel = new fabric.Text(texte, {
+          fontSize: Math.min(largeur, hauteur) * 0.06,
+          originX: 'center',
+          originY: 'center',
+          top: hauteur * 0.4,
+          fill: '#424242',
+          textAlign: 'center',
+          selectable: false,
+          evented: false
+        });
+
+        const arbreGroup = new fabric.Group([ellipse, emoji, nomLabel, dimensionsLabel], {
           left: position.x,
           top: position.y,
           originX: 'center',
@@ -130,8 +165,15 @@ export const useArbresPlacement = ({
       
       canvas.renderAll();
       logger.info('AjoutArbres', `✅ ${arbresAPlanter.length} arbres ajoutés (triés par profondeur)`);
-    }, 500);
+    });
 
-  }, [arbresAPlanter]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    arbresAPlanter,
+    fabricCanvasRef,
+    anneeProjection,
+    calculerTailleSelonAnnee,
+    trouverPositionValide,
+    validerPositionArbre
+  ]);
 };
 

@@ -17,7 +17,7 @@ export const supprimerSelection = (canvas, exporterPlanCallback) => {
   const locked = actifs.filter(obj => obj.locked);
   
   if (locked.length > 0) {
-    alert(`⚠️ ${locked.length} objet(s) verrouillé(s)`);
+    logger.warn('SupprimerSelection', `${locked.length} objet(s) verrouillé(s)`);
     return;
   }
   
@@ -37,7 +37,7 @@ export const verrouillerSelection = (canvas) => {
   
   const actifs = canvas.getActiveObjects();
   if (actifs.length === 0) {
-    alert('Sélectionnez d\'abord un ou plusieurs objets');
+    logger.warn('SupprimerSelection', 'Aucun objet sélectionné');
     return;
   }
   
@@ -66,7 +66,7 @@ export const verrouillerSelection = (canvas) => {
   
   canvas.discardActiveObject();
   canvas.renderAll();
-  alert(`✅ ${actifs.length} objet(s) verrouillé(s)`);
+  logger.info('VerrouSelection', `${actifs.length} objet(s) verrouillé(s)`);
 };
 
 /**
@@ -103,9 +103,9 @@ export const deverrouillerTout = (canvas) => {
   
   canvas.renderAll();
   if (count > 0) {
-    alert(`🔓 ${count} objet(s) déverrouillé(s)`);
+    logger.info('DeverrouillerTout', `${count} objet(s) déverrouillé(s)`);
   } else {
-    alert('Aucun objet verrouillé');
+    logger.warn('DeverrouillerTout', 'Aucun objet verrouillé');
   }
 };
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
-import { autoSortOnMove, forcerTriObjets } from '../utils/canvas/depthSorting';
+import { forcerTriObjets } from '../utils/canvas/depthSorting';
 
 /**
  * Hook pour initialiser le canvas Fabric.js
@@ -19,6 +19,7 @@ export const useCanvasInit = ({
   const isPanningRef = useRef(false);
   const lastPosXRef = useRef(0);
   const lastPosYRef = useRef(0);
+  const planChargeRef = useRef(false); // ✅ Tracker si le plan a déjà été chargé
 
   useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return;
@@ -41,7 +42,7 @@ export const useCanvasInit = ({
       selection: true,
       centeredScaling: false,
       centeredRotation: true,
-      snapAngle: 15,
+      snapAngle: 5, // Snap tous les 5° pour rotation précise (facilite 90°)
       snapThreshold: 10
     });
 
@@ -49,7 +50,6 @@ export const useCanvasInit = ({
 
     // ========== TRI PAR PROFONDEUR ==========
     // Le tri est géré manuellement dans useCanvasEvents pour éviter les doubles renderAll()
-    // autoSortOnMove(canvas) est désactivé
     logger.info('Canvas', 'Tri par profondeur géré manuellement dans useCanvasEvents');
 
     // ========== ZOOM AVEC MOLETTE ==========
@@ -134,41 +134,45 @@ export const useCanvasInit = ({
     ajouterGrille(canvas);
     ajouterIndicateurSud(canvas);
 
-    // ✅ CHARGEMENT DU PLAN : Toujours charger le plan par défaut personnalisé
-    // La sauvegarde automatique enregistrera les modifications après
-    setTimeout(() => {
-      if (chargerPlanDemo) {
-        chargerPlanDemo();
-        logger.info('Canvas', '✅ Plan par défaut personnalisé chargé');
-        
-        // Afficher notification
-        const notification = document.createElement('div');
-        notification.textContent = '🏠 Plan chargé';
-        notification.style.cssText = `
-          position: fixed;
-          top: 80px;
-          right: 20px;
-          background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-          color: white;
-          padding: 12px 20px;
-          border-radius: 8px;
-          font-weight: bold;
-          font-size: 14px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-          z-index: 10000;
-        `;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-          notification.style.transition = 'opacity 0.3s ease';
-          notification.style.opacity = '0';
+    // ✅ CHARGEMENT DU PLAN : Uniquement au premier chargement
+    // Ne JAMAIS recharger après (sinon perte des modifications utilisateur)
+    if (!planChargeRef.current) {
+      planChargeRef.current = true; // Marquer comme chargé
+      
+      setTimeout(() => {
+        if (chargerPlanDemo) {
+          chargerPlanDemo();
+          logger.info('Canvas', '✅ Plan par défaut personnalisé chargé (première fois)');
+          
+          // Afficher notification
+          const notification = document.createElement('div');
+          notification.textContent = '🏠 Plan chargé';
+          notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+          `;
+          document.body.appendChild(notification);
           setTimeout(() => {
-            if (notification.parentNode) {
-              document.body.removeChild(notification);
-            }
-          }, 300);
-        }, 2000);
-      }
-    }, 100);
+            notification.style.transition = 'opacity 0.3s ease';
+            notification.style.opacity = '0';
+            setTimeout(() => {
+              if (notification.parentNode) {
+                document.body.removeChild(notification);
+              }
+            }, 300);
+          }, 2000);
+        }
+      }, 100);
+    }
 
     logger.info('Canvas', '✅ Zoom molette et Pan activés');
 
@@ -182,6 +186,6 @@ export const useCanvasInit = ({
       canvas.dispose();
       fabricCanvasRef.current = null;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // ✅ Uniquement au montage initial, jamais après
 };
 

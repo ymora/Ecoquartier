@@ -50,7 +50,7 @@ function ImageGallery({ arbusteId, arbusteName }) {
         setImages(validImages);
         setCurrentIndex(0);
       } catch (error) {
-        console.error('Erreur chargement images:', error);
+        // Erreur chargement images - images par défaut utilisées
         setImages([]);
       }
       setLoading(false);

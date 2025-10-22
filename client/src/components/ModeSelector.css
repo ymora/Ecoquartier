@@ -1,65 +1,84 @@
-/* Sélecteur de mode unifié */
-.mode-selector {
+/* Sélecteur de mode circulaire */
+.mode-selector-circle {
   position: fixed;
   top: 1rem;
   right: 2rem;
   z-index: 1001;
-  display: flex;
-  gap: 0.5rem;
+  width: 100px;
+  height: 100px;
   background: white;
-  padding: 0.4rem;
-  border-radius: 25px;
+  border-radius: 50%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 3px solid #000;
 }
 
-.mode-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.6rem 1.2rem;
-  border: 2px solid;
-  border-radius: 20px;
+.circle-svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.circle-segment {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  stroke: none;
+  stroke-width: 0;
+}
+
+.circle-segment:hover {
+  opacity: 0.8;
+  filter: brightness(1.1);
+}
+
+.circle-segment.active {
+  filter: brightness(1);
+}
+
+.mode-icon-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
   transition: all 0.3s ease;
-  white-space: nowrap;
+  z-index: 2;
+  border-radius: 50%;
 }
 
-.mode-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.mode-icon-btn:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.mode-btn.active {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  transform: translateY(0);
-}
-
-.mode-btn svg {
-  font-size: 1.1rem;
-}
-
-.mode-label {
-  font-weight: 600;
+.mode-icon-btn.active {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .mode-selector {
-    flex-direction: column;
+  .mode-selector-circle {
+    width: 80px;
+    height: 80px;
     right: 1rem;
-    gap: 0.3rem;
   }
   
-  .mode-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+  .mode-icon-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 1.1rem;
   }
   
-  .mode-label {
-    display: none; /* Masquer texte sur mobile */
+  .mode-icon-btn.active {
+    font-size: 1.3rem;
   }
 }
 

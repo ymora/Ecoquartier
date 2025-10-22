@@ -1,12 +1,15 @@
-/* Panneau latéral avec onglets - OPTIMISÉ COMPACT */
+/* Panneau latéral avec onglets - OPTIMISÉ COMPACT + CONTOUR */
 .panneau-lateral {
   width: 260px;
   flex-shrink: 0;
   background: white;
-  border-right: 1px solid #e0e0e0;
+  border: 3px solid var(--accent-primary);
+  border-radius: 8px;
+  margin: 0 10px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* En-tête avec onglets */
@@ -67,6 +70,80 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
   margin-bottom: 1rem;
+}
+
+/* Stack vertical pour boutons pleine largeur */
+.outils-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Stack pour configs */
+.config-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Ligne de configuration uniforme */
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.config-row label {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  margin: 0;
+}
+
+.config-row input[type="number"],
+.config-row select {
+  width: 80px;
+  padding: 0.4rem;
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.config-row .unit {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 600;
+  min-width: 20px;
+}
+
+/* Boîte info uniforme */
+.info-box {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 6px;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.info-box .info-title {
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+
+.info-box .info-subtitle {
+  font-size: 0.7rem;
+  opacity: 0.8;
 }
 
 .btn-outil {
@@ -140,6 +217,74 @@
   border-color: #2196f3;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+/* Bouton pleine largeur pour stack vertical */
+.btn-outil-full {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #333;
+}
+
+.btn-outil-full:hover {
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  border-color: #4caf50;
+  transform: translateX(3px);
+  box-shadow: -3px 3px 8px rgba(76, 175, 80, 0.15);
+}
+
+.btn-outil-full:active {
+  transform: translateX(1px);
+}
+
+.btn-outil-full.btn-active {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+}
+
+/* Variantes de couleur pour boutons spéciaux */
+.btn-danger-full {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border-color: #ef5350;
+}
+
+.btn-danger-full:hover {
+  background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+  border-color: #d32f2f;
+}
+
+.btn-warning-full {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-color: #ff9800;
+  color: #e65100;
+}
+
+.btn-warning-full:hover {
+  background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
+  border-color: #f57c00;
+}
+
+.btn-purple-full {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  border-color: #9c27b0;
+  color: #4a148c;
+}
+
+.btn-purple-full:hover {
+  background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
+  border-color: #7b1fa2;
 }
 
 .navigation-aide {

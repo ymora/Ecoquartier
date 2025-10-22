@@ -10,7 +10,7 @@ import {
 
 /**
  * Hook pour gérer tous les event listeners du canvas
- * Snap magnétique, guides, object:modified, clavier, etc.
+ * Guides, object:modified, clavier, etc.
  */
 export const useCanvasEvents = ({
   fabricCanvasRef,
@@ -24,7 +24,6 @@ export const useCanvasEvents = ({
   cacherCercleTronc,
   exporterPlan,
   ajouterMesuresLive,
-  afficherOmbreMaison,
   ajouterPointIntermediaire
 }) => {
   useEffect(() => {
@@ -36,34 +35,8 @@ export const useCanvasEvents = ({
       const obj = e.target;
       const snapSize = echelle * 0.05;
       
-      let newLeft = Math.round(obj.left / snapSize) * snapSize;
-      let newTop = Math.round(obj.top / snapSize) * snapSize;
-      
-      if (snapMagnetiqueActif && !obj.isGridLine && !obj.isBoussole) {
-        const snapDistance = echelle * 0.1;
-        
-        canvas.getObjects().forEach(target => {
-          if (target === obj || target.isGridLine || target.isBoussole || 
-              target.measureLabel || target.isZoneContrainte || target.isOmbre ||
-              target.isLigneMesure || target.isTroncIndicator) return;
-          
-          const targetLeft = target.left;
-          const targetRight = target.left + (target.getScaledWidth ? target.getScaledWidth() : 0);
-          const objWidth = obj.getScaledWidth ? obj.getScaledWidth() : 0;
-          
-          if (Math.abs(newLeft - targetLeft) < snapDistance) newLeft = targetLeft;
-          if (Math.abs(newLeft - targetRight) < snapDistance) newLeft = targetRight;
-          if (Math.abs((newLeft + objWidth) - targetLeft) < snapDistance) newLeft = targetLeft - objWidth;
-          
-          const targetTop = target.top;
-          const targetBottom = target.top + (target.getScaledHeight ? target.getScaledHeight() : 0);
-          const objHeight = obj.getScaledHeight ? obj.getScaledHeight() : 0;
-          
-          if (Math.abs(newTop - targetTop) < snapDistance) newTop = targetTop;
-          if (Math.abs(newTop - targetBottom) < snapDistance) newTop = targetBottom;
-          if (Math.abs((newTop + objHeight) - targetTop) < snapDistance) newTop = targetTop - objHeight;
-        });
-      }
+      const newLeft = Math.round(obj.left / snapSize) * snapSize;
+      const newTop = Math.round(obj.top / snapSize) * snapSize;
       
       obj.set({ left: newLeft, top: newTop });
     };
@@ -115,8 +88,6 @@ export const useCanvasEvents = ({
         resetClotureLastPos(e.target, canvas);
       }
       
-      afficherOmbreMaison(canvas);
-      
       // Forcer le tri par profondeur après modification
       forcerTriObjets(canvas);
       
@@ -133,7 +104,7 @@ export const useCanvasEvents = ({
         const locked = activeObjects.filter(obj => obj.locked);
         
         if (locked.length > 0) {
-          alert('⚠️ Objet(s) verrouillé(s)');
+          logger.warn('Canvas', 'Objet(s) verrouillé(s) - impossible à supprimer');
           return;
         }
         
@@ -279,6 +250,19 @@ export const useCanvasEvents = ({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [snapMagnetiqueActif]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    fabricCanvasRef,
+    echelle,
+    afficherMenuContextuel,
+    cacherMenuContextuel,
+    cacherTooltipValidation,
+    validerPositionArbre,
+    revaliderTous,
+    afficherTooltipValidation,
+    cacherCercleTronc,
+    exporterPlan,
+    ajouterMesuresLive,
+    ajouterPointIntermediaire
+  ]);
 };
 

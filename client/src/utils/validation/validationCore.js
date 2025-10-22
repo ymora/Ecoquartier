@@ -38,7 +38,6 @@ export function validerArbre(arbreData, criteres, options = {}) {
     // Mettre à jour le pire pourcentage
     if (resultat.pourcentage !== null && resultat.pourcentage < pourcentageMinGlobal) {
       pourcentageMinGlobal = resultat.pourcentage;
-      console.log(`🔍 Validation ${arbreData.name}: ${critere.type} → ${resultat.pourcentage.toFixed(0)}% (${critere.distance.toFixed(2)}m / ${critere.distanceMin}m requis)`);
     }
     
     // Ajouter le message si présent
@@ -52,8 +51,6 @@ export function validerArbre(arbreData, criteres, options = {}) {
   
   // Déterminer le statut selon le pourcentage le plus critique
   const status = getStatusFromPourcentage(pourcentageMinGlobal);
-  
-  console.log(`🎨 ${arbreData.name}: Pourcentage global = ${pourcentageMinGlobal.toFixed(0)}% → Statut = ${status}`);
   
   // Message par défaut si tout est conforme
   const messages = tousLesMessages.length > 0 

@@ -13,37 +13,56 @@ import logger from '../logger';
 export const creerMaison = (canvas, echelle) => {
   if (!canvas) return;
   
+  const largeur = 10;
+  const hauteur = 10;
+  
   const maisonRect = new fabric.Rect({
     left: 0,
     top: 0,
-    width: 10 * echelle,
-    height: 10 * echelle,
+    width: largeur * echelle,
+    height: hauteur * echelle,
     fill: '#bdbdbd',
     stroke: '#757575',
     strokeWidth: 3,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    selectable: false,
+    evented: false
   });
 
-  // ✅ Label central comme en 3D
-  const label = new fabric.Text('🏠 Maison\n10.0×10.0m', {
+  // Label nom au centre
+  const labelNom = new fabric.Text('🏠 Maison', {
     left: 0,
     top: 0,
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: 'bold',
     fill: '#333',
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
     evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 4,
-    stroke: '#757575',
-    strokeWidth: 1.5
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 3
   });
 
-  const group = new fabric.Group([maisonRect, label], {
+  // Label dimensions à l'extérieur (en haut)
+  const labelDimensions = new fabric.Text(`${largeur}×${hauteur}m`, {
+    left: 0,
+    top: -(hauteur * echelle / 2) - 15,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#757575',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 2
+  });
+
+  const group = new fabric.Group([maisonRect, labelNom, labelDimensions], {
     left: 300,
     top: 200,
     customType: 'maison',
@@ -55,7 +74,7 @@ export const creerMaison = (canvas, echelle) => {
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Maison ajoutée avec label');
+  logger.info('Objets', 'Maison ajoutée avec labels');
 };
 
 /**
@@ -77,7 +96,8 @@ export const creerCanalisation = (canvas) => {
     lockScalingX: false,
     lockRotation: false,
     strokeUniform: true,
-    profondeur: 0.6
+    profondeur: 0.6,
+    diametreCanalisation: 0.1 // 10cm
   });
 
   canvas.add(canalisation);
@@ -94,43 +114,72 @@ export const creerCanalisation = (canvas) => {
 export const creerCiterne = (canvas, echelle) => {
   if (!canvas) return;
   
-  const citerne = new fabric.Rect({
-    left: 400,
-    top: 400,
-    width: 2 * echelle,
-    height: 3 * echelle,
-    fill: '#b3e5fc',
-    stroke: '#0288d1',
+  const diametre = 1.5; // Diamètre par défaut en mètres
+  const profondeur = 2.5; // Profondeur par défaut en mètres
+  const rayon = (diametre * echelle) / 2;
+  
+  // Calculer le volume (cylindre) : π × r² × h
+  const volume = (Math.PI * Math.pow(diametre / 2, 2) * profondeur).toFixed(1);
+  
+  const citerne = new fabric.Circle({
+    left: 0,
+    top: 0,
+    radius: rayon,
+    fill: 'rgba(33, 150, 243, 0.3)',
+    stroke: '#1976d2',
     strokeWidth: 3,
-    strokeDashArray: [10, 5],
-    customType: 'citerne',
-    profondeur: 2.5
-  });
-
-  const label = new fabric.Text('💧 Citerne\n2m × 3m\nProf: 2.5m', {
-    left: 400 + echelle,
-    top: 400 + (1.5 * echelle),
-    fontSize: 10,
-    fontWeight: 'bold',
-    fill: '#01579b',
-    textAlign: 'center',
+    strokeDashArray: [5, 3],
     originX: 'center',
     originY: 'center',
     selectable: false,
     evented: false
   });
 
-  const group = new fabric.Group([citerne, label], {
+  // Label nom au centre UNIQUEMENT
+  const labelNom = new fabric.Text('💧 Citerne', {
+    left: 0,
+    top: 0,
+    fontSize: 12,
+    fontWeight: 'bold',
+    fill: '#333',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 3
+  });
+
+  // Label dimensions + volume à l'extérieur (en haut)
+  const labelDimensions = new fabric.Text(`Ø${diametre}m · ${volume}m³\nProf: ${profondeur}m`, {
+    left: 0,
+    top: -rayon - 20,
+    fontSize: 9,
+    fontWeight: '600',
+    fill: '#1976d2',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 2
+  });
+
+  const group = new fabric.Group([citerne, labelNom, labelDimensions], {
+    left: 400,
+    top: 400,
     customType: 'citerne',
-    profondeur: 2.5
+    diametre: diametre,
+    profondeur: profondeur
   });
 
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  // Debug désactivé pour performance
-  // logger.debug('Objets', 'Citerne ajoutée', { profondeur: 2.5 });
+  logger.info('Objets', `Citerne ajoutée: Ø${diametre}m, prof. ${profondeur}m`);
 };
 
 /**
@@ -185,47 +234,68 @@ export const creerCloture = (canvas, pointsClotureRef) => {
 export const creerTerrasse = (canvas, echelle) => {
   if (!canvas) return;
   
+  const largeur = 5;
+  const hauteur = 4;
+  
   const terrasseRect = new fabric.Rect({
     left: 0,
     top: 0,
-    width: 5 * echelle,
-    height: 4 * echelle,
+    width: largeur * echelle,
+    height: hauteur * echelle,
     fill: 'rgba(158, 158, 158, 0.4)',
     stroke: '#757575',
     strokeWidth: 2,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    selectable: false,
+    evented: false
   });
   
-  // ✅ Label central
-  const label = new fabric.Text('🏡 Terrasse\n5.0×4.0m', {
+  // Label nom au centre
+  const labelNom = new fabric.Text('🏡 Terrasse', {
     left: 0,
     top: 0,
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: 'bold',
     fill: '#333',
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
     evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 4,
-    stroke: '#757575',
-    strokeWidth: 1.5
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 3
   });
 
-  const group = new fabric.Group([terrasseRect, label], {
+  // Label dimensions à l'extérieur (en haut)
+  const labelDimensions = new fabric.Text(`${largeur}×${hauteur}m`, {
+    left: 0,
+    top: -(hauteur * echelle / 2) - 15,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#757575',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 2
+  });
+
+  const group = new fabric.Group([terrasseRect, labelNom, labelDimensions], {
     left: 150,
     top: 150,
-    customType: 'terrasse'
+    customType: 'terrasse',
+    hauteurDalle: 0.15, // 15cm
+    profondeurFondation: 0.3 // 30cm
   });
 
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Terrasse ajoutée avec label');
+  logger.info('Objets', 'Terrasse ajoutée avec labels');
 };
 
 /**
@@ -234,103 +304,148 @@ export const creerTerrasse = (canvas, echelle) => {
 export const creerPaves = (canvas, echelle) => {
   if (!canvas) return;
   
+  const largeur = 5;
+  const hauteur = 5;
+  
   const pavesRect = new fabric.Rect({
     left: 0,
     top: 0,
-    width: 5 * echelle,
-    height: 5 * echelle,
+    width: largeur * echelle,
+    height: hauteur * echelle,
     fill: 'rgba(139, 195, 74, 0.3)',
     stroke: '#7cb342',
     strokeWidth: 2,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    selectable: false,
+    evented: false
   });
   
-  // ✅ Label central
-  const label = new fabric.Text('🟩 Pavés\n5.0×5.0m', {
+  // Label nom au centre
+  const labelNom = new fabric.Text('🟩 Pavés', {
     left: 0,
     top: 0,
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: 'bold',
     fill: '#333',
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
     evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 4,
-    stroke: '#7cb342',
-    strokeWidth: 1.5
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 3
   });
 
-  const group = new fabric.Group([pavesRect, label], {
+  // Label dimensions à l'extérieur (en haut)
+  const labelDimensions = new fabric.Text(`${largeur}×${hauteur}m`, {
+    left: 0,
+    top: -(hauteur * echelle / 2) - 15,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#7cb342',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 2
+  });
+
+  const group = new fabric.Group([pavesRect, labelNom, labelDimensions], {
     left: 500,
     top: 500,
-    customType: 'paves'
+    customType: 'paves',
+    hauteurPaves: 0.08, // 8cm
+    profondeurGravier: 0.15 // 15cm
   });
 
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Pavés enherbés ajoutés avec label');
+  logger.info('Objets', 'Pavés enherbés ajoutés avec labels');
 };
 
 /**
- * Créer un caisson rectangulaire d'eau de pluie
+ * Créer un caisson rectangulaire de rétention d'eau
+ * Volume = largeur × profondeur × hauteur
  */
 export const creerCaissonEau = (canvas, echelle) => {
   if (!canvas) return;
 
-  const largeur = 3 * echelle;
-  const longueur = 5 * echelle;
+  const largeurMetres = 5; // 5m par défaut
+  const profondeurMetres = 3; // 3m par défaut (dimension horizontale)
+  const hauteurMetres = 1; // 1m par défaut (pour 15m³)
+  
+  const largeur = largeurMetres * echelle;
+  const profondeur = profondeurMetres * echelle;
   
   const caissonRect = new fabric.Rect({
     left: 0,
     top: 0,
     width: largeur,
-    height: longueur,
-    fill: 'rgba(33, 150, 243, 0.3)',
+    height: profondeur,
+    fill: 'rgba(33, 150, 243, 0.25)',
     stroke: '#1565c0',
     strokeWidth: 3,
     strokeDashArray: [5, 3],
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    selectable: false,
+    evented: false
   });
   
-  // ✅ Label central
-  const label = new fabric.Text('💧 Caisson\n3.0×5.0m', {
+  const volume = (largeurMetres * profondeurMetres * hauteurMetres).toFixed(1);
+  
+  // Label nom au centre UNIQUEMENT
+  const labelNom = new fabric.Text('🟦 Caisson', {
     left: 0,
     top: 0,
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: 'bold',
     fill: '#333',
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
     evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 4,
-    stroke: '#1565c0',
-    strokeWidth: 1.5
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 3
   });
 
-  const group = new fabric.Group([caissonRect, label], {
+  // Label dimensions + volume à l'extérieur (en haut)
+  const labelDimensions = new fabric.Text(`${largeurMetres}×${profondeurMetres}×${hauteurMetres}m · ${volume}m³`, {
+    left: 0,
+    top: -(profondeur / 2) - 15,
+    fontSize: 9,
+    fontWeight: '600',
+    fill: '#1565c0',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 2
+  });
+
+  const group = new fabric.Group([caissonRect, labelNom, labelDimensions], {
     left: 300,
     top: 300,
     customType: 'caisson-eau',
-    profondeur: 2.5,
-    largeurCaisson: 3,
-    longueurCaisson: 5
+    profondeurEnterree: 1.0, // 1m sous la surface
+    largeurCaisson: largeurMetres,
+    profondeurCaisson: profondeurMetres,
+    hauteurCaisson: hauteurMetres
   });
 
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
   
-  logger.debug('Objets', 'Caisson eau ajouté avec label');
+  logger.info('Objets', `Caisson rétention ajouté: ${largeurMetres}×${profondeurMetres}×${hauteurMetres}m = ${volume}m³ (prof. 1m)`);
 };
 
 /**
@@ -339,8 +454,10 @@ export const creerCaissonEau = (canvas, echelle) => {
 export const creerArbreExistant = (canvas, echelle) => {
   if (!canvas) return;
   
-  const rayon = 2.5 * echelle;
-  const diametre = 5.0; // ✅ FIX: Définir le diamètre (5m par défaut)
+  const diametre = 5.0; // Diamètre par défaut (5m)
+  const hauteur = 8.0; // Hauteur par défaut (8m)
+  const profondeurRacines = 2.5; // Profondeur racines (2.5m)
+  const rayon = (diametre * echelle) / 2;
   
   const cercle = new fabric.Circle({
     left: 0,
@@ -350,34 +467,51 @@ export const creerArbreExistant = (canvas, echelle) => {
     stroke: '#388e3c',
     strokeWidth: 3,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    selectable: false,
+    evented: false
   });
 
-  const label = new fabric.Text('🌳 Arbre existant\n↕️8.0m · ↔️5.0m', {
+  // Label nom au centre
+  const labelNom = new fabric.Text('🌳 Arbre existant', {
     left: 0,
     top: 0,
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: 'bold',
     fill: '#333',
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
     selectable: false,
     evented: false,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 4,
-    stroke: '#388e3c',
-    strokeWidth: 1.5
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 3
   });
 
-  const group = new fabric.Group([cercle, label], {
+  // Label dimensions à l'extérieur (en haut)
+  const labelDimensions = new fabric.Text(`↕️${hauteur}m · ↔️${diametre}m`, {
+    left: 0,
+    top: -rayon - 18,
+    fontSize: 10,
+    fontWeight: '600',
+    fill: '#388e3c',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 2
+  });
+
+  const group = new fabric.Group([cercle, labelNom, labelDimensions], {
     left: 250,
     top: 250,
     customType: 'arbre-existant',
     // ✅ Dimensions éditables (3 dimensions)
     diametreArbre: diametre, // Largeur de la couronne
-    hauteurArbre: 8, // Hauteur de l'arbre
-    profondeurRacines: 2.5 // Profondeur des racines
+    hauteurArbre: hauteur, // Hauteur de l'arbre
+    profondeurRacines: profondeurRacines // Profondeur des racines
   });
   
   // Stocker les informations pour le tooltip
@@ -445,19 +579,14 @@ export const creerGrille = (canvas, echelle) => {
   
   // Envoyer toutes les lignes de grille en arrière-plan
   // (juste au-dessus de l'image de fond si elle existe)
-  const imageFond = canvas.getObjects().find(obj => obj.isImageFond);
+  gridLines.forEach(line => {
+    canvas.sendObjectToBack(line);
+  });
   
+  // Si une image de fond existe, la placer encore plus en arrière que la grille
+  const imageFond = canvas.getObjects().find(obj => obj.isImageFond);
   if (imageFond) {
-    // Image de fond existe : envoyer au fond d'abord l'image, puis la grille
     canvas.sendObjectToBack(imageFond);
-    gridLines.forEach(line => {
-      canvas.sendObjectToBack(line);
-    });
-  } else {
-    // Pas d'image : envoyer juste la grille au fond
-    gridLines.forEach(line => {
-      canvas.sendObjectToBack(line);
-    });
   }
   
   canvas.renderAll();

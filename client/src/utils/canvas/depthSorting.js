@@ -66,35 +66,8 @@ function getBottomPosition(obj) {
   return bounds.top + bounds.height;
 }
 
-/**
- * Réorganiser automatiquement les objets après un déplacement
- * @param {fabric.Canvas} canvas - Le canvas
- * 
- * NOTE: Cette fonction n'est PAS utilisée car le tri est géré manuellement
- * dans useCanvasEvents pour éviter les appels multiples de renderAll()
- */
-export function autoSortOnMove(canvas) {
-  if (!canvas) return;
-  
-  // DÉSACTIVÉ : Le tri est fait manuellement dans les event handlers
-  // pour éviter les doubles appels de renderAll()
-  
-  // Code original commenté :
-  // canvas.on('object:moved', () => {
-  //   trierObjetsParProfondeur(canvas);
-  //   canvas.renderAll(); // ← Double appel avec useCanvasEvents
-  // });
-}
-
-/**
- * Désactiver le tri automatique
- * @param {fabric.Canvas} canvas - Le canvas
- */
-export function disableAutoSort(canvas) {
-  if (!canvas) return;
-  canvas.off('object:moved');
-  canvas.off('object:added');
-}
+// Les fonctions autoSortOnMove et disableAutoSort ont été supprimées
+// Le tri est géré manuellement dans useCanvasEvents pour éviter les doubles renderAll()
 
 /**
  * Forcer le tri immédiat de tous les objets

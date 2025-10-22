@@ -53,19 +53,19 @@ function LogViewer({ isOpen, onClose }) {
 
   const handleExport = () => {
     exportLogs();
-    alert('✅ Logs exportés en JSON !');
+    logger.info('LogViewer', 'Logs exportés en JSON');
   };
 
   const handleClear = () => {
-    if (confirm('Effacer tous les logs ?')) {
-      clearLogs();
-      refreshLogs();
-    }
+    // Effacement direct sans confirmation
+    clearLogs();
+    refreshLogs();
+    logger.info('LogViewer', 'Logs effacés');
   };
 
   const handleStats = () => {
     showLogStats();
-    alert('📊 Statistiques affichées dans la console');
+    logger.info('LogViewer', 'Statistiques affichées dans la console');
   };
 
   return (

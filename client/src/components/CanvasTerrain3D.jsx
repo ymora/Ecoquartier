@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useRef, useState, useMemo, useCallback, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Sky } from '@react-three/drei';
 import Arbre3D from './3d/Arbre3D';
@@ -372,6 +372,25 @@ function CanvasTerrain3D({
     }
   }, [onObjetPositionChange]);
   
+  // Écouter l'événement de réinitialisation de la caméra 3D
+  useEffect(() => {
+    const handleResetCamera = () => {
+      if (orbitControlsRef.current) {
+        // Réinitialiser les contrôles OrbitControls
+        orbitControlsRef.current.reset();
+        
+        // Revenir en vue perspective si on est dans une autre vue
+        setVueMode('perspective');
+      }
+    };
+    
+    window.addEventListener('reset3DCamera', handleResetCamera);
+    
+    return () => {
+      window.removeEventListener('reset3DCamera', handleResetCamera);
+    };
+  }, []);
+  
   return (
     <div className="canvas-terrain-3d">
       {/* Barre d'outils 3D */}
@@ -499,7 +518,6 @@ function CanvasTerrain3D({
           const validationStatus = validation3D.status;
           
           if (model3D) {
-            console.log(`[3D] Utilisation modèle GLB pour ${arbre.arbreData.id}:`, model3D.path);
           }
           
           return (

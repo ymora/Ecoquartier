@@ -31,11 +31,16 @@ function Maison3D({
     return new THREE.ExtrudeGeometry(shape, extrudeSettings);
   };
   
+  // Dimensions sous-sol
+  const hauteurFondationsSemelles = 0.4; // 40cm de hauteur pour les semelles
+  const hauteurMursSousSol = 2.1; // 2.1m de hauteur pour les murs du sous-sol
+  const profondeurTotaleSousSol = hauteurFondationsSemelles + hauteurMursSousSol; // 2.5m total
+  
   return (
     <group position={position} onClick={onClick}>
-      {/* FONDATIONS sous terre (gris wireframe) */}
-      <mesh position={[0, -profondeurFondations / 2, 0]}>
-        <boxGeometry args={[largeur + 1, profondeurFondations, profondeur + 1]} />
+      {/* FONDATIONS / SEMELLES sous terre (40cm, plus larges que la maison) */}
+      <mesh position={[0, -profondeurTotaleSousSol + hauteurFondationsSemelles / 2, 0]}>
+        <boxGeometry args={[largeur + 1, hauteurFondationsSemelles, profondeur + 1]} />
         <meshStandardMaterial 
           color="#666666" 
           transparent 
@@ -44,7 +49,18 @@ function Maison3D({
         />
       </mesh>
       
-      {/* MURS (beige avec texture brique simulée) */}
+      {/* MURS DU SOUS-SOL (2.1m, même taille que la maison) */}
+      <mesh position={[0, -hauteurMursSousSol / 2, 0]}>
+        <boxGeometry args={[largeur, hauteurMursSousSol, profondeur]} />
+        <meshStandardMaterial 
+          color="#999999" 
+          transparent 
+          opacity={0.6}
+          roughness={0.9}
+        />
+      </mesh>
+      
+      {/* MURS RDC + ÉTAGES (beige avec texture brique simulée) */}
       <mesh position={[0, hauteur / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[largeur, hauteur, profondeur]} />
         <meshStandardMaterial 

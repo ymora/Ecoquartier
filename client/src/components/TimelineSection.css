@@ -1,0 +1,33 @@
+/* Section de timeline réutilisable avec Grid */
+.timeline-section {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.timeline-section.with-border {
+  padding-left: 0.75rem;
+  border-left: none;
+}
+
+.timeline-control {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.timeline-bottom-text {
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: bold;
+  color: var(--accent-primary);
+  line-height: 1.2;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 15px;
+}
+

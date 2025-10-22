@@ -20,7 +20,7 @@ export default function HaloPulsant({ status, position, envergure }) {
   
   // ⚠️ Protection : Si envergure invalide, ne rien afficher
   if (!envergure || envergure <= 0 || isNaN(envergure)) {
-    console.warn('HaloPulsant: envergure invalide', { envergure, status });
+    // Envergure invalide - halo par défaut
     return null;
   }
   

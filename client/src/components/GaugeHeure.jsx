@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import TimelineSection from './TimelineSection';
 import './GaugeHeure.css';
 
 /**
@@ -85,9 +86,29 @@ function GaugeHeure({
     // On inverse donc: newAngle = 180 - newAngle
     newAngle = 180 - newAngle;
     
-    // Limiter à 0-180° (demi-jauge horizontale)
-    if (newAngle < 0) newAngle = 0;
-    if (newAngle > 180) newAngle = 180;
+    // ✅ Logique améliorée pour les butées : garder le côté le plus proche
+    if (newAngle < 0 || newAngle > 180) {
+      // Déterminer de quel côté la souris est la plus proche
+      const distanceFromLeft = Math.abs(newAngle - 0);
+      const distanceFromRight = Math.abs(newAngle - 180);
+      const distanceFromRight360 = Math.abs(newAngle - 360);
+      const distanceFromLeftNeg = Math.abs(newAngle - (-180));
+      
+      // Trouver la distance minimale
+      const minDistance = Math.min(
+        distanceFromLeft,
+        distanceFromRight,
+        distanceFromRight360,
+        distanceFromLeftNeg
+      );
+      
+      // Maintenir l'angle du côté le plus proche
+      if (minDistance === distanceFromLeft || minDistance === distanceFromLeftNeg) {
+        newAngle = 0; // Côté matin
+      } else {
+        newAngle = 180; // Côté soir
+      }
+    }
     
     return newAngle;
   };
@@ -138,17 +159,18 @@ function GaugeHeure({
   const heureInfo = angleToDescription(angle);
 
   return (
-    <div className="timeline-section heure-section">
-      <label style={{ fontSize: '0.85rem', marginBottom: '0.3rem' }}>
-        <span className="timeline-icon" style={{ fontSize: '1rem' }}>🕐</span>
-        <strong>Heure du jour</strong>
-      </label>
-      
+    <TimelineSection 
+      width={180}
+      bottomText={
+        <><span className="timeline-icon" style={{ fontSize: '0.8rem' }}>🕐</span> {heureInfo.heure}</>
+      }
+    >
       {/* Demi-jauge horizontale fluide - RÉDUITE ET VISIBLE */}
       <div 
         ref={gaugeRef}
         className="gauge-heure-container"
         onMouseDown={handleMouseDown}
+        style={{ transform: 'scale(0.7)', transformOrigin: 'top center', marginTop: '0px', marginBottom: '-8px' }}
       >
         <svg width="200" height="50" viewBox="0 0 200 50">
           {/* Arc de base - descendu pour être complètement visible */}
@@ -224,14 +246,7 @@ function GaugeHeure({
           <circle cx="100" cy="44" r="3" fill="#333" />
         </svg>
       </div>
-      
-      {/* Informations compactes */}
-      <div className="heure-info-compact">
-        <div className="heure-actuelle-compact">
-          <strong>{heureInfo.heure}</strong>
-        </div>
-      </div>
-    </div>
+    </TimelineSection>
   );
 }
 

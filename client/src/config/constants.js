@@ -106,11 +106,11 @@ export const ANNEES_MATURITE = {
 // ========== SOLS ==========
 
 /**
- * Couches de sol par défaut
+ * Couches de sol par défaut (total 3m)
  */
 export const COUCHES_SOL_DEFAUT = [
   { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
-  { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' }
+  { nom: 'Marne calcaire', profondeur: 270, couleur: '#bdbdbd', type: 'marne' }
 ];
 
 // ========== ORIENTATION ==========
@@ -161,11 +161,6 @@ export const ZOOM_LIMITES = {
 export const ZOOM_VITESSE = 0.999;
 
 // ========== SNAP ==========
-
-/**
- * Distance de snap magnétique (en pixels)
- */
-export const SNAP_DISTANCE = 0.1; // 10cm en mètres
 
 /**
  * Taille de snap à la grille (en pixels)

@@ -96,18 +96,6 @@ function GLBModel({ modelPath, position, scale, hauteurMaturite = 7, envergure =
   const finalScale = scaleNecessaire * scaleProgression;
   const hauteurFinale = hauteurModele * finalScale;
   
-  // Log de debug
-  console.log(`[3D AUTO] ${arbreData?.name || 'Arbre'}:`, {
-    hauteurModeleBlender: hauteurModele.toFixed(2) + ' unités',
-    hauteurMaturiteFiche: hauteurMaturite + 'm',
-    annee: anneeProjection,
-    progression: (progression * 100).toFixed(0) + '%',
-    scaleCalcule: scaleNecessaire.toFixed(4),
-    scaleFinal: finalScale.toFixed(4),
-    hauteurActuelle: hauteurFinale.toFixed(2) + 'm',
-    hauteurAttendue: (hauteurMaturite * scaleProgression).toFixed(2) + 'm'
-  });
-  
   // Calculer l'envergure actuelle selon la progression
   const envergureActuelle = envergure * scaleProgression;
   
@@ -180,7 +168,7 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    console.warn('Erreur chargement modèle 3D, utilisation du fallback:', error);
+    // Fallback silencieux - l'arbre procédural sera utilisé
     return { hasError: true };
   }
 
@@ -197,7 +185,7 @@ export const preloadModel = (path) => {
   try {
     useGLTF.preload(path);
   } catch (error) {
-    console.warn(`Impossible de précharger: ${path}`, error);
+    // Préchargement échoué - chargement à la demande
   }
 };
 

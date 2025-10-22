@@ -15,7 +15,7 @@ function SelecteurArbres({ plantes, onArbresSelectionnes }) {
 
   const ajouterArbre = () => {
     if (arbresListe.length >= 10) {
-      alert('Maximum 10 arbres à la fois');
+      logger.warn('SelecteurArbres', 'Maximum 10 arbres atteint');
       return;
     }
     setArbresListe([...arbresListe, plantes[0]]);
@@ -23,7 +23,7 @@ function SelecteurArbres({ plantes, onArbresSelectionnes }) {
 
   const supprimerArbre = (index) => {
     if (arbresListe.length <= 1) {
-      alert('Il faut au moins 1 arbre');
+      logger.warn('SelecteurArbres', 'Il faut au moins 1 arbre');
       return;
     }
     const newListe = arbresListe.filter((_, i) => i !== index);

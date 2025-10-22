@@ -142,7 +142,7 @@ export const supprimerObjetActif = (canvas) => {
   if (!actif) return;
   
   if (actif.locked) {
-    alert('⚠️ Objet verrouillé - Déverrouillez d\'abord');
+    logger.warn('MenuContextuel', 'Objet verrouillé - déverrouillez d\'abord');
     return;
   }
   

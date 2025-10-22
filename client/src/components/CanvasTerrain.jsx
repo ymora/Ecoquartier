@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react'
 import { FaMap, FaCube } from 'react-icons/fa';
 import PanneauLateral from './PanneauLateral';
 import GaugeHeure from './GaugeHeure';
+import TimelineSection from './TimelineSection';
 import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 
@@ -13,6 +14,7 @@ import {
   creerMaison,
   creerCanalisation,
   creerCiterne,
+  creerCaissonEau,
   creerCloture,
   creerTerrasse,
   creerPaves,
@@ -22,7 +24,6 @@ import {
 } from '../utils/canvas/creerObjets';
 
 import {
-  afficherOmbreMaison as afficherOmbreUtils,
   afficherCercleTronc as afficherCercleTroncUtils,
   cacherCercleTronc as cacherCercleTroncUtils
 } from '../utils/canvas/affichage';
@@ -49,6 +50,7 @@ import {
 
 import {
   exporterPlan as exporterPlanUtils,
+  loggerPositionsPlanCopiable,
   chargerImageFond as chargerImageUtils,
   ajusterOpaciteImage as ajusterOpaciteUtils,
   supprimerImageFond as supprimerImageUtils,
@@ -72,7 +74,7 @@ import { useArbresPlacement } from '../hooks/useArbresPlacement';
 
 import './CanvasTerrain.css';
 
-function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete, arbresAPlanter = [] }) {
+function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete, arbresAPlanter: arbresAPlanterExterne = [] }) {
   // ========== REFS ==========
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
@@ -95,62 +97,60 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [mode3D, setMode3D] = useState(false);
   const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D
   const syncTimerRef = useRef(null); // Timer pour throttle de la sync
+  const [arbresAPlanter, setArbresAPlanter] = useState(arbresAPlanterExterne); // Gestion interne des arbres
 
   // ========== WRAPPERS POUR ADAPTER LES SIGNATURES ==========
   
-  // Validation
-  const validerPositionArbre = (canvas, arbreGroup) => {
+  // Validation - useCallback pour éviter boucles infinies
+  const validerPositionArbre = useCallback((canvas, arbreGroup) => {
     validerPositionUtils(canvas, arbreGroup, echelle, couchesSol, orientation);
-  };
+  }, [echelle, couchesSol, orientation]);
   
   // Re-validation globale (à appeler après tout déplacement)
-  const revaliderTous = (canvas) => {
+  const revaliderTous = useCallback((canvas) => {
     revaliderTousLesArbres(canvas, echelle, couchesSol, orientation);
-  };
+  }, [echelle, couchesSol, orientation]);
   
-  // Croissance
-  const calculerTailleSelonAnnee = (arbre, annee) => {
+  // Croissance - useCallback pour éviter boucles infinies
+  const calculerTailleSelonAnnee = useCallback((arbre, annee) => {
     return calculerTailleUtils(arbre, annee, echelle);
-  };
+  }, [echelle]);
   
-  // ✅ Ombre toujours active (pas de toggle)
-  const afficherOmbreMaison = (canvas) => {
-    afficherOmbreUtils(canvas, echelle, true, saison, orientation);
-  };
+  // ❌ Ombres désactivées en mode 2D (uniquement en 3D)
   
-  const afficherCercleTronc = (canvas, arbreGroup) => {
+  const afficherCercleTronc = useCallback((canvas, arbreGroup) => {
     afficherCercleTroncUtils(canvas, arbreGroup, echelle, anneeProjection, calculerTailleSelonAnnee);
-  };
+  }, [echelle, anneeProjection, calculerTailleSelonAnnee]);
   
-  const cacherCercleTronc = (canvas) => {
+  const cacherCercleTronc = useCallback((canvas) => {
     cacherCercleTroncUtils(canvas);
     canvas.getObjects().filter(obj => obj.isLigneMesure).forEach(obj => canvas.remove(obj));
-      canvas.renderAll();
-  };
+    canvas.renderAll();
+  }, []);
   
-  const afficherLignesMesure = (canvas, arbreGroup) => {
+  const afficherLignesMesure = useCallback((canvas, arbreGroup) => {
     return afficherLignesMesureUtils(canvas, arbreGroup, echelle);
-  };
+  }, [echelle]);
   
-  // Menu contextuel
-  const afficherMenuContextuel = (obj, canvas) => {
+  // Menu contextuel - useCallback
+  const afficherMenuContextuel = useCallback((obj, canvas) => {
     afficherMenuUtils(obj, canvas, canvasRef, contextMenuRef);
-  };
+  }, []);
   
-  const cacherMenuContextuel = () => {
+  const cacherMenuContextuel = useCallback(() => {
     cacherMenuUtils(contextMenuRef);
-  };
+  }, []);
   
-  const toggleVerrouObjetActif = () => {
+  const toggleVerrouObjetActif = useCallback(() => {
     toggleVerrouUtils(fabricCanvasRef.current, contextMenuRef, canvasRef);
-  };
+  }, []);
   
-  const supprimerObjetActif = () => {
+  const supprimerObjetActif = useCallback(() => {
     supprimerObjetUtils(fabricCanvasRef.current);
-  };
+  }, []);
   
-  // Tooltip validation
-  const afficherTooltipValidation = (arbreGroup, canvas) => {
+  // Tooltip validation - useCallback
+  const afficherTooltipValidation = useCallback((arbreGroup, canvas) => {
     afficherTooltipUtils(
       arbreGroup, 
       canvas, 
@@ -160,20 +160,20 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       afficherCercleTronc,
       afficherLignesMesure
     );
-  };
+  }, [anneeProjection, calculerTailleSelonAnnee, afficherCercleTronc, afficherLignesMesure]);
   
-  const cacherTooltipValidation = () => {
+  const cacherTooltipValidation = useCallback(() => {
     cacherTooltipUtils(validationTooltipRef);
-  };
+  }, []);
   
-  // Export/Import
-  const exporterPlan = (canvas) => {
+  // Export/Import - useCallback simple (le throttle est dans loggerPositionsPlanCopiable)
+  const exporterPlan = useCallback((canvas) => {
     exporterPlanUtils(canvas, dimensions, orientation, echelle, onPlanComplete);
-  };
+  }, [dimensions, orientation, echelle, onPlanComplete]);
   
-  const ajouterMesuresLive = (canvas) => {
+  const ajouterMesuresLive = useCallback((canvas) => {
     ajouterMesuresUtils(canvas, echelle, exporterPlan);
-  };
+  }, [echelle, exporterPlan]);
   
   const chargerPlanDemo = () => {
     chargerPlanDemoUtils(fabricCanvasRef.current, echelle, ajouterGrille);
@@ -196,6 +196,32 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     setTimeout(() => notification.remove(), 2000);
     
     logger.info('Plan', '✅ Plan par défaut rechargé');
+  };
+  
+  const genererLogCopiable = () => {
+    if (!fabricCanvasRef.current) return;
+    
+    // Récupérer les données du plan actuel depuis localStorage
+    const planDataString = localStorage.getItem('planTerrain');
+    
+    if (!planDataString) {
+      logger.warn('LogCopiable', 'Aucun plan sauvegardé');
+      return;
+    }
+    
+    const planData = JSON.parse(planDataString);
+    
+    // Générer le log dans la console
+    loggerPositionsPlanCopiable(planData, echelle);
+    
+    // Notification
+    const notification = document.createElement('div');
+    notification.textContent = '📋 Log généré ! Ouvrez la console (F12)';
+    notification.style.cssText = 'position: fixed; top: 80px; right: 20px; background: #9c27b0; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+    
+    logger.info('Plan', '✅ Log copiable généré dans console');
   };
   
   const chargerImageFond = () => {
@@ -242,13 +268,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     effacerToutUtils(fabricCanvasRef.current, exporterPlan);
   };
   
-  const ajouterPointIntermediaire = (canvas, ligne, pointer) => {
+  const ajouterPointIntermediaire = useCallback((canvas, ligne, pointer) => {
     ajouterPointUtils(canvas, ligne, pointer);
-  };
+  }, []);
   
-  const trouverPositionValide = (canvas, arbre, largeur, hauteur, index) => {
+  const trouverPositionValide = useCallback((canvas, arbre, largeur, hauteur, index) => {
     return trouverPositionUtils(canvas, arbre, largeur, hauteur, index, echelle);
-  };
+  }, [echelle]);
   
   
   // Création d'objets
@@ -262,6 +288,10 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   };
   const ajouterCiterne = () => {
     creerCiterne(fabricCanvasRef.current, echelle);
+    revaliderTous(fabricCanvasRef.current);
+  };
+  const ajouterCaissonEau = () => {
+    creerCaissonEau(fabricCanvasRef.current, echelle);
     revaliderTous(fabricCanvasRef.current);
   };
   const ajouterCloture = () => {
@@ -280,6 +310,24 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     creerArbreExistant(fabricCanvasRef.current, echelle);
     revaliderTous(fabricCanvasRef.current);
   };
+  
+  const ajouterArbrePlante = (plante) => {
+    // Ajouter l'arbre à la liste
+    setArbresAPlanter(prev => [...prev, plante]);
+    logger.info('Arbres', `${plante.name} ajouté à la liste`);
+  };
+  
+  const retirerArbrePlante = (index) => {
+    setArbresAPlanter(prev => prev.filter((_, i) => i !== index));
+    logger.info('Arbres', 'Arbre retiré de la liste');
+  };
+  
+  // Synchroniser avec les arbres externes si fournis
+  useEffect(() => {
+    if (arbresAPlanterExterne.length > 0 && arbresAPlanter.length === 0) {
+      setArbresAPlanter(arbresAPlanterExterne);
+    }
+  }, [arbresAPlanterExterne, arbresAPlanter.length]);
   const ajouterGrille = (canvas) => creerGrille(canvas, echelle);
   const ajouterIndicateurSud = (canvas) => creerIndicateurSud(canvas, orientation, onOrientationChange, echelle);
 
@@ -306,7 +354,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onOrientationChange(planData.orientation);
       }
     } catch (error) {
-      console.error('Erreur chargement plan:', error);
+      logger.error('Canvas', 'Erreur chargement plan', error);
     }
   }, [echelle, onDimensionsChange, onOrientationChange]);
 
@@ -334,7 +382,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     cacherCercleTronc,
     exporterPlan,
     ajouterMesuresLive,
-    afficherOmbreMaison,
     ajouterPointIntermediaire
   });
 
@@ -359,11 +406,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // ========== EFFECTS SIMPLES ==========
   
-  // Ombre maison
-  useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-    if (canvas) afficherOmbreMaison(canvas);
-  }, [saison, orientation]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Ombres désactivées en mode 2D
 
   // Rendre les panneaux déplaçables
   useEffect(() => {
@@ -479,8 +522,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       echelle: echelle3D
     };
     
-    // Log pour débugger la synchronisation
-    console.log('🔄 Sync 2D→3D:', {
+    // Synchronisation 2D→3D
+    logger.debug('Sync', 'Sync 2D→3D', {
       terrasses: extractedData.terrasses.length,
       arbres: extractedData.arbres.length,
       citernes: extractedData.citernes.length
@@ -543,7 +586,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     });
     
     if (!objet) {
-      console.warn('Objet non trouvé pour sync 3D→2D', objetData);
+      logger.warn('Sync', 'Objet non trouvé pour sync 3D→2D', objetData);
       return;
     }
     
@@ -580,7 +623,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         newTop - objetSize / 2 < maisonBounds.bottom;
       
       if (isInsideMaison) {
-        console.warn('❌ Impossible: objet à l\'intérieur de la maison');
+        logger.warn('Canvas', 'Impossible: objet à l\'intérieur de la maison');
         // Resynchroniser pour annuler le déplacement en 3D
         throttledSync();
         return; // Bloquer le déplacement
@@ -604,6 +647,124 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   return (
     <div className="canvas-terrain-container">
+      {/* Bouton toggle timeline */}
+      <button 
+        className="timeline-toggle-btn"
+        onClick={() => setTimelineVisible(!timelineVisible)}
+        title={timelineVisible ? 'Masquer la projection temporelle' : 'Afficher la projection temporelle'}
+      >
+        {timelineVisible ? '📅 Masquer' : '📅 Projection'}
+      </button>
+
+      {/* Timeline de croissance (slider temporel) - EN BAS, DÉPLAÇABLE */}
+      {timelineVisible && (
+      <div className="timeline-croissance">
+        {/* Handle de déplacement */}
+        <div 
+          className="timeline-drag-handle"
+          onMouseDown={(e) => {
+            const timeline = e.currentTarget.parentElement;
+            const rect = timeline.getBoundingClientRect();
+            const startX = e.clientX - rect.left;
+            const startY = e.clientY - rect.top;
+            
+            const handleMouseMove = (moveEvent) => {
+              timeline.style.left = `${moveEvent.clientX - startX}px`;
+              timeline.style.top = `${moveEvent.clientY - startY}px`;
+              timeline.style.transform = 'none';
+            };
+            
+            const handleMouseUp = () => {
+              document.removeEventListener('mousemove', handleMouseMove);
+              document.removeEventListener('mouseup', handleMouseUp);
+            };
+            
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            e.preventDefault();
+          }}
+        >
+          ⋮⋮ Projection temporelle - Déplacer ⋮⋮
+        </div>
+        
+        <div className="timeline-row">
+          {/* Section 1: Projection temporelle */}
+          <TimelineSection 
+            width={180}
+            bottomText={
+              anneeProjection === 0 ? '🌱 Plantation - Jeunes plants' :
+              anneeProjection > 0 && anneeProjection < 20 ? `🌿 ${anneeProjection} an${anneeProjection > 1 ? 's' : ''} - Croissance (~${Math.round(anneeProjection / 20 * 100)}%)` :
+              '🌳 Maturité (20+ ans)'
+            }
+          >
+            <div className="timeline-slider-container">
+              <span className="timeline-label">Aujourd'hui</span>
+              <input 
+                type="range" 
+                min="0" 
+                max="20" 
+                step="1"
+                value={anneeProjection}
+                onChange={(e) => setAnneeProjection(parseInt(e.target.value))}
+                className="timeline-slider"
+              />
+              <span className="timeline-label">Maturité</span>
+            </div>
+          </TimelineSection>
+          
+          {/* Section 2: Heure du jour */}
+          <GaugeHeure 
+            heureActuelle={heureJournee}
+            saison={saison}
+            onHeureChange={setHeureJournee}
+          />
+          
+          {/* Section 3: Saison */}
+          <TimelineSection 
+            width={200}
+            hasBorder={true}
+            bottomText={
+              saison === 'hiver' ? '❄️ Hiver (18)' :
+              saison === 'printemps' ? '🌸 Printemps (45)' :
+              saison === 'ete' ? '☀️ Été (65)' :
+              '🍂 Automne (45)'
+            }
+          >
+            <div className="saison-buttons">
+              <button 
+                className={`btn-saison ${saison === 'hiver' ? 'active' : ''}`}
+                onClick={() => setSaison('hiver')}
+                title="Hiver (21 déc) - Soleil bas 18°"
+              >
+                ❄️
+              </button>
+              <button 
+                className={`btn-saison ${saison === 'printemps' ? 'active' : ''}`}
+                onClick={() => setSaison('printemps')}
+                title="Printemps (21 mars) - Équinoxe 45°"
+              >
+                🌸
+              </button>
+              <button 
+                className={`btn-saison ${saison === 'ete' ? 'active' : ''}`}
+                onClick={() => setSaison('ete')}
+                title="Été (21 juin) - Soleil haut 65°"
+              >
+                ☀️
+              </button>
+              <button 
+                className={`btn-saison ${saison === 'automne' ? 'active' : ''}`}
+                onClick={() => setSaison('automne')}
+                title="Automne (21 sept) - Équinoxe 45°"
+              >
+                🍂
+              </button>
+            </div>
+          </TimelineSection>
+        </div>
+      </div>
+      )}
+
       {/* Boutons 2D/3D */}
       <div className="toggle-dimension-canvas">
           <button 
@@ -623,7 +784,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         </div>
 
       {/* Layout avec panneau latéral + vue principale */}
-      <div style={{ display: 'flex', width: '100%', height: 'calc(100% - 160px)' }}>
+      <div style={{ display: 'flex', width: '100%', height: 'calc(100% - 40px)', marginTop: '40px' }}>
         {/* Panneau latéral avec outils et stats - TOUJOURS VISIBLE */}
         <PanneauLateral
             canvas={fabricCanvasRef.current} 
@@ -632,8 +793,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             onCouchesSolChange={setCouchesSol}
         dimensions={dimensions}
         onDimensionsChange={onDimensionsChange}
-        timelineVisible={timelineVisible}
-        onToggleTimeline={() => setTimelineVisible(!timelineVisible)}
         imageFondChargee={imageFondChargee}
         opaciteImage={opaciteImage}
         onAjouterMaison={ajouterMaison}
@@ -641,6 +800,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onAjouterPaves={ajouterPaves}
         onAjouterCanalisation={ajouterCanalisation}
         onAjouterCiterne={ajouterCiterne}
+        onAjouterCaissonEau={ajouterCaissonEau}
         onAjouterCloture={ajouterCloture}
         onAjouterArbreExistant={ajouterArbreExistant}
         onVerrouillerSelection={verrouillerSelection}
@@ -652,6 +812,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onSupprimerImageFond={supprimerImageFond}
         onResetZoom={resetZoom}
         onExporterPlan={exporterPlan}
+        onGenererLogCopiable={genererLogCopiable}
+        onAjouterArbrePlante={ajouterArbrePlante}
+        onRetirerArbrePlante={retirerArbrePlante}
         />
 
         {/* Vue 3D Suspense */}
@@ -685,6 +848,63 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             {/* Menu contextuel en bulle */}
             <div className="context-menu" ref={contextMenuRef}>
               <button 
+                className="context-btn context-rotate"
+                onClick={() => {
+                  const actif = fabricCanvasRef.current?.getActiveObject();
+                  if (actif && !actif.isGridLine && !actif.isBoussole && !actif.isImageFond && !actif.customType?.includes('cloture') && !actif.customType?.includes('canalisation')) {
+                    const newAngle = ((actif.angle || 0) + 90) % 360;
+                    actif.set({ angle: newAngle });
+                    actif.setCoords();
+                    fabricCanvasRef.current.renderAll();
+                    setTimeout(() => exporterPlan(fabricCanvasRef.current), 50);
+                  }
+                }}
+                title="Rotation +90°"
+              >
+                ↻
+              </button>
+              <button 
+                className="context-btn context-rotate"
+                onClick={() => {
+                  const actif = fabricCanvasRef.current?.getActiveObject();
+                  if (actif && !actif.isGridLine && !actif.isBoussole && !actif.isImageFond && !actif.customType?.includes('cloture') && !actif.customType?.includes('canalisation')) {
+                    const newAngle = ((actif.angle || 0) - 90 + 360) % 360;
+                    actif.set({ angle: newAngle });
+                    actif.setCoords();
+                    fabricCanvasRef.current.renderAll();
+                    setTimeout(() => exporterPlan(fabricCanvasRef.current), 50);
+                  }
+                }}
+                title="Rotation -90°"
+              >
+                ↺
+              </button>
+              <button 
+                className="context-btn context-duplicate"
+                onClick={() => {
+                  const actif = fabricCanvasRef.current?.getActiveObject();
+                  if (actif && !actif.isGridLine && !actif.isBoussole && !actif.isImageFond) {
+                    actif.clone((cloned) => {
+                      cloned.set({
+                        left: actif.left + echelle,
+                        top: actif.top + echelle
+                      });
+                      fabricCanvasRef.current.add(cloned);
+                      fabricCanvasRef.current.setActiveObject(cloned);
+                      fabricCanvasRef.current.renderAll();
+                      // Utiliser setTimeout pour éviter l'erreur "t2 is not iterable"
+                      setTimeout(() => {
+                        exporterPlan(fabricCanvasRef.current);
+                        revaliderTous(fabricCanvasRef.current);
+                      }, 50);
+                    }, ['arbreData']); // Inclure arbreData dans le clonage
+                  }
+                }}
+                title="Dupliquer"
+              >
+                📋
+              </button>
+              <button 
                 className="context-btn context-lock"
                 onClick={toggleVerrouObjetActif}
                 title="Verrouiller/Déverrouiller"
@@ -703,92 +923,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         </div>
       </div>
 
-      {/* Timeline de croissance (slider temporel) - EN DEHORS DES CONTENEURS 2D/3D */}
-      {timelineVisible && (
-      <div className="timeline-croissance">
-        <div className="timeline-row">
-          <div className="timeline-section">
-            <label>
-              <span className="timeline-icon">📅</span>
-              <strong>Projection temporelle</strong>
-            </label>
-            <div className="timeline-slider-container">
-              <span className="timeline-label">Aujourd'hui</span>
-              <input 
-                type="range" 
-                min="0" 
-                max="20" 
-                step="1"
-                value={anneeProjection}
-                onChange={(e) => setAnneeProjection(parseInt(e.target.value))}
-                className="timeline-slider"
-              />
-              <span className="timeline-label">Maturité</span>
-            </div>
-            <div className="timeline-value">
-              {anneeProjection === 0 && (
-                <span>🌱 <strong>Plantation</strong> - Jeunes plants (tailles variables selon espèces)</span>
-              )}
-              {anneeProjection > 0 && anneeProjection < 20 && (
-                <span>🌿 <strong>{anneeProjection} an{anneeProjection > 1 ? 's' : ''}</strong> - Croissance en cours (~{Math.round(anneeProjection / 20 * 100)}% maturité)</span>
-              )}
-              {anneeProjection >= 20 && (
-                <span>🌳 <strong>Maturité atteinte</strong> (20+ ans) - Tailles adultes maximales</span>
-              )}
-            </div>
-          </div>
-          
-          <GaugeHeure 
-            heureActuelle={heureJournee}
-            saison={saison}
-            onHeureChange={setHeureJournee}
-          />
-          
-          <div className="timeline-section saison-section">
-            <label>
-              <span className="timeline-icon">☀️</span>
-              <strong>Saison</strong>
-            </label>
-              <div className="saison-buttons">
-                <button 
-                  className={`btn-saison ${saison === 'hiver' ? 'active' : ''}`}
-                  onClick={() => setSaison('hiver')}
-                  title="Hiver (21 déc) - Soleil bas 18°"
-                >
-                  ❄️
-                </button>
-                <button 
-                  className={`btn-saison ${saison === 'printemps' ? 'active' : ''}`}
-                  onClick={() => setSaison('printemps')}
-                  title="Printemps (21 mars) - Équinoxe 45°"
-                >
-                  🌸
-                </button>
-                <button 
-                  className={`btn-saison ${saison === 'ete' ? 'active' : ''}`}
-                  onClick={() => setSaison('ete')}
-                  title="Été (21 juin) - Soleil haut 65°"
-                >
-                  ☀️
-                </button>
-                <button 
-                  className={`btn-saison ${saison === 'automne' ? 'active' : ''}`}
-                  onClick={() => setSaison('automne')}
-                  title="Automne (21 sept) - Équinoxe 45°"
-                >
-                  🍂
-                </button>
-              </div>
-              <div className="saison-info">
-                {saison === 'hiver' && '❄️ Hiver : ombre longue (18°)'}
-                {saison === 'printemps' && '🌸 Printemps : ombre moyenne (45°)'}
-                {saison === 'ete' && '☀️ Été : ombre courte (65°)'}
-                {saison === 'automne' && '🍂 Automne : ombre moyenne (45°)'}
-              </div>
-            </div>
-        </div>
-      </div>
-      )}
       
     </div>
   );

@@ -113,7 +113,7 @@ export function getModelPourArbre(arbreId) {
   
   // Ne pas charger si désactivé (trop lourd)
   if (model.disabled) {
-    console.log(`[3D] Modèle ${modelId} désactivé (trop lourd), utilisation arbre procédural`);
+    // Modèle désactivé (trop lourd) - utilisation arbre procédural
     return null;
   }
   

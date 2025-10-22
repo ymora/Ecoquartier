@@ -35,7 +35,7 @@ export const useTimelineSync = ({
         const arbre = arbreGroup.arbreData;
         
         if (!arbreGroup._objects || !Array.isArray(arbreGroup._objects) || arbreGroup._objects.length < 4) {
-          logger.error('Timeline', `${arbre.name} n'est pas un groupe valide`);
+          logger.error('Timeline', `${arbre.name} n'est pas un groupe valide (${arbreGroup._objects?.length || 0} éléments)`);
           return;
         }
         
@@ -46,8 +46,10 @@ export const useTimelineSync = ({
           return;
         }
         
+        // Structure du groupe : [0: ellipse, 1: emoji, 2: nomLabel, 3: dimensionsLabel]
         const ellipse = arbreGroup._objects[0];
         const emoji = arbreGroup._objects[1];
+        const nomLabel = arbreGroup._objects[2];
         const dimensionsLabel = arbreGroup._objects[3];
         
         if (ellipse && ellipse.type === 'ellipse') {
@@ -79,8 +81,10 @@ export const useTimelineSync = ({
           dimensionsLabel.set({ text: texte });
         }
         
+        // ✅ Forcer le recalcul complet du groupe pour affichage correct
         arbreGroup.dirty = true;
-        arbreGroup.setCoords();
+        arbreGroup.addWithUpdate(); // Recalcule les bounds du groupe
+        arbreGroup.setCoords(); // Met à jour les coordonnées pour la sélection
         validerPositionArbre(canvas, arbreGroup);
         
       } catch (error) {
@@ -92,6 +96,11 @@ export const useTimelineSync = ({
     canvas.requestRenderAll();
     
     logger.info('Timeline', `✅ ${arbresPlantes.length} arbres redimensionnés (année ${anneeProjection})`);
-  }, [anneeProjection]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    anneeProjection,
+    fabricCanvasRef,
+    calculerTailleSelonAnnee,
+    validerPositionArbre
+  ]);
 };
 
