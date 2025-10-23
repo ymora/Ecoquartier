@@ -538,7 +538,7 @@ function CanvasTerrain3D({
               ]}
               largeur={terrasse.largeur}
               profondeur={terrasse.profondeur}
-              onClick={() => handleObjetClick({ type: 'paves', ...terrasse, index: idx })}
+              onClick={() => handleObjetClick({ type: 'paves', ...terrasse, index: idx, customType: 'paves' })}
             />
           ) : (
             // Terrasse classique (béton gris)

@@ -692,8 +692,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const posZ_px = pos3DZ_m * echelle;
     
     // Trouver l'objet dans le canvas 2D
+    const typeRecherche = objetData.customType || objetData.type; // Utiliser customType si disponible
     const objet = canvas.getObjects().find(o => {
-      if (o.customType !== objetData.type) return false;
+      if (o.customType !== typeRecherche) return false;
       
       // Comparer position approximative (tolérance très large pour les objets)
       const tolerance = 100; // Augmenté à 100 pixels pour tolérer les arrondis et erreurs de conversion
@@ -727,7 +728,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     } else {
       // Filtrer uniquement les objets du même type pour le debug
       const objetsDuMemeType = canvas.getObjects()
-        .filter(o => o.customType === objetData.type)
+        .filter(o => o.customType === typeRecherche)
         .map(o => ({
           type: o.customType,
           left: o.left,
@@ -737,7 +738,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         }));
       
       logger.warn('Selection3D', '❌ Objet non trouvé dans le canvas 2D', {
-        type: objetData.type,
+        typeRequested: typeRecherche,
+        typeOriginal: objetData.type,
+        customType: objetData.customType,
         position3D: objetData.position,
         position2Dattendue: `(${posX_px.toFixed(1)}px, ${posZ_px.toFixed(1)}px)`,
         tolerance: 100,
