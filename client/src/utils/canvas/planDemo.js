@@ -193,7 +193,7 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const tailleIconeTerrasse1 = Math.min(largeurTerrasse1 * echelle, hauteurTerrasse1 * echelle) * 0.4;
-  const terrasse1Icone = new fabric.Text('🪵', {
+  const terrasse1Icone = new fabric.Text('🪴', {
     left: 0,
     top: 0,
     fontSize: Math.max(tailleIconeTerrasse1, 24),
@@ -235,7 +235,7 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const tailleIconeTerrasse2 = Math.min(largeurTerrasse2 * echelle, hauteurTerrasse2 * echelle) * 0.4;
-  const terrasse2Icone = new fabric.Text('🪵', {
+  const terrasse2Icone = new fabric.Text('🪴', {
     left: 0,
     top: 0,
     fontSize: Math.max(tailleIconeTerrasse2, 24),
@@ -278,7 +278,7 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const tailleIconeTerrasse3 = Math.min(largeurTerrasse3 * echelle, hauteurTerrasse3 * echelle) * 0.4;
-  const terrasse3Icone = new fabric.Text('🪵', {
+  const terrasse3Icone = new fabric.Text('🪴', {
     left: 0,
     top: 0,
     fontSize: Math.max(tailleIconeTerrasse3, 24),

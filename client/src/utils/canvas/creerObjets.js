@@ -222,7 +222,7 @@ export const creerTerrasseObjet = (echelle) => {
   });
   
   const tailleIcone = Math.min(largeur * echelle, hauteur * echelle) * 0.4;
-  const labelIcone = new fabric.Text('🪵', {
+  const labelIcone = new fabric.Text('🪴', {
     left: 0,
     top: 0,
     fontSize: Math.max(tailleIcone, 24),
