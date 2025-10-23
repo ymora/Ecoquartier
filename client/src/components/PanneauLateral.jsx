@@ -374,7 +374,7 @@ function PanneauLateral({
           <div className="section-title">🏠 Maison (configuration globale)</div>
           <div className="config-stack">
             <div className="config-row">
-              <label>Hauteur bâtiment</label>
+              <label>Hauteur maison</label>
               <input 
                 type="number" 
                 min="3" 
@@ -497,7 +497,7 @@ function PanneauLateral({
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
                         <div className="config-row">
-                          <label>Hauteur bâtiment</label>
+                          <label>Hauteur maison</label>
                           <input 
                             type="number" 
                             min="3" 
