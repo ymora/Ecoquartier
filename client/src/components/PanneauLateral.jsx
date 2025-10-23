@@ -308,6 +308,30 @@ function PanneauLateral({
     </div>
   );
 
+  // ✅ Helper pour largeur/profondeur avec gestion des groupes Fabric.js
+  const renderDimensionInput = (label, prop, min, max, step) => {
+    const getValue = () => {
+      if (prop === 'width') {
+        return ((objetSelectionne.getScaledWidth ? objetSelectionne.getScaledWidth() : objetSelectionne.width) / echelle).toFixed(1);
+      } else {
+        return ((objetSelectionne.getScaledHeight ? objetSelectionne.getScaledHeight() : objetSelectionne.height) / echelle).toFixed(1);
+      }
+    };
+    
+    const handleChange = (e) => {
+      const value = parseFloat(e.target.value);
+      if (prop === 'width') {
+        objetSelectionne.set({ width: value * echelle });
+      } else {
+        objetSelectionne.set({ height: value * echelle });
+      }
+      canvas.requestRenderAll();
+      if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
+    };
+    
+    return renderNumberInput(label, getValue(), handleChange, min, max, step, 'm');
+  };
+
   return (
     <div className="panneau-lateral">
       {/* En-tête avec onglets */}
@@ -371,30 +395,18 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
-                  <div className="config-row">
-                    <label>Rotation</label>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="360" 
-                      step="5"
-                      value={Math.round(objetSelectionne.angle || 0)}
-                      onChange={(e) => updateObjetProp('angle', e.target.value)}
-                    />
-                    <span className="unit">°</span>
-                  </div>
-                  <div className="config-row">
-                          <label>Élévation rel. sol</label>
-                          <input 
-                            type="number" 
-                            min="-5" 
-                            max="10" 
-                            step="0.1"
-                            value={objetSelectionne.elevationSol || 0}
-                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Rotation',
+                          Math.round(objetSelectionne.angle || 0).toString(),
+                          (e) => updateObjetProp('angle', e.target.value),
+                          0, 360, 5, '°'
+                        )}
+                        {renderNumberInput(
+                          'Élévation rel. sol',
+                          (objetSelectionne.elevationSol || 0).toString(),
+                          (e) => updateObjetProp('elevationSol', e.target.value),
+                          -5, 10, 0.1, 'm'
+                        )}
                       </div>
                     )}
                   </div>
@@ -410,40 +422,8 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Largeur</label>
-                          <input 
-                            type="number" 
-                            min="2" 
-                            max="30" 
-                            step="0.1"
-                            value={((objetSelectionne.getScaledWidth ? objetSelectionne.getScaledWidth() : objetSelectionne.width) / echelle).toFixed(1)}
-                            onChange={(e) => {
-                              const newWidth = parseFloat(e.target.value) * echelle;
-                              objetSelectionne.set({ width: newWidth });
-                              canvas.requestRenderAll();
-                              if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
-                            }}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                        <div className="config-row">
-                          <label>Profondeur</label>
-                          <input 
-                            type="number" 
-                            min="2" 
-                            max="30" 
-                            step="0.1"
-                            value={((objetSelectionne.getScaledHeight ? objetSelectionne.getScaledHeight() : objetSelectionne.height) / echelle).toFixed(1)}
-                            onChange={(e) => {
-                              const newHeight = parseFloat(e.target.value) * echelle;
-                              objetSelectionne.set({ height: newHeight });
-                              canvas.requestRenderAll();
-                              if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
-                            }}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderDimensionInput('Largeur', 'width', 2, 30, 0.1)}
+                        {renderDimensionInput('Profondeur', 'height', 2, 30, 0.1)}
                         {renderNumberInput(
                           'Hauteur maison',
                           (objetSelectionne.hauteurBatiment || 7).toString(),
@@ -475,30 +455,18 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Diamètre</label>
-                          <input 
-                            type="number" 
-                            min="0.5" 
-                            max="3" 
-                            step="0.1"
-                            value={objetSelectionne.diametre || 1.5}
-                            onChange={(e) => updateObjetProp('diametre', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                        <div className="config-row">
-                          <label>Longueur</label>
-                          <input 
-                            type="number" 
-                            min="1" 
-                            max="5" 
-                            step="0.5"
-                            value={objetSelectionne.profondeur || 2.5}
-                            onChange={(e) => updateObjetProp('profondeur', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Diamètre',
+                          (objetSelectionne.diametre || 1.5).toString(),
+                          (e) => updateObjetProp('diametre', e.target.value),
+                          0.5, 3, 0.1, 'm'
+                        )}
+                        {renderNumberInput(
+                          'Longueur',
+                          (objetSelectionne.profondeur || 2.5).toString(),
+                          (e) => updateObjetProp('profondeur', e.target.value),
+                          1, 5, 0.5, 'm'
+                        )}
                         <div className="info-box">
                           💧 Volume : {(Math.PI * Math.pow((objetSelectionne.diametre || 1.5) / 2, 2) * (objetSelectionne.profondeur || 2.5)).toFixed(1)}m³
                         </div>
@@ -517,18 +485,12 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Élévation sol (m)</label>
-                          <input 
-                            type="number" 
-                            min="-5" 
-                            max="5" 
-                            step="0.1"
-                            value={objetSelectionne.elevationSol || 0}
-                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Élévation sol (m)',
+                          (objetSelectionne.elevationSol || 0).toString(),
+                          (e) => updateObjetProp('elevationSol', e.target.value),
+                          -5, 5, 0.1, 'm'
+                        )}
                         <div className="info-box" style={{ background: '#fff3e0', padding: '0.5rem', marginTop: '0.5rem' }}>
                           💡 Négatif = enterré (ex: -2.5m sous terre)
                         </div>
@@ -551,30 +513,18 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
-                  <div className="config-row">
-                    <label>Rotation</label>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="360" 
-                      step="5"
-                      value={Math.round(objetSelectionne.angle || 0)}
-                      onChange={(e) => updateObjetProp('angle', e.target.value)}
-                    />
-                    <span className="unit">°</span>
-                  </div>
-                        <div className="config-row">
-                          <label>Élévation sol (m)</label>
-                          <input 
-                            type="number" 
-                            min="-3" 
-                            max="5" 
-                            step="0.1"
-                            value={objetSelectionne.elevationSol || 0}
-                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Rotation',
+                          Math.round(objetSelectionne.angle || 0).toString(),
+                          (e) => updateObjetProp('angle', e.target.value),
+                          0, 360, 5, '°'
+                        )}
+                        {renderNumberInput(
+                          'Élévation sol (m)',
+                          (objetSelectionne.elevationSol || 0).toString(),
+                          (e) => updateObjetProp('elevationSol', e.target.value),
+                          -3, 5, 0.1, 'm'
+                        )}
                         <div className="info-box" style={{ background: '#fff3e0', padding: '0.5rem', marginTop: '0.5rem' }}>
                           💡 Négatif = enterré (ex: -1m sous terre)
                         </div>
@@ -593,42 +543,24 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
-                  <div className="config-row">
-                    <label>Largeur</label>
-                    <input 
-                      type="number" 
-                      min="1" 
-                      max="10" 
-                      step="0.5"
-                      value={objetSelectionne.largeurCaisson || 5}
-                      onChange={(e) => updateObjetProp('largeurCaisson', e.target.value)}
-                    />
-                    <span className="unit">m</span>
-                  </div>
-                  <div className="config-row">
-                    <label>Profondeur</label>
-                    <input 
-                      type="number" 
-                      min="1" 
-                      max="10" 
-                      step="0.5"
-                      value={objetSelectionne.profondeurCaisson || 3}
-                      onChange={(e) => updateObjetProp('profondeurCaisson', e.target.value)}
-                    />
-                    <span className="unit">m</span>
-                  </div>
-                  <div className="config-row">
-                    <label>Hauteur</label>
-                    <input 
-                      type="number" 
-                      min="0.5" 
-                      max="3" 
-                      step="0.1"
-                      value={objetSelectionne.hauteurCaisson || 1}
-                      onChange={(e) => updateObjetProp('hauteurCaisson', e.target.value)}
-                    />
-                    <span className="unit">m</span>
-                  </div>
+                        {renderNumberInput(
+                          'Largeur',
+                          (objetSelectionne.largeurCaisson || 5).toString(),
+                          (e) => updateObjetProp('largeurCaisson', e.target.value),
+                          1, 10, 0.5, 'm'
+                        )}
+                        {renderNumberInput(
+                          'Profondeur',
+                          (objetSelectionne.profondeurCaisson || 3).toString(),
+                          (e) => updateObjetProp('profondeurCaisson', e.target.value),
+                          1, 10, 0.5, 'm'
+                        )}
+                        {renderNumberInput(
+                          'Hauteur',
+                          (objetSelectionne.hauteurCaisson || 1).toString(),
+                          (e) => updateObjetProp('hauteurCaisson', e.target.value),
+                          0.5, 3, 0.1, 'm'
+                        )}
                   <div className="info-box">
                     💧 Volume : {((objetSelectionne.largeurCaisson || 5) * (objetSelectionne.profondeurCaisson || 3) * (objetSelectionne.hauteurCaisson || 1)).toFixed(1)}m³
                   </div>
@@ -652,30 +584,18 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Rotation</label>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="360" 
-                      step="5"
-                      value={Math.round(objetSelectionne.angle || 0)}
-                      onChange={(e) => updateObjetProp('angle', e.target.value)}
-                    />
-                          <span className="unit">°</span>
-                  </div>
-                        <div className="config-row">
-                          <label>⚠️ Élévation sol (m)</label>
-                    <input 
-                      type="number" 
-                            min="-2" 
-                            max="2" 
-                            step="0.1"
-                            value={objetSelectionne.elevationSol || 0}
-                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Rotation',
+                          Math.round(objetSelectionne.angle || 0).toString(),
+                          (e) => updateObjetProp('angle', e.target.value),
+                          0, 360, 5, '°'
+                        )}
+                        {renderNumberInput(
+                          '⚠️ Élévation sol (m)',
+                          (objetSelectionne.elevationSol || 0).toString(),
+                          (e) => updateObjetProp('elevationSol', e.target.value),
+                          -2, 2, 0.1, 'm'
+                        )}
                       </div>
                     )}
                   </div>
@@ -691,30 +611,18 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Hauteur dalle</label>
-                          <input 
-                            type="number" 
-                            min="-1" 
-                            max="1" 
-                            step="0.05"
-                            value={objetSelectionne.hauteurDalle || 0.15}
-                            onChange={(e) => updateObjetProp('hauteurDalle', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                        <div className="config-row">
-                          <label>Prof. fondation</label>
-                          <input 
-                            type="number" 
-                            min="-1" 
-                            max="1" 
-                            step="0.1"
-                            value={objetSelectionne.profondeurFondation || 0.3}
-                            onChange={(e) => updateObjetProp('profondeurFondation', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Hauteur dalle',
+                          (objetSelectionne.hauteurDalle || 0.15).toString(),
+                          (e) => updateObjetProp('hauteurDalle', e.target.value),
+                          -1, 1, 0.05, 'm'
+                        )}
+                        {renderNumberInput(
+                          'Prof. fondation',
+                          (objetSelectionne.profondeurFondation || 0.3).toString(),
+                          (e) => updateObjetProp('profondeurFondation', e.target.value),
+                          -1, 1, 0.1, 'm'
+                        )}
                       </div>
                     )}
                   </div>
@@ -734,30 +642,18 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Rotation</label>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="360" 
-                      step="5"
-                      value={Math.round(objetSelectionne.angle || 0)}
-                      onChange={(e) => updateObjetProp('angle', e.target.value)}
-                    />
-                          <span className="unit">°</span>
-                  </div>
-                        <div className="config-row">
-                          <label>⚠️ Élévation sol (m)</label>
-                    <input 
-                      type="number" 
-                            min="-2" 
-                            max="2" 
-                            step="0.1"
-                            value={objetSelectionne.elevationSol || 0}
-                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Rotation',
+                          Math.round(objetSelectionne.angle || 0).toString(),
+                          (e) => updateObjetProp('angle', e.target.value),
+                          0, 360, 5, '°'
+                        )}
+                        {renderNumberInput(
+                          '⚠️ Élévation sol (m)',
+                          (objetSelectionne.elevationSol || 0).toString(),
+                          (e) => updateObjetProp('elevationSol', e.target.value),
+                          -2, 2, 0.1, 'm'
+                        )}
                       </div>
                     )}
                   </div>
@@ -773,30 +669,18 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Hauteur pavés</label>
-                          <input 
-                            type="number" 
-                            min="-0.5" 
-                            max="0.5" 
-                            step="0.05"
-                            value={objetSelectionne.hauteurPaves || 0.08}
-                            onChange={(e) => updateObjetProp('hauteurPaves', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                        <div className="config-row">
-                          <label>Prof. gravier</label>
-                          <input 
-                            type="number" 
-                            min="-0.5" 
-                            max="0.5" 
-                            step="0.05"
-                            value={objetSelectionne.profondeurGravier || 0.15}
-                            onChange={(e) => updateObjetProp('profondeurGravier', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Hauteur pavés',
+                          (objetSelectionne.hauteurPaves || 0.08).toString(),
+                          (e) => updateObjetProp('hauteurPaves', e.target.value),
+                          -0.5, 0.5, 0.05, 'm'
+                        )}
+                        {renderNumberInput(
+                          'Prof. gravier',
+                          (objetSelectionne.profondeurGravier || 0.15).toString(),
+                          (e) => updateObjetProp('profondeurGravier', e.target.value),
+                          -0.5, 0.5, 0.05, 'm'
+                        )}
                       </div>
                     )}
                   </div>
@@ -816,18 +700,12 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Élévation sol (m)</label>
-                          <input 
-                            type="number" 
-                            min="-2" 
-                            max="5" 
-                            step="0.1"
-                            value={objetSelectionne.elevationSol || 0}
-                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Élévation sol (m)',
+                          (objetSelectionne.elevationSol || 0).toString(),
+                          (e) => updateObjetProp('elevationSol', e.target.value),
+                          -2, 5, 0.1, 'm'
+                        )}
                         <div className="info-box" style={{ background: '#fff3e0', padding: '0.5rem', marginTop: '0.5rem' }}>
                           💡 Négatif = enterré (ex: -0.6m sous terre)
                         </div>
@@ -846,18 +724,12 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Diamètre</label>
-                          <input 
-                            type="number" 
-                            min="0.05" 
-                            max="0.5" 
-                            step="0.05"
-                            value={objetSelectionne.diametreCanalisation || 0.1}
-                            onChange={(e) => updateObjetProp('diametreCanalisation', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Diamètre',
+                          (objetSelectionne.diametreCanalisation || 0.1).toString(),
+                          (e) => updateObjetProp('diametreCanalisation', e.target.value),
+                          0.05, 0.5, 0.05, 'm'
+                        )}
                       </div>
                     )}
                   </div>
@@ -866,17 +738,12 @@ function PanneauLateral({
               
               {objetSelectionne.customType === 'cloture' && (
                 <div className="objet-controls">
-                  <div className="dimension-control">
-                    <label>Hauteur (m)</label>
-                    <input 
-                      type="number" 
-                      min="0.5" 
-                      max="3" 
-                      step="0.1"
-                      value={objetSelectionne.hauteurCloture || 1.5}
-                      onChange={(e) => updateObjetProp('hauteurCloture', e.target.value)}
-                    />
-                  </div>
+                  {renderNumberInput(
+                    'Hauteur (m)',
+                    (objetSelectionne.hauteurCloture || 1.5).toString(),
+                    (e) => updateObjetProp('hauteurCloture', e.target.value),
+                    0.5, 3, 0.1, 'm'
+                  )}
                   <div className="objet-controls">
                     <div className="dimension-control">
                       <label>Épaisseur (cm)</label>
@@ -896,52 +763,37 @@ function PanneauLateral({
               {/* ✅ Arbre existant : 3 dimensions éditables */}
               {objetSelectionne.customType === 'arbre-existant' && (
                 <div className="objet-controls">
-                  <div className="dimension-control">
-                    <label>Ø Couronne (m)</label>
-                    <input 
-                      type="number" 
-                      min="1" 
-                      max="15" 
-                      step="0.5"
-                      value={objetSelectionne.diametreArbre || 5}
-                      onChange={(e) => {
-                        const newDiam = parseFloat(e.target.value);
-                        const newRadius = (newDiam / 2) * canvas.getZoom() * 20; // Approximation échelle
-                        objetSelectionne.set({ diametreArbre: newDiam });
-                        // Redimensionner le cercle
-                        if (objetSelectionne._objects && objetSelectionne._objects[0]) {
-                          objetSelectionne._objects[0].set({ radius: newRadius });
-                        }
-                        objetSelectionne.setCoords();
-                        canvas.requestRenderAll();
-                        if (onExporterPlan) {
-                          setTimeout(() => onExporterPlan(canvas), 100);
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className="dimension-control">
-                    <label>Hauteur (m)</label>
-                    <input 
-                      type="number" 
-                      min="2" 
-                      max="30" 
-                      step="0.5"
-                      value={objetSelectionne.hauteurArbre || 8}
-                      onChange={(e) => updateObjetProp('hauteurArbre', e.target.value)}
-                    />
-                  </div>
-                  <div className="dimension-control">
-                    <label>Prof. racines (m)</label>
-                    <input 
-                      type="number" 
-                      min="0.5" 
-                      max="5" 
-                      step="0.5"
-                      value={objetSelectionne.profondeurRacines || 2.5}
-                      onChange={(e) => updateObjetProp('profondeurRacines', e.target.value)}
-                    />
-                  </div>
+                  {renderNumberInput(
+                    'Ø Couronne (m)',
+                    (objetSelectionne.diametreArbre || 5).toString(),
+                    (e) => {
+                      const newDiam = parseFloat(e.target.value);
+                      const newRadius = (newDiam / 2) * canvas.getZoom() * 20; // Approximation échelle
+                      objetSelectionne.set({ diametreArbre: newDiam });
+                      // Redimensionner le cercle
+                      if (objetSelectionne._objects && objetSelectionne._objects[0]) {
+                        objetSelectionne._objects[0].set({ radius: newRadius });
+                      }
+                      objetSelectionne.setCoords();
+                      canvas.requestRenderAll();
+                      if (onExporterPlan) {
+                        setTimeout(() => onExporterPlan(canvas), 100);
+                      }
+                    },
+                    1, 15, 0.5, 'm'
+                  )}
+                  {renderNumberInput(
+                    'Hauteur (m)',
+                    (objetSelectionne.hauteurArbre || 8).toString(),
+                    (e) => updateObjetProp('hauteurArbre', e.target.value),
+                    2, 30, 0.5, 'm'
+                  )}
+                  {renderNumberInput(
+                    'Prof. racines (m)',
+                    (objetSelectionne.profondeurRacines || 2.5).toString(),
+                    (e) => updateObjetProp('profondeurRacines', e.target.value),
+                    0.5, 5, 0.5, 'm'
+                  )}
                 </div>
               )}
             </>
