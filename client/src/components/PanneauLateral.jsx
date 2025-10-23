@@ -40,7 +40,8 @@ function PanneauLateral({
   onExporterPlan, // ✅ Ajout pour sauvegarder après modification
   onGenererLogCopiable, // ✅ Génération manuelle du log console
   onAjouterArbrePlante, // ✅ Ajouter un arbre à planter
-  onRetirerArbrePlante // ✅ Retirer un arbre de la liste
+  onRetirerArbrePlante, // ✅ Retirer un arbre de la liste
+  ongletActifExterne = null // ✅ Onglet externe pour forcer l'ouverture depuis 3D
 }) {
   const [ongletActif, setOngletActif] = useState('outils');
   const [objetSelectionne, setObjetSelectionne] = useState(null);
@@ -59,6 +60,13 @@ function PanneauLateral({
   
   // Ref pour stocker l'objet précédemment sélectionné (évite boucle infinie)
   const objetSelectionnePrecedentRef = useRef(null);
+  
+  // ✅ Synchroniser l'onglet externe (depuis sélection 3D)
+  useEffect(() => {
+    if (ongletActifExterne) {
+      setOngletActif(ongletActifExterne);
+    }
+  }, [ongletActifExterne]);
   
   // Séparer arbres et arbustes
   const arbres = plantesData.filter(p => p.type === 'arbre');

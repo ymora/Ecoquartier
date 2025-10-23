@@ -97,6 +97,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [anneeProjection, setAnneeProjection] = useState(0);
   const [timelineVisible, setTimelineVisible] = useState(true);
   const [saison, setSaison] = useState('ete');
+  const [ongletActif, setOngletActif] = useState(null); // ✅ Pour forcer l'ouverture de l'onglet Config depuis 3D
   const [heureJournee, setHeureJournee] = useState(90); // Angle de 0° (matin) à 180° (soir), 90° = midi
   const [mode3D, setMode3D] = useState(false);
   const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D
@@ -698,6 +699,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       canvas.setActiveObject(objet);
       canvas.renderAll();
       
+      // ✅ Ouvrir automatiquement l'onglet Config
+      setOngletActif('config');
+      
       // Logger pour debug
       logger.info('Selection3D', `Objet ${objetData.type} sélectionné depuis la 3D`);
     } else {
@@ -936,6 +940,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onGenererLogCopiable={genererLogCopiable}
         onAjouterArbrePlante={ajouterArbrePlante}
         onRetirerArbrePlante={retirerArbrePlante}
+        ongletActifExterne={ongletActif}
         />
 
         {/* Vue 3D Suspense */}
