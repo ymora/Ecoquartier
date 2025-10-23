@@ -177,27 +177,30 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
               >
                 −
               </button>
-              <input
-                type="text"
-                className="sol-couche-input"
-                value={couche.profondeur}
-                onChange={(e) => {
-                  const nouvellesCouches = [...couchesSol];
-                  const nouvelleProfondeur = Math.max(5, parseInt(e.target.value) || 5);
-                  
-                  // Vérifier la limite totale
-                  const totalSansActuelle = nouvellesCouches.reduce((sum, c, idx) => 
-                    idx === index ? sum : sum + c.profondeur, 0);
-                  
-                  if (totalSansActuelle + nouvelleProfondeur <= PROFONDEUR_MAX_TOTALE) {
-                    nouvellesCouches[index].profondeur = nouvelleProfondeur;
-                    if (onCouchesSolChange) {
-                      onCouchesSolChange(nouvellesCouches);
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                <input
+                  type="text"
+                  className="sol-couche-input"
+                  value={couche.profondeur}
+                  onChange={(e) => {
+                    const nouvellesCouches = [...couchesSol];
+                    const nouvelleProfondeur = Math.max(5, parseInt(e.target.value) || 5);
+                    
+                    // Vérifier la limite totale
+                    const totalSansActuelle = nouvellesCouches.reduce((sum, c, idx) => 
+                      idx === index ? sum : sum + c.profondeur, 0);
+                    
+                    if (totalSansActuelle + nouvelleProfondeur <= PROFONDEUR_MAX_TOTALE) {
+                      nouvellesCouches[index].profondeur = nouvelleProfondeur;
+                      if (onCouchesSolChange) {
+                        onCouchesSolChange(nouvellesCouches);
+                      }
                     }
-                  }
-                }}
-                style={{ width: '60px', minWidth: '50px', textAlign: 'right', flexShrink: 1 }}
-              />
+                  }}
+                  style={{ width: '60px', minWidth: '50px', textAlign: 'right', flexShrink: 1 }}
+                />
+                <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', flexShrink: 0 }}>cm</span>
+              </div>
               <button
                 type="button"
                 onClick={() => ajusterCouche(index, 5)}
@@ -219,7 +222,6 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
               >
                 +
               </button>
-              <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', minWidth: '20px', flexShrink: 0 }}>cm</span>
             </div>
           </div>
         ))}
