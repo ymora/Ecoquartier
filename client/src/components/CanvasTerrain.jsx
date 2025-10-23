@@ -883,6 +883,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
             couchesSol={couchesSol}
             onCouchesSolChange={setCouchesSol}
         dimensions={dimensions}
+        echelle={echelle}
         onDimensionsChange={onDimensionsChange}
         imageFondChargee={imageFondChargee}
         opaciteImage={opaciteImage}

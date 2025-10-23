@@ -18,6 +18,7 @@ function PanneauLateral({
   couchesSol,
   onCouchesSolChange,
   dimensions,
+  echelle = 40, // Échelle par défaut (40 pixels = 1 mètre)
   onDimensionsChange,
   imageFondChargee,
   opaciteImage,
