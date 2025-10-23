@@ -53,7 +53,8 @@ function CanvasTerrain3D({
     { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
     { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' }
   ],
-  onObjetPositionChange = null
+  onObjetPositionChange = null,
+  onObjetSelectionChange = null // ✅ Callback pour sélectionner un objet 3D
 }) {
   // Passer l'angle directement au soleil pour un mouvement fluide
   // heureJournee est maintenant un angle de 0° (matin) à 180° (soir)
@@ -393,9 +394,11 @@ function CanvasTerrain3D({
   }, [terrainLargeur, terrainHauteur, terrainCentreX, terrainCentreZ]);
   
   const handleObjetClick = useCallback((objet) => {
-    // Modal d'édition supprimé - clic désactivé
-    // setObjetSelectionne(objet);
-  }, []);
+    // ✅ Transmettre la sélection au parent pour ouvrir le menu Config
+    if (onObjetSelectionChange) {
+      onObjetSelectionChange(objet);
+    }
+  }, [onObjetSelectionChange]);
   
   // handleProprieteChange supprimé - modal d'édition non nécessaire
   

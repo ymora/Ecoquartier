@@ -675,6 +675,36 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     setTimeout(() => throttledSync(), 150);
   }, [throttledSync]);
   
+  // ✅ Callback pour sélectionner un objet depuis la 3D
+  const handleObjetSelection3D = useCallback((objetData) => {
+    if (!fabricCanvasRef.current) return;
+    
+    const canvas = fabricCanvasRef.current;
+    const echelle = ECHELLE_PIXELS_PAR_METRE;
+    
+    // Trouver l'objet dans le canvas 2D
+    const objet = canvas.getObjects().find(o => {
+      if (o.customType !== objetData.type) return false;
+      
+      // Comparer position approximative (tolérance 10 pixels pour être sûr)
+      const tolerance = 10;
+      const matchX = Math.abs(o.left - objetData.position[0] * echelle) < tolerance;
+      const matchY = Math.abs(o.top - objetData.position[2] * echelle) < tolerance;
+      return matchX && matchY;
+    });
+    
+    if (objet) {
+      // Sélectionner l'objet dans le canvas 2D
+      canvas.setActiveObject(objet);
+      canvas.renderAll();
+      
+      // Logger pour debug
+      logger.info('Selection3D', `Objet ${objetData.type} sélectionné depuis la 3D`);
+    } else {
+      logger.warn('Selection3D', 'Objet non trouvé dans le canvas 2D', objetData);
+    }
+  }, []);
+  
   // Gérer le placement interactif d'objets
   useEffect(() => {
     if (!fabricCanvasRef.current || !objetEnPlacement) return;
@@ -921,6 +951,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                 heureJournee={heureJournee}
                 couchesSol={couchesSol}
                 onObjetPositionChange={handleObjetPositionChange3D}
+                onObjetSelectionChange={handleObjetSelection3D}
               />
             </div>
           </Suspense>
