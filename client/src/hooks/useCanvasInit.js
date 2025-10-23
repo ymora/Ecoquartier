@@ -45,6 +45,12 @@ export const useCanvasInit = ({
       snapThreshold: 10
     });
 
+    // ✅ Augmenter la taille des contrôles pour faciliter les clics
+    canvas.set({
+      cornerSize: 15, // Taille des coins (par défaut 13)
+      rotatingPointOffset: 60 // Distance du point de rotation (par défaut 50)
+    });
+
     fabricCanvasRef.current = canvas;
 
     // ========== TRI PAR PROFONDEUR ==========

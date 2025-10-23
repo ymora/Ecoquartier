@@ -243,6 +243,71 @@ function PanneauLateral({
     }
   };
 
+  // ✅ Helper pour créer un champ numérique avec boutons +/-
+  const renderNumberInput = (label, value, onChange, min, max, step, unit = 'm') => (
+    <div className="config-row">
+      <label>{label}</label>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+        <button
+          type="button"
+          onClick={() => {
+            const newValue = Math.max(min, parseFloat(value) - step);
+            onChange({ target: { value: newValue.toString() } });
+          }}
+          style={{
+            background: '#4caf50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            width: '28px',
+            height: '28px',
+            cursor: 'pointer',
+            fontSize: '1.2rem',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          −
+        </button>
+        <input 
+          type="number" 
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={onChange}
+          style={{ flex: 1 }}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const newValue = Math.min(max, parseFloat(value) + step);
+            onChange({ target: { value: newValue.toString() } });
+          }}
+          style={{
+            background: '#4caf50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            width: '28px',
+            height: '28px',
+            cursor: 'pointer',
+            fontSize: '1.2rem',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          +
+        </button>
+        <span className="unit">{unit}</span>
+      </div>
+    </div>
+  );
+
   return (
     <div className="panneau-lateral">
       {/* En-tête avec onglets */}
@@ -379,30 +444,18 @@ function PanneauLateral({
                           />
                           <span className="unit">m</span>
                         </div>
-                        <div className="config-row">
-                          <label>Hauteur maison</label>
-                          <input 
-                            type="number" 
-                            min="3" 
-                            max="15" 
-                            step="0.5"
-                            value={objetSelectionne.hauteurBatiment || 7}
-                            onChange={(e) => updateObjetProp('hauteurBatiment', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                        <div className="config-row">
-                          <label>Prof. fondations</label>
-                          <input 
-                            type="number" 
-                            min="-2" 
-                            max="3" 
-                            step="0.1"
-                            value={objetSelectionne.profondeurFondations || 1.2}
-                            onChange={(e) => updateObjetProp('profondeurFondations', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
+                        {renderNumberInput(
+                          'Hauteur maison',
+                          (objetSelectionne.hauteurBatiment || 7).toString(),
+                          (e) => updateObjetProp('hauteurBatiment', e.target.value),
+                          3, 15, 0.5, 'm'
+                        )}
+                        {renderNumberInput(
+                          'Prof. fondations',
+                          (objetSelectionne.profondeurFondations || 1.2).toString(),
+                          (e) => updateObjetProp('profondeurFondations', e.target.value),
+                          -2, 3, 0.1, 'm'
+                        )}
                       </div>
                     )}
                   </div>
