@@ -45,7 +45,9 @@ export const creerMaisonObjet = (echelle) => {
     profondeurFondations: 1.2,
     hauteurBatiment: 7,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    lockRotation: true, // ✅ Désactiver la rotation pour éviter les bugs
+    hasRotatingPoint: false
   });
 
   return group;
@@ -135,7 +137,9 @@ export const creerCiterneObjet = (echelle) => {
     profondeur: profondeur,
     elevationSol: 0,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    lockRotation: true, // ✅ Désactiver la rotation pour éviter les bugs
+    hasRotatingPoint: false
   });
 
   return group;
@@ -239,7 +243,9 @@ export const creerTerrasseObjet = (echelle) => {
     profondeurFondation: 0.3,
     elevationSol: 0,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    lockRotation: true, // ✅ Désactiver la rotation pour éviter les bugs
+    hasRotatingPoint: false
   });
 
   return group;
@@ -297,7 +303,9 @@ export const creerPavesObjet = (echelle) => {
     profondeurGravier: 0.15,
     elevationSol: 0,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    lockRotation: true, // ✅ Désactiver la rotation pour éviter les bugs
+    hasRotatingPoint: false
   });
 
   return group;
@@ -362,7 +370,9 @@ export const creerCaissonEauObjet = (echelle) => {
     hauteurCaisson: hauteurMetres,
     elevationSol: 0,
     originX: 'center',
-    originY: 'center'
+    originY: 'center',
+    lockRotation: true, // ✅ Désactiver la rotation pour éviter les bugs
+    hasRotatingPoint: false
   });
 
   return group;
