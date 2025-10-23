@@ -683,15 +683,33 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const canvas = fabricCanvasRef.current;
     const echelle = ECHELLE_PIXELS_PAR_METRE;
     
+    // Les positions dans objetData.position sont déjà en mètres
+    const pos3DX_m = objetData.position[0];
+    const pos3DZ_m = objetData.position[2];
+    
+    // Convertir en pixels pour la comparaison
+    const posX_px = pos3DX_m * echelle;
+    const posZ_px = pos3DZ_m * echelle;
+    
     // Trouver l'objet dans le canvas 2D
     const objet = canvas.getObjects().find(o => {
       if (o.customType !== objetData.type) return false;
       
-      // Comparer position approximative (tolérance 10 pixels pour être sûr)
-      const tolerance = 10;
-      const matchX = Math.abs(o.left - objetData.position[0] * echelle) < tolerance;
-      const matchY = Math.abs(o.top - objetData.position[2] * echelle) < tolerance;
-      return matchX && matchY;
+      // Comparer position approximative (tolérance plus large pour les objets)
+      const tolerance = 50; // Augmenté à 50 pixels pour tolérer les arrondis
+      const diffX = Math.abs(o.left - posX_px);
+      const diffY = Math.abs(o.top - posZ_px);
+      
+      // Logger détaillé pour debug
+      logger.info('Selection3D', `Recherche objet ${objetData.type}:`, {
+        pos3D: `(${pos3DX_m.toFixed(2)}m, ${pos3DZ_m.toFixed(2)}m)`,
+        pos2D: `(${o.left.toFixed(1)}px, ${o.top.toFixed(1)}px)`,
+        expected: `(${posX_px.toFixed(1)}px, ${posZ_px.toFixed(1)}px)`,
+        diff: `(${diffX.toFixed(1)}px, ${diffY.toFixed(1)}px)`,
+        tolerance
+      });
+      
+      return diffX < tolerance && diffY < tolerance;
     });
     
     if (objet) {
@@ -703,9 +721,18 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       setOngletActif('config');
       
       // Logger pour debug
-      logger.info('Selection3D', `Objet ${objetData.type} sélectionné depuis la 3D`);
+      logger.info('Selection3D', `✅ Objet ${objetData.type} sélectionné depuis la 3D`);
     } else {
-      logger.warn('Selection3D', 'Objet non trouvé dans le canvas 2D', objetData);
+      logger.warn('Selection3D', '❌ Objet non trouvé dans le canvas 2D', {
+        type: objetData.type,
+        position3D: objetData.position,
+        position2Dattendue: `(${posX_px.toFixed(1)}px, ${posZ_px.toFixed(1)}px)`,
+        objetsDisponibles: canvas.getObjects().map(o => ({
+          type: o.customType,
+          left: o.left,
+          top: o.top
+        }))
+      });
     }
   }, []);
   
