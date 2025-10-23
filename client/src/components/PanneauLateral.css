@@ -129,7 +129,8 @@
   font-size: 0.75rem;
   color: #888;
   font-weight: 600;
-  min-width: 20px;
+  width: 1.5ch; /* Largeur fixe basée sur le caractère pour aligner les unités */
+  text-align: left;
 }
 
 /* ✅ Style pour le conteneur des boutons +/- - Défini plus haut avec justify-content: flex-end */

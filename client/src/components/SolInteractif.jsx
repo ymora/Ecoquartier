@@ -199,7 +199,7 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
                   }}
                   style={{ width: '60px', minWidth: '50px', textAlign: 'right', flexShrink: 1 }}
                 />
-                <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', flexShrink: 0 }}>cm</span>
+                <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', width: '1.5ch', textAlign: 'left' }}>cm</span>
               </div>
               <button
                 type="button"
