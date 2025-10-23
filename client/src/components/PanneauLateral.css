@@ -129,7 +129,7 @@
   font-size: 0.75rem;
   color: #888;
   font-weight: 600;
-  width: 1.5ch; /* Largeur fixe basée sur le caractère pour aligner les unités */
+  min-width: 20px; /* Largeur minimale pour les unités longues */
   text-align: left;
 }
 
