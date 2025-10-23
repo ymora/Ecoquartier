@@ -362,11 +362,13 @@ function PanneauLateral({
     
     const handleChange = (e) => {
       const value = parseFloat(e.target.value);
+      console.log('handleChange:', { prop, value, eTargetValue: e.target.value });
       if (prop === 'width') {
         objetSelectionne.set({ width: value * echelle });
       } else {
         objetSelectionne.set({ height: value * echelle });
       }
+      objetSelectionne.setCoords(); // ✅ Ajout pour synchroniser les coordonnées
       canvas.requestRenderAll();
       if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
     };
