@@ -244,69 +244,75 @@ function PanneauLateral({
   };
 
   // ✅ Helper pour créer un champ numérique avec boutons +/-
-  const renderNumberInput = (label, value, onChange, min, max, step, unit = 'm') => (
-    <div className="config-row">
-      <label>{label}</label>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-        <button
-          type="button"
-          onClick={() => {
-            const newValue = Math.max(min, parseFloat(value) - step);
-            onChange({ target: { value: newValue.toString() } });
-          }}
-          style={{
-            background: '#4caf50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            width: '28px',
-            height: '28px',
-            cursor: 'pointer',
-            fontSize: '1.2rem',
-            fontWeight: 'bold',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          −
-        </button>
-        <input 
-          type="number" 
-          min={min}
-          max={max}
-          step={step}
-          value={value}
-          onChange={onChange}
-          style={{ flex: 1 }}
-        />
-        <button
-          type="button"
-          onClick={() => {
-            const newValue = Math.min(max, parseFloat(value) + step);
-            onChange({ target: { value: newValue.toString() } });
-          }}
-          style={{
-            background: '#4caf50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            width: '28px',
-            height: '28px',
-            cursor: 'pointer',
-            fontSize: '1.2rem',
-            fontWeight: 'bold',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          +
-        </button>
-        <span className="unit">{unit}</span>
+  const renderNumberInput = (label, value, onChange, min, max, step, unit = 'm') => {
+    // Normaliser la valeur pour éviter les problèmes avec les nombres formatés
+    const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
+    const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
+    
+    return (
+      <div className="config-row">
+        <label>{label}</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+          <button
+            type="button"
+            onClick={() => {
+              const newValue = Math.max(min, currentValue - step);
+              onChange({ target: { value: newValue.toString() } });
+            }}
+            style={{
+              background: '#4caf50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              width: '28px',
+              height: '28px',
+              cursor: 'pointer',
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            −
+          </button>
+          <input 
+            type="number" 
+            min={min}
+            max={max}
+            step={step}
+            value={currentValue}
+            onChange={onChange}
+            style={{ flex: 1 }}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const newValue = Math.min(max, currentValue + step);
+              onChange({ target: { value: newValue.toString() } });
+            }}
+            style={{
+              background: '#4caf50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              width: '28px',
+              height: '28px',
+              cursor: 'pointer',
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            +
+          </button>
+          <span className="unit">{unit}</span>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // ✅ Helper pour largeur/profondeur avec gestion des groupes Fabric.js
   const renderDimensionInput = (label, prop, min, max, step) => {
