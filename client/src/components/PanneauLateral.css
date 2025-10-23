@@ -90,7 +90,8 @@
 
 /* Ligne de configuration uniforme */
 .config-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 0.5rem;
   background: white;
@@ -100,7 +101,6 @@
 }
 
 .config-row label {
-  flex: 1;
   font-size: 0.8rem;
   font-weight: 600;
   color: #555;
@@ -129,8 +129,6 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  flex: 1;
-  min-width: 0; /* Permet au conteneur de se rétrécir si nécessaire */
 }
 
 .config-row input[type="text"] {
