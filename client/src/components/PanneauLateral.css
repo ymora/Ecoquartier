@@ -124,6 +124,26 @@
   min-width: 20px;
 }
 
+/* ✅ Style pour le conteneur des boutons +/- */
+.config-row > div {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0; /* Permet au conteneur de se rétrécir si nécessaire */
+}
+
+.config-row input[type="text"] {
+  width: 60px;
+  min-width: 50px;
+  padding: 0.4rem;
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-align: right;
+  flex-shrink: 1;
+}
+
 /* Boîte info uniforme */
 .info-box {
   background: #e3f2fd;

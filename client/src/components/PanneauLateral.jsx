@@ -280,7 +280,7 @@ function PanneauLateral({
             type="text" 
             value={currentValue}
             onChange={onChange}
-            style={{ flex: 1 }}
+            style={{ width: '60px' }}
           />
           <button
             type="button"
