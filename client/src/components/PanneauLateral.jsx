@@ -252,7 +252,9 @@ function PanneauLateral({
   };
 
   // ✅ Helper pour créer un champ numérique avec boutons +/-
-  const renderNumberInput = (label, value, onChange, min, max, step, unit = 'm') => {
+  const renderNumberInput = (label, value, onChange, min, max, step, unit = 'm', disabled = false) => {
+    const isDisabled = disabled || (min === max && value === min.toString());
+    
     return (
       <div className="config-row">
         <label>{label}</label>
@@ -260,6 +262,7 @@ function PanneauLateral({
           <button
             type="button"
             onClick={() => {
+              if (isDisabled) return;
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.max(min, currentValue - step);
@@ -270,20 +273,22 @@ function PanneauLateral({
               };
               onChange(syntheticEvent);
             }}
+            disabled={isDisabled}
             style={{
-              background: '#4caf50',
+              background: isDisabled ? '#e0e0e0' : '#4caf50',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
               width: '33px',
               height: '33px',
-              cursor: 'pointer',
+              cursor: isDisabled ? 'not-allowed' : 'pointer',
               fontSize: '1.2rem',
               fontWeight: 'bold',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              flexShrink: 0
+              flexShrink: 0,
+              opacity: isDisabled ? 0.5 : 1
             }}
           >
             −
@@ -292,11 +297,19 @@ function PanneauLateral({
             type="text" 
             value={value}
             onChange={onChange}
-            style={{ width: '60px', minWidth: '50px', flexShrink: 1 }}
+            disabled={isDisabled}
+            style={{ 
+              width: '60px', 
+              minWidth: '50px', 
+              flexShrink: 1,
+              background: isDisabled ? '#f5f5f5' : 'white',
+              cursor: isDisabled ? 'not-allowed' : 'text'
+            }}
           />
           <button
             type="button"
             onClick={() => {
+              if (isDisabled) return;
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.min(max, currentValue + step);
@@ -307,20 +320,22 @@ function PanneauLateral({
               };
               onChange(syntheticEvent);
             }}
+            disabled={isDisabled}
             style={{
-              background: '#4caf50',
+              background: isDisabled ? '#e0e0e0' : '#4caf50',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
               width: '33px',
               height: '33px',
-              cursor: 'pointer',
+              cursor: isDisabled ? 'not-allowed' : 'pointer',
               fontSize: '1.2rem',
               fontWeight: 'bold',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              flexShrink: 0
+              flexShrink: 0,
+              opacity: isDisabled ? 0.5 : 1
             }}
           >
             +
@@ -768,17 +783,12 @@ function PanneauLateral({
                     0.5, 3, 0.1, 'm'
                   )}
                   <div className="objet-controls">
-                    <div className="dimension-control">
-                      <label>Épaisseur (cm)</label>
-                      <input 
-                        type="number" 
-                        value={5}
-                        disabled
-                        step="1"
-                        style={{ background: '#f5f5f5', cursor: 'not-allowed' }}
-                        title="Épaisseur fixe non modifiable"
-                      />
-                    </div>
+                    {renderNumberInput(
+                      'Épaisseur',
+                      '5',
+                      () => {}, // Désactivé - aucune action
+                      5, 5, 1, 'cm'
+                    )}
                   </div>
                 </div>
               )}
