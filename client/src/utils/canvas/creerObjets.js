@@ -310,8 +310,6 @@ export const creerPavesObjet = (echelle) => {
     originX: 'center',
     originY: 'center'
   });
-<｜tool▁call▁begin｜>
-read_file
 
   return group;
 };
