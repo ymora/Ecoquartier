@@ -16,9 +16,9 @@ function PaveEnherbe3D({
   const herbeGroupRef = useRef();
   
   // Configuration des pavés
-  const TAILLE_PAVE = 0.12; // 12 cm
+  const TAILLE_PAVE = 0.10; // 10 cm
   const EPAISSEUR_PAVE = 0.05; // 5 cm
-  const ESPACEMENT_HERBE = 0.03; // 3 cm entre les pavés
+  const ESPACEMENT_HERBE = 0.04; // 4 cm entre les pavés
   const HAUTEUR_HERBE = 0.07; // 7 cm de hauteur d'herbe (5-10 cm)
   
   // Calculer le nombre de pavés selon les dimensions
@@ -189,21 +189,32 @@ function PaveEnherbe3D({
         />
       </mesh>
       
-      {/* Pavés béton 12cm × 12cm */}
+      {/* Pavés béton 10cm × 10cm avec contour */}
       {paves.map((pavePos, idx) => (
-        <mesh 
-          key={`pave-${idx}`}
-          position={pavePos}
-          castShadow
-          receiveShadow
-        >
-          <boxGeometry args={[TAILLE_PAVE, EPAISSEUR_PAVE, TAILLE_PAVE]} />
-          <meshStandardMaterial 
-            color="#bdbdbd"
-            roughness={0.8}
-            metalness={0.1}
-          />
-        </mesh>
+        <group key={`pave-${idx}`} position={pavePos}>
+          {/* Pavé principal */}
+          <mesh 
+            castShadow
+            receiveShadow
+          >
+            <boxGeometry args={[TAILLE_PAVE, EPAISSEUR_PAVE, TAILLE_PAVE]} />
+            <meshStandardMaterial 
+              color="#9e9e9e"
+              roughness={0.8}
+              metalness={0.1}
+            />
+          </mesh>
+          
+          {/* Contour (bordure légèrement plus sombre) */}
+          <mesh position={[0, EPAISSEUR_PAVE / 2, 0]}>
+            <boxGeometry args={[TAILLE_PAVE + 0.002, 0.001, TAILLE_PAVE + 0.002]} />
+            <meshStandardMaterial 
+              color="#757575"
+              roughness={0.9}
+              metalness={0}
+            />
+          </mesh>
+        </group>
       ))}
       
       {/* ✅ Herbe entre les pavés : BRINS VERTICAUX qui bougent au vent */}
@@ -226,14 +237,30 @@ function PaveEnherbe3D({
         </instancedMesh>
       )}
       
-      {/* Texture d'herbe au sol (entre les pavés) - Base verte OPAQUE */}
-      <mesh position={[0, 0.005, 0]} receiveShadow>
-        <boxGeometry args={[largeur, 0.01, profondeur]} />
-        <meshStandardMaterial 
-          color="#689f38"
-          roughness={0.95}
-        />
-      </mesh>
+      {/* Fond vert avec contour */}
+      <group>
+        {/* Base verte principale avec légère émissivité */}
+        <mesh position={[0, 0.005, 0]} receiveShadow>
+          <boxGeometry args={[largeur, 0.01, profondeur]} />
+          <meshStandardMaterial 
+            color="#66bb6a"
+            roughness={0.95}
+            emissive="#4caf50"
+            emissiveIntensity={0.15}
+          />
+        </mesh>
+        
+        {/* Contour léger autour de toute la zone (bordure rectangulaire) */}
+        <mesh position={[0, 0.011, 0]}>
+          <boxGeometry args={[largeur + 0.01, 0.002, profondeur + 0.01]} />
+          <meshStandardMaterial 
+            color="#8bc34a"
+            roughness={0.9}
+            emissive="#7cb342"
+            emissiveIntensity={0.3}
+          />
+        </mesh>
+      </group>
     </group>
   );
 }
