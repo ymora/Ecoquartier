@@ -695,19 +695,21 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const objet = canvas.getObjects().find(o => {
       if (o.customType !== objetData.type) return false;
       
-      // Comparer position approximative (tolérance plus large pour les objets)
-      const tolerance = 50; // Augmenté à 50 pixels pour tolérer les arrondis
+      // Comparer position approximative (tolérance très large pour les objets)
+      const tolerance = 100; // Augmenté à 100 pixels pour tolérer les arrondis et erreurs de conversion
       const diffX = Math.abs(o.left - posX_px);
       const diffY = Math.abs(o.top - posZ_px);
       
-      // Logger détaillé pour debug
-      logger.info('Selection3D', `Recherche objet ${objetData.type}:`, {
-        pos3D: `(${pos3DX_m.toFixed(2)}m, ${pos3DZ_m.toFixed(2)}m)`,
-        pos2D: `(${o.left.toFixed(1)}px, ${o.top.toFixed(1)}px)`,
-        expected: `(${posX_px.toFixed(1)}px, ${posZ_px.toFixed(1)}px)`,
-        diff: `(${diffX.toFixed(1)}px, ${diffY.toFixed(1)}px)`,
-        tolerance
-      });
+      // Logger uniquement si proche (pour éviter spam)
+      if (diffX < tolerance * 2 && diffY < tolerance * 2) {
+        logger.info('Selection3D', `Recherche objet ${objetData.type}:`, {
+          pos3D: `(${pos3DX_m.toFixed(2)}m, ${pos3DZ_m.toFixed(2)}m)`,
+          pos2D: `(${o.left.toFixed(1)}px, ${o.top.toFixed(1)}px)`,
+          expected: `(${posX_px.toFixed(1)}px, ${posZ_px.toFixed(1)}px)`,
+          diff: `(${diffX.toFixed(1)}px, ${diffY.toFixed(1)}px)`,
+          tolerance
+        });
+      }
       
       return diffX < tolerance && diffY < tolerance;
     });
