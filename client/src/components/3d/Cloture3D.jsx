@@ -3,7 +3,8 @@ function Cloture3D({
   y1 = 0, 
   x2 = 10, 
   y2 = 0, 
-  hauteur = 1.8 
+  hauteur = 1.8,
+  onClick = null
 }) {
   // Calculer position centrale et rotation
   const dx = x2 - x1;
@@ -15,7 +16,7 @@ function Cloture3D({
   const centerY = (y1 + y2) / 2;
   
   return (
-    <group position={[centerX, hauteur / 2, centerY]}>
+    <group position={[centerX, hauteur / 2, centerY]} onClick={onClick}>
       {/* Clôture (panneau mince) */}
       <mesh rotation={[0, angle, 0]} castShadow receiveShadow>
         <boxGeometry args={[longueur, hauteur, 0.05]} />

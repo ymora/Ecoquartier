@@ -6,10 +6,11 @@ function Citerne3D({
   profondeur = 2,
   profondeurEnterree = 2.5,
   volume = 3000,
-  elevationSol = 0
+  elevationSol = 0,
+  onClick = null
 }) {
   return (
-    <group position={[position[0], elevationSol - profondeurEnterree / 2, position[2]]}>
+    <group position={[position[0], elevationSol - profondeurEnterree / 2, position[2]]} onClick={onClick}>
       {/* Citerne enterrée (cylindre couché) */}
       <mesh rotation={[0, 0, Math.PI / 2]} castShadow receiveShadow>
         <cylinderGeometry args={[profondeur / 2, profondeur / 2, largeur, 16]} />
