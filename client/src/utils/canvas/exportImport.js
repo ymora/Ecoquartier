@@ -215,8 +215,8 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
   localStorage.setItem('planTerrain', JSON.stringify(planData));
   onPlanComplete(planData);
   
-  // ✅ LOG COPIABLE automatique avec throttle de 1 seconde
-  loggerPositionsPlanCopiable(planData, echelle);
+  // ❌ LOG COPIABLE retiré - sera généré uniquement sur demande via bouton "Actions"
+  // loggerPositionsPlanCopiable(planData, echelle);
 };
 
 /**
