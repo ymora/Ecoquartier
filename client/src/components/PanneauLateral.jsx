@@ -1052,6 +1052,7 @@ function PanneauLateral({
                         type="number" 
                         value={5}
                         disabled
+                        step="1"
                         style={{ background: '#f5f5f5', cursor: 'not-allowed' }}
                         title="Épaisseur fixe non modifiable"
                       />
