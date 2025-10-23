@@ -61,6 +61,7 @@ function CanvasTerrain3D({
   const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote (coupe supprimée)
   const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
   const [solTransparent, setSolTransparent] = useState(true); // ✅ Sol transparent TOUJOURS ACTIF = voir racines, fondations, citernes, canalisations
+  const [objetSelectionne3D, setObjetSelectionne3D] = useState(null); // ✅ Objet sélectionné en 3D pour highlight
   const orbitControlsRef = useRef();
   
   // Convertir les données 2D en 3D
@@ -234,8 +235,6 @@ function CanvasTerrain3D({
         const posX = t.left / echelle;
         const posZ = t.top / echelle;
         
-        // Debug désactivé pour performance
-        
         data3D.terrasses.push({
           position: [posX, 0, posZ],
           largeur,
@@ -262,8 +261,6 @@ function CanvasTerrain3D({
         // Position centrée
         const posX = p.left / echelle;
         const posZ = p.top / echelle;
-        
-        // Debug désactivé pour performance
         
         data3D.terrasses.push({
           position: [posX, 0, posZ],
@@ -402,6 +399,9 @@ function CanvasTerrain3D({
   }, [terrainLargeur, terrainHauteur, terrainCentreX, terrainCentreZ]);
   
   const handleObjetClick = useCallback((objet) => {
+    // ✅ Stocker l'objet sélectionné pour highlight visuel
+    setObjetSelectionne3D(objet);
+    
     // ✅ Transmettre la sélection au parent pour ouvrir le menu Config
     if (onObjetSelectionChange) {
       onObjetSelectionChange(objet);
@@ -502,7 +502,12 @@ function CanvasTerrain3D({
           <Citerne3D 
             key={`citerne-${idx}`}
             {...citerne}
-            onClick={() => handleObjetClick({ type: 'citerne', ...citerne, index: idx })}
+            onClick={() => handleObjetClick({ 
+              type: 'citerne', 
+              ...citerne, 
+              index: idx,
+              position: [citerne.position[0], citerne.elevationSol - citerne.profondeurEnterree / 2, citerne.position[2]] // ✅ Position réelle rendue
+            })}
           />
         ))}
         
@@ -511,27 +516,50 @@ function CanvasTerrain3D({
           <Caisson3D 
             key={`caisson-${idx}`}
             {...caisson}
-            onClick={() => handleObjetClick({ type: 'caisson-eau', ...caisson, index: idx })}
+            onClick={() => handleObjetClick({ 
+              type: 'caisson-eau', 
+              ...caisson, 
+              index: idx,
+              position: [caisson.position[0], caisson.elevationSol - caisson.profondeurEnterree, caisson.position[2]] // ✅ Position réelle rendue
+            })}
           />
         ))}
         
         {/* Canalisations - Visibles uniquement si sol transparent */}
-        {solTransparent && data3D?.canalisations?.map((canal, idx) => (
-          <Canalisation3D 
-            key={`canal-${idx}`}
-            {...canal}
-            onClick={() => handleObjetClick({ type: 'canalisation', ...canal, index: idx })}
-          />
-        ))}
+        {solTransparent && data3D?.canalisations?.map((canal, idx) => {
+          const centerX = (canal.x1 + canal.x2) / 2;
+          const centerY = (canal.y1 + canal.y2) / 2;
+          return (
+            <Canalisation3D 
+              key={`canal-${idx}`}
+              {...canal}
+              onClick={() => handleObjetClick({ 
+                type: 'canalisation', 
+                ...canal, 
+                index: idx,
+                position: [centerX, -canal.profondeur, centerY] // ✅ Position réelle rendue
+              })}
+            />
+          );
+        })}
         
         {/* Clôtures */}
-        {data3D?.clotures?.map((cloture, idx) => (
-          <Cloture3D 
-            key={`cloture-${idx}`}
-            {...cloture}
-            onClick={() => handleObjetClick({ type: 'cloture', ...cloture, index: idx })}
-          />
-        ))}
+        {data3D?.clotures?.map((cloture, idx) => {
+          const centerX = (cloture.x1 + cloture.x2) / 2;
+          const centerY = (cloture.y1 + cloture.y2) / 2;
+          return (
+            <Cloture3D 
+              key={`cloture-${idx}`}
+              {...cloture}
+              onClick={() => handleObjetClick({ 
+                type: 'cloture', 
+                ...cloture, 
+                index: idx,
+                position: [centerX, cloture.hauteur / 2, centerY] // ✅ Position réelle rendue
+              })}
+            />
+          );
+        })}
         
         {/* Terrasses/Pavés enherbés ultra-réalistes */}
         {data3D?.terrasses?.map((terrasse, idx) => (
@@ -546,7 +574,13 @@ function CanvasTerrain3D({
               ]}
               largeur={terrasse.largeur}
               profondeur={terrasse.profondeur}
-              onClick={() => handleObjetClick({ type: 'paves', ...terrasse, index: idx })}
+              onClick={() => handleObjetClick({ 
+                ...terrasse, 
+                type: 'paves',
+                customType: 'paves',
+                index: idx,
+                position: [terrasse.position[0], 0, terrasse.position[2]]
+              })}
             />
           ) : (
             // Terrasse classique (béton gris)
@@ -560,13 +594,19 @@ function CanvasTerrain3D({
               rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
               receiveShadow
               castShadow
-              onClick={() => handleObjetClick({ type: 'terrasse', ...terrasse, index: idx })}
+              onClick={() => handleObjetClick({ 
+                ...terrasse, 
+                type: 'terrasse',
+                customType: 'terrasse',
+                index: idx,
+                position: [terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]
+              })}
             >
               <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
               <meshStandardMaterial 
-                color="#9e9e9e"
-                roughness={0.7}
-                metalness={0.2}
+                color="#8d6e63"
+                roughness={0.9}
+                metalness={0.1}
               />
             </mesh>
           )

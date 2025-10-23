@@ -225,9 +225,9 @@ function PaveEnherbe3D({
           >
             <boxGeometry args={[TAILLE_PAVE, EPAISSEUR_PAVE, TAILLE_PAVE]} />
             <meshStandardMaterial 
-              color="#9e9e9e"
-              roughness={0.8}
-              metalness={0.1}
+              color="#e0e0e0"
+              roughness={0.5}
+              metalness={0.3}
             />
           </mesh>
           
@@ -235,7 +235,7 @@ function PaveEnherbe3D({
           <mesh position={[0, EPAISSEUR_PAVE / 2, 0]}>
             <boxGeometry args={[TAILLE_PAVE + 0.003, 0.002, TAILLE_PAVE + 0.003]} />
             <meshStandardMaterial 
-              color="#757575"
+              color="#616161"
               roughness={0.9}
               metalness={0}
             />

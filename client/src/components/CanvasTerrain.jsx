@@ -546,7 +546,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       citernes: canvas.getObjects().filter(o => o.customType === 'citerne' && objetValide(o)),
       canalisations: canvas.getObjects().filter(o => o.customType === 'canalisation' && objetValide(o)),
       clotures: canvas.getObjects().filter(o => o.customType === 'cloture' && objetValide(o)),
-      terrasses: canvas.getObjects().filter(o => (o.customType === 'paves' || o.customType === 'terrasse') && objetValide(o)),
+      terrasses: canvas.getObjects().filter(o => o.customType === 'terrasse' && objetValide(o)),
+      paves: canvas.getObjects().filter(o => o.customType === 'paves' && objetValide(o)),
       caissonsEau: canvas.getObjects().filter(o => o.customType === 'caisson-eau' && objetValide(o)),
       arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter' && objetValide(o)),
       echelle: echelle3D
@@ -555,6 +556,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     // Synchronisation 2D→3D
     logger.debug('Sync', 'Sync 2D→3D', {
       terrasses: extractedData.terrasses.length,
+      paves: extractedData.paves.length,
       arbres: extractedData.arbres.length,
       citernes: extractedData.citernes.length
     });
@@ -691,47 +693,15 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const posX_px = pos3DX_m * echelle;
     const posZ_px = pos3DZ_m * echelle;
     
-    // ✅ Log détaillé pour debug
-    const typeRecherche = objetData.customType || objetData.type; // Utiliser customType si disponible
-    
-    // ✅ Lister tous les objets du même type sur le canvas
-    const objetsDuMemeTypeList = canvas.getObjects()
-      .filter(o => o.customType === typeRecherche)
-      .map(o => ({
-        customType: o.customType,
-        left: o.left?.toFixed(1),
-        top: o.top?.toFixed(1),
-        angle: o.angle,
-        originX: o.originX,
-        originY: o.originY
-      }));
-    
-    logger.info('Selection3D', `🔍 Recherche objet depuis 3D:`, {
-      typeRecherche,
-      position3D_m: `(${pos3DX_m.toFixed(2)}, ${pos3DZ_m.toFixed(2)})`,
-      position2D_attendue_px: `(${posX_px.toFixed(1)}, ${posZ_px.toFixed(1)})`,
-      echelle,
-      totalObjetsCanvas: canvas.getObjects().length,
-      objetsDeCeType: objetsDuMemeTypeList.length,
-      objetsDuMemeTypeList
-    });
+    const typeRecherche = objetData.customType || objetData.type;
     
     // Trouver l'objet dans le canvas 2D
     const objet = canvas.getObjects().find(o => {
       if (o.customType !== typeRecherche) return false;
       
-      // Comparer position approximative (tolérance très large pour les objets)
-      const tolerance = 200; // ✅ Augmenté à 200 pixels
+      const tolerance = 200;
       const diffX = Math.abs(o.left - posX_px);
       const diffY = Math.abs(o.top - posZ_px);
-      
-      // Logger pour chaque objet du bon type
-      logger.info('Selection3D', `📋 Objet 2D trouvé de type "${o.customType}":`, {
-        pos2D: `(${o.left.toFixed(1)}px, ${o.top.toFixed(1)}px)`,
-        diff: `(${diffX.toFixed(1)}px, ${diffY.toFixed(1)}px)`,
-        tolerance,
-        match: diffX < tolerance && diffY < tolerance
-      });
       
       return diffX < tolerance && diffY < tolerance;
     });
@@ -744,8 +714,36 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       // ✅ Ouvrir automatiquement l'onglet Config
       setOngletActif('config');
       
-      // Logger pour debug
-      logger.info('Selection3D', `✅ Objet ${objetData.type} sélectionné depuis la 3D`);
+      // Logger pour debug avec détails spécifiques selon le type
+      let detailObjet = '';
+      switch(objetData.type) {
+        case 'arbre':
+          const nomArbre = objetData.arbreData?.name || objetData.arbreData?.id || 'inconnu';
+          detailObjet = ` "${nomArbre}"`;
+          break;
+        case 'maison':
+          detailObjet = ` #${(objetData.index || 0) + 1}`;
+          break;
+        case 'terrasse':
+          detailObjet = ` (${objetData.largeur?.toFixed(1)}m × ${objetData.profondeur?.toFixed(1)}m)`;
+          break;
+        case 'paves':
+          detailObjet = ` enherbé (${objetData.largeur?.toFixed(1)}m × ${objetData.profondeur?.toFixed(1)}m)`;
+          break;
+        case 'citerne':
+          detailObjet = ` (${objetData.volume || 'N/A'}L)`;
+          break;
+        case 'caisson-eau':
+          detailObjet = ` (${objetData.volume?.toFixed(1) || 'N/A'}m³)`;
+          break;
+        case 'canalisation':
+          detailObjet = ` (${objetData.x1?.toFixed(1)},${objetData.y1?.toFixed(1)} → ${objetData.x2?.toFixed(1)},${objetData.y2?.toFixed(1)})`;
+          break;
+        case 'cloture':
+          detailObjet = ` (${objetData.hauteur?.toFixed(1)}m hauteur)`;
+          break;
+      }
+      logger.info('Selection3D', `✅ ${objetData.type}${detailObjet} sélectionné depuis la 3D`);
     } else {
       // Filtrer uniquement les objets du même type pour le debug
       const objetsDuMemeType = canvas.getObjects()
