@@ -398,6 +398,40 @@ function PanneauLateral({
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
                         <div className="config-row">
+                          <label>Largeur</label>
+                          <input 
+                            type="number" 
+                            min="2" 
+                            max="30" 
+                            step="0.1"
+                            value={((objetSelectionne.getScaledWidth ? objetSelectionne.getScaledWidth() : objetSelectionne.width) / echelle).toFixed(1)}
+                            onChange={(e) => {
+                              const newWidth = parseFloat(e.target.value) * echelle;
+                              objetSelectionne.set({ width: newWidth });
+                              canvas.requestRenderAll();
+                              if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
+                            }}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                        <div className="config-row">
+                          <label>Profondeur</label>
+                          <input 
+                            type="number" 
+                            min="2" 
+                            max="30" 
+                            step="0.1"
+                            value={((objetSelectionne.getScaledHeight ? objetSelectionne.getScaledHeight() : objetSelectionne.height) / echelle).toFixed(1)}
+                            onChange={(e) => {
+                              const newHeight = parseFloat(e.target.value) * echelle;
+                              objetSelectionne.set({ height: newHeight });
+                              canvas.requestRenderAll();
+                              if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
+                            }}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                        <div className="config-row">
                           <label>Hauteur maison</label>
                           <input 
                             type="number" 
@@ -413,13 +447,13 @@ function PanneauLateral({
                     )}
                   </div>
 
-                  {/* PROFONDEURS */}
+                  {/* POSITION VERTICALE */}
                   <div style={{ marginBottom: '0.5rem' }}>
                     <button
                       onClick={() => setProfondeursOuvert(!profondeursOuvert)}
                       style={styles.boutonSection(profondeursOuvert, '#ff9800')}
                     >
-                      <span>⬇️ Profondeurs</span>
+                      <span>⬇️ Position verticale</span>
                       <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
                     </button>
                     {profondeursOuvert && (
@@ -625,19 +659,19 @@ function PanneauLateral({
                     )}
                   </div>
 
-                  {/* PROFONDEURS */}
+                  {/* POSITION VERTICALE */}
                   <div style={{ marginBottom: '0.5rem' }}>
                     <button
                       onClick={() => setProfondeursOuvert(!profondeursOuvert)}
                       style={styles.boutonSection(profondeursOuvert, '#ff9800')}
                     >
-                      <span>⬇️ Profondeurs</span>
+                      <span>⬇️ Position verticale</span>
                       <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
                     </button>
                     {profondeursOuvert && (
                       <div style={styles.conteneurListe}>
                         <div className="config-row">
-                          <label>Prof. enterrée</label>
+                          <label>Position verticale</label>
                           <input 
                             type="number" 
                             min="0" 
