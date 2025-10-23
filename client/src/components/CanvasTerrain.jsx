@@ -692,15 +692,25 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const posZ_px = pos3DZ_m * echelle;
     
     // ✅ Log détaillé pour debug
+    const typeRecherche = objetData.customType || objetData.type; // Utiliser customType si disponible
+    
+    // ✅ Lister tous les objets disponibles sur le canvas
+    const tousLesObjets = canvas.getObjects().map(o => ({
+      customType: o.customType,
+      left: o.left?.toFixed(1),
+      top: o.top?.toFixed(1)
+    }));
+    
     logger.info('Selection3D', `🔍 Recherche objet depuis 3D:`, {
-      typeRecherche: objetData.customType || objetData.type,
+      typeRecherche,
       position3D_m: `(${pos3DX_m.toFixed(2)}, ${pos3DZ_m.toFixed(2)})`,
       position2D_attendue_px: `(${posX_px.toFixed(1)}, ${posZ_px.toFixed(1)})`,
-      echelle
+      echelle,
+      totalObjetsCanvas: tousLesObjets.length,
+      objetsDisponibles: tousLesObjets.slice(0, 10) // Limiter à 10 pour ne pas spammer
     });
     
     // Trouver l'objet dans le canvas 2D
-    const typeRecherche = objetData.customType || objetData.type; // Utiliser customType si disponible
     const objet = canvas.getObjects().find(o => {
       if (o.customType !== typeRecherche) return false;
       
@@ -748,8 +758,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         customType: objetData.customType,
         position3D: objetData.position,
         position2Dattendue: `(${posX_px.toFixed(1)}px, ${posZ_px.toFixed(1)}px)`,
-        tolerance: 100,
-        objetsDuMemeType
+        tolerance: 200, // ✅ Corrigé : tolérance réelle utilisée
+        objetsDuMemeType: objetsDuMemeType.length > 0 ? objetsDuMemeType : 'Aucun objet de ce type'
       });
     }
   }, []);
