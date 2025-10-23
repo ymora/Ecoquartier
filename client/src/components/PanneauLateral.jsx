@@ -263,7 +263,12 @@ function PanneauLateral({
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.max(min, currentValue - step);
-              onChange({ target: { value: newValue.toString() } });
+              // Créer un événement synthétique compatible
+              const syntheticEvent = {
+                target: { value: newValue.toString() },
+                currentTarget: { value: newValue.toString() }
+              };
+              onChange(syntheticEvent);
             }}
             style={{
               background: '#4caf50',
@@ -295,7 +300,12 @@ function PanneauLateral({
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.min(max, currentValue + step);
-              onChange({ target: { value: newValue.toString() } });
+              // Créer un événement synthétique compatible
+              const syntheticEvent = {
+                target: { value: newValue.toString() },
+                currentTarget: { value: newValue.toString() }
+              };
+              onChange(syntheticEvent);
             }}
             style={{
               background: '#4caf50',
