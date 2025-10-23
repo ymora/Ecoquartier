@@ -11,7 +11,8 @@ import * as THREE from 'three';
 function PaveEnherbe3D({ 
   position = [0, 0, 0], 
   largeur = 2, 
-  profondeur = 2
+  profondeur = 2,
+  onClick = null
 }) {
   const herbeGroupRef = useRef();
   
@@ -179,7 +180,7 @@ function PaveEnherbe3D({
   });
   
   return (
-    <group position={position}>
+    <group position={position} onClick={onClick}>
       {/* Base en terre (sous les pavés) */}
       <mesh position={[0, -0.03, 0]} receiveShadow>
         <boxGeometry args={[largeur, 0.05, profondeur]} />

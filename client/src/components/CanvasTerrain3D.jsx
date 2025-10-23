@@ -512,6 +512,7 @@ function CanvasTerrain3D({
           <Canalisation3D 
             key={`canal-${idx}`}
             {...canal}
+            onClick={() => handleObjetClick({ type: 'canalisation', ...canal, index: idx })}
           />
         ))}
         
@@ -520,6 +521,7 @@ function CanvasTerrain3D({
           <Cloture3D 
             key={`cloture-${idx}`}
             {...cloture}
+            onClick={() => handleObjetClick({ type: 'cloture', ...cloture, index: idx })}
           />
         ))}
         
@@ -536,6 +538,7 @@ function CanvasTerrain3D({
               ]}
               largeur={terrasse.largeur}
               profondeur={terrasse.profondeur}
+              onClick={() => handleObjetClick({ type: 'paves', ...terrasse, index: idx })}
             />
           ) : (
             // Terrasse classique (béton gris)
@@ -549,6 +552,7 @@ function CanvasTerrain3D({
               rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
               receiveShadow
               castShadow
+              onClick={() => handleObjetClick({ type: 'terrasse', ...terrasse, index: idx })}
             >
               <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
               <meshStandardMaterial 
