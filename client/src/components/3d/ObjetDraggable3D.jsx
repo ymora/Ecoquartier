@@ -15,7 +15,7 @@ function ObjetDraggable3D({
   onDragStart,
   onDrag,
   onDragEnd,
-  maisonBounds = null // Pour validation collision
+  maisonBounds = null // Pour validation collision (peut être tableau pour multi-maisons)
 }) {
   const groupRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
@@ -73,17 +73,24 @@ function ObjetDraggable3D({
       if (raycaster.ray.intersectPlane(dragPlane.current, intersection.current)) {
         const newPos = intersection.current.clone().sub(offset.current);
         
-        // Validation collision avec maison
+        // Validation collision avec maisons (supporte multi-maisons)
         if (maisonBounds && type !== 'maison') {
-          const isInsideMaison = 
-            newPos.x > maisonBounds.minX &&
-            newPos.x < maisonBounds.maxX &&
-            newPos.z > maisonBounds.minZ &&
-            newPos.z < maisonBounds.maxZ;
+          const maisons = Array.isArray(maisonBounds) ? maisonBounds : [maisonBounds];
           
-          if (isInsideMaison) {
-            // Bloquer : ne pas mettre à jour la position
-            return;
+          // Vérifier collision avec chaque maison
+          for (const maison of maisons) {
+            if (!maison) continue;
+            
+            const isInsideMaison = 
+              newPos.x > maison.minX &&
+              newPos.x < maison.maxX &&
+              newPos.z > maison.minZ &&
+              newPos.z < maison.maxZ;
+            
+            if (isInsideMaison) {
+              // Bloquer : ne pas mettre à jour la position
+              return;
+            }
           }
         }
         

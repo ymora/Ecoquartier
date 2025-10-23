@@ -33,9 +33,6 @@ export default defineConfig({
           // Fabric.js pour canvas 2D (gros package ~400 KB)
           'fabric-vendor': ['fabric'],
           
-          // jsPDF pour export PDF (lazy-loadable, ~200 KB)
-          'pdf-vendor': ['jspdf'],
-          
           // Icons (changement fréquent, petit)
           'icons': ['react-icons']
         }

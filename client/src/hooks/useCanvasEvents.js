@@ -164,6 +164,10 @@ export const useCanvasEvents = ({
     const handleAddedOrRemoved = (e) => {
       if (e && e.target && (e.target.measureLabel || e.target.alignmentGuide || e.target.isGridLine || 
                             e.target.isConnectionIndicator || e.target.isSnapIndicator)) return;
+      
+      // Éviter la boucle infinie : ne pas exporter si c'est une ligne de mesure
+      if (e && e.target && e.target.isLigneMesure) return;
+      
       exporterPlan(canvas);
       ajouterMesuresLive(canvas);
       

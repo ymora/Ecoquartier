@@ -1,8 +1,9 @@
 /**
  * planDemo.js
  * Plan personnalisé par défaut avec LABELS COMPLETS
- * Plan généré le 22/10/2025 14:28:15
- * Dimensions: 30m × 30m, Orientation: nord-bas
+ * Plan généré le 23/10/2025 05:46:12
+ * Dimensions: 30m × 30m, Orientation: nord-haut
+ * Position sud (boussole): bas ⬇️
  */
 
 import * as fabric from 'fabric';
@@ -16,6 +17,9 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   
   logger.info('Plan', 'Chargement du plan personnalisé');
   
+  // Forcer le rechargement en supprimant le localStorage
+  localStorage.removeItem('planTerrain');
+  
   // Nettoyer le canvas (sauf grille, boussole, etc.)
   const objets = canvas.getObjects().filter(obj => 
     !obj.isGridLine && 
@@ -25,19 +29,29 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
     !obj.alignmentGuide &&
     !obj.isDimensionBox &&
     !obj.isAideButton &&
-    !obj.isImageFond
+    !obj.isImageFond &&
+    !obj.isCenterMark
   );
   objets.forEach(obj => canvas.remove(obj));
   
-  // ========== MAISON avec LABELS ==========
-  const largeurMaison = 10.305;
-  const hauteurMaison = 11.285;
+  // Calculer le centre du canvas pour positionner la maison 1
+  const posMaison1X = canvas.width / 2;
+  const posMaison1Y = canvas.height / 2;
   
-  const maisonRect = new fabric.Rect({
+  // Calculer le décalage nécessaire pour centrer la maison 1
+  // L'ancienne position était à left: -318.0, top: -115.1
+  const deltaX = posMaison1X - (-318.0);
+  const deltaY = posMaison1Y - (-115.1);
+  
+  // ========== MAISON 1 avec LABELS ==========
+  const largeurMaison1 = 10.15;
+  const hauteurMaison1 = 10.15;
+  
+  const maison1Rect = new fabric.Rect({
     left: 0,
     top: 0,
-    width: largeurMaison * echelle,
-    height: hauteurMaison * echelle,
+    width: largeurMaison1 * echelle,
+    height: hauteurMaison1 * echelle,
     fill: '#bdbdbd',
     stroke: '#757575',
     strokeWidth: 3,
@@ -47,11 +61,11 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
     evented: false
   });
   
-  const tailleIconeMaison = Math.min(largeurMaison * echelle, hauteurMaison * echelle) * 0.4;
-  const maisonIcone = new fabric.Text('🏠', {
+  const tailleIconeMaison1 = Math.min(largeurMaison1 * echelle, hauteurMaison1 * echelle) * 0.4;
+  const maison1Icone = new fabric.Text('🏠', {
     left: 0,
     top: 0,
-    fontSize: Math.max(tailleIconeMaison, 24),
+    fontSize: Math.max(tailleIconeMaison1, 24),
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
@@ -59,16 +73,59 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
     evented: false
   });
   
-  const maisonGroup = new fabric.Group([maisonRect, maisonIcone], {
-    left: 81.3,
-    top: -163.0,
+  const maison1Group = new fabric.Group([maison1Rect, maison1Icone], {
+    left: posMaison1X,
+    top: posMaison1Y,
     customType: 'maison',
     profondeurFondations: 1.2,
     hauteurBatiment: 7,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
-  canvas.add(maisonGroup);
+  canvas.add(maison1Group);
+  
+  // ========== MAISON 2 avec LABELS ==========
+  const largeurMaison2 = 10.185;
+  const hauteurMaison2 = 10.18;
+  
+  const maison2Rect = new fabric.Rect({
+    left: 0,
+    top: 0,
+    width: largeurMaison2 * echelle,
+    height: hauteurMaison2 * echelle,
+    fill: '#bdbdbd',
+    stroke: '#757575',
+    strokeWidth: 3,
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false
+  });
+  
+  const tailleIconeMaison2 = Math.min(largeurMaison2 * echelle, hauteurMaison2 * echelle) * 0.4;
+  const maison2Icone = new fabric.Text('🏠', {
+    left: 0,
+    top: 0,
+    fontSize: Math.max(tailleIconeMaison2, 24),
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false
+  });
+  
+  const maison2Group = new fabric.Group([maison2Rect, maison2Icone], {
+    left: 87.0 + deltaX,
+    top: -187.2 + deltaY,
+    customType: 'maison',
+    profondeurFondations: 1.2,
+    hauteurBatiment: 7,
+    elevationSol: 0,
+    originX: 'center',
+    originY: 'center'
+  });
+  canvas.add(maison2Group);
   
   // ========== CAISSON D'EAU avec LABELS ==========
   const largeurCaisson = 5;
@@ -104,21 +161,22 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const caissonGroup = new fabric.Group([caissonRect, caissonIcone], {
-    left: 440.0,
-    top: 162.0,
+    left: 440.0 + deltaX,
+    top: 162.0 + deltaY,
     customType: 'caisson-eau',
     largeurCaisson: largeurCaisson,
     profondeurCaisson: profondeurCaisson,
     hauteurCaisson: hauteurCaisson,
     profondeurEnterree: 1.0,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
   canvas.add(caissonGroup);
   
   // ========== TERRASSE 1 avec LABELS ==========
-  const largeurTerrasse1 = 2.01;
-  const hauteurTerrasse1 = 2.32;
+  const largeurTerrasse1 = 2.06;
+  const hauteurTerrasse1 = 2.37;
   
   const terrasse1Rect = new fabric.Rect({
     left: 0,
@@ -147,19 +205,20 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const terrasse1Group = new fabric.Group([terrasse1Rect, terrasse1Icone], {
-    left: 246.2,
-    top: -433.6,
+    left: 246.9 + deltaX,
+    top: -438.3 + deltaY,
     customType: 'terrasse',
     hauteurDalle: 0.15,
     profondeurFondation: 0.3,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
   canvas.add(terrasse1Group);
   
   // ========== TERRASSE 2 avec LABELS (ROTATED 90°) ==========
-  const largeurTerrasse2 = 6.57;
-  const hauteurTerrasse2 = 5.16;
+  const largeurTerrasse2 = 6.62;
+  const hauteurTerrasse2 = 5.21;
   
   const terrasse2Rect = new fabric.Rect({
     left: 0,
@@ -188,20 +247,21 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const terrasse2Group = new fabric.Group([terrasse2Rect, terrasse2Icone], {
-    left: 388.7,
-    top: -350.8,
+    left: 394.1 + deltaX,
+    top: -353.3 + deltaY,
     customType: 'terrasse',
     hauteurDalle: 0.15,
     profondeurFondation: 0.3,
     angle: 90,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
   canvas.add(terrasse2Group);
   
   // ========== TERRASSE 3 avec LABELS ==========
-  const largeurTerrasse3 = 7.32;
-  const hauteurTerrasse3 = 5.16;
+  const largeurTerrasse3 = 7.37;
+  const hauteurTerrasse3 = 5.21;
   
   const terrasse3Rect = new fabric.Rect({
     left: 0,
@@ -230,25 +290,26 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
   });
   
   const terrasse3Group = new fabric.Group([terrasse3Rect, terrasse3Icone], {
-    left: 59.9,
-    top: -491.0,
+    left: 58.6 + deltaX,
+    top: -495.3 + deltaY,
     customType: 'terrasse',
     hauteurDalle: 0.15,
     profondeurFondation: 0.3,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
   canvas.add(terrasse3Group);
   
   // ========== PAVÉ ENHERBÉ 1 avec LABELS ==========
-  const largeurPaves = 6.18;
-  const hauteurPaves = 8.15;
+  const largeurPaves1 = 5.1;
+  const hauteurPaves1 = 5.1;
   
-  const pavesRect = new fabric.Rect({
+  const paves1Rect = new fabric.Rect({
     left: 0,
     top: 0,
-    width: largeurPaves * echelle,
-    height: hauteurPaves * echelle,
+    width: largeurPaves1 * echelle,
+    height: hauteurPaves1 * echelle,
     fill: 'rgba(139, 195, 74, 0.3)',
     stroke: '#7cb342',
     strokeWidth: 2,
@@ -258,11 +319,11 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
     evented: false
   });
   
-  const tailleIconePaves = Math.min(largeurPaves * echelle, hauteurPaves * echelle) * 0.4;
-  const pavesIcone = new fabric.Text('🌿', {
+  const tailleIconePaves1 = Math.min(largeurPaves1 * echelle, hauteurPaves1 * echelle) * 0.4;
+  const paves1Icone = new fabric.Text('🌿', {
     left: 0,
     top: 0,
-    fontSize: Math.max(tailleIconePaves, 24),
+    fontSize: Math.max(tailleIconePaves1, 24),
     textAlign: 'center',
     originX: 'center',
     originY: 'center',
@@ -270,16 +331,59 @@ export const chargerPlanDemo = (canvas, echelle, ajouterGrille) => {
     evented: false
   });
   
-  const pavesGroup = new fabric.Group([pavesRect, pavesIcone], {
-    left: -0.5,
-    top: 225.8,
+  const paves1Group = new fabric.Group([paves1Rect, paves1Icone], {
+    left: -215.7 + deltaX,
+    top: 190.4 + deltaY,
     customType: 'paves',
     hauteurPaves: 0.08,
     profondeurGravier: 0.15,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
-  canvas.add(pavesGroup);
+  canvas.add(paves1Group);
+  
+  // ========== PAVÉ ENHERBÉ 2 avec LABELS ==========
+  const largeurPaves2 = 6.28;
+  const hauteurPaves2 = 6.99;
+  
+  const paves2Rect = new fabric.Rect({
+    left: 0,
+    top: 0,
+    width: largeurPaves2 * echelle,
+    height: hauteurPaves2 * echelle,
+    fill: 'rgba(139, 195, 74, 0.3)',
+    stroke: '#7cb342',
+    strokeWidth: 2,
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false
+  });
+  
+  const tailleIconePaves2 = Math.min(largeurPaves2 * echelle, hauteurPaves2 * echelle) * 0.4;
+  const paves2Icone = new fabric.Text('🌿', {
+    left: 0,
+    top: 0,
+    fontSize: Math.max(tailleIconePaves2, 24),
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false
+  });
+  
+  const paves2Group = new fabric.Group([paves2Rect, paves2Icone], {
+    left: 10.6 + deltaX,
+    top: 152.5 + deltaY,
+    customType: 'paves',
+    hauteurPaves: 0.08,
+    profondeurGravier: 0.15,
+    elevationSol: 0,
+    originX: 'center',
+    originY: 'center'
+  });
+  canvas.add(paves2Group);
   
   // NOTE: Les arbres seront ajoutés via la sélection d'arbres
   // Cerisier du Japon Kanzan (prunus-kanzan) - Position: 387.6,362.0 px | 9.69,9.05 m

@@ -3,10 +3,11 @@ import './ModeSelector.css';
 
 function ModeSelector({ modeActuel, onModeChange }) {
   // Ordre et angles personnalisés : Fiche à gauche, Comparer à droite, Plan en bas
+  // Angles ajustés pour diviser le cercle en 3 secteurs de 120° parfaitement alignés
   const modes = [
-    { id: 'normal', label: 'Fiches', icon: FaEye, color: '#2e7d32', angleStart: 120 }, // Gauche (centré sur 180°)
-    { id: 'comparaison', label: 'Comparer', icon: FaExchangeAlt, color: '#1976d2', angleStart: -60 }, // Droite (centré sur 0°)
-    { id: 'planification', label: 'Planifier', icon: FaMapMarkedAlt, color: '#f57c00', angleStart: 30 } // Bas (centré sur 90°)
+    { id: 'normal', label: 'Fiches', icon: FaEye, color: '#2e7d32', angleStart: 180 }, // Gauche (180°)
+    { id: 'comparaison', label: 'Comparer', icon: FaExchangeAlt, color: '#1976d2', angleStart: 60 }, // Droite (60°)
+    { id: 'planification', label: 'Planifier', icon: FaMapMarkedAlt, color: '#f57c00', angleStart: 300 } // Bas (300°)
   ];
 
   return (

@@ -5,12 +5,13 @@ function Citerne3D({
   largeur = 2, 
   profondeur = 2,
   profondeurEnterree = 2.5,
-  volume = 3000
+  volume = 3000,
+  elevationSol = 0
 }) {
   return (
-    <group position={[position[0], -profondeurEnterree / 2, position[2]]}>
+    <group position={[position[0], elevationSol - profondeurEnterree / 2, position[2]]}>
       {/* Citerne enterrée (cylindre couché) */}
-      <mesh rotation={[0, 0, Math.PI / 2]} castShadow>
+      <mesh rotation={[0, 0, Math.PI / 2]} castShadow receiveShadow>
         <cylinderGeometry args={[profondeur / 2, profondeur / 2, largeur, 16]} />
         <meshStandardMaterial 
           color="#00acc1"
@@ -22,7 +23,7 @@ function Citerne3D({
       </mesh>
       
       {/* Couvercle au niveau du sol */}
-      <mesh position={[0, profondeurEnterree / 2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[0, profondeurEnterree / 2, 0]} rotation={[-Math.PI / 2, 0, 0]} castShadow receiveShadow>
         <circleGeometry args={[0.4, 16]} />
         <meshStandardMaterial 
           color="#666666"

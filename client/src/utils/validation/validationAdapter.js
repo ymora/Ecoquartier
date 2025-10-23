@@ -24,9 +24,9 @@ export function collecterCriteres2D(arbreGroup, canvas, echelle) {
   const x = arbreGroup.left;
   const y = arbreGroup.top;
   
-  // 1. 🏠 Vérifier maison/fondations
-  const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
-  if (maison) {
+  // 1. 🏠 Vérifier maisons/fondations (peut y en avoir plusieurs)
+  const maisons = canvas.getObjects().filter(obj => obj.customType === 'maison');
+  maisons.forEach((maison, idx) => {
     const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
     const profondeurFondations = maison.profondeurFondations || 1.2;
     
@@ -35,13 +35,13 @@ export function collecterCriteres2D(arbreGroup, canvas, echelle) {
       distance: distMaison,
       distanceMin: distances.fondations,
       icone: '🏠',
-      label: 'fondations',
+      label: maisons.length > 1 ? `fondations (maison ${idx + 1})` : 'fondations',
       metadata: {
         profondeurRacines: distances.profondeurRacines,
         profondeurObjet: profondeurFondations
       }
     });
-  }
+  });
   
   // 2. 🚰 Vérifier canalisations
   const canalisations = canvas.getObjects().filter(obj => obj.customType === 'canalisation');
@@ -158,14 +158,14 @@ export function collecterCriteres2D(arbreGroup, canvas, echelle) {
  * @param {Array} position - Position [x, y, z] de l'arbre
  * @param {number} arbreIndex - Index de l'arbre dans le tableau
  * @param {Array} tousLesArbres - Liste de tous les arbres avec {position, arbreData}
- * @param {Object} maison - Objet maison {position, largeur, profondeur, profondeurFondations}
+ * @param {Array} maisons - Tableau des maisons {position, largeur, profondeur, profondeurFondations}
  * @param {Array} canalisations - Liste des canalisations {x1, y1, x2, y2, profondeur}
  * @param {Array} citernes - Liste des citernes {position, largeur, profondeur}
  * @param {Array} clotures - Liste des clôtures {x1, y1, x2, y2}
  * @param {Array} terrasses - Liste des terrasses (non utilisé en 3D pour l'instant)
  * @returns {Array<CritereValidation>} Liste des critères à valider
  */
-export function collecterCriteres3D(arbreData, position, arbreIndex, tousLesArbres, maison, canalisations, citernes, clotures, terrasses) {
+export function collecterCriteres3D(arbreData, position, arbreIndex, tousLesArbres, maisons, canalisations, citernes, clotures, terrasses) {
   if (!arbreData) return [];
   
   const distances = extraireDistancesMin(arbreData);
@@ -174,25 +174,27 @@ export function collecterCriteres3D(arbreData, position, arbreIndex, tousLesArbr
   const x = position[0];
   const z = position[2];
   
-  // 1. 🏠 Vérifier maison
-  if (maison) {
-    const distMaison = Math.sqrt(
-      Math.pow(x - (maison.position[0] + maison.largeur / 2), 2) +
-      Math.pow(z - (maison.position[2] + maison.profondeur / 2), 2)
-    );
-    const distMaisonBord = distMaison - Math.max(maison.largeur, maison.profondeur) / 2;
-    const profondeurFondations = maison.profondeurFondations || 1.2;
-    
-    criteres.push({
-      type: 'maison',
-      distance: Math.max(0, distMaisonBord), // Éviter les valeurs négatives
-      distanceMin: distances.fondations,
-      icone: '🏠',
-      label: 'fondations',
-      metadata: {
-        profondeurRacines: distances.profondeurRacines,
-        profondeurObjet: profondeurFondations
-      }
+  // 1. 🏠 Vérifier maisons (peut y en avoir plusieurs)
+  if (maisons && maisons.length > 0) {
+    maisons.forEach((maison, idx) => {
+      const distMaison = Math.sqrt(
+        Math.pow(x - (maison.position[0] + maison.largeur / 2), 2) +
+        Math.pow(z - (maison.position[2] + maison.profondeur / 2), 2)
+      );
+      const distMaisonBord = distMaison - Math.max(maison.largeur, maison.profondeur) / 2;
+      const profondeurFondations = maison.profondeurFondations || 1.2;
+      
+      criteres.push({
+        type: 'maison',
+        distance: Math.max(0, distMaisonBord), // Éviter les valeurs négatives
+        distanceMin: distances.fondations,
+        icone: '🏠',
+        label: maisons.length > 1 ? `fondations (maison ${idx + 1})` : 'fondations',
+        metadata: {
+          profondeurRacines: distances.profondeurRacines,
+          profondeurObjet: profondeurFondations
+        }
+      });
     });
   }
   

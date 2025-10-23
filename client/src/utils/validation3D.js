@@ -11,7 +11,7 @@ import { validerArbre3D } from './validation';
  * Retourne un Map avec arbre index → validationStatus
  * 
  * @param {Array} tousLesArbres - Tous les arbres [{position, arbreData}, ...]
- * @param {Object} maison - Objet maison
+ * @param {Array} maisons - Tableau des maisons
  * @param {Array} canalisations - Liste des canalisations
  * @param {Array} citernes - Liste des citernes
  * @param {Array} clotures - Liste des clôtures
@@ -19,13 +19,13 @@ import { validerArbre3D } from './validation';
  * @param {Object} options - Options (couchesSol, orientation)
  * @returns {Map} Map(index → {status, messages})
  */
-export const validerArbres3D = (tousLesArbres, maison, canalisations, citernes, clotures, terrasses, options = {}) => {
+export const validerArbres3D = (tousLesArbres, maisons, canalisations, citernes, clotures, terrasses, options = {}) => {
   const validationMap = new Map();
   
   // Préparer la scène pour le système de validation
   const scene = {
     arbres: tousLesArbres,
-    maison,
+    maisons,
     canalisations,
     citernes,
     clotures,

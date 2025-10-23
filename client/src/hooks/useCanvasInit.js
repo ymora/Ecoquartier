@@ -12,8 +12,7 @@ export const useCanvasInit = ({
   fabricCanvasRef,
   ajouterGrille,
   ajouterIndicateurSud,
-  chargerPlanDemo,
-  chargerPlanSauvegarde // ✅ Nouveau : fonction pour charger le plan sauvegardé
+  chargerPlanDemo
 }) => {
   // Refs pour le pan (persistent entre renders)
   const isPanningRef = useRef(false);

@@ -133,6 +133,7 @@ export const creerCiterneObjet = (echelle) => {
     customType: 'citerne',
     diametre: diametre,
     profondeur: profondeur,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
@@ -236,6 +237,7 @@ export const creerTerrasseObjet = (echelle) => {
     customType: 'terrasse',
     hauteurDalle: 0.15,
     profondeurFondation: 0.3,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
@@ -293,6 +295,7 @@ export const creerPavesObjet = (echelle) => {
     customType: 'paves',
     hauteurPaves: 0.08,
     profondeurGravier: 0.15,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
@@ -357,6 +360,7 @@ export const creerCaissonEauObjet = (echelle) => {
     largeurCaisson: largeurMetres,
     profondeurCaisson: profondeurMetres,
     hauteurCaisson: hauteurMetres,
+    elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
@@ -426,6 +430,55 @@ export const creerGrille = (canvas, echelle) => {
   gridLines.forEach(line => {
     canvas.sendObjectToBack(line);
   });
+  
+  // Marque du centre du terrain (croix centrale)
+  const centreX = canvas.width / 2;
+  const centreY = canvas.height / 2;
+  const tailleMarque = 20; // pixels
+  
+  // Supprimer l'ancienne marque du centre si elle existe
+  const oldCenterMark = canvas.getObjects().find(obj => obj.isCenterMark);
+  if (oldCenterMark) canvas.remove(oldCenterMark);
+  
+  // Créer une croix au centre
+  const markGroup = new fabric.Group([
+    // Ligne horizontale
+    new fabric.Line([centreX - tailleMarque, centreY, centreX + tailleMarque, centreY], {
+      stroke: '#ff5722',
+      strokeWidth: 2,
+      selectable: false,
+      evented: false
+    }),
+    // Ligne verticale
+    new fabric.Line([centreX, centreY - tailleMarque, centreX, centreY + tailleMarque], {
+      stroke: '#ff5722',
+      strokeWidth: 2,
+      selectable: false,
+      evented: false
+    }),
+    // Cercle au centre
+    new fabric.Circle({
+      left: centreX,
+      top: centreY,
+      radius: 3,
+      fill: '#ff5722',
+      originX: 'center',
+      originY: 'center',
+      selectable: false,
+      evented: false
+    })
+  ], {
+    left: centreX,
+    top: centreY,
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    isCenterMark: true
+  });
+  
+  canvas.add(markGroup);
+  canvas.sendObjectToBack(markGroup);
   
   // Si une image de fond existe, la placer encore plus en arrière que la grille
   const imageFond = canvas.getObjects().find(obj => obj.isImageFond);

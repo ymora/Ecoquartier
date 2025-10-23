@@ -8,6 +8,7 @@ import Maison3D from './3d/Maison3D';
 import Sol3D from './3d/Sol3D';
 import Canalisation3D from './3d/Canalisation3D';
 import Citerne3D from './3d/Citerne3D';
+import Caisson3D from './3d/Caisson3D';
 import Cloture3D from './3d/Cloture3D';
 import ObjetDraggable3D from './3d/ObjetDraggable3D';
 import PaveEnherbe3D from './3d/PaveEnherbe3D';
@@ -66,6 +67,16 @@ function CanvasTerrain3D({
   const convertir2DTo3D = () => {
     const echelle = ECHELLE_PIXELS_PAR_METRE; // Utilisation de la constante globale : 40 pixels = 1 mètre
     
+    // 🔍 DEBUG - Vérifier les données reçues
+    console.log('🎯 DEBUG planData reçu:', {
+      maisons: planData?.maisons?.length || 0,
+      terrasses: planData?.terrasses?.length || 0,
+      paves: planData?.paves?.length || 0,
+      citernes: planData?.citernes?.length || 0,
+      caissonsEau: planData?.caissonsEau?.length || 0,
+      arbres: planData?.arbres?.length || 0
+    });
+    
     const data3D = {
       maison: null,
       arbres: [],
@@ -88,29 +99,43 @@ function CanvasTerrain3D({
       maxZ = Math.max(maxZ, z + profondeur);
     };
     
-    // Maison (si existe)
-    if (planData.maison) {
-      const maisonWidth = planData.maison.getScaledWidth ? planData.maison.getScaledWidth() : planData.maison.width;
-      const maisonHeight = planData.maison.getScaledHeight ? planData.maison.getScaledHeight() : planData.maison.height;
-      
-      const largeur = maisonWidth / echelle;
-      const profondeur = maisonHeight / echelle;
-      
-      // Les objets 2D avec originX/Y: 'center' sont déjà centrés
-      // Donc on utilise directement left/top pour la position 3D
-      const posX = planData.maison.left / echelle;
-      const posZ = planData.maison.top / echelle;
-      
-      data3D.maison = {
-        position: [posX, 0, posZ],
-        largeur,
-        profondeur,
-        hauteur: planData.maison.hauteurBatiment || 7,
-        profondeurFondations: planData.maison.profondeurFondations || 1.2,
-        angle: planData.maison.angle || 0
-      };
-      
-      updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
+    // Maisons (tableau)
+    if (planData.maisons && planData.maisons.length > 0) {
+      data3D.maisons = planData.maisons.map((maison, idx) => {
+        const maisonWidth = maison.getScaledWidth ? maison.getScaledWidth() : maison.width;
+        const maisonHeight = maison.getScaledHeight ? maison.getScaledHeight() : maison.height;
+        
+        const largeur = maisonWidth / echelle;
+        const profondeur = maisonHeight / echelle;
+        
+        // Les objets 2D avec originX/Y: 'center' sont déjà centrés
+        // Donc on utilise directement left/top pour la position 3D
+        const posX = maison.left / echelle;
+        const posZ = maison.top / echelle;
+        
+        // 🔍 DEBUG - Vérifier la conversion
+        console.log('🎯 DEBUG Maison:', {
+          index: idx,
+          left_px: maison.left,
+          top_px: maison.top,
+          echelle: echelle,
+          posX_m: posX,
+          posZ_m: posZ,
+          largeur_m: largeur,
+          profondeur_m: profondeur
+        });
+        
+        updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
+        
+        return {
+          position: [posX, 0, posZ],
+          largeur,
+          profondeur,
+          hauteur: maison.hauteurBatiment || 7,
+          profondeurFondations: maison.profondeurFondations || 1.2,
+          angle: maison.angle || 0
+        };
+      });
     }
     
     // Citernes (objets circulaires - Groups)
@@ -121,6 +146,15 @@ function CanvasTerrain3D({
         const posX = c.left / echelle;
         const posZ = c.top / echelle;
         
+        // 🔍 DEBUG
+        console.log('🎯 DEBUG Citerne:', {
+          left_px: c.left,
+          top_px: c.top,
+          posX_m: posX,
+          posZ_m: posZ,
+          diametre_m: diametre
+        });
+        
         updateBounds(posX - diametre/2, posZ - diametre/2, diametre, diametre);
         
         return {
@@ -128,7 +162,8 @@ function CanvasTerrain3D({
           largeur: diametre,
           profondeur: diametre,
           profondeurEnterree: c.profondeur || 2.5,
-          volume: c.volume || 3000
+          volume: c.volume || 3000,
+          elevationSol: c.elevationSol || 0
         };
       });
     }
@@ -144,14 +179,26 @@ function CanvasTerrain3D({
         const posX = c.left / echelle;
         const posZ = c.top / echelle;
         
+        // 🔍 DEBUG
+        console.log('🎯 DEBUG Caisson:', {
+          left_px: c.left,
+          top_px: c.top,
+          posX_m: posX,
+          posZ_m: posZ,
+          largeur_m: largeur,
+          profondeur_m: profondeur
+        });
+        
         if (!data3D.citernes) data3D.citernes = [];
         data3D.citernes.push({
-          position: [posX, 0, posZ],
+          position: [posX, 0, posZ], // Position au sol, profondeurEnterree appliquée dans Caisson3D
           largeur,
           profondeur,
           profondeurEnterree: c.profondeurEnterree || 1.0,
+          hauteur: hauteur,
           volume: largeur * profondeur * hauteur,
           angle: c.angle || 0,
+          elevationSol: c.elevationSol || 0,
           type: 'caisson'
         });
         
@@ -214,12 +261,23 @@ function CanvasTerrain3D({
         const posX = t.left / echelle;
         const posZ = t.top / echelle;
         
+        // 🔍 DEBUG
+        console.log('🎯 DEBUG Terrasse:', {
+          left_px: t.left,
+          top_px: t.top,
+          posX_m: posX,
+          posZ_m: posZ,
+          largeur_m: largeur,
+          profondeur_m: profondeur
+        });
+        
         data3D.terrasses.push({
           position: [posX, 0, posZ],
           largeur,
           profondeur,
           hauteur: t.hauteurDalle || 0.15, // Hauteur de la dalle
           angle: t.angle || 0,
+          elevationSol: t.elevationSol || 0, // Élévation par rapport au sol
           type: 'terrasse'
         });
         
@@ -238,6 +296,16 @@ function CanvasTerrain3D({
         // Position centrée
         const posX = p.left / echelle;
         const posZ = p.top / echelle;
+        
+        // 🔍 DEBUG
+        console.log('🎯 DEBUG Pavé:', {
+          left_px: p.left,
+          top_px: p.top,
+          posX_m: posX,
+          posZ_m: posZ,
+          largeur_m: largeur,
+          profondeur_m: profondeur
+        });
         
         data3D.terrasses.push({
           position: [posX, 0, posZ],
@@ -324,7 +392,7 @@ function CanvasTerrain3D({
     
     const validationComplete = validerArbres3D(
       tousLesArbres,
-      data3D.maison,
+      data3D.maisons,
       data3D.canalisations,
       data3D.citernes,
       data3D.clotures,
@@ -350,14 +418,14 @@ function CanvasTerrain3D({
   
   const { largeur: terrainLargeur, hauteur: terrainHauteur, centreX: terrainCentreX, centreZ: terrainCentreZ } = terrainDimensions;
   
-  // Calculer les bounds de la maison pour validation collision (mémorisé)
+  // Calculer les bounds des maisons pour validation collision (mémorisé)
   // ✅ Les positions 3D sont centrées, donc on doit soustraire/ajouter la demi-dimension
-  const maisonBounds = useMemo(() => data3D?.maison ? {
-    minX: data3D.maison.position[0] - data3D.maison.largeur / 2,
-    maxX: data3D.maison.position[0] + data3D.maison.largeur / 2,
-    minZ: data3D.maison.position[2] - data3D.maison.profondeur / 2,
-    maxZ: data3D.maison.position[2] + data3D.maison.profondeur / 2
-  } : null, [data3D]);
+  const maisonsBounds = useMemo(() => (data3D?.maisons || []).map(maison => ({
+    minX: maison.position[0] - maison.largeur / 2,
+    maxX: maison.position[0] + maison.largeur / 2,
+    minZ: maison.position[2] - maison.profondeur / 2,
+    maxZ: maison.position[2] + maison.profondeur / 2
+  })), [data3D]);
   
   // Positions de caméra selon mode (mémorisées)
   const cameraPositions = useMemo(() => {
@@ -458,20 +526,30 @@ function CanvasTerrain3D({
           transparent={solTransparent}
         />
         
-        {/* Maison */}
-        {data3D?.maison && (
+        {/* Maisons */}
+        {data3D?.maisons?.map((maison, idx) => (
           <Maison3D 
-            {...data3D.maison}
-            onClick={() => handleObjetClick({ type: 'maison', ...data3D.maison })}
+            key={`maison-${idx}`}
+            {...maison}
+            onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
           />
-        )}
+        ))}
         
-        {/* Citernes */}
-        {data3D?.citernes?.map((citerne, idx) => (
+        {/* Citernes cylindriques */}
+        {data3D?.citernes?.filter(c => c.type !== 'caisson').map((citerne, idx) => (
           <Citerne3D 
             key={`citerne-${idx}`}
             {...citerne}
             onClick={() => handleObjetClick({ type: 'citerne', ...citerne, index: idx })}
+          />
+        ))}
+        
+        {/* Caissons d'eau rectangulaires */}
+        {data3D?.citernes?.filter(c => c.type === 'caisson').map((caisson, idx) => (
+          <Caisson3D 
+            key={`caisson-${idx}`}
+            {...caisson}
+            onClick={() => handleObjetClick({ type: 'caisson-eau', ...caisson, index: idx })}
           />
         ))}
         
@@ -510,10 +588,11 @@ function CanvasTerrain3D({
             <mesh 
               key={`terrasse-${idx}`}
               position={[
-                terrasse.position[0] + terrasse.largeur / 2,
-                terrasse.hauteur / 2,
-                terrasse.position[2] + terrasse.profondeur / 2
+                terrasse.position[0],
+                terrasse.elevationSol || 0, // Positionner à l'élévation du sol
+                terrasse.position[2]
               ]}
+              rotation={[0, terrasse.angle ? terrasse.angle * Math.PI / 180 : 0, 0]}
               receiveShadow
               castShadow
             >
@@ -546,7 +625,7 @@ function CanvasTerrain3D({
               type="arbre-a-planter"
               enabled={modeDeplacement}
               onDragEnd={handleObjetDragEnd}
-              maisonBounds={maisonBounds}
+              maisonBounds={maisonsBounds}
             >
               {model3D ? (
                 /* Modèle 3D réel (GLB) avec fallback automatique */

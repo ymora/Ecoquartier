@@ -5,7 +5,6 @@
 
 import * as fabric from 'fabric';
 import logger from '../logger';
-import { forcerTriObjets } from './depthSorting';
 
 
 // Timer pour throttle du logger
@@ -48,11 +47,11 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
   code += `// Dimensions: ${planData.largeur}m × ${planData.hauteur}m, Orientation: ${planData.orientation}\n`;
   code += `// Position sud (boussole): ${positionSud}\n\n`;
   
-  // MAISON
-  if (planData.maison) {
-    const angleStr = planData.maison.angle ? `, angle: ${planData.maison.angle}` : '';
-    code += `  // MAISON\n  const maison = new fabric.Rect({left: ${(planData.maison.left * echelle).toFixed(1)}, top: ${(planData.maison.top * echelle).toFixed(1)}, width: ${(planData.maison.width * echelle).toFixed(1)}, height: ${(planData.maison.height * echelle).toFixed(1)}, fill: '#bdbdbd', stroke: '#757575', strokeWidth: 3, customType: 'maison', profondeurFondations: ${planData.maison.profondeurFondations || 1.2}, hauteurBatiment: ${planData.maison.hauteurBatiment || 7}${angleStr}});\n  canvas.add(maison);\n\n`;
-  }
+  // MAISONS (tableau)
+  planData.maisons.forEach((m, i) => {
+    const angleStr = m.angle ? `, angle: ${m.angle}` : '';
+    code += `  // Maison ${i+1}\n  const maison${i+1} = new fabric.Rect({left: ${(m.left * echelle).toFixed(1)}, top: ${(m.top * echelle).toFixed(1)}, width: ${(m.width * echelle).toFixed(1)}, height: ${(m.height * echelle).toFixed(1)}, fill: '#bdbdbd', stroke: '#757575', strokeWidth: 3, customType: 'maison', profondeurFondations: ${m.profondeurFondations || 1.2}, hauteurBatiment: ${m.hauteurBatiment || 7}${angleStr}});\n  canvas.add(maison${i+1});\n\n`;
+  });
   
   // CITERNES
   planData.citernes.forEach((c, i) => {
@@ -96,7 +95,7 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
   console.log('%c' + code, 'color: #2196f3; font-family: monospace; font-size: 11px');
   console.log('');
   console.log('%c✅ Résumé:', 'font-weight: bold; font-size: 12px');
-  console.log(`  🏠 Maison: ${planData.maison ? '✅' : '❌'}`);
+  console.log(`  🏠 Maisons: ${planData.maisons.length}`);
   console.log(`  💧 Citernes: ${planData.citernes.length}`);
   console.log(`  🟦 Caissons d'eau: ${planData.caissonsEau.length}`);
   console.log(`  🏡 Terrasses: ${planData.terrasses.length}`);
@@ -118,7 +117,7 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
     hauteur: dimensions.hauteur,
     orientation,
     timestamp: Date.now(),
-    maison: null,
+    maisons: [],
     canalisations: [],
     arbresAPlanter: [],
     terrasses: [],
@@ -133,7 +132,7 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
 
     if (obj.customType === 'maison') {
-      planData.maison = {
+      planData.maisons.push({
         left: obj.left / echelle,
         top: obj.top / echelle,
         width: obj.getScaledWidth() / echelle,
@@ -141,7 +140,7 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         angle: obj.angle || 0,
         profondeurFondations: obj.profondeurFondations,
         hauteurBatiment: obj.hauteurBatiment
-      };
+      });
     } else if (obj.customType === 'canalisation') {
       planData.canalisations.push({
         x1: obj.x1,
@@ -174,7 +173,8 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         largeurCaisson: obj.largeurCaisson || 5,
         profondeurCaisson: obj.profondeurCaisson || 3,
         hauteurCaisson: obj.hauteurCaisson || 1,
-        profondeurEnterree: obj.profondeurEnterree || 1.0
+        profondeurEnterree: obj.profondeurEnterree || 1.0,
+        elevationSol: obj.elevationSol || 0
       });
     } else if (obj.customType === 'terrasse') {
       planData.terrasses.push({
@@ -184,7 +184,8 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         height: obj.getScaledHeight() / echelle,
         angle: obj.angle || 0,
         hauteurDalle: obj.hauteurDalle || 0.15,
-        profondeurFondation: obj.profondeurFondation || 0.3
+        profondeurFondation: obj.profondeurFondation || 0.3,
+        elevationSol: obj.elevationSol || 0
       });
     } else if (obj.customType === 'paves') {
       planData.paves.push({
@@ -194,7 +195,8 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         height: obj.getScaledHeight() / echelle,
         angle: obj.angle || 0,
         hauteurPaves: obj.hauteurPaves || 0.08,
-        profondeurGravier: obj.profondeurGravier || 0.15
+        profondeurGravier: obj.profondeurGravier || 0.15,
+        elevationSol: obj.elevationSol || 0
       });
     } else if (obj.customType === 'citerne') {
       planData.citernes.push({
@@ -204,7 +206,8 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         height: obj.getScaledHeight() / echelle,
         angle: obj.angle || 0,
         profondeur: obj.profondeur,
-        diametre: obj.diametre
+        diametre: obj.diametre,
+        elevationSol: obj.elevationSol || 0
       });
     }
   });
@@ -214,17 +217,6 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
   
   // ✅ LOG COPIABLE automatique avec throttle de 1 seconde
   loggerPositionsPlanCopiable(planData, echelle);
-};
-
-/**
- * Charger un plan depuis localStorage
- * ⚠️ FONCTION OBSOLÈTE - Le chargement se fait maintenant automatiquement
- * Cette fonction n'est plus utilisée car le plan se recharge automatiquement
- * depuis localStorage à chaque modification
- */
-export const chargerPlanSauvegarde = (canvas, echelle, ajouterMesuresLive) => {
-  logger.warn('ImportPlan', 'chargerPlanSauvegarde est obsolète - utiliser le système automatique');
-  // Ne fait plus rien - le plan se charge automatiquement
 };
 
 /**

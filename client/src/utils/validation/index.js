@@ -61,7 +61,7 @@ export function validerArbre3D(arbreData, position, arbreIndex, scene, options =
     position,
     arbreIndex,
     scene.arbres,
-    scene.maison,
+    scene.maisons,
     scene.canalisations,
     scene.citernes,
     scene.clotures,

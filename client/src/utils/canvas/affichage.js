@@ -24,9 +24,9 @@ export const afficherZonesContraintes = (canvas, echelle, zonesContraintesVisibl
     
   const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
     
-    // Zones autour de la maison
-    const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
-    if (maison) {
+    // Zones autour de toutes les maisons
+    const maisons = canvas.getObjects().filter(obj => obj.customType === 'maison');
+    maisons.forEach((maison, idx) => {
       // Zone interdite (rouge)
       const zoneRouge = new fabric.Rect({
         left: maison.left - distanceFondations * echelle,
@@ -60,7 +60,7 @@ export const afficherZonesContraintes = (canvas, echelle, zonesContraintesVisibl
       });
       canvas.add(zoneOrange);
       canvas.sendObjectToBack(zoneOrange);
-    }
+    });
     
     // Zones autour des citernes
     const citernes = canvas.getObjects().filter(obj => obj.customType === 'citerne');
@@ -125,8 +125,8 @@ export const afficherOmbreMaison = (canvas, echelle, ombreVisible, saison, orien
   
   if (!ombreVisible) return;
   
-  const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
-  if (!maison) return;
+  const maisons = canvas.getObjects().filter(obj => obj.customType === 'maison');
+  if (maisons.length === 0) return;
   
   // Angles solaires selon la saison (Bessancourt, latitude 49°N)
   const angles = {
@@ -139,61 +139,65 @@ export const afficherOmbreMaison = (canvas, echelle, ombreVisible, saison, orien
   const angleSoleil = angles[saison] || 45;
   const angleRad = (angleSoleil * Math.PI) / 180;
   
-  // Hauteur de la maison
-  const hauteurMaison = maison.hauteurBatiment || 7;
-  
-  // Longueur de l'ombre projetée
-  const longueurOmbre = hauteurMaison / Math.tan(angleRad);
-  const longueurPixels = longueurOmbre * echelle;
-  
-  // Direction : ombre vers le NORD (soleil au sud à midi)
-  // Ajuster selon l'orientation de la carte
-  let offsetX = 0;
-  let offsetY = 0;
-  let width = maison.getScaledWidth();
-  let height = longueurPixels;
-  
-  switch(orientation) {
-    case 'nord-haut':  // Nord en haut → ombre vers le haut
-      offsetX = 0;
-      offsetY = -longueurPixels;
-      width = maison.getScaledWidth();
-      height = longueurPixels;
-      break;
-    case 'sud-haut':   // Sud en haut → ombre vers le bas
-      offsetX = 0;
-      offsetY = maison.getScaledHeight();
-      width = maison.getScaledWidth();
-      height = longueurPixels;
-      break;
-    case 'est-haut':   // Est en haut → ombre vers la droite
-      offsetX = maison.getScaledWidth();
-      offsetY = 0;
-      width = longueurPixels;
-      height = maison.getScaledHeight();
-      break;
-    case 'ouest-haut': // Ouest en haut → ombre vers la gauche
-      offsetX = -longueurPixels;
-      offsetY = 0;
-      width = longueurPixels;
-      height = maison.getScaledHeight();
-      break;
-  }
-  
-  // Créer l'ombre (rectangle semi-transparent)
-  const ombre = new fabric.Rect({
-    left: maison.left + offsetX,
-    top: maison.top + offsetY,
-    width: width,
-    height: height,
-    fill: 'rgba(0, 0, 0, 0.2)',
-    selectable: false,
-    evented: false,
-    isOmbre: true
+  // Créer ombre pour chaque maison
+  maisons.forEach((maison, idx) => {
+    // Hauteur de la maison
+    const hauteurMaison = maison.hauteurBatiment || 7;
+    
+    // Longueur de l'ombre projetée
+    const longueurOmbre = hauteurMaison / Math.tan(angleRad);
+    const longueurPixels = longueurOmbre * echelle;
+    
+    // Direction : ombre vers le NORD (soleil au sud à midi)
+    // Ajuster selon l'orientation de la carte
+    let offsetX = 0;
+    let offsetY = 0;
+    let width = maison.getScaledWidth();
+    let height = longueurPixels;
+    
+    switch(orientation) {
+      case 'nord-haut':  // Nord en haut → ombre vers le haut
+        offsetX = 0;
+        offsetY = -longueurPixels;
+        width = maison.getScaledWidth();
+        height = longueurPixels;
+        break;
+      case 'sud-haut':   // Sud en haut → ombre vers le bas
+        offsetX = 0;
+        offsetY = maison.getScaledHeight();
+        width = maison.getScaledWidth();
+        height = longueurPixels;
+        break;
+      case 'est-haut':   // Est en haut → ombre vers la droite
+        offsetX = maison.getScaledWidth();
+        offsetY = 0;
+        width = longueurPixels;
+        height = maison.getScaledHeight();
+        break;
+      case 'ouest-haut': // Ouest en haut → ombre vers la gauche
+        offsetX = -longueurPixels;
+        offsetY = 0;
+        width = longueurPixels;
+        height = maison.getScaledHeight();
+        break;
+    }
+    
+    // Créer l'ombre pour cette maison (rectangle semi-transparent)
+    const ombre = new fabric.Rect({
+      left: maison.left + offsetX,
+      top: maison.top + offsetY,
+      width: width,
+      height: height,
+      fill: 'rgba(0, 0, 0, 0.2)',
+      selectable: false,
+      evented: false,
+      isOmbre: true
+    });
+    
+    canvas.add(ombre);
+    canvas.sendObjectToBack(ombre);
   });
   
-  canvas.add(ombre);
-  canvas.sendObjectToBack(ombre);
   canvas.renderAll();
 };
 

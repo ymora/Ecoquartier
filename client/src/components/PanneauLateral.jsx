@@ -45,9 +45,179 @@ function PanneauLateral({
   const [actionsOuvert, setActionsOuvert] = useState(false);
   const [surPlanOuvert, setSurPlanOuvert] = useState(true); // Ouvert par défaut
   
+  // États pour sections repliables dans Config
+  const [dimensionsOuvert, setDimensionsOuvert] = useState(true);
+  const [positionOuvert, setPositionOuvert] = useState(true);
+  const [profondeursOuvert, setProfondeursOuvert] = useState(true);
+  
   // Séparer arbres et arbustes
   const arbres = plantesData.filter(p => p.type === 'arbre');
   const arbustes = plantesData.filter(p => !p.type || p.type === 'arbuste');
+  
+  // ✅ Fonction unifiée pour encadrer visuellement un objet
+  const highlightObject = (obj) => {
+    if (!obj) return;
+    
+    if (obj._objects && obj._objects.length > 0) {
+      // C'est un groupe, appliquer aux sous-objets qui ont un stroke
+      obj._objects.forEach(subObj => {
+        if (subObj.stroke) {
+          // Sauvegarder les propriétés originales
+          subObj.__originalStroke = subObj.stroke;
+          subObj.__originalStrokeWidth = subObj.strokeWidth;
+          subObj.__originalStrokeDashArray = subObj.strokeDashArray;
+          // Appliquer le rouge épais sans pointillés
+          subObj.set({ strokeWidth: 5, stroke: '#f44336', strokeDashArray: null });
+        }
+      });
+    } else {
+      // Objet simple
+      obj.__originalStroke = obj.stroke;
+      obj.__originalStrokeWidth = obj.strokeWidth;
+      obj.__originalStrokeDashArray = obj.strokeDashArray;
+      obj.set({ strokeWidth: 5, stroke: '#f44336', strokeDashArray: null });
+    }
+    canvas.renderAll();
+  };
+  
+  // ✅ Fonction unifiée pour retirer l'encadrement
+  const unhighlightObject = (obj) => {
+    if (!obj) return;
+    
+    if (obj._objects && obj._objects.length > 0) {
+      // C'est un groupe, restaurer les couleurs originales
+      obj._objects.forEach(subObj => {
+        if (subObj.stroke && subObj.__originalStroke) {
+          subObj.set({ 
+            strokeWidth: subObj.__originalStrokeWidth || 3, 
+            stroke: subObj.__originalStroke,
+            strokeDashArray: subObj.__originalStrokeDashArray
+          });
+        }
+      });
+    } else {
+      // Objet simple
+      if (obj.__originalStroke) {
+        obj.set({ 
+          strokeWidth: obj.__originalStrokeWidth || 3, 
+          stroke: obj.__originalStroke,
+          strokeDashArray: obj.__originalStrokeDashArray
+        });
+      }
+    }
+    canvas.renderAll();
+  };
+  
+  // ✅ Styles unifiés pour les boutons et conteneurs
+  const styles = {
+    boutonSection: (ouvert, couleur) => ({
+      width: '100%',
+      padding: '0.6rem',
+      background: ouvert ? couleur : 'white',
+      color: ouvert ? 'white' : '#333',
+      border: `1px solid ${couleur}`,
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      fontSize: '0.85rem',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      transition: 'all 0.2s'
+    }),
+    conteneurListe: {
+      marginTop: '0.3rem',
+      background: 'white',
+      borderRadius: '4px',
+      border: '1px solid #ddd'
+    },
+    boutonListe: {
+      width: '100%',
+      padding: '0.5rem',
+      background: 'white',
+      color: '#333',
+      border: 'none',
+      borderBottom: '1px solid #f0f0f0',
+      cursor: 'pointer',
+      fontSize: '0.85rem',
+      fontWeight: '500',
+      textAlign: 'left',
+      transition: 'background 0.2s'
+    },
+    boutonListeDernier: {
+      width: '100%',
+      padding: '0.5rem',
+      background: 'white',
+      color: '#333',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '0.85rem',
+      fontWeight: '500',
+      textAlign: 'left',
+      transition: 'background 0.2s'
+    },
+    boutonSupprimer: {
+      background: '#f44336',
+      color: 'white',
+      border: 'none',
+      borderRadius: '3px',
+      padding: '0.2rem 0.4rem',
+      cursor: 'pointer',
+      fontSize: '0.7rem',
+      transition: 'transform 0.2s'
+    },
+    ligneObjet: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '0.3rem',
+      marginBottom: '0.2rem',
+      background: 'white',
+      borderRadius: '3px',
+      fontSize: '0.75rem',
+      cursor: 'pointer'
+    }
+  };
+  
+  // ✅ Fonction unifiée pour créer les boutons d'action (supprimer, effacer, etc.)
+  const creerBoutonAction = (onClick, texte, couleur = '#333', estDanger = false) => (
+    <button 
+      onClick={onClick}
+      style={{
+        ...styles.boutonListeDernier,
+        color: estDanger ? '#f44336' : couleur,
+        borderBottom: '1px solid #f0f0f0'
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.background = estDanger ? '#ffebee' : '#f1f8e9'}
+      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+    >
+      {texte}
+    </button>
+  );
+  
+  // ✅ Fonction unifiée pour créer les boutons dans les sections d'outils
+  const creerBoutonOutil = (onClick, icone, texte, titre, estDernier = false) => (
+    <button 
+      onClick={onClick}
+      title={titre}
+      style={estDernier ? styles.boutonListeDernier : styles.boutonListe}
+      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+    >
+      {icone} {texte}
+    </button>
+  );
+  
+  // ✅ Fonction unifiée pour créer les en-têtes de sections repliables
+  const creerEnTeteSection = (ouvert, setOuvert, titre, couleur) => (
+    <button
+      onClick={() => setOuvert(!ouvert)}
+      style={styles.boutonSection(ouvert, couleur)}
+    >
+      <span>{titre}</span>
+      <span style={{ fontSize: '1rem' }}>{ouvert ? '▼' : '▶'}</span>
+    </button>
+  );
   
   // Gérer la sélection d'objets
   useEffect(() => {
@@ -57,7 +227,8 @@ function PanneauLateral({
       const obj = e.selected?.[0];
       if (obj && (obj.customType === 'maison' || obj.customType === 'citerne' || 
                   obj.customType === 'caisson-eau' || obj.customType === 'canalisation' || 
-                  obj.customType === 'cloture')) {
+                  obj.customType === 'cloture' || obj.customType === 'terrasse' || 
+                  obj.customType === 'paves')) {
         setObjetSelectionne(obj);
       } else {
         setObjetSelectionne(null);
@@ -200,247 +371,591 @@ function PanneauLateral({
               </div>
               
               {objetSelectionne.customType === 'maison' && (
-                <div className="config-stack">
-                  <div className="config-row">
-                    <label>Rotation</label>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="360" 
-                      step="5"
-                      value={Math.round(objetSelectionne.angle || 0)}
-                      onChange={(e) => updateObjetProp('angle', e.target.value)}
-                    />
-                    <span className="unit">°</span>
+                <>
+                  {/* POSITION */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setPositionOuvert(!positionOuvert)}
+                      style={styles.boutonSection(positionOuvert, '#2196f3')}
+                    >
+                      <span>📍 Position</span>
+                      <span style={{ fontSize: '1rem' }}>{positionOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {positionOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Rotation</label>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="360" 
+                            step="5"
+                            value={Math.round(objetSelectionne.angle || 0)}
+                            onChange={(e) => updateObjetProp('angle', e.target.value)}
+                          />
+                          <span className="unit">°</span>
+                        </div>
+                        <div className="config-row">
+                          <label>Élévation rel. sol</label>
+                          <input 
+                            type="number" 
+                            min="-5" 
+                            max="10" 
+                            step="0.1"
+                            value={objetSelectionne.elevationSol || 0}
+                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="config-row">
-                    <label>Hauteur bâtiment</label>
-                    <input 
-                      type="number" 
-                      min="3" 
-                      max="15" 
-                      step="0.5"
-                      value={objetSelectionne.hauteurBatiment || 7}
-                      onChange={(e) => updateObjetProp('hauteurBatiment', e.target.value)}
-                    />
-                    <span className="unit">m</span>
+
+                  {/* DIMENSIONS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setDimensionsOuvert(!dimensionsOuvert)}
+                      style={styles.boutonSection(dimensionsOuvert, '#4caf50')}
+                    >
+                      <span>📏 Dimensions</span>
+                      <span style={{ fontSize: '1rem' }}>{dimensionsOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {dimensionsOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Hauteur bâtiment</label>
+                          <input 
+                            type="number" 
+                            min="3" 
+                            max="15" 
+                            step="0.5"
+                            value={objetSelectionne.hauteurBatiment || 7}
+                            onChange={(e) => updateObjetProp('hauteurBatiment', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="config-row">
-                    <label>Prof. fondations</label>
-                    <input 
-                      type="number" 
-                      min="0.5" 
-                      max="3" 
-                      step="0.1"
-                      value={objetSelectionne.profondeurFondations || 1.2}
-                      onChange={(e) => updateObjetProp('profondeurFondations', e.target.value)}
-                    />
-                    <span className="unit">m</span>
+
+                  {/* PROFONDEURS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
+                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
+                    >
+                      <span>⬇️ Profondeurs</span>
+                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {profondeursOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Prof. fondations</label>
+                          <input 
+                            type="number" 
+                            min="-2" 
+                            max="3" 
+                            step="0.1"
+                            value={objetSelectionne.profondeurFondations || 1.2}
+                            onChange={(e) => updateObjetProp('profondeurFondations', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </>
               )}
               
               {objetSelectionne.customType === 'citerne' && (
-                <div className="config-stack">
-                  <div className="config-row">
-                    <label>Diamètre</label>
-                    <input 
-                      type="number" 
-                      min="0.5" 
-                      max="3" 
-                      step="0.1"
-                      value={objetSelectionne.diametre || 1.5}
-                      onChange={(e) => updateObjetProp('diametre', e.target.value)}
-                    />
-                    <span className="unit">m</span>
+                <>
+                  {/* DIMENSIONS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setDimensionsOuvert(!dimensionsOuvert)}
+                      style={styles.boutonSection(dimensionsOuvert, '#4caf50')}
+                    >
+                      <span>📏 Dimensions</span>
+                      <span style={{ fontSize: '1rem' }}>{dimensionsOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {dimensionsOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Diamètre</label>
+                          <input 
+                            type="number" 
+                            min="0.5" 
+                            max="3" 
+                            step="0.1"
+                            value={objetSelectionne.diametre || 1.5}
+                            onChange={(e) => updateObjetProp('diametre', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                        <div className="info-box">
+                          💧 Volume : {(Math.PI * Math.pow((objetSelectionne.diametre || 1.5) / 2, 2) * (objetSelectionne.profondeur || 2.5)).toFixed(1)}m³
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="config-row">
-                    <label>Profondeur</label>
-                    <input 
-                      type="number" 
-                      min="1" 
-                      max="5" 
-                      step="0.5"
-                      value={objetSelectionne.profondeur || 2.5}
-                      onChange={(e) => updateObjetProp('profondeur', e.target.value)}
-                    />
-                    <span className="unit">m</span>
+
+                  {/* PROFONDEURS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
+                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
+                    >
+                      <span>⬇️ Profondeurs</span>
+                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {profondeursOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Profondeur</label>
+                          <input 
+                            type="number" 
+                            min="1" 
+                            max="5" 
+                            step="0.5"
+                            value={objetSelectionne.profondeur || 2.5}
+                            onChange={(e) => updateObjetProp('profondeur', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="info-box">
-                    💧 Volume : {(Math.PI * Math.pow((objetSelectionne.diametre || 1.5) / 2, 2) * (objetSelectionne.profondeur || 2.5)).toFixed(1)}m³
+
+                  {/* POSITION */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setPositionOuvert(!positionOuvert)}
+                      style={styles.boutonSection(positionOuvert, '#2196f3')}
+                    >
+                      <span>📍 Position</span>
+                      <span style={{ fontSize: '1rem' }}>{positionOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {positionOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>⚠️ Élévation sol (m)</label>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="5" 
+                            step="0.1"
+                            value={objetSelectionne.elevationSol || 0}
+                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </>
               )}
               
               {objetSelectionne.customType === 'caisson-eau' && (
-                <div className="config-stack">
-                  <div className="config-row">
-                    <label>Rotation</label>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="360" 
-                      step="5"
-                      value={Math.round(objetSelectionne.angle || 0)}
-                      onChange={(e) => updateObjetProp('angle', e.target.value)}
-                    />
-                    <span className="unit">°</span>
+                <>
+                  {/* POSITION */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setPositionOuvert(!positionOuvert)}
+                      style={styles.boutonSection(positionOuvert, '#2196f3')}
+                    >
+                      <span>📍 Position</span>
+                      <span style={{ fontSize: '1rem' }}>{positionOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {positionOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Rotation</label>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="360" 
+                            step="5"
+                            value={Math.round(objetSelectionne.angle || 0)}
+                            onChange={(e) => updateObjetProp('angle', e.target.value)}
+                          />
+                          <span className="unit">°</span>
+                        </div>
+                        <div className="config-row">
+                          <label>⚠️ Élévation sol (m)</label>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="5" 
+                            step="0.1"
+                            value={objetSelectionne.elevationSol || 0}
+                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="config-row">
-                    <label>Largeur</label>
-                    <input 
-                      type="number" 
-                      min="1" 
-                      max="10" 
-                      step="0.5"
-                      value={objetSelectionne.largeurCaisson || 5}
-                      onChange={(e) => updateObjetProp('largeurCaisson', e.target.value)}
-                    />
-                    <span className="unit">m</span>
+
+                  {/* DIMENSIONS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setDimensionsOuvert(!dimensionsOuvert)}
+                      style={styles.boutonSection(dimensionsOuvert, '#4caf50')}
+                    >
+                      <span>📏 Dimensions</span>
+                      <span style={{ fontSize: '1rem' }}>{dimensionsOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {dimensionsOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Largeur</label>
+                          <input 
+                            type="number" 
+                            min="1" 
+                            max="10" 
+                            step="0.5"
+                            value={objetSelectionne.largeurCaisson || 5}
+                            onChange={(e) => updateObjetProp('largeurCaisson', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                        <div className="config-row">
+                          <label>Profondeur</label>
+                          <input 
+                            type="number" 
+                            min="1" 
+                            max="10" 
+                            step="0.5"
+                            value={objetSelectionne.profondeurCaisson || 3}
+                            onChange={(e) => updateObjetProp('profondeurCaisson', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                        <div className="config-row">
+                          <label>Hauteur</label>
+                          <input 
+                            type="number" 
+                            min="0.5" 
+                            max="3" 
+                            step="0.1"
+                            value={objetSelectionne.hauteurCaisson || 1}
+                            onChange={(e) => updateObjetProp('hauteurCaisson', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                        <div className="info-box">
+                          💧 Volume : {((objetSelectionne.largeurCaisson || 5) * (objetSelectionne.profondeurCaisson || 3) * (objetSelectionne.hauteurCaisson || 1)).toFixed(1)}m³
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="config-row">
-                    <label>Profondeur</label>
-                    <input 
-                      type="number" 
-                      min="1" 
-                      max="10" 
-                      step="0.5"
-                      value={objetSelectionne.profondeurCaisson || 3}
-                      onChange={(e) => updateObjetProp('profondeurCaisson', e.target.value)}
-                    />
-                    <span className="unit">m</span>
+
+                  {/* PROFONDEURS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
+                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
+                    >
+                      <span>⬇️ Profondeurs</span>
+                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {profondeursOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Prof. enterrée</label>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="3" 
+                            step="0.1"
+                            value={objetSelectionne.profondeurEnterree || 1}
+                            onChange={(e) => updateObjetProp('profondeurEnterree', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="config-row">
-                    <label>Hauteur</label>
-                    <input 
-                      type="number" 
-                      min="0.5" 
-                      max="3" 
-                      step="0.1"
-                      value={objetSelectionne.hauteurCaisson || 1}
-                      onChange={(e) => updateObjetProp('hauteurCaisson', e.target.value)}
-                    />
-                    <span className="unit">m</span>
-                  </div>
-                  <div className="config-row">
-                    <label>Prof. enterrée</label>
-                    <input 
-                      type="number" 
-                      min="0.5" 
-                      max="3" 
-                      step="0.1"
-                      value={objetSelectionne.profondeurEnterree || 1}
-                      onChange={(e) => updateObjetProp('profondeurEnterree', e.target.value)}
-                    />
-                    <span className="unit">m</span>
-                  </div>
-                  <div className="info-box">
-                    💧 Volume : {((objetSelectionne.largeurCaisson || 5) * (objetSelectionne.profondeurCaisson || 3) * (objetSelectionne.hauteurCaisson || 1)).toFixed(1)}m³
-                  </div>
-                </div>
+                </>
               )}
               
               {objetSelectionne.customType === 'terrasse' && (
-                <div className="objet-controls">
-                  <div className="dimension-control">
-                    <label>Rotation (°)</label>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="360" 
-                      step="5"
-                      value={Math.round(objetSelectionne.angle || 0)}
-                      onChange={(e) => updateObjetProp('angle', e.target.value)}
-                    />
+                <>
+                  {/* POSITION */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setPositionOuvert(!positionOuvert)}
+                      style={styles.boutonSection(positionOuvert, '#2196f3')}
+                    >
+                      <span>📍 Position</span>
+                      <span style={{ fontSize: '1rem' }}>{positionOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {positionOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Rotation</label>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="360" 
+                            step="5"
+                            value={Math.round(objetSelectionne.angle || 0)}
+                            onChange={(e) => updateObjetProp('angle', e.target.value)}
+                          />
+                          <span className="unit">°</span>
+                        </div>
+                        <div className="config-row">
+                          <label>⚠️ Élévation sol (m)</label>
+                          <input 
+                            type="number" 
+                            min="-2" 
+                            max="2" 
+                            step="0.1"
+                            value={objetSelectionne.elevationSol || 0}
+                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="dimension-control">
-                    <label>Hauteur dalle (m)</label>
-                    <input 
-                      type="number" 
-                      min="0.1" 
-                      max="1" 
-                      step="0.05"
-                      value={objetSelectionne.hauteurDalle || 0.15}
-                      onChange={(e) => updateObjetProp('hauteurDalle', e.target.value)}
-                    />
+
+                  {/* DIMENSIONS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setDimensionsOuvert(!dimensionsOuvert)}
+                      style={styles.boutonSection(dimensionsOuvert, '#4caf50')}
+                    >
+                      <span>📏 Dimensions</span>
+                      <span style={{ fontSize: '1rem' }}>{dimensionsOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {dimensionsOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Hauteur dalle</label>
+                          <input 
+                            type="number" 
+                            min="-1" 
+                            max="1" 
+                            step="0.05"
+                            value={objetSelectionne.hauteurDalle || 0.15}
+                            onChange={(e) => updateObjetProp('hauteurDalle', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="dimension-control">
-                    <label>Prof. fondation (m)</label>
-                    <input 
-                      type="number" 
-                      min="0.2" 
-                      max="1" 
-                      step="0.1"
-                      value={objetSelectionne.profondeurFondation || 0.3}
-                      onChange={(e) => updateObjetProp('profondeurFondation', e.target.value)}
-                    />
+
+                  {/* PROFONDEURS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
+                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
+                    >
+                      <span>⬇️ Profondeurs</span>
+                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {profondeursOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Prof. fondation</label>
+                          <input 
+                            type="number" 
+                            min="-1" 
+                            max="1" 
+                            step="0.1"
+                            value={objetSelectionne.profondeurFondation || 0.3}
+                            onChange={(e) => updateObjetProp('profondeurFondation', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </>
               )}
               
               {objetSelectionne.customType === 'paves' && (
-                <div className="objet-controls">
-                  <div className="dimension-control">
-                    <label>Rotation (°)</label>
-                    <input 
-                      type="number" 
-                      min="0" 
-                      max="360" 
-                      step="5"
-                      value={Math.round(objetSelectionne.angle || 0)}
-                      onChange={(e) => updateObjetProp('angle', e.target.value)}
-                    />
+                <>
+                  {/* POSITION */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setPositionOuvert(!positionOuvert)}
+                      style={styles.boutonSection(positionOuvert, '#2196f3')}
+                    >
+                      <span>📍 Position</span>
+                      <span style={{ fontSize: '1rem' }}>{positionOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {positionOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Rotation</label>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="360" 
+                            step="5"
+                            value={Math.round(objetSelectionne.angle || 0)}
+                            onChange={(e) => updateObjetProp('angle', e.target.value)}
+                          />
+                          <span className="unit">°</span>
+                        </div>
+                        <div className="config-row">
+                          <label>⚠️ Élévation sol (m)</label>
+                          <input 
+                            type="number" 
+                            min="-2" 
+                            max="2" 
+                            step="0.1"
+                            value={objetSelectionne.elevationSol || 0}
+                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="dimension-control">
-                    <label>Hauteur pavés (m)</label>
-                    <input 
-                      type="number" 
-                      min="0.05" 
-                      max="0.5" 
-                      step="0.05"
-                      value={objetSelectionne.hauteurPaves || 0.08}
-                      onChange={(e) => updateObjetProp('hauteurPaves', e.target.value)}
-                    />
+
+                  {/* DIMENSIONS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setDimensionsOuvert(!dimensionsOuvert)}
+                      style={styles.boutonSection(dimensionsOuvert, '#4caf50')}
+                    >
+                      <span>📏 Dimensions</span>
+                      <span style={{ fontSize: '1rem' }}>{dimensionsOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {dimensionsOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Hauteur pavés</label>
+                          <input 
+                            type="number" 
+                            min="-0.5" 
+                            max="0.5" 
+                            step="0.05"
+                            value={objetSelectionne.hauteurPaves || 0.08}
+                            onChange={(e) => updateObjetProp('hauteurPaves', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="dimension-control">
-                    <label>Prof. gravier (m)</label>
-                    <input 
-                      type="number" 
-                      min="0.1" 
-                      max="0.5" 
-                      step="0.05"
-                      value={objetSelectionne.profondeurGravier || 0.15}
-                      onChange={(e) => updateObjetProp('profondeurGravier', e.target.value)}
-                    />
+
+                  {/* PROFONDEURS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
+                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
+                    >
+                      <span>⬇️ Profondeurs</span>
+                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {profondeursOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Prof. gravier</label>
+                          <input 
+                            type="number" 
+                            min="-0.5" 
+                            max="0.5" 
+                            step="0.05"
+                            value={objetSelectionne.profondeurGravier || 0.15}
+                            onChange={(e) => updateObjetProp('profondeurGravier', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </>
               )}
               
               {objetSelectionne.customType === 'canalisation' && (
-                <div className="objet-controls">
-                  <div className="dimension-control">
-                    <label>Profondeur (m)</label>
-                    <input 
-                      type="number" 
-                      min="0.3" 
-                      max="2" 
-                      step="0.1"
-                      value={objetSelectionne.profondeur || 0.6}
-                      onChange={(e) => updateObjetProp('profondeur', e.target.value)}
-                    />
+                <>
+                  {/* POSITION */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setPositionOuvert(!positionOuvert)}
+                      style={styles.boutonSection(positionOuvert, '#2196f3')}
+                    >
+                      <span>📍 Position</span>
+                      <span style={{ fontSize: '1rem' }}>{positionOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {positionOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>⚠️ Élévation sol (m)</label>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="5" 
+                            step="0.1"
+                            value={objetSelectionne.elevationSol || 0}
+                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="dimension-control">
-                    <label>Diamètre (m)</label>
-                    <input 
-                      type="number" 
-                      min="0.05" 
-                      max="0.5" 
-                      step="0.05"
-                      value={objetSelectionne.diametreCanalisation || 0.1}
-                      onChange={(e) => updateObjetProp('diametreCanalisation', e.target.value)}
-                    />
+
+                  {/* DIMENSIONS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setDimensionsOuvert(!dimensionsOuvert)}
+                      style={styles.boutonSection(dimensionsOuvert, '#4caf50')}
+                    >
+                      <span>📏 Dimensions</span>
+                      <span style={{ fontSize: '1rem' }}>{dimensionsOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {dimensionsOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Diamètre</label>
+                          <input 
+                            type="number" 
+                            min="0.05" 
+                            max="0.5" 
+                            step="0.05"
+                            value={objetSelectionne.diametreCanalisation || 0.1}
+                            onChange={(e) => updateObjetProp('diametreCanalisation', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+
+                  {/* PROFONDEURS */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
+                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
+                    >
+                      <span>⬇️ Profondeurs</span>
+                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {profondeursOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>⚠️ Profondeur</label>
+                          <input 
+                            type="number" 
+                            min="0.3" 
+                            max="2" 
+                            step="0.1"
+                            value={objetSelectionne.profondeur || 0.6}
+                            onChange={(e) => updateObjetProp('profondeur', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
               
               {objetSelectionne.customType === 'cloture' && (
@@ -1011,6 +1526,24 @@ function PanneauLateral({
                     {arbresAPlanter.map((arbre, index) => (
                       <div 
                         key={`arbre-${arbre.id}-${index}`}
+                        onMouseEnter={() => {
+                          // Trouver l'objet arbre sur le canvas et l'encadrer
+                          const arbreObjet = canvas.getObjects().find(obj => 
+                            obj.customType === 'arbre-a-planter' && 
+                            obj.arbreData?.id === arbre.id &&
+                            obj.arbreIndex === index
+                          );
+                          highlightObject(arbreObjet);
+                        }}
+                        onMouseLeave={() => {
+                          // Retirer l'encadrement de l'arbre
+                          const arbreObjet = canvas.getObjects().find(obj => 
+                            obj.customType === 'arbre-a-planter' && 
+                            obj.arbreData?.id === arbre.id &&
+                            obj.arbreIndex === index
+                          );
+                          unhighlightObject(arbreObjet);
+                        }}
                         style={{
                           display: 'flex',
                           justifyContent: 'space-between',
@@ -1020,7 +1553,8 @@ function PanneauLateral({
                           background: 'white',
                           borderRadius: '3px',
                           fontSize: '0.75rem',
-                          border: '1px solid #c8e6c9'
+                          border: '1px solid #c8e6c9',
+                          cursor: 'pointer'
                         }}
                       >
                         <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
@@ -1038,8 +1572,6 @@ function PanneauLateral({
                             fontSize: '0.7rem',
                             transition: 'transform 0.2s'
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                           title="Retirer cet arbre"
                         >
                           🗑️
@@ -1070,6 +1602,8 @@ function PanneauLateral({
                       return (
                         <div 
                           key={`objet-${obj.customType}-${index}`}
+                          onMouseEnter={() => highlightObject(obj)}
+                          onMouseLeave={() => unhighlightObject(obj)}
                           style={{
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -1079,34 +1613,33 @@ function PanneauLateral({
                             background: 'white',
                             borderRadius: '3px',
                             fontSize: '0.75rem',
-                            border: '1px solid #e0e0e0'
+                            border: '1px solid #e0e0e0',
+                            cursor: 'pointer'
                           }}
                         >
                           <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
                             {icone} {nom}
                           </span>
-          <button 
-                            onClick={() => {
-                              canvas.remove(obj);
-                              canvas.renderAll();
-                              onExporterPlan && onExporterPlan(canvas);
-                            }}
-                            style={{
-                              background: '#f44336',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '3px',
-                              padding: '0.2rem 0.4rem',
-                              cursor: 'pointer',
-                              fontSize: '0.7rem',
-                              transition: 'transform 0.2s'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                            title={`Supprimer ${nom}`}
-                          >
-                            🗑️
-          </button>
+                        <button 
+                          onClick={() => {
+                            canvas.remove(obj);
+                            canvas.renderAll();
+                            onExporterPlan && onExporterPlan(canvas);
+                          }}
+                          style={{
+                            background: '#f44336',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '3px',
+                            padding: '0.2rem 0.4rem',
+                            cursor: 'pointer',
+                            fontSize: '0.7rem',
+                            transition: 'transform 0.2s'
+                          }}
+                          title={`Supprimer ${nom}`}
+                        >
+                          🗑️
+                        </button>
               </div>
                       );
                     })}

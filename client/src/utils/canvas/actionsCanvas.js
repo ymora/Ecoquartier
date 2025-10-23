@@ -198,11 +198,13 @@ export const trouverPositionValide = (canvas, arbre, largeur, hauteur, index, ec
       let isValid = true;
       let score = 1000;
 
-      const maison = canvas.getObjects().find(obj => obj.customType === 'maison');
-      if (maison) {
+      // Vérifier distance avec toutes les maisons
+      const maisons = canvas.getObjects().filter(obj => obj.customType === 'maison');
+      for (const maison of maisons) {
         const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
         if (distMaison < distanceFondations) {
           isValid = false;
+          break;
         } else {
           score += distMaison * 10;
         }

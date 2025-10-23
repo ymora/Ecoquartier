@@ -197,6 +197,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       !obj.isDimensionBox &&
       !obj.isAideButton &&
       !obj.isImageFond &&
+      !obj.isCenterMark &&
       !obj.measureLabel
     );
     objets.forEach(obj => canvas.remove(obj));
@@ -387,12 +388,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   // ========== HOOKS PERSONNALISÉS ==========
   
-  // Fonction pour charger le plan sauvegardé - OBSOLÈTE
-  // Le plan se charge maintenant automatiquement via le système de persistance
-  const chargerPlanSauvegarde = useCallback(() => {
-    // Fonction vide - le chargement est automatique
-  }, []);
-
   // Initialisation du canvas
   useCanvasInit({
     canvasRef,
@@ -400,8 +395,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     echelle,
     ajouterGrille,
     ajouterIndicateurSud,
-    chargerPlanDemo,
-    chargerPlanSauvegarde // ✅ Ajout du chargement automatique
+    chargerPlanDemo
   });
 
   // Event listeners du canvas
@@ -547,11 +541,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     };
     
     const extractedData = {
-      maison: canvas.getObjects().find(o => o.customType === 'maison' && objetValide(o)),
+      maisons: canvas.getObjects().filter(o => o.customType === 'maison' && objetValide(o)),
       citernes: canvas.getObjects().filter(o => o.customType === 'citerne' && objetValide(o)),
       canalisations: canvas.getObjects().filter(o => o.customType === 'canalisation' && objetValide(o)),
       clotures: canvas.getObjects().filter(o => o.customType === 'cloture' && objetValide(o)),
       terrasses: canvas.getObjects().filter(o => (o.customType === 'paves' || o.customType === 'terrasse') && objetValide(o)),
+      caissonsEau: canvas.getObjects().filter(o => o.customType === 'caisson-eau' && objetValide(o)),
       arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter' && objetValide(o)),
       echelle: echelle3D
     };
@@ -628,19 +623,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const newLeft = objetData.newPosition.x * echelle;
     const newTop = objetData.newPosition.z * echelle;
     
-    // VALIDATION : Vérifier collision avec la maison
-    const maison = canvas.getObjects().find(o => o.customType === 'maison');
-    if (maison && objetData.type !== 'maison') {
-      const maisonWidth = maison.getScaledWidth ? maison.getScaledWidth() : maison.width;
-      const maisonHeight = maison.getScaledHeight ? maison.getScaledHeight() : maison.height;
-      
-      const maisonBounds = {
-        left: maison.left,
-        right: maison.left + maisonWidth,
-        top: maison.top,
-        bottom: maison.top + maisonHeight
-      };
-      
+    // VALIDATION : Vérifier collision avec les maisons
+    const maisons = canvas.getObjects().filter(o => o.customType === 'maison');
+    if (maisons.length > 0 && objetData.type !== 'maison') {
       // Taille de l'objet
       let objetSize = 50; // Default
       if (objet.radius) {
@@ -649,18 +634,31 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         objetSize = Math.max(objet.getScaledWidth(), objet.getScaledHeight());
       }
       
-      // Vérifier si l'objet serait à l'intérieur de la maison
-      const isInsideMaison = 
-        newLeft + objetSize / 2 > maisonBounds.left &&
-        newLeft - objetSize / 2 < maisonBounds.right &&
-        newTop + objetSize / 2 > maisonBounds.top &&
-        newTop - objetSize / 2 < maisonBounds.bottom;
-      
-      if (isInsideMaison) {
-        logger.warn('Canvas', 'Impossible: objet à l\'intérieur de la maison');
-        // Resynchroniser pour annuler le déplacement en 3D
-        throttledSync();
-        return; // Bloquer le déplacement
+      // Vérifier collision avec chaque maison
+      for (const maison of maisons) {
+        const maisonWidth = maison.getScaledWidth ? maison.getScaledWidth() : maison.width;
+        const maisonHeight = maison.getScaledHeight ? maison.getScaledHeight() : maison.height;
+        
+        const maisonBounds = {
+          left: maison.left,
+          right: maison.left + maisonWidth,
+          top: maison.top,
+          bottom: maison.top + maisonHeight
+        };
+        
+        // Vérifier si l'objet serait à l'intérieur de la maison
+        const isInsideMaison = 
+          newLeft + objetSize / 2 > maisonBounds.left &&
+          newLeft - objetSize / 2 < maisonBounds.right &&
+          newTop + objetSize / 2 > maisonBounds.top &&
+          newTop - objetSize / 2 < maisonBounds.bottom;
+        
+        if (isInsideMaison) {
+          logger.warn('Canvas', 'Impossible: objet à l\'intérieur d\'une maison');
+          // Resynchroniser pour annuler le déplacement en 3D
+          throttledSync();
+          return; // Bloquer le déplacement
+        }
       }
     }
     
@@ -976,7 +974,21 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                 onClick={() => {
                   const actif = fabricCanvasRef.current?.getActiveObject();
                   if (actif && !actif.isGridLine && !actif.isBoussole && !actif.isImageFond) {
-                    actif.clone((cloned) => {
+                    actif.clone().then((cloned) => {
+                      // Copier les propriétés custom manuellement
+                      if (actif.arbreData) {
+                        cloned.arbreData = { ...actif.arbreData };
+                      }
+                      if (actif.tailles) {
+                        cloned.tailles = { ...actif.tailles };
+                      }
+                      if (actif.iconeType) {
+                        cloned.iconeType = actif.iconeType;
+                      }
+                      if (actif.validationStatus) {
+                        cloned.validationStatus = actif.validationStatus;
+                      }
+                      
                       cloned.set({
                         left: actif.left + echelle,
                         top: actif.top + echelle
@@ -984,12 +996,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                       fabricCanvasRef.current.add(cloned);
                       fabricCanvasRef.current.setActiveObject(cloned);
                       fabricCanvasRef.current.renderAll();
-                      // Utiliser setTimeout pour éviter l'erreur "t2 is not iterable"
+                      
+                      // Utiliser setTimeout pour éviter les conflits
                       setTimeout(() => {
                         exporterPlan(fabricCanvasRef.current);
                         revaliderTous(fabricCanvasRef.current);
                       }, 50);
-                    }, ['arbreData']); // Inclure arbreData dans le clonage
+                    });
                   }
                 }}
                 title="Dupliquer"
