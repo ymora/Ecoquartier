@@ -1,6 +1,6 @@
 /* Panneau latéral avec onglets - OPTIMISÉ COMPACT + CONTOUR */
 .panneau-lateral {
-  width: 260px;
+  width: 280px;
   flex-shrink: 0;
   background: white;
   border: 3px solid var(--accent-primary);
@@ -371,7 +371,7 @@
 /* Responsive */
 @media (max-width: 1024px) {
   .panneau-lateral {
-    width: 240px;
+    width: 260px;
   }
   
   .outils-grid {
@@ -381,7 +381,7 @@
 
 @media (max-width: 768px) {
   .panneau-lateral {
-    width: 200px;
+    width: 220px;
   }
   
   .btn-outil {
