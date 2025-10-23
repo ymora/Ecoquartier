@@ -14,7 +14,7 @@ function Caisson3D({
   // Le caisson doit être positionné sous terre avec le haut à la profondeur enterrée
   
   return (
-    <group position={[position[0], elevationSol - profondeurEnterree, position[2]]} rotation={[0, angle * Math.PI / 180, 0]}>
+    <group position={[position[0], elevationSol - profondeurEnterree, position[2]]} rotation={[0, -(angle * Math.PI / 180), 0]}>
       {/* Caisson rectangulaire enterré */}
       <mesh castShadow receiveShadow>
         <boxGeometry args={[largeur, hauteur, profondeur]} />

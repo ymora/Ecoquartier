@@ -12,8 +12,10 @@ function Maison3D({
 }) {
   const hauteurToit = 2.5;
   
-  // Convertir l'angle en radians (THREE.js utilise des radians)
-  const angleRad = (angle * Math.PI) / 180;
+  // Convertir l'angle en radians et inverser pour correspondre à Fabric.js
+  // Fabric.js : angle positif = rotation horaire (vers le bas)
+  // Three.js : angle positif = rotation antihoraire (vers le haut)
+  const angleRad = -(angle * Math.PI) / 180;
   
   // Créer un toit à 2 pans réaliste
   const createToitGeometry = () => {

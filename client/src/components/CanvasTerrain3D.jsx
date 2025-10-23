@@ -543,7 +543,7 @@ function CanvasTerrain3D({
                 terrasse.elevationSol || 0, // Positionner à l'élévation du sol
                 terrasse.position[2]
               ]}
-              rotation={[0, terrasse.angle ? terrasse.angle * Math.PI / 180 : 0, 0]}
+              rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
               receiveShadow
               castShadow
             >
