@@ -42,6 +42,7 @@ function Sol3D({
         rotation={[-Math.PI / 2, 0, 0]} 
         position={[0, 0.07, 0]} 
         receiveShadow
+        raycast={() => null} // ✅ Désactiver l'interaction pour permettre clic sur objets en dessous
       >
         <planeGeometry args={[largeur, hauteur]} />
         <meshStandardMaterial 
@@ -54,7 +55,10 @@ function Sol3D({
       {couches.map((couche, index) => (
         <group key={index}>
           {/* Couche de sol - ✅ Transparence augmentée pour voir les racines */}
-          <mesh position={[0, couche.positionY, 0]}>
+          <mesh 
+            position={[0, couche.positionY, 0]}
+            raycast={() => null} // ✅ Désactiver l'interaction pour permettre clic sur objets en dessous
+          >
             <boxGeometry args={[largeur, couche.profondeurM, hauteur]} />
             <meshStandardMaterial 
               color={couche.couleur}
@@ -70,7 +74,11 @@ function Sol3D({
           {/* Bordure visible entre les couches (sauf pour la dernière) - Masquée si transparent */}
           {!transparent && index < couches.length - 1 && (
             <>
-              <mesh position={[0, -(couche.profondeurCumuleeAvant + couche.profondeurM), 0]} rotation={[-Math.PI / 2, 0, 0]}>
+              <mesh 
+                position={[0, -(couche.profondeurCumuleeAvant + couche.profondeurM), 0]} 
+                rotation={[-Math.PI / 2, 0, 0]}
+                raycast={() => null}
+              >
                 <planeGeometry args={[largeur, hauteur]} />
                 <meshBasicMaterial 
                   color="#4a3728"
@@ -80,11 +88,19 @@ function Sol3D({
               </mesh>
               
               {/* Lignes orange de séparation */}
-              <mesh position={[0, -(couche.profondeurCumuleeAvant + couche.profondeurM), largeur / 2]} rotation={[0, 0, 0]}>
+              <mesh 
+                position={[0, -(couche.profondeurCumuleeAvant + couche.profondeurM), largeur / 2]} 
+                rotation={[0, 0, 0]}
+                raycast={() => null}
+              >
                 <boxGeometry args={[largeur, 0.05, 0.1]} />
                 <meshBasicMaterial color="#ff9800" />
               </mesh>
-              <mesh position={[0, -(couche.profondeurCumuleeAvant + couche.profondeurM), -largeur / 2]} rotation={[0, 0, 0]}>
+              <mesh 
+                position={[0, -(couche.profondeurCumuleeAvant + couche.profondeurM), -largeur / 2]} 
+                rotation={[0, 0, 0]}
+                raycast={() => null}
+              >
                 <boxGeometry args={[largeur, 0.05, 0.1]} />
                 <meshBasicMaterial color="#ff9800" />
               </mesh>
