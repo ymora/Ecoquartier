@@ -57,7 +57,7 @@ function PanneauLateral({
   const arbres = plantesData.filter(p => p.type === 'arbre');
   const arbustes = plantesData.filter(p => !p.type || p.type === 'arbuste');
   
-  // ✅ Fonction unifiée pour encadrer visuellement un objet
+  // ✅ Fonction unifiée pour encadrer visuellement un objet (rouge pour suppression)
   const highlightObject = (obj) => {
     if (!obj) return;
     
@@ -65,46 +65,46 @@ function PanneauLateral({
       // C'est un groupe, appliquer aux sous-objets qui ont un stroke
       obj._objects.forEach(subObj => {
         if (subObj.stroke) {
-          // Sauvegarder les propriétés originales
-          subObj.__originalStroke = subObj.stroke;
-          subObj.__originalStrokeWidth = subObj.strokeWidth;
-          subObj.__originalStrokeDashArray = subObj.strokeDashArray;
-          // Appliquer le rouge épais sans pointillés
+          // Sauvegarder l'état ACTUEL (qui peut être vert si sélectionné)
+          subObj.__hoverStroke = subObj.stroke;
+          subObj.__hoverStrokeWidth = subObj.strokeWidth;
+          subObj.__hoverStrokeDashArray = subObj.strokeDashArray;
+          // Appliquer le rouge épais sans pointillés (priorité sur le vert)
           subObj.set({ strokeWidth: 5, stroke: '#f44336', strokeDashArray: null });
         }
       });
     } else {
       // Objet simple
-      obj.__originalStroke = obj.stroke;
-      obj.__originalStrokeWidth = obj.strokeWidth;
-      obj.__originalStrokeDashArray = obj.strokeDashArray;
+      obj.__hoverStroke = obj.stroke;
+      obj.__hoverStrokeWidth = obj.strokeWidth;
+      obj.__hoverStrokeDashArray = obj.strokeDashArray;
       obj.set({ strokeWidth: 5, stroke: '#f44336', strokeDashArray: null });
     }
     canvas.renderAll();
   };
   
-  // ✅ Fonction unifiée pour retirer l'encadrement
+  // ✅ Fonction unifiée pour retirer l'encadrement (rouge)
   const unhighlightObject = (obj) => {
     if (!obj) return;
     
     if (obj._objects && obj._objects.length > 0) {
-      // C'est un groupe, restaurer les couleurs originales
+      // C'est un groupe, restaurer l'état précédent
       obj._objects.forEach(subObj => {
-        if (subObj.stroke && subObj.__originalStroke) {
+        if (subObj.stroke && subObj.__hoverStroke) {
           subObj.set({ 
-            strokeWidth: subObj.__originalStrokeWidth || 3, 
-            stroke: subObj.__originalStroke,
-            strokeDashArray: subObj.__originalStrokeDashArray
+            strokeWidth: subObj.__hoverStrokeWidth || 3, 
+            stroke: subObj.__hoverStroke,
+            strokeDashArray: subObj.__hoverStrokeDashArray
           });
         }
       });
     } else {
       // Objet simple
-      if (obj.__originalStroke) {
+      if (obj.__hoverStroke) {
         obj.set({ 
-          strokeWidth: obj.__originalStrokeWidth || 3, 
-          stroke: obj.__originalStroke,
-          strokeDashArray: obj.__originalStrokeDashArray
+          strokeWidth: obj.__hoverStrokeWidth || 3, 
+          stroke: obj.__hoverStroke,
+          strokeDashArray: obj.__hoverStrokeDashArray
         });
       }
     }
