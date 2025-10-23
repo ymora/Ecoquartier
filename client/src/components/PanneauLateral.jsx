@@ -2,6 +2,12 @@ import { useState, useEffect, useRef, memo } from 'react';
 import SolInteractif from './SolInteractif';
 import plantesData from '../data/arbustesData';
 import './PanneauLateral.css';
+import { 
+  highlightHover, 
+  unhighlightHover, 
+  highlightSelection, 
+  unhighlightSelection 
+} from '../utils/canvas/highlightUtils';
 
 /**
  * Panneau latéral avec onglets pour outils et configuration
@@ -56,114 +62,6 @@ function PanneauLateral({
   // Séparer arbres et arbustes
   const arbres = plantesData.filter(p => p.type === 'arbre');
   const arbustes = plantesData.filter(p => !p.type || p.type === 'arbuste');
-  
-  // ✅ Fonction unifiée pour encadrer visuellement un objet (rouge pour suppression)
-  const highlightObject = (obj) => {
-    if (!obj) return;
-    
-    if (obj._objects && obj._objects.length > 0) {
-      // C'est un groupe, appliquer aux sous-objets qui ont un stroke
-      obj._objects.forEach(subObj => {
-        if (subObj.stroke) {
-          // Sauvegarder l'état ACTUEL (qui peut être vert si sélectionné)
-          subObj.__hoverStroke = subObj.stroke;
-          subObj.__hoverStrokeWidth = subObj.strokeWidth;
-          subObj.__hoverStrokeDashArray = subObj.strokeDashArray;
-          // Appliquer le rouge épais sans pointillés (priorité sur le vert)
-          subObj.set({ strokeWidth: 5, stroke: '#f44336', strokeDashArray: null });
-        }
-      });
-    } else {
-      // Objet simple
-      obj.__hoverStroke = obj.stroke;
-      obj.__hoverStrokeWidth = obj.strokeWidth;
-      obj.__hoverStrokeDashArray = obj.strokeDashArray;
-      obj.set({ strokeWidth: 5, stroke: '#f44336', strokeDashArray: null });
-    }
-    canvas.renderAll();
-  };
-  
-  // ✅ Fonction unifiée pour retirer l'encadrement (rouge)
-  const unhighlightObject = (obj) => {
-    if (!obj) return;
-    
-    if (obj._objects && obj._objects.length > 0) {
-      // C'est un groupe, restaurer l'état précédent
-      obj._objects.forEach(subObj => {
-        if (subObj.stroke && subObj.__hoverStroke) {
-          subObj.set({ 
-            strokeWidth: subObj.__hoverStrokeWidth || 3, 
-            stroke: subObj.__hoverStroke,
-            strokeDashArray: subObj.__hoverStrokeDashArray
-          });
-        }
-      });
-    } else {
-      // Objet simple
-      if (obj.__hoverStroke) {
-        obj.set({ 
-          strokeWidth: obj.__hoverStrokeWidth || 3, 
-          stroke: obj.__hoverStroke,
-          strokeDashArray: obj.__hoverStrokeDashArray
-        });
-      }
-    }
-    canvas.renderAll();
-  };
-  
-  // ✅ Fonction pour mettre en évidence la sélection (vert)
-  const highlightSelection = (obj) => {
-    if (!obj) return;
-    
-    if (obj._objects && obj._objects.length > 0) {
-      // C'est un groupe, appliquer aux sous-objets qui ont un stroke
-      obj._objects.forEach(subObj => {
-        if (subObj.stroke) {
-          // Sauvegarder les propriétés originales de SÉLECTION (différent de hover)
-          subObj.__selectedStroke = subObj.stroke;
-          subObj.__selectedStrokeWidth = subObj.strokeWidth;
-          subObj.__selectedStrokeDashArray = subObj.strokeDashArray;
-          // Appliquer le vert épais sans pointillés
-          subObj.set({ strokeWidth: 6, stroke: '#4caf50', strokeDashArray: null });
-        }
-      });
-    } else {
-      // Objet simple
-      obj.__selectedStroke = obj.stroke;
-      obj.__selectedStrokeWidth = obj.strokeWidth;
-      obj.__selectedStrokeDashArray = obj.strokeDashArray;
-      obj.set({ strokeWidth: 6, stroke: '#4caf50', strokeDashArray: null });
-    }
-    canvas.renderAll();
-  };
-  
-  // ✅ Fonction pour retirer la mise en évidence de sélection
-  const unhighlightSelection = (obj) => {
-    if (!obj) return;
-    
-    if (obj._objects && obj._objects.length > 0) {
-      // C'est un groupe, restaurer les couleurs originales
-      obj._objects.forEach(subObj => {
-        if (subObj.stroke && subObj.__selectedStroke) {
-          subObj.set({ 
-            strokeWidth: subObj.__selectedStrokeWidth || 3, 
-            stroke: subObj.__selectedStroke,
-            strokeDashArray: subObj.__selectedStrokeDashArray
-          });
-        }
-      });
-    } else {
-      // Objet simple
-      if (obj.__selectedStroke) {
-        obj.set({ 
-          strokeWidth: obj.__selectedStrokeWidth || 3, 
-          stroke: obj.__selectedStroke,
-          strokeDashArray: obj.__selectedStrokeDashArray
-        });
-      }
-    }
-    canvas.renderAll();
-  };
   
   // ✅ Styles unifiés pour les boutons et conteneurs
   const styles = {
@@ -289,16 +187,16 @@ function PanneauLateral({
                   obj.customType === 'arbre-existant')) {
         // Retirer la mise en évidence de l'objet précédent s'il y en a un
         if (objetSelectionnePrecedentRef.current) {
-          unhighlightSelection(objetSelectionnePrecedentRef.current);
+          unhighlightSelection(objetSelectionnePrecedentRef.current, canvas);
         }
         setObjetSelectionne(obj);
         objetSelectionnePrecedentRef.current = obj;
         // Mettre en évidence visuellement l'objet sélectionné (vert)
-        highlightSelection(obj);
+        highlightSelection(obj, canvas);
       } else {
         // Retirer la mise en évidence de l'objet précédent
         if (objetSelectionnePrecedentRef.current) {
-          unhighlightSelection(objetSelectionnePrecedentRef.current);
+          unhighlightSelection(objetSelectionnePrecedentRef.current, canvas);
         }
         setObjetSelectionne(null);
         objetSelectionnePrecedentRef.current = null;
@@ -308,7 +206,7 @@ function PanneauLateral({
     const handleDeselection = () => {
       // Retirer la mise en évidence de l'objet précédent
       if (objetSelectionnePrecedentRef.current) {
-        unhighlightSelection(objetSelectionnePrecedentRef.current);
+        unhighlightSelection(objetSelectionnePrecedentRef.current, canvas);
       }
       setObjetSelectionne(null);
       objetSelectionnePrecedentRef.current = null;
@@ -1611,7 +1509,7 @@ function PanneauLateral({
                             obj.arbreData?.id === arbre.id &&
                             obj.arbreIndex === index
                           );
-                          highlightObject(arbreObjet);
+                          highlightHover(arbreObjet, canvas);
                         }}
                         onMouseLeave={() => {
                           // Retirer l'encadrement de l'arbre
@@ -1620,7 +1518,7 @@ function PanneauLateral({
                             obj.arbreData?.id === arbre.id &&
                             obj.arbreIndex === index
                           );
-                          unhighlightObject(arbreObjet);
+                          unhighlightHover(arbreObjet, canvas);
                         }}
                         style={{
                           display: 'flex',
@@ -1680,8 +1578,8 @@ function PanneauLateral({
                       return (
                         <div 
                           key={`objet-${obj.customType}-${index}`}
-                          onMouseEnter={() => highlightObject(obj)}
-                          onMouseLeave={() => unhighlightObject(obj)}
+                          onMouseEnter={() => highlightHover(obj, canvas)}
+                          onMouseLeave={() => unhighlightHover(obj, canvas)}
                           style={{
                             display: 'flex',
                             justifyContent: 'space-between',

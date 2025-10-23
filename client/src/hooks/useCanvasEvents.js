@@ -7,6 +7,7 @@ import {
   resetClotureLastPos,
   afficherIndicateursConnexion
 } from '../utils/canvas/cloturesHelpers';
+import { createProtectedEventHandler } from '../utils/canvas/eventManager';
 
 /**
  * Hook pour gérer tous les event listeners du canvas
@@ -29,9 +30,6 @@ export const useCanvasEvents = ({
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
-
-    // Flag pour éviter la boucle infinie lors des modifications par le code
-    let isHandlingProgrammatically = false;
 
     // SNAP TO GRID
     const handleMoving = (e) => {
@@ -164,21 +162,8 @@ export const useCanvasEvents = ({
       }
     };
 
-    const handleAddedOrRemoved = (e) => {
-      // Si on est déjà en train de gérer un événement programmatique, ignorer
-      if (isHandlingProgrammatically) return;
-      
-      if (e && e.target && (e.target.measureLabel || e.target.alignmentGuide || e.target.isGridLine || 
-                            e.target.isConnectionIndicator || e.target.isSnapIndicator)) return;
-      
-      // Éviter la boucle infinie : ne pas exporter si c'est une ligne de mesure
-      if (e && e.target && e.target.isLigneMesure) return;
-      
-      // Éviter la boucle infinie : ignorer les objets temporaires créés par ajouterMesuresLive
-      if (e && e.target && (e.target.isMeasureLine || e.target.isMeasureLabel)) return;
-      
-      isHandlingProgrammatically = true;
-      
+    // ✅ Handle added/removed avec gestionnaire protégé (évite boucles infinies)
+    const handleAddedOrRemovedBase = (e) => {
       exporterPlan(canvas);
       ajouterMesuresLive(canvas);
       
@@ -190,12 +175,9 @@ export const useCanvasEvents = ({
       
       // Afficher les indicateurs de connexion
       afficherIndicateursConnexion(canvas);
-      
-      // Réinitialiser le flag après un délai court
-      setTimeout(() => {
-        isHandlingProgrammatically = false;
-      }, 10);
     };
+    
+    const handleAddedOrRemoved = createProtectedEventHandler(handleAddedOrRemovedBase, 50);
 
     const handleScaling = (e) => {
       if (e.target && !e.target.measureLabel && !e.target.alignmentGuide && !e.target.isGridLine) {
