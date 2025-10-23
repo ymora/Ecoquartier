@@ -590,17 +590,8 @@ function PanneauLateral({
                           />
                           <span className="unit">°</span>
                         </div>
-                        <div className="config-row">
-                          <label>⚠️ Élévation sol (m)</label>
-                          <input 
-                            type="number" 
-                            min="0" 
-                            max="5" 
-                            step="0.1"
-                            value={objetSelectionne.elevationSol || 0}
-                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
-                          />
-                          <span className="unit">m</span>
+                        <div className="info-box" style={{ background: '#e3f2fd', padding: '0.5rem', marginTop: '0.5rem' }}>
+                          ℹ️ Réseau enterré : profondeur gérée dans Profondeurs
                         </div>
                       </div>
                     )}
@@ -672,7 +663,7 @@ function PanneauLateral({
                     {profondeursOuvert && (
                       <div style={styles.conteneurListe}>
                         <div className="config-row">
-                          <label>Prof. enterrée</label>
+                          <label>Profondeur enterrée</label>
                           <input 
                             type="number" 
                             min="0" 
