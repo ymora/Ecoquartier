@@ -448,13 +448,13 @@ function PanneauLateral({
                     )}
                   </div>
 
-                  {/* POSITION VERTICALE */}
+                  {/* PROFONDEURS */}
                   <div style={{ marginBottom: '0.5rem' }}>
                     <button
                       onClick={() => setProfondeursOuvert(!profondeursOuvert)}
                       style={styles.boutonSection(profondeursOuvert, '#ff9800')}
                     >
-                      <span>⬇️ Position verticale</span>
+                      <span>⬇️ Profondeurs</span>
                       <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
                     </button>
                     {profondeursOuvert && (
@@ -660,19 +660,19 @@ function PanneauLateral({
                     )}
                   </div>
 
-                  {/* POSITION VERTICALE */}
+                  {/* PROFONDEURS */}
                   <div style={{ marginBottom: '0.5rem' }}>
                     <button
                       onClick={() => setProfondeursOuvert(!profondeursOuvert)}
                       style={styles.boutonSection(profondeursOuvert, '#ff9800')}
                     >
-                      <span>⬇️ Position verticale</span>
+                      <span>⬇️ Profondeurs</span>
                       <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
                     </button>
                     {profondeursOuvert && (
                       <div style={styles.conteneurListe}>
                         <div className="config-row">
-                          <label>Position verticale</label>
+                          <label>Prof. enterrée</label>
                           <input 
                             type="number" 
                             min="0" 
