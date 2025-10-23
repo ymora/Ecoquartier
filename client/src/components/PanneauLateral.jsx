@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import SolInteractif from './SolInteractif';
 import plantesData from '../data/arbustesData';
 import './PanneauLateral.css';
@@ -49,6 +49,9 @@ function PanneauLateral({
   const [dimensionsOuvert, setDimensionsOuvert] = useState(true);
   const [positionOuvert, setPositionOuvert] = useState(true);
   const [profondeursOuvert, setProfondeursOuvert] = useState(true);
+  
+  // Ref pour stocker l'objet précédemment sélectionné (évite boucle infinie)
+  const objetSelectionnePrecedentRef = useRef(null);
   
   // Séparer arbres et arbustes
   const arbres = plantesData.filter(p => p.type === 'arbre');
@@ -102,6 +105,60 @@ function PanneauLateral({
           strokeWidth: obj.__originalStrokeWidth || 3, 
           stroke: obj.__originalStroke,
           strokeDashArray: obj.__originalStrokeDashArray
+        });
+      }
+    }
+    canvas.renderAll();
+  };
+  
+  // ✅ Fonction pour mettre en évidence la sélection (vert)
+  const highlightSelection = (obj) => {
+    if (!obj) return;
+    
+    if (obj._objects && obj._objects.length > 0) {
+      // C'est un groupe, appliquer aux sous-objets qui ont un stroke
+      obj._objects.forEach(subObj => {
+        if (subObj.stroke) {
+          // Sauvegarder les propriétés originales de SÉLECTION (différent de hover)
+          subObj.__selectedStroke = subObj.stroke;
+          subObj.__selectedStrokeWidth = subObj.strokeWidth;
+          subObj.__selectedStrokeDashArray = subObj.strokeDashArray;
+          // Appliquer le vert épais sans pointillés
+          subObj.set({ strokeWidth: 6, stroke: '#4caf50', strokeDashArray: null });
+        }
+      });
+    } else {
+      // Objet simple
+      obj.__selectedStroke = obj.stroke;
+      obj.__selectedStrokeWidth = obj.strokeWidth;
+      obj.__selectedStrokeDashArray = obj.strokeDashArray;
+      obj.set({ strokeWidth: 6, stroke: '#4caf50', strokeDashArray: null });
+    }
+    canvas.renderAll();
+  };
+  
+  // ✅ Fonction pour retirer la mise en évidence de sélection
+  const unhighlightSelection = (obj) => {
+    if (!obj) return;
+    
+    if (obj._objects && obj._objects.length > 0) {
+      // C'est un groupe, restaurer les couleurs originales
+      obj._objects.forEach(subObj => {
+        if (subObj.stroke && subObj.__selectedStroke) {
+          subObj.set({ 
+            strokeWidth: subObj.__selectedStrokeWidth || 3, 
+            stroke: subObj.__selectedStroke,
+            strokeDashArray: subObj.__selectedStrokeDashArray
+          });
+        }
+      });
+    } else {
+      // Objet simple
+      if (obj.__selectedStroke) {
+        obj.set({ 
+          strokeWidth: obj.__selectedStrokeWidth || 3, 
+          stroke: obj.__selectedStroke,
+          strokeDashArray: obj.__selectedStrokeDashArray
         });
       }
     }
@@ -229,14 +286,31 @@ function PanneauLateral({
                   obj.customType === 'caisson-eau' || obj.customType === 'canalisation' || 
                   obj.customType === 'cloture' || obj.customType === 'terrasse' || 
                   obj.customType === 'paves')) {
+        // Retirer la mise en évidence de l'objet précédent s'il y en a un
+        if (objetSelectionnePrecedentRef.current) {
+          unhighlightSelection(objetSelectionnePrecedentRef.current);
+        }
         setObjetSelectionne(obj);
+        objetSelectionnePrecedentRef.current = obj;
+        // Mettre en évidence visuellement l'objet sélectionné (vert)
+        highlightSelection(obj);
       } else {
+        // Retirer la mise en évidence de l'objet précédent
+        if (objetSelectionnePrecedentRef.current) {
+          unhighlightSelection(objetSelectionnePrecedentRef.current);
+        }
         setObjetSelectionne(null);
+        objetSelectionnePrecedentRef.current = null;
       }
     };
     
     const handleDeselection = () => {
+      // Retirer la mise en évidence de l'objet précédent
+      if (objetSelectionnePrecedentRef.current) {
+        unhighlightSelection(objetSelectionnePrecedentRef.current);
+      }
       setObjetSelectionne(null);
+      objetSelectionnePrecedentRef.current = null;
     };
     
     canvas.on('selection:created', handleSelection);
