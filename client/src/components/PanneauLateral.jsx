@@ -245,10 +245,6 @@ function PanneauLateral({
 
   // ✅ Helper pour créer un champ numérique avec boutons +/-
   const renderNumberInput = (label, value, onChange, min, max, step, unit = 'm') => {
-    // Normaliser la valeur pour éviter les problèmes avec les nombres formatés
-    const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
-    const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
-    
     return (
       <div className="config-row">
         <label>{label}</label>
@@ -256,6 +252,8 @@ function PanneauLateral({
           <button
             type="button"
             onClick={() => {
+              const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
+              const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.max(min, currentValue - step);
               onChange({ target: { value: newValue.toString() } });
             }}
@@ -278,13 +276,15 @@ function PanneauLateral({
           </button>
           <input 
             type="text" 
-            value={currentValue}
+            value={value}
             onChange={onChange}
             style={{ width: '60px' }}
           />
           <button
             type="button"
             onClick={() => {
+              const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
+              const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.min(max, currentValue + step);
               onChange({ target: { value: newValue.toString() } });
             }}
