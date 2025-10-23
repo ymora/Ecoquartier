@@ -271,6 +271,7 @@ function PanneauLateral({
                 target: { value: newValue.toString() },
                 currentTarget: { value: newValue.toString() }
               };
+              console.log('Bouton -:', { label, value, newValue, onChange });
               onChange(syntheticEvent);
             }}
             disabled={isDisabled}
@@ -321,6 +322,7 @@ function PanneauLateral({
                 target: { value: newValue.toString() },
                 currentTarget: { value: newValue.toString() }
               };
+              console.log('Bouton +:', { label, value, newValue, onChange });
               onChange(syntheticEvent);
             }}
             disabled={isDisabled}
