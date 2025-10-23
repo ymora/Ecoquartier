@@ -264,61 +264,6 @@ function PanneauLateral({
       {/* Contenu selon onglet actif */}
       {ongletActif === 'config' ? (
         <div className="panneau-outils-content">
-          {/* ✅ TERRAIN AUTO-CALCULÉ */}
-          <div className="info-box">
-            <div className="info-title">📐 Terrain auto-adaptatif</div>
-            <div className="info-subtitle">
-              Taille = objets les plus éloignés +5m
-            </div>
-          </div>
-          
-          {/* MAISON GLOBALE */}
-          <div className="section-title">🏠 Maison (configuration globale)</div>
-          <div className="config-stack">
-            <div className="config-row">
-              <label>Hauteur maison</label>
-              <input 
-                type="number" 
-                min="3" 
-                max="15" 
-                step="0.5"
-                value={canvas?.getObjects().find(obj => obj.customType === 'maison')?.hauteurBatiment || 7}
-                onChange={(e) => {
-                  const maison = canvas?.getObjects().find(obj => obj.customType === 'maison');
-                  if (maison) {
-                    maison.set({ hauteurBatiment: parseFloat(e.target.value) });
-                    canvas.requestRenderAll();
-                    if (onExporterPlan) {
-                      setTimeout(() => onExporterPlan(canvas), 100);
-                    }
-                  }
-                }}
-              />
-              <span className="unit">m</span>
-            </div>
-            <div className="config-row">
-              <label>Profondeur fondations</label>
-              <input 
-                type="number" 
-                min="0.5" 
-                max="3" 
-                step="0.1"
-                value={canvas?.getObjects().find(obj => obj.customType === 'maison')?.profondeurFondations || 1.2}
-                onChange={(e) => {
-                  const maison = canvas?.getObjects().find(obj => obj.customType === 'maison');
-                  if (maison) {
-                    maison.set({ profondeurFondations: parseFloat(e.target.value) });
-                    canvas.requestRenderAll();
-                    if (onExporterPlan) {
-                      setTimeout(() => onExporterPlan(canvas), 100);
-                    }
-                  }
-                }}
-              />
-              <span className="unit">m</span>
-            </div>
-          </div>
-          
           {/* COMPOSITION DU SOL */}
           <div className="section-title">🌍 Composition du sol</div>
           <SolInteractif 
