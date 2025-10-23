@@ -266,13 +266,8 @@ function PanneauLateral({
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.max(min, currentValue - step);
-              // Créer un événement synthétique compatible
-              const syntheticEvent = {
-                target: { value: newValue.toString() },
-                currentTarget: { value: newValue.toString() }
-              };
-              console.log('Bouton -:', { label, value, newValue, onChange });
-              onChange(syntheticEvent);
+              // Appeler directement onChange avec la nouvelle valeur
+              onChange({ target: { value: newValue.toString() } });
             }}
             disabled={isDisabled}
             style={{
@@ -317,13 +312,8 @@ function PanneauLateral({
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.min(max, currentValue + step);
-              // Créer un événement synthétique compatible
-              const syntheticEvent = {
-                target: { value: newValue.toString() },
-                currentTarget: { value: newValue.toString() }
-              };
-              console.log('Bouton +:', { label, value, newValue, onChange });
-              onChange(syntheticEvent);
+              // Appeler directement onChange avec la nouvelle valeur
+              onChange({ target: { value: newValue.toString() } });
             }}
             disabled={isDisabled}
             style={{
@@ -362,13 +352,12 @@ function PanneauLateral({
     
     const handleChange = (e) => {
       const value = parseFloat(e.target.value);
-      console.log('handleChange:', { prop, value, eTargetValue: e.target.value });
       if (prop === 'width') {
         objetSelectionne.set({ width: value * echelle });
       } else {
         objetSelectionne.set({ height: value * echelle });
       }
-      objetSelectionne.setCoords(); // ✅ Ajout pour synchroniser les coordonnées
+      objetSelectionne.setCoords();
       canvas.requestRenderAll();
       if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
     };
