@@ -91,13 +91,21 @@
 /* Ligne de configuration uniforme */
 .config-row {
   display: grid;
-  grid-template-columns: 1fr 200px; /* Largeur fixe pour la colonne des boutons +/- */
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 0.5rem;
   background: white;
   padding: 0.5rem;
   border-radius: 6px;
   border: 1px solid #e0e0e0;
+}
+
+/* Conteneur des boutons +/- aligné à droite */
+.config-row > div {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  justify-content: flex-end; /* Alignement à droite */
 }
 
 .config-row label {
@@ -124,12 +132,7 @@
   min-width: 20px;
 }
 
-/* ✅ Style pour le conteneur des boutons +/- */
-.config-row > div {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
+/* ✅ Style pour le conteneur des boutons +/- - Défini plus haut avec justify-content: flex-end */
 
 .config-row input[type="text"] {
   width: 60px;
