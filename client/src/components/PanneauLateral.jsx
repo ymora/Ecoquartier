@@ -359,19 +359,19 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Rotation</label>
-                          <input 
-                            type="number" 
-                            min="0" 
-                            max="360" 
-                            step="5"
-                            value={Math.round(objetSelectionne.angle || 0)}
-                            onChange={(e) => updateObjetProp('angle', e.target.value)}
-                          />
-                          <span className="unit">°</span>
-                        </div>
-                        <div className="config-row">
+                  <div className="config-row">
+                    <label>Rotation</label>
+                    <input 
+                      type="number" 
+                      min="0" 
+                      max="360" 
+                      step="5"
+                      value={Math.round(objetSelectionne.angle || 0)}
+                      onChange={(e) => updateObjetProp('angle', e.target.value)}
+                    />
+                    <span className="unit">°</span>
+                  </div>
+                  <div className="config-row">
                           <label>Élévation rel. sol</label>
                           <input 
                             type="number" 
@@ -444,21 +444,6 @@ function PanneauLateral({
                           />
                           <span className="unit">m</span>
                         </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* PROFONDEURS */}
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <button
-                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
-                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
-                    >
-                      <span>⬇️ Profondeurs</span>
-                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
-                    </button>
-                    {profondeursOuvert && (
-                      <div style={styles.conteneurListe}>
                         <div className="config-row">
                           <label>Prof. fondations</label>
                           <input 
@@ -502,26 +487,8 @@ function PanneauLateral({
                           />
                           <span className="unit">m</span>
                         </div>
-                        <div className="info-box">
-                          💧 Volume : {(Math.PI * Math.pow((objetSelectionne.diametre || 1.5) / 2, 2) * (objetSelectionne.profondeur || 2.5)).toFixed(1)}m³
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* PROFONDEURS */}
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <button
-                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
-                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
-                    >
-                      <span>⬇️ Profondeurs</span>
-                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
-                    </button>
-                    {profondeursOuvert && (
-                      <div style={styles.conteneurListe}>
                         <div className="config-row">
-                          <label>Profondeur</label>
+                          <label>Longueur</label>
                           <input 
                             type="number" 
                             min="1" 
@@ -531,6 +498,9 @@ function PanneauLateral({
                             onChange={(e) => updateObjetProp('profondeur', e.target.value)}
                           />
                           <span className="unit">m</span>
+                        </div>
+                        <div className="info-box">
+                          💧 Volume : {(Math.PI * Math.pow((objetSelectionne.diametre || 1.5) / 2, 2) * (objetSelectionne.profondeur || 2.5)).toFixed(1)}m³
                         </div>
                       </div>
                     )}
@@ -548,16 +518,19 @@ function PanneauLateral({
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
                         <div className="config-row">
-                          <label>⚠️ Élévation sol (m)</label>
+                          <label>Élévation sol (m)</label>
                           <input 
                             type="number" 
-                            min="0" 
+                            min="-5" 
                             max="5" 
                             step="0.1"
                             value={objetSelectionne.elevationSol || 0}
                             onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
                           />
                           <span className="unit">m</span>
+                        </div>
+                        <div className="info-box" style={{ background: '#fff3e0', padding: '0.5rem', marginTop: '0.5rem' }}>
+                          💡 Négatif = enterré (ex: -2.5m sous terre)
                         </div>
                       </div>
                     )}
@@ -578,20 +551,32 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
+                  <div className="config-row">
+                    <label>Rotation</label>
+                    <input 
+                      type="number" 
+                      min="0" 
+                      max="360" 
+                      step="5"
+                      value={Math.round(objetSelectionne.angle || 0)}
+                      onChange={(e) => updateObjetProp('angle', e.target.value)}
+                    />
+                    <span className="unit">°</span>
+                  </div>
                         <div className="config-row">
-                          <label>Rotation</label>
+                          <label>Élévation sol (m)</label>
                           <input 
                             type="number" 
-                            min="0" 
-                            max="360" 
-                            step="5"
-                            value={Math.round(objetSelectionne.angle || 0)}
-                            onChange={(e) => updateObjetProp('angle', e.target.value)}
+                            min="-3" 
+                            max="5" 
+                            step="0.1"
+                            value={objetSelectionne.elevationSol || 0}
+                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
                           />
-                          <span className="unit">°</span>
+                          <span className="unit">m</span>
                         </div>
-                        <div className="info-box" style={{ background: '#e3f2fd', padding: '0.5rem', marginTop: '0.5rem' }}>
-                          ℹ️ Réseau enterré : profondeur gérée dans Profondeurs
+                        <div className="info-box" style={{ background: '#fff3e0', padding: '0.5rem', marginTop: '0.5rem' }}>
+                          💡 Négatif = enterré (ex: -1m sous terre)
                         </div>
                       </div>
                     )}
@@ -608,75 +593,49 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Largeur</label>
-                          <input 
-                            type="number" 
-                            min="1" 
-                            max="10" 
-                            step="0.5"
-                            value={objetSelectionne.largeurCaisson || 5}
-                            onChange={(e) => updateObjetProp('largeurCaisson', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                        <div className="config-row">
-                          <label>Profondeur</label>
-                          <input 
-                            type="number" 
-                            min="1" 
-                            max="10" 
-                            step="0.5"
-                            value={objetSelectionne.profondeurCaisson || 3}
-                            onChange={(e) => updateObjetProp('profondeurCaisson', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                        <div className="config-row">
-                          <label>Hauteur</label>
-                          <input 
-                            type="number" 
-                            min="0.5" 
-                            max="3" 
-                            step="0.1"
-                            value={objetSelectionne.hauteurCaisson || 1}
-                            onChange={(e) => updateObjetProp('hauteurCaisson', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                        <div className="info-box">
-                          💧 Volume : {((objetSelectionne.largeurCaisson || 5) * (objetSelectionne.profondeurCaisson || 3) * (objetSelectionne.hauteurCaisson || 1)).toFixed(1)}m³
-                        </div>
-                      </div>
+                  <div className="config-row">
+                    <label>Largeur</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      max="10" 
+                      step="0.5"
+                      value={objetSelectionne.largeurCaisson || 5}
+                      onChange={(e) => updateObjetProp('largeurCaisson', e.target.value)}
+                    />
+                    <span className="unit">m</span>
+                  </div>
+                  <div className="config-row">
+                    <label>Profondeur</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      max="10" 
+                      step="0.5"
+                      value={objetSelectionne.profondeurCaisson || 3}
+                      onChange={(e) => updateObjetProp('profondeurCaisson', e.target.value)}
+                    />
+                    <span className="unit">m</span>
+                  </div>
+                  <div className="config-row">
+                    <label>Hauteur</label>
+                    <input 
+                      type="number" 
+                      min="0.5" 
+                      max="3" 
+                      step="0.1"
+                      value={objetSelectionne.hauteurCaisson || 1}
+                      onChange={(e) => updateObjetProp('hauteurCaisson', e.target.value)}
+                    />
+                    <span className="unit">m</span>
+                  </div>
+                  <div className="info-box">
+                    💧 Volume : {((objetSelectionne.largeurCaisson || 5) * (objetSelectionne.profondeurCaisson || 3) * (objetSelectionne.hauteurCaisson || 1)).toFixed(1)}m³
+                  </div>
+                </div>
                     )}
                   </div>
 
-                  {/* PROFONDEURS */}
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <button
-                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
-                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
-                    >
-                      <span>⬇️ Profondeurs</span>
-                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
-                    </button>
-                    {profondeursOuvert && (
-                      <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Profondeur enterrée</label>
-                          <input 
-                            type="number" 
-                            min="0" 
-                            max="3" 
-                            step="0.1"
-                            value={objetSelectionne.profondeurEnterree || 1}
-                            onChange={(e) => updateObjetProp('profondeurEnterree', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </>
               )}
               
@@ -695,20 +654,20 @@ function PanneauLateral({
                       <div style={styles.conteneurListe}>
                         <div className="config-row">
                           <label>Rotation</label>
-                          <input 
-                            type="number" 
-                            min="0" 
-                            max="360" 
-                            step="5"
-                            value={Math.round(objetSelectionne.angle || 0)}
-                            onChange={(e) => updateObjetProp('angle', e.target.value)}
-                          />
+                    <input 
+                      type="number" 
+                      min="0" 
+                      max="360" 
+                      step="5"
+                      value={Math.round(objetSelectionne.angle || 0)}
+                      onChange={(e) => updateObjetProp('angle', e.target.value)}
+                    />
                           <span className="unit">°</span>
-                        </div>
+                  </div>
                         <div className="config-row">
                           <label>⚠️ Élévation sol (m)</label>
-                          <input 
-                            type="number" 
+                    <input 
+                      type="number" 
                             min="-2" 
                             max="2" 
                             step="0.1"
@@ -744,21 +703,6 @@ function PanneauLateral({
                           />
                           <span className="unit">m</span>
                         </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* PROFONDEURS */}
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <button
-                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
-                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
-                    >
-                      <span>⬇️ Profondeurs</span>
-                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
-                    </button>
-                    {profondeursOuvert && (
-                      <div style={styles.conteneurListe}>
                         <div className="config-row">
                           <label>Prof. fondation</label>
                           <input 
@@ -792,20 +736,20 @@ function PanneauLateral({
                       <div style={styles.conteneurListe}>
                         <div className="config-row">
                           <label>Rotation</label>
-                          <input 
-                            type="number" 
-                            min="0" 
-                            max="360" 
-                            step="5"
-                            value={Math.round(objetSelectionne.angle || 0)}
-                            onChange={(e) => updateObjetProp('angle', e.target.value)}
-                          />
+                    <input 
+                      type="number" 
+                      min="0" 
+                      max="360" 
+                      step="5"
+                      value={Math.round(objetSelectionne.angle || 0)}
+                      onChange={(e) => updateObjetProp('angle', e.target.value)}
+                    />
                           <span className="unit">°</span>
-                        </div>
+                  </div>
                         <div className="config-row">
                           <label>⚠️ Élévation sol (m)</label>
-                          <input 
-                            type="number" 
+                    <input 
+                      type="number" 
                             min="-2" 
                             max="2" 
                             step="0.1"
@@ -841,21 +785,6 @@ function PanneauLateral({
                           />
                           <span className="unit">m</span>
                         </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* PROFONDEURS */}
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <button
-                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
-                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
-                    >
-                      <span>⬇️ Profondeurs</span>
-                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
-                    </button>
-                    {profondeursOuvert && (
-                      <div style={styles.conteneurListe}>
                         <div className="config-row">
                           <label>Prof. gravier</label>
                           <input 
@@ -887,8 +816,20 @@ function PanneauLateral({
                     </button>
                     {positionOuvert && (
                       <div style={styles.conteneurListe}>
-                        <div className="info-box" style={{ background: '#e3f2fd', padding: '0.5rem', marginBottom: '0.5rem' }}>
-                          ℹ️ Réseau enterré : position verticale gérée dans Profondeurs
+                        <div className="config-row">
+                          <label>Élévation sol (m)</label>
+                          <input 
+                            type="number" 
+                            min="-2" 
+                            max="5" 
+                            step="0.1"
+                            value={objetSelectionne.elevationSol || 0}
+                            onChange={(e) => updateObjetProp('elevationSol', e.target.value)}
+                          />
+                          <span className="unit">m</span>
+                        </div>
+                        <div className="info-box" style={{ background: '#fff3e0', padding: '0.5rem', marginTop: '0.5rem' }}>
+                          💡 Négatif = enterré (ex: -0.6m sous terre)
                         </div>
                       </div>
                     )}
@@ -914,33 +855,6 @@ function PanneauLateral({
                             step="0.05"
                             value={objetSelectionne.diametreCanalisation || 0.1}
                             onChange={(e) => updateObjetProp('diametreCanalisation', e.target.value)}
-                          />
-                          <span className="unit">m</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* PROFONDEURS */}
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <button
-                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
-                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
-                    >
-                      <span>⬇️ Profondeurs</span>
-                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
-                    </button>
-                    {profondeursOuvert && (
-                      <div style={styles.conteneurListe}>
-                        <div className="config-row">
-                          <label>Profondeur enterrée</label>
-                          <input 
-                            type="number" 
-                            min="0.3" 
-                            max="2" 
-                            step="0.1"
-                            value={objetSelectionne.profondeur || 0.6}
-                            onChange={(e) => updateObjetProp('profondeur', e.target.value)}
                           />
                           <span className="unit">m</span>
                         </div>
@@ -1613,26 +1527,26 @@ function PanneauLateral({
                           <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
                             {icone} {nom}
                           </span>
-                        <button 
-                          onClick={() => {
-                            canvas.remove(obj);
-                            canvas.renderAll();
-                            onExporterPlan && onExporterPlan(canvas);
-                          }}
-                          style={{
-                            background: '#f44336',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '3px',
-                            padding: '0.2rem 0.4rem',
-                            cursor: 'pointer',
-                            fontSize: '0.7rem',
-                            transition: 'transform 0.2s'
-                          }}
-                          title={`Supprimer ${nom}`}
-                        >
-                          🗑️
-                        </button>
+          <button 
+                            onClick={() => {
+                              canvas.remove(obj);
+                              canvas.renderAll();
+                              onExporterPlan && onExporterPlan(canvas);
+                            }}
+                            style={{
+                              background: '#f44336',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '3px',
+                              padding: '0.2rem 0.4rem',
+                              cursor: 'pointer',
+                              fontSize: '0.7rem',
+                              transition: 'transform 0.2s'
+                            }}
+                            title={`Supprimer ${nom}`}
+                          >
+                            🗑️
+          </button>
               </div>
                       );
                     })}
