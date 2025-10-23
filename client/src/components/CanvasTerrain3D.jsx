@@ -67,15 +67,7 @@ function CanvasTerrain3D({
   const convertir2DTo3D = () => {
     const echelle = ECHELLE_PIXELS_PAR_METRE; // Utilisation de la constante globale : 40 pixels = 1 mètre
     
-    // 🔍 DEBUG - Vérifier les données reçues
-    console.log('🎯 DEBUG planData reçu:', {
-      maisons: planData?.maisons?.length || 0,
-      terrasses: planData?.terrasses?.length || 0,
-      paves: planData?.paves?.length || 0,
-      citernes: planData?.citernes?.length || 0,
-      caissonsEau: planData?.caissonsEau?.length || 0,
-      arbres: planData?.arbres?.length || 0
-    });
+    // Debug désactivé pour performance (produit des logs volumineux)
     
     const data3D = {
       maison: null,
@@ -113,17 +105,7 @@ function CanvasTerrain3D({
         const posX = maison.left / echelle;
         const posZ = maison.top / echelle;
         
-        // 🔍 DEBUG - Vérifier la conversion
-        console.log('🎯 DEBUG Maison:', {
-          index: idx,
-          left_px: maison.left,
-          top_px: maison.top,
-          echelle: echelle,
-          posX_m: posX,
-          posZ_m: posZ,
-          largeur_m: largeur,
-          profondeur_m: profondeur
-        });
+        // Debug désactivé pour performance
         
         updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
         
@@ -146,14 +128,7 @@ function CanvasTerrain3D({
         const posX = c.left / echelle;
         const posZ = c.top / echelle;
         
-        // 🔍 DEBUG
-        console.log('🎯 DEBUG Citerne:', {
-          left_px: c.left,
-          top_px: c.top,
-          posX_m: posX,
-          posZ_m: posZ,
-          diametre_m: diametre
-        });
+        // Debug désactivé pour performance
         
         updateBounds(posX - diametre/2, posZ - diametre/2, diametre, diametre);
         
@@ -179,15 +154,7 @@ function CanvasTerrain3D({
         const posX = c.left / echelle;
         const posZ = c.top / echelle;
         
-        // 🔍 DEBUG
-        console.log('🎯 DEBUG Caisson:', {
-          left_px: c.left,
-          top_px: c.top,
-          posX_m: posX,
-          posZ_m: posZ,
-          largeur_m: largeur,
-          profondeur_m: profondeur
-        });
+        // Debug désactivé pour performance
         
         if (!data3D.citernes) data3D.citernes = [];
         data3D.citernes.push({
@@ -261,15 +228,7 @@ function CanvasTerrain3D({
         const posX = t.left / echelle;
         const posZ = t.top / echelle;
         
-        // 🔍 DEBUG
-        console.log('🎯 DEBUG Terrasse:', {
-          left_px: t.left,
-          top_px: t.top,
-          posX_m: posX,
-          posZ_m: posZ,
-          largeur_m: largeur,
-          profondeur_m: profondeur
-        });
+        // Debug désactivé pour performance
         
         data3D.terrasses.push({
           position: [posX, 0, posZ],
@@ -297,15 +256,7 @@ function CanvasTerrain3D({
         const posX = p.left / echelle;
         const posZ = p.top / echelle;
         
-        // 🔍 DEBUG
-        console.log('🎯 DEBUG Pavé:', {
-          left_px: p.left,
-          top_px: p.top,
-          posX_m: posX,
-          posZ_m: posZ,
-          largeur_m: largeur,
-          profondeur_m: profondeur
-        });
+        // Debug désactivé pour performance
         
         data3D.terrasses.push({
           position: [posX, 0, posZ],
