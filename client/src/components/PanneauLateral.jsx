@@ -285,7 +285,8 @@ function PanneauLateral({
       if (obj && (obj.customType === 'maison' || obj.customType === 'citerne' || 
                   obj.customType === 'caisson-eau' || obj.customType === 'canalisation' || 
                   obj.customType === 'cloture' || obj.customType === 'terrasse' || 
-                  obj.customType === 'paves')) {
+                  obj.customType === 'paves' || obj.customType === 'arbre-a-planter' ||
+                  obj.customType === 'arbre-existant')) {
         // Retirer la mise en évidence de l'objet précédent s'il y en a un
         if (objetSelectionnePrecedentRef.current) {
           unhighlightSelection(objetSelectionnePrecedentRef.current);
@@ -441,6 +442,8 @@ function PanneauLateral({
                 {objetSelectionne.customType === 'cloture' && '🚧 Clôture'}
                   {objetSelectionne.customType === 'terrasse' && '🏡 Terrasse'}
                   {objetSelectionne.customType === 'paves' && '🟩 Pavés'}
+                  {objetSelectionne.customType === 'arbre-a-planter' && `🌳 ${objetSelectionne.arbreData?.name || 'Arbre'}`}
+                  {objetSelectionne.customType === 'arbre-existant' && '🌳 Arbre existant'}
                 </div>
               </div>
               
