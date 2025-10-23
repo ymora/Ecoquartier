@@ -19,7 +19,7 @@ function PaveEnherbe3D({
   const TAILLE_PAVE = 0.10; // 10 cm
   const EPAISSEUR_PAVE = 0.05; // 5 cm
   const ESPACEMENT_HERBE = 0.04; // 4 cm entre les pavés
-  const HAUTEUR_HERBE = 0.07; // 7 cm de hauteur d'herbe (5-10 cm)
+  const HAUTEUR_HERBE = 0.12; // 12 cm de hauteur d'herbe (visible entre les pavés)
   
   // Calculer le nombre de pavés selon les dimensions
   const nbPavesX = Math.floor(largeur / (TAILLE_PAVE + ESPACEMENT_HERBE));
@@ -66,8 +66,8 @@ function PaveEnherbe3D({
             const herbePosX = paveX + TAILLE_PAVE + Math.random() * ESPACEMENT_HERBE;
             const herbePosZ = paveZ + Math.random() * TAILLE_PAVE;
             
-            // ✅ Position au SOL (y=0), l'herbe pousse vers le haut
-            positions.push(herbePosX, 0, herbePosZ);
+            // Position au-dessus du sol pour être visible
+            positions.push(herbePosX, HAUTEUR_HERBE / 2, herbePosZ);
             
             // Variation de taille (hauteur)
             const scaleX = 0.6 + Math.random() * 0.4; // Largeur du brin
@@ -225,8 +225,8 @@ function PaveEnherbe3D({
           castShadow
           frustumCulled={false}
         >
-          {/* ✅ Géométrie verticale : cylindre fin pour brin d'herbe */}
-          <cylinderGeometry args={[0.001, 0.0015, HAUTEUR_HERBE, 3, 1]} />
+          {/* ✅ Géométrie verticale : cylindre fin pour brin d'herbe (hauteur augmentée) */}
+          <cylinderGeometry args={[0.002, 0.003, HAUTEUR_HERBE * 1.5, 6, 1]} />
           <meshStandardMaterial 
             color="#7cb342"
             roughness={0.85}
