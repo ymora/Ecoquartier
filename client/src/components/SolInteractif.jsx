@@ -155,29 +155,70 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
             
             <div className="sol-couche-nom">{couche.nom}</div>
             
-            <input
-              type="number"
-              className="sol-couche-input"
-              min="5"
-              max={PROFONDEUR_MAX_TOTALE}
-              step="5"
-              value={couche.profondeur}
-              onChange={(e) => {
-                const nouvellesCouches = [...couchesSol];
-                const nouvelleProfondeur = Math.max(5, parseInt(e.target.value) || 5);
-                
-                // Vérifier la limite totale
-                const totalSansActuelle = nouvellesCouches.reduce((sum, c, idx) => 
-                  idx === index ? sum : sum + c.profondeur, 0);
-                
-                if (totalSansActuelle + nouvelleProfondeur <= PROFONDEUR_MAX_TOTALE) {
-                  nouvellesCouches[index].profondeur = nouvelleProfondeur;
-                  if (onCouchesSolChange) {
-                    onCouchesSolChange(nouvellesCouches);
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <button
+                type="button"
+                onClick={() => ajusterCouche(index, -5)}
+                style={{
+                  background: '#4caf50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  width: '33px',
+                  height: '33px',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                −
+              </button>
+              <input
+                type="text"
+                className="sol-couche-input"
+                value={couche.profondeur}
+                onChange={(e) => {
+                  const nouvellesCouches = [...couchesSol];
+                  const nouvelleProfondeur = Math.max(5, parseInt(e.target.value) || 5);
+                  
+                  // Vérifier la limite totale
+                  const totalSansActuelle = nouvellesCouches.reduce((sum, c, idx) => 
+                    idx === index ? sum : sum + c.profondeur, 0);
+                  
+                  if (totalSansActuelle + nouvelleProfondeur <= PROFONDEUR_MAX_TOTALE) {
+                    nouvellesCouches[index].profondeur = nouvelleProfondeur;
+                    if (onCouchesSolChange) {
+                      onCouchesSolChange(nouvellesCouches);
+                    }
                   }
-                }
-              }}
-            />
+                }}
+                style={{ width: '60px', textAlign: 'right' }}
+              />
+              <button
+                type="button"
+                onClick={() => ajusterCouche(index, 5)}
+                style={{
+                  background: '#4caf50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  width: '33px',
+                  height: '33px',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                +
+              </button>
+              <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', minWidth: '20px' }}>cm</span>
+            </div>
           </div>
         ))}
       </div>
