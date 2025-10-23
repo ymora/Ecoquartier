@@ -91,7 +91,7 @@
 /* Ligne de configuration uniforme */
 .config-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 200px; /* Largeur fixe pour la colonne des boutons +/- */
   align-items: center;
   gap: 0.5rem;
   background: white;
