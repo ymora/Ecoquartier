@@ -694,20 +694,26 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     // ✅ Log détaillé pour debug
     const typeRecherche = objetData.customType || objetData.type; // Utiliser customType si disponible
     
-    // ✅ Lister tous les objets disponibles sur le canvas
-    const tousLesObjets = canvas.getObjects().map(o => ({
-      customType: o.customType,
-      left: o.left?.toFixed(1),
-      top: o.top?.toFixed(1)
-    }));
+    // ✅ Lister tous les objets du même type sur le canvas
+    const objetsDuMemeTypeList = canvas.getObjects()
+      .filter(o => o.customType === typeRecherche)
+      .map(o => ({
+        customType: o.customType,
+        left: o.left?.toFixed(1),
+        top: o.top?.toFixed(1),
+        angle: o.angle,
+        originX: o.originX,
+        originY: o.originY
+      }));
     
     logger.info('Selection3D', `🔍 Recherche objet depuis 3D:`, {
       typeRecherche,
       position3D_m: `(${pos3DX_m.toFixed(2)}, ${pos3DZ_m.toFixed(2)})`,
       position2D_attendue_px: `(${posX_px.toFixed(1)}, ${posZ_px.toFixed(1)})`,
       echelle,
-      totalObjetsCanvas: tousLesObjets.length,
-      objetsDisponibles: tousLesObjets.slice(0, 10) // Limiter à 10 pour ne pas spammer
+      totalObjetsCanvas: canvas.getObjects().length,
+      objetsDeCeType: objetsDuMemeTypeList.length,
+      objetsDuMemeTypeList
     });
     
     // Trouver l'objet dans le canvas 2D
