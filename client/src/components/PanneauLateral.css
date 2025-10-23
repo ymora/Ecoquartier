@@ -117,18 +117,6 @@
   text-align: right;
 }
 
-/* ✅ Masquer les flèches natives des inputs number dans le panneau (on a nos boutons +/-) */
-.config-row input[type="number"]::-webkit-inner-spin-button,
-.config-row input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.config-row input[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
 .config-row .unit {
   font-size: 0.75rem;
   color: #888;
@@ -430,18 +418,6 @@
   font-size: 0.8rem;
   text-align: center;
   font-weight: 600;
-}
-
-/* ✅ Masquer les flèches natives des inputs number dans dimension-control aussi */
-.dimension-control input[type="number"]::-webkit-inner-spin-button,
-.dimension-control input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.dimension-control input[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield;
 }
 
 .orientation-buttons {

@@ -277,10 +277,7 @@ function PanneauLateral({
             −
           </button>
           <input 
-            type="number" 
-            min={min}
-            max={max}
-            step={step}
+            type="text" 
             value={currentValue}
             onChange={onChange}
             style={{ flex: 1 }}
