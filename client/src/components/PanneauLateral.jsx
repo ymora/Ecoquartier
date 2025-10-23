@@ -397,6 +397,27 @@ function PanneauLateral({
             📏 Profondeur totale : {couchesSol ? (couchesSol.reduce((sum, c) => sum + c.profondeur, 0) / 100).toFixed(2) : 0} m
           </div>
           
+          {/* Bouton pour accéder aux couches végétales dans l'onglet Config */}
+          {!objetSelectionne && (
+            <button
+              onClick={() => setOngletActif('config')}
+              style={{
+                width: '100%',
+                padding: '0.6rem',
+                background: '#4caf50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                marginTop: '0.5rem'
+              }}
+            >
+              ⚙️ Ouvrir configuration des couches
+            </button>
+          )}
+          
           {/* OBJET SÉLECTIONNÉ */}
           {objetSelectionne && (
             <>
