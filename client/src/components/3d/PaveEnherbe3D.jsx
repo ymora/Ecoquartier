@@ -189,6 +189,31 @@ function PaveEnherbe3D({
         />
       </mesh>
       
+      {/* Fond vert avec contour - D'ABORD pour être sous les pavés */}
+      <group>
+        {/* Base verte principale avec légère émissivité */}
+        <mesh position={[0, EPAISSEUR_PAVE / 2, 0]} receiveShadow>
+          <boxGeometry args={[largeur, 0.001, profondeur]} />
+          <meshStandardMaterial 
+            color="#66bb6a"
+            roughness={0.95}
+            emissive="#4caf50"
+            emissiveIntensity={0.25}
+          />
+        </mesh>
+        
+        {/* Contour léger autour de toute la zone (bordure rectangulaire) */}
+        <mesh position={[0, EPAISSEUR_PAVE / 2 + 0.001, 0]}>
+          <boxGeometry args={[largeur + 0.01, 0.002, profondeur + 0.01]} />
+          <meshStandardMaterial 
+            color="#8bc34a"
+            roughness={0.9}
+            emissive="#7cb342"
+            emissiveIntensity={0.4}
+          />
+        </mesh>
+      </group>
+      
       {/* Pavés béton 10cm × 10cm avec contour */}
       {paves.map((pavePos, idx) => (
         <group key={`pave-${idx}`} position={pavePos}>
@@ -207,7 +232,7 @@ function PaveEnherbe3D({
           
           {/* Contour (bordure légèrement plus sombre) */}
           <mesh position={[0, EPAISSEUR_PAVE / 2, 0]}>
-            <boxGeometry args={[TAILLE_PAVE + 0.002, 0.001, TAILLE_PAVE + 0.002]} />
+            <boxGeometry args={[TAILLE_PAVE + 0.003, 0.002, TAILLE_PAVE + 0.003]} />
             <meshStandardMaterial 
               color="#757575"
               roughness={0.9}
@@ -226,41 +251,16 @@ function PaveEnherbe3D({
           frustumCulled={false}
         >
           {/* ✅ Géométrie verticale : cylindre fin pour brin d'herbe (hauteur augmentée) */}
-          <cylinderGeometry args={[0.002, 0.003, HAUTEUR_HERBE * 1.5, 6, 1]} />
+          <cylinderGeometry args={[0.003, 0.004, HAUTEUR_HERBE * 1.5, 8, 1]} />
           <meshStandardMaterial 
-            color="#7cb342"
+            color="#66bb6a"
             roughness={0.85}
             metalness={0}
-            emissive="#558b2f"
-            emissiveIntensity={0.2}
+            emissive="#4caf50"
+            emissiveIntensity={0.3}
           />
         </instancedMesh>
       )}
-      
-      {/* Fond vert avec contour */}
-      <group>
-        {/* Base verte principale avec légère émissivité */}
-        <mesh position={[0, 0.005, 0]} receiveShadow>
-          <boxGeometry args={[largeur, 0.01, profondeur]} />
-          <meshStandardMaterial 
-            color="#66bb6a"
-            roughness={0.95}
-            emissive="#4caf50"
-            emissiveIntensity={0.15}
-          />
-        </mesh>
-        
-        {/* Contour léger autour de toute la zone (bordure rectangulaire) */}
-        <mesh position={[0, 0.011, 0]}>
-          <boxGeometry args={[largeur + 0.01, 0.002, profondeur + 0.01]} />
-          <meshStandardMaterial 
-            color="#8bc34a"
-            roughness={0.9}
-            emissive="#7cb342"
-            emissiveIntensity={0.3}
-          />
-        </mesh>
-      </group>
     </group>
   );
 }
