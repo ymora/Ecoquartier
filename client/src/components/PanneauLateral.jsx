@@ -293,19 +293,22 @@ function PanneauLateral({
           >
             −
           </button>
-          <input 
-            type="text" 
-            value={value}
-            onChange={onChange}
-            disabled={isDisabled}
-            style={{ 
-              width: '60px', 
-              minWidth: '50px', 
-              flexShrink: 1,
-              background: isDisabled ? '#f5f5f5' : 'white',
-              cursor: isDisabled ? 'not-allowed' : 'text'
-            }}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+            <input 
+              type="text" 
+              value={value}
+              onChange={onChange}
+              disabled={isDisabled}
+              style={{ 
+                width: '60px', 
+                minWidth: '50px', 
+                flexShrink: 1,
+                background: isDisabled ? '#f5f5f5' : 'white',
+                cursor: isDisabled ? 'not-allowed' : 'text'
+              }}
+            />
+            <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', flexShrink: 0 }}>{unit}</span>
+          </div>
           <button
             type="button"
             onClick={() => {
@@ -340,7 +343,6 @@ function PanneauLateral({
           >
             +
           </button>
-          <span className="unit">{unit}</span>
         </div>
       </div>
     );
