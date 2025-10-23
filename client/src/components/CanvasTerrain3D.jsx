@@ -485,7 +485,7 @@ function CanvasTerrain3D({
           <Maison3D 
             key={`maison-${idx}`}
             {...maison}
-            onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
+            onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx, customType: 'maison' })}
           />
         ))}
         
@@ -494,7 +494,7 @@ function CanvasTerrain3D({
           <Citerne3D 
             key={`citerne-${idx}`}
             {...citerne}
-            onClick={() => handleObjetClick({ type: 'citerne', ...citerne, index: idx })}
+            onClick={() => handleObjetClick({ type: 'citerne', ...citerne, index: idx, customType: 'citerne' })}
           />
         ))}
         
@@ -503,7 +503,7 @@ function CanvasTerrain3D({
           <Caisson3D 
             key={`caisson-${idx}`}
             {...caisson}
-            onClick={() => handleObjetClick({ type: 'caisson-eau', ...caisson, index: idx })}
+            onClick={() => handleObjetClick({ type: 'caisson-eau', ...caisson, index: idx, customType: 'caisson-eau' })}
           />
         ))}
         
@@ -512,7 +512,7 @@ function CanvasTerrain3D({
           <Canalisation3D 
             key={`canal-${idx}`}
             {...canal}
-            onClick={() => handleObjetClick({ type: 'canalisation', ...canal, index: idx })}
+            onClick={() => handleObjetClick({ type: 'canalisation', ...canal, index: idx, customType: 'canalisation' })}
           />
         ))}
         
@@ -521,7 +521,7 @@ function CanvasTerrain3D({
           <Cloture3D 
             key={`cloture-${idx}`}
             {...cloture}
-            onClick={() => handleObjetClick({ type: 'cloture', ...cloture, index: idx })}
+            onClick={() => handleObjetClick({ type: 'cloture', ...cloture, index: idx, customType: 'cloture' })}
           />
         ))}
         
@@ -552,7 +552,7 @@ function CanvasTerrain3D({
               rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
               receiveShadow
               castShadow
-              onClick={() => handleObjetClick({ type: 'terrasse', ...terrasse, index: idx })}
+              onClick={() => handleObjetClick({ type: 'terrasse', ...terrasse, index: idx, customType: 'terrasse' })}
             >
               <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
               <meshStandardMaterial 
@@ -597,7 +597,7 @@ function CanvasTerrain3D({
                   anneeProjection={anneeProjection}
                   saison={saison}
                   arbreData={arbre.arbreData}
-                  onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
+                  onClick={() => handleObjetClick({ type: 'arbre', ...arbre, customType: 'arbre-a-planter' })}
                   fallbackProps={{
                     arbreData: arbre.arbreData,
                     hauteur: arbre.hauteur,
@@ -606,7 +606,7 @@ function CanvasTerrain3D({
                     validationStatus: arbre.validationStatus || 'ok',
                     anneeProjection: anneeProjection,
                     saison: saison,
-                    onClick: () => handleObjetClick({ type: 'arbre', ...arbre })
+                    onClick: () => handleObjetClick({ type: 'arbre', ...arbre, customType: 'arbre-a-planter' })
                   }}
                 />
               ) : (
@@ -620,7 +620,7 @@ function CanvasTerrain3D({
                   validationStatus={validationStatus}
                   anneeProjection={anneeProjection}
                   saison={saison}
-                  onClick={() => handleObjetClick({ type: 'arbre', ...arbre })}
+                  onClick={() => handleObjetClick({ type: 'arbre', ...arbre, customType: 'arbre-a-planter' })}
                 />
               )}
             </ObjetDraggable3D>
