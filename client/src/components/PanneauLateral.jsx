@@ -277,7 +277,8 @@ function PanneauLateral({
               fontWeight: 'bold',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              flexShrink: 0
             }}
           >
             −
@@ -286,7 +287,7 @@ function PanneauLateral({
             type="text" 
             value={value}
             onChange={onChange}
-            style={{ width: '60px' }}
+            style={{ width: '60px', minWidth: '50px', flexShrink: 1 }}
           />
           <button
             type="button"
@@ -308,7 +309,8 @@ function PanneauLateral({
               fontWeight: 'bold',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              flexShrink: 0
             }}
           >
             +

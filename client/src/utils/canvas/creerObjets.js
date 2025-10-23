@@ -8,6 +8,13 @@ import * as fabric from 'fabric';
 import logger from '../logger';
 
 /**
+ * Générer un ID unique pour un objet
+ */
+const genererIdUnique = (type) => {
+  return `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+/**
  * Créer un objet maison (retourne l'objet sans l'ajouter au canvas)
  */
 export const creerMaisonObjet = (echelle) => {
@@ -42,6 +49,7 @@ export const creerMaisonObjet = (echelle) => {
 
   const group = new fabric.Group([maisonRect, labelIcone], {
     customType: 'maison',
+    customId: genererIdUnique('maison'), // ✅ ID unique
     profondeurFondations: 1.2,
     hauteurBatiment: 7,
     originX: 'center',
@@ -131,6 +139,7 @@ export const creerCiterneObjet = (echelle) => {
 
   const group = new fabric.Group([citerne, labelIcone], {
     customType: 'citerne',
+    customId: genererIdUnique('citerne'), // ✅ ID unique
     diametre: diametre,
     profondeur: profondeur,
     elevationSol: 0,
@@ -235,6 +244,7 @@ export const creerTerrasseObjet = (echelle) => {
 
   const group = new fabric.Group([terrasseRect, labelIcone], {
     customType: 'terrasse',
+    customId: genererIdUnique('terrasse'), // ✅ ID unique
     hauteurDalle: 0.15,
     profondeurFondation: 0.3,
     elevationSol: 0,
@@ -293,12 +303,15 @@ export const creerPavesObjet = (echelle) => {
 
   const group = new fabric.Group([pavesRect, labelIcone], {
     customType: 'paves',
+    customId: genererIdUnique('paves'), // ✅ ID unique
     hauteurPaves: 0.08,
     profondeurGravier: 0.15,
     elevationSol: 0,
     originX: 'center',
     originY: 'center'
   });
+<｜tool▁call▁begin｜>
+read_file
 
   return group;
 };
