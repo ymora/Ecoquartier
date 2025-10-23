@@ -116,7 +116,8 @@ function CanvasTerrain3D({
           profondeur,
           hauteur: maison.hauteurBatiment || 7,
           profondeurFondations: maison.profondeurFondations || 1.2,
-          angle: maison.angle || 0
+          angle: maison.angle || 0,
+          customType: 'maison' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
     }
@@ -139,7 +140,8 @@ function CanvasTerrain3D({
           profondeur: diametre,
           profondeurEnterree: c.profondeur || 2.5,
           volume: c.volume || 3000,
-          elevationSol: c.elevationSol || 0
+          elevationSol: c.elevationSol || 0,
+          customType: 'citerne' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
     }
@@ -167,7 +169,8 @@ function CanvasTerrain3D({
           volume: largeur * profondeur * hauteur,
           angle: c.angle || 0,
           elevationSol: c.elevationSol || 0,
-          type: 'caisson'
+          type: 'caisson',
+          customType: 'caisson-eau' // ✅ Ajout pour synchronisation avec le canvas 2D
         });
         
         updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
@@ -189,7 +192,8 @@ function CanvasTerrain3D({
           x2: x2 / echelle,
           y2: y2 / echelle,
           profondeur: c.profondeur || 0.6,
-          diametre: c.diametre || 0.1
+          diametre: c.diametre || 0.1,
+          customType: 'canalisation' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
     }
@@ -209,7 +213,8 @@ function CanvasTerrain3D({
           x2: x2 / echelle,
           y2: y2 / echelle,
           hauteur: c.hauteurCloture || 1.5,
-          epaisseur: c.epaisseur || 0.05
+          epaisseur: c.epaisseur || 0.05,
+          customType: 'cloture' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
     }
@@ -238,7 +243,8 @@ function CanvasTerrain3D({
           hauteur: t.hauteurDalle || 0.15, // Hauteur de la dalle
           angle: t.angle || 0,
           elevationSol: t.elevationSol || 0, // Élévation par rapport au sol
-          type: 'terrasse'
+          type: 'terrasse',
+          customType: 'terrasse' // ✅ Ajout pour synchronisation avec le canvas 2D
         });
         
         updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
@@ -265,7 +271,8 @@ function CanvasTerrain3D({
           profondeur,
           hauteur: p.hauteurPaves || 0.08, // Hauteur des pavés
           angle: p.angle || 0,
-          type: 'pave-enherbe'
+          type: 'pave-enherbe',
+          customType: 'paves' // ✅ Ajout pour synchronisation avec le canvas 2D
         });
         
         updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
@@ -304,7 +311,8 @@ function CanvasTerrain3D({
           hauteur: hauteurMax,
           envergure: envergureMax,
           profondeurRacines: profondeurRacines,
-          validationStatus: a.validationStatus || 'ok'
+          validationStatus: a.validationStatus || 'ok',
+          customType: 'arbre-a-planter' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
     }
@@ -485,7 +493,7 @@ function CanvasTerrain3D({
           <Maison3D 
             key={`maison-${idx}`}
             {...maison}
-            onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx, customType: 'maison' })}
+            onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
           />
         ))}
         
@@ -494,7 +502,7 @@ function CanvasTerrain3D({
           <Citerne3D 
             key={`citerne-${idx}`}
             {...citerne}
-            onClick={() => handleObjetClick({ type: 'citerne', ...citerne, index: idx, customType: 'citerne' })}
+            onClick={() => handleObjetClick({ type: 'citerne', ...citerne, index: idx })}
           />
         ))}
         
@@ -503,7 +511,7 @@ function CanvasTerrain3D({
           <Caisson3D 
             key={`caisson-${idx}`}
             {...caisson}
-            onClick={() => handleObjetClick({ type: 'caisson-eau', ...caisson, index: idx, customType: 'caisson-eau' })}
+            onClick={() => handleObjetClick({ type: 'caisson-eau', ...caisson, index: idx })}
           />
         ))}
         
@@ -512,7 +520,7 @@ function CanvasTerrain3D({
           <Canalisation3D 
             key={`canal-${idx}`}
             {...canal}
-            onClick={() => handleObjetClick({ type: 'canalisation', ...canal, index: idx, customType: 'canalisation' })}
+            onClick={() => handleObjetClick({ type: 'canalisation', ...canal, index: idx })}
           />
         ))}
         
@@ -521,7 +529,7 @@ function CanvasTerrain3D({
           <Cloture3D 
             key={`cloture-${idx}`}
             {...cloture}
-            onClick={() => handleObjetClick({ type: 'cloture', ...cloture, index: idx, customType: 'cloture' })}
+            onClick={() => handleObjetClick({ type: 'cloture', ...cloture, index: idx })}
           />
         ))}
         
@@ -538,7 +546,7 @@ function CanvasTerrain3D({
               ]}
               largeur={terrasse.largeur}
               profondeur={terrasse.profondeur}
-              onClick={() => handleObjetClick({ type: 'paves', ...terrasse, index: idx, customType: 'paves' })}
+              onClick={() => handleObjetClick({ type: 'paves', ...terrasse, index: idx })}
             />
           ) : (
             // Terrasse classique (béton gris)
@@ -552,7 +560,7 @@ function CanvasTerrain3D({
               rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
               receiveShadow
               castShadow
-              onClick={() => handleObjetClick({ type: 'terrasse', ...terrasse, index: idx, customType: 'terrasse' })}
+              onClick={() => handleObjetClick({ type: 'terrasse', ...terrasse, index: idx })}
             >
               <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
               <meshStandardMaterial 
