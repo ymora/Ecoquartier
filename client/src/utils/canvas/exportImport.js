@@ -50,30 +50,30 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
   // MAISONS (tableau)
   planData.maisons.forEach((m, i) => {
     const angleStr = m.angle ? `, angle: ${m.angle}` : '';
-    code += `  // Maison ${i+1}\n  const maison${i+1} = new fabric.Rect({left: ${(m.left * echelle).toFixed(1)}, top: ${(m.top * echelle).toFixed(1)}, width: ${(m.width * echelle).toFixed(1)}, height: ${(m.height * echelle).toFixed(1)}, fill: '#bdbdbd', stroke: '#757575', strokeWidth: 3, customType: 'maison', profondeurFondations: ${m.profondeurFondations || 1.2}, hauteurBatiment: ${m.hauteurBatiment || 7}${angleStr}});\n  canvas.add(maison${i+1});\n\n`;
+    code += `  // Maison ${i+1}\n  const maison${i+1} = new fabric.Rect({left: ${(m.left * echelle).toFixed(1)}, top: ${(m.top * echelle).toFixed(1)}, width: ${(m.width * echelle).toFixed(1)}, height: ${(m.height * echelle).toFixed(1)}, fill: '#bdbdbd', stroke: '#757575', strokeWidth: 3, customType: 'maison', profondeurFondations: ${m.profondeurFondations || 1.2}, hauteurBatiment: ${m.hauteurBatiment || 7}, elevationSol: ${m.elevationSol || 0}${angleStr}});\n  canvas.add(maison${i+1});\n\n`;
   });
   
   // CITERNES
   planData.citernes.forEach((c, i) => {
-    code += `  // Citerne ${i+1}\n  canvas.add(new fabric.Circle({left: ${(c.left * echelle).toFixed(1)}, top: ${(c.top * echelle).toFixed(1)}, radius: ${((c.diametre || 1.5) * echelle / 2).toFixed(1)}, fill: 'rgba(33,150,243,0.3)', stroke: '#1976d2', strokeWidth: 3, customType: 'citerne', profondeur: ${c.profondeur || 2.5}, diametre: ${c.diametre || 1.5}, originX: 'center', originY: 'center'}));\n\n`;
+    code += `  // Citerne ${i+1}\n  canvas.add(new fabric.Circle({left: ${(c.left * echelle).toFixed(1)}, top: ${(c.top * echelle).toFixed(1)}, radius: ${((c.diametre || 1.5) * echelle / 2).toFixed(1)}, fill: 'rgba(33,150,243,0.3)', stroke: '#1976d2', strokeWidth: 3, customType: 'citerne', profondeur: ${c.profondeur || 2.5}, diametre: ${c.diametre || 1.5}, elevationSol: ${c.elevationSol || 0}, originX: 'center', originY: 'center'}));\n\n`;
   });
   
   // CAISSONS D'EAU
   planData.caissonsEau.forEach((c, i) => {
     const angleStr = c.angle ? `, angle: ${c.angle}` : '';
-    code += `  // Caisson d'eau ${i+1}\n  canvas.add(new fabric.Rect({left: ${(c.left * echelle).toFixed(1)}, top: ${(c.top * echelle).toFixed(1)}, width: ${(c.largeurCaisson * echelle).toFixed(1)}, height: ${(c.profondeurCaisson * echelle).toFixed(1)}, fill: 'rgba(33,150,243,0.25)', stroke: '#1565c0', strokeWidth: 3, strokeDashArray: [5,3], customType: 'caisson-eau', largeurCaisson: ${c.largeurCaisson}, profondeurCaisson: ${c.profondeurCaisson}, hauteurCaisson: ${c.hauteurCaisson}, profondeurEnterree: ${c.profondeurEnterree || 1.0}, originX: 'center', originY: 'center'${angleStr}}));\n\n`;
+    code += `  // Caisson d'eau ${i+1}\n  canvas.add(new fabric.Rect({left: ${(c.left * echelle).toFixed(1)}, top: ${(c.top * echelle).toFixed(1)}, width: ${(c.largeurCaisson * echelle).toFixed(1)}, height: ${(c.profondeurCaisson * echelle).toFixed(1)}, fill: 'rgba(33,150,243,0.25)', stroke: '#1565c0', strokeWidth: 3, strokeDashArray: [5,3], customType: 'caisson-eau', largeurCaisson: ${c.largeurCaisson}, profondeurCaisson: ${c.profondeurCaisson}, hauteurCaisson: ${c.hauteurCaisson}, profondeurEnterree: ${c.profondeurEnterree || 1.0}, elevationSol: ${c.elevationSol || 0}, originX: 'center', originY: 'center'${angleStr}}));\n\n`;
   });
   
   // TERRASSES
   planData.terrasses.forEach((t, i) => {
     const angleStr = t.angle ? `, angle: ${t.angle}` : '';
-    code += `  // Terrasse ${i+1}\n  canvas.add(new fabric.Rect({left: ${(t.left * echelle).toFixed(1)}, top: ${(t.top * echelle).toFixed(1)}, width: ${(t.width * echelle).toFixed(1)}, height: ${(t.height * echelle).toFixed(1)}, fill: 'rgba(158,158,158,0.4)', stroke: '#757575', strokeWidth: 2, customType: 'terrasse', hauteurDalle: ${t.hauteurDalle || 0.15}, profondeurFondation: ${t.profondeurFondation || 0.3}${angleStr}}));\n\n`;
+    code += `  // Terrasse ${i+1}\n  canvas.add(new fabric.Rect({left: ${(t.left * echelle).toFixed(1)}, top: ${(t.top * echelle).toFixed(1)}, width: ${(t.width * echelle).toFixed(1)}, height: ${(t.height * echelle).toFixed(1)}, fill: 'rgba(158,158,158,0.4)', stroke: '#757575', strokeWidth: 2, customType: 'terrasse', hauteurDalle: ${t.hauteurDalle || 0.15}, profondeurFondation: ${t.profondeurFondation || 0.3}, elevationSol: ${t.elevationSol || 0}${angleStr}}));\n\n`;
   });
   
   // PAVÉS ENHERBÉS
   planData.paves.forEach((p, i) => {
     const angleStr = p.angle ? `, angle: ${p.angle}` : '';
-    code += `  // Pavé enherbé ${i+1}\n  canvas.add(new fabric.Rect({left: ${(p.left * echelle).toFixed(1)}, top: ${(p.top * echelle).toFixed(1)}, width: ${(p.width * echelle).toFixed(1)}, height: ${(p.height * echelle).toFixed(1)}, fill: 'rgba(139,195,74,0.3)', stroke: '#7cb342', strokeWidth: 2, customType: 'paves', hauteurPaves: ${p.hauteurPaves || 0.08}, profondeurGravier: ${p.profondeurGravier || 0.15}${angleStr}}));\n\n`;
+    code += `  // Pavé enherbé ${i+1}\n  canvas.add(new fabric.Rect({left: ${(p.left * echelle).toFixed(1)}, top: ${(p.top * echelle).toFixed(1)}, width: ${(p.width * echelle).toFixed(1)}, height: ${(p.height * echelle).toFixed(1)}, fill: 'rgba(139,195,74,0.3)', stroke: '#7cb342', strokeWidth: 2, customType: 'paves', hauteurPaves: ${p.hauteurPaves || 0.08}, profondeurGravier: ${p.profondeurGravier || 0.15}, elevationSol: ${p.elevationSol || 0}${angleStr}}));\n\n`;
   });
   
   // CLÔTURES
@@ -83,7 +83,7 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
   
   // CANALISATIONS
   planData.canalisations.forEach((c, i) => {
-    code += `  // Canalisation ${i+1}\n  // const canal${i} = creerCanalisationGroup(${c.x1.toFixed(1)}, ${c.y1.toFixed(1)}, ${c.x2.toFixed(1)}, ${c.y2.toFixed(1)}, ${c.profondeur || 0.6}, ${c.diametreCanalisation || 0.1});\n  // canvas.add(canal${i});\n\n`;
+    code += `  // Canalisation ${i+1}\n  // const canal${i} = creerCanalisationGroup(${c.x1.toFixed(1)}, ${c.y1.toFixed(1)}, ${c.x2.toFixed(1)}, ${c.y2.toFixed(1)}, ${c.profondeur || 0.6}, ${c.diametreCanalisation || 0.1}, ${c.elevationSol || 0});\n  // canvas.add(canal${i});\n\n`;
   });
   
   
