@@ -691,26 +691,31 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     const posX_px = pos3DX_m * echelle;
     const posZ_px = pos3DZ_m * echelle;
     
+    // ✅ Log détaillé pour debug
+    logger.info('Selection3D', `🔍 Recherche objet depuis 3D:`, {
+      typeRecherche: objetData.customType || objetData.type,
+      position3D_m: `(${pos3DX_m.toFixed(2)}, ${pos3DZ_m.toFixed(2)})`,
+      position2D_attendue_px: `(${posX_px.toFixed(1)}, ${posZ_px.toFixed(1)})`,
+      echelle
+    });
+    
     // Trouver l'objet dans le canvas 2D
     const typeRecherche = objetData.customType || objetData.type; // Utiliser customType si disponible
     const objet = canvas.getObjects().find(o => {
       if (o.customType !== typeRecherche) return false;
       
       // Comparer position approximative (tolérance très large pour les objets)
-      const tolerance = 100; // Augmenté à 100 pixels pour tolérer les arrondis et erreurs de conversion
+      const tolerance = 200; // ✅ Augmenté à 200 pixels
       const diffX = Math.abs(o.left - posX_px);
       const diffY = Math.abs(o.top - posZ_px);
       
-      // Logger uniquement si proche (pour éviter spam)
-      if (diffX < tolerance * 2 && diffY < tolerance * 2) {
-        logger.info('Selection3D', `Recherche objet ${objetData.type}:`, {
-          pos3D: `(${pos3DX_m.toFixed(2)}m, ${pos3DZ_m.toFixed(2)}m)`,
-          pos2D: `(${o.left.toFixed(1)}px, ${o.top.toFixed(1)}px)`,
-          expected: `(${posX_px.toFixed(1)}px, ${posZ_px.toFixed(1)}px)`,
-          diff: `(${diffX.toFixed(1)}px, ${diffY.toFixed(1)}px)`,
-          tolerance
-        });
-      }
+      // Logger pour chaque objet du bon type
+      logger.info('Selection3D', `📋 Objet 2D trouvé de type "${o.customType}":`, {
+        pos2D: `(${o.left.toFixed(1)}px, ${o.top.toFixed(1)}px)`,
+        diff: `(${diffX.toFixed(1)}px, ${diffY.toFixed(1)}px)`,
+        tolerance,
+        match: diffX < tolerance && diffY < tolerance
+      });
       
       return diffX < tolerance && diffY < tolerance;
     });
