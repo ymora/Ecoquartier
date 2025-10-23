@@ -725,15 +725,23 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       // Logger pour debug
       logger.info('Selection3D', `✅ Objet ${objetData.type} sélectionné depuis la 3D`);
     } else {
+      // Filtrer uniquement les objets du même type pour le debug
+      const objetsDuMemeType = canvas.getObjects()
+        .filter(o => o.customType === objetData.type)
+        .map(o => ({
+          type: o.customType,
+          left: o.left,
+          top: o.top,
+          diffX: Math.abs(o.left - posX_px).toFixed(1),
+          diffY: Math.abs(o.top - posZ_px).toFixed(1)
+        }));
+      
       logger.warn('Selection3D', '❌ Objet non trouvé dans le canvas 2D', {
         type: objetData.type,
         position3D: objetData.position,
         position2Dattendue: `(${posX_px.toFixed(1)}px, ${posZ_px.toFixed(1)}px)`,
-        objetsDisponibles: canvas.getObjects().map(o => ({
-          type: o.customType,
-          left: o.left,
-          top: o.top
-        }))
+        tolerance: 100,
+        objetsDuMemeType
       });
     }
   }, []);
