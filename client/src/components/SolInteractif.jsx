@@ -155,7 +155,7 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
             
             <div className="sol-couche-nom">{couche.nom}</div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'nowrap' }}>
               <button
                 type="button"
                 onClick={() => ajusterCouche(index, -5)}
@@ -171,7 +171,8 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
                   fontWeight: 'bold',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  flexShrink: 0
                 }}
               >
                 −
@@ -195,7 +196,7 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
                     }
                   }
                 }}
-                style={{ width: '60px', textAlign: 'right' }}
+                style={{ width: '60px', minWidth: '50px', textAlign: 'right', flexShrink: 1 }}
               />
               <button
                 type="button"
@@ -212,12 +213,13 @@ function SolInteractif({ couchesSol, onCouchesSolChange }) {
                   fontWeight: 'bold',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  flexShrink: 0
                 }}
               >
                 +
               </button>
-              <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', minWidth: '20px' }}>cm</span>
+              <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', minWidth: '20px', flexShrink: 0 }}>cm</span>
             </div>
           </div>
         ))}

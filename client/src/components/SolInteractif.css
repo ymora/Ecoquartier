@@ -14,7 +14,7 @@
 
 .sol-couche-controle {
   display: grid;
-  grid-template-columns: 16px 1fr 60px;
+  grid-template-columns: 16px 1fr auto;
   align-items: center;
   gap: 0.4rem;
   padding: 0.3rem 0.5rem;

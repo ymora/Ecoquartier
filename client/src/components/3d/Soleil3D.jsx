@@ -147,8 +147,11 @@ function Soleil3D({
         </div>
       </Html>
       
-      {/* Ligne pointillée vers le sol (rayon vertical) */}
-      <mesh position={[0, -y / 2, 0]}>
+      {/* Ligne pointillée vers le sol (rayon incliné selon l'élévation du soleil) */}
+      <mesh 
+        position={[0, -y / 2, 0]}
+        rotation={[Math.PI / 2 - elevationRad, azimuthRad, 0]}
+      >
         <cylinderGeometry args={[0.05, 0.05, y, 8]} />
         <meshBasicMaterial 
           color="#FFD700"
