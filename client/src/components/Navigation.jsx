@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaBars, FaTree, FaLeaf, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { ICONS } from '../config/icons';
 import './Navigation.css';
 
 function Navigation({ plantes, selectedId, onSelect, onMenuToggle, disclaimerClosed }) {
@@ -102,7 +103,7 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle, disclaimerClo
       {/* Bouton toggle uniquement sur mobile */}
       {isMobile && (
         <button 
-          className="nav-toggle"
+          className="btn btn-secondary nav-toggle"
           onClick={toggleNav}
           aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
         >
@@ -129,7 +130,7 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle, disclaimerClo
             {arbres.map(arbre => (
               <button
                 key={arbre.id}
-                className={`nav-item ${selectedId === arbre.id ? 'active' : ''}`}
+                className={`btn btn-secondary nav-item ${selectedId === arbre.id ? 'active' : ''}`}
                 onClick={() => handleSelect(arbre.id)}
               >
                 <span className="nav-item-name">{arbre.name}</span>
@@ -154,7 +155,7 @@ function Navigation({ plantes, selectedId, onSelect, onMenuToggle, disclaimerClo
             {arbustes.map(arbuste => (
               <button
                 key={arbuste.id}
-                className={`nav-item ${selectedId === arbuste.id ? 'active' : ''}`}
+                className={`btn btn-secondary nav-item ${selectedId === arbuste.id ? 'active' : ''}`}
                 onClick={() => handleSelect(arbuste.id)}
               >
                 <span className="nav-item-name">{arbuste.name}</span>

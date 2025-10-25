@@ -1,0 +1,161 @@
+/**
+ * Styles professionnels - Design sobre et épuré
+ */
+
+/* Variables CSS pour les couleurs */
+:root {
+  --color-primary: #1976d2;
+  --color-secondary: #424242;
+  --color-accent: #ff9800;
+  --color-success: #2e7d32;
+  --color-warning: #f57c00;
+  --color-error: #d32f2f;
+  --color-info: #1976d2;
+  
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f5f5;
+  --color-bg-tertiary: #eeeeee;
+  
+  --color-border-light: #e0e0e0;
+  --color-border-medium: #bdbdbd;
+  --color-border-dark: #757575;
+  
+  --color-text-primary: #212121;
+  --color-text-secondary: #757575;
+  --color-text-light: #9e9e9e;
+  
+  --border-radius: 4px;
+  --border-radius-lg: 8px;
+  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-lg: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Boutons professionnels */
+.btn-professional {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.btn-professional:hover {
+  background: #1565c0;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.btn-professional:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow);
+}
+
+/* Boutons secondaires */
+.btn-secondary {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-primary);
+}
+
+/* Boutons d'action */
+.btn-success {
+  background: var(--color-success);
+  color: white;
+}
+
+.btn-warning {
+  background: var(--color-warning);
+  color: white;
+}
+
+.btn-error {
+  background: var(--color-error);
+  color: white;
+}
+
+/* Sections */
+.section-professional {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.section-title-professional {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+/* Info boxes professionnelles */
+.info-box-professional {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius);
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.info-box-success {
+  background: #e8f5e8;
+  border-color: var(--color-success);
+  color: #1b5e20;
+}
+
+.info-box-warning {
+  background: #fff3e0;
+  border-color: var(--color-warning);
+  color: #e65100;
+}
+
+.info-box-error {
+  background: #ffebee;
+  border-color: var(--color-error);
+  color: #c62828;
+}
+
+/* Onglets professionnels */
+.tab-professional {
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-light);
+  border-bottom: none;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-professional.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.tab-professional:hover:not(.active) {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}

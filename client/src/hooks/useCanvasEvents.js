@@ -8,6 +8,15 @@ import {
   afficherIndicateursConnexion
 } from '../utils/canvas/cloturesHelpers';
 import { createProtectedEventHandler } from '../utils/canvas/eventManager';
+import { 
+  maintenirCentreAuPremierPlan,
+  creerMaisonObjet, 
+  creerCiterneObjet, 
+  creerCaissonEauObjet,
+  creerTerrasseObjet,
+  creerPavesObjet
+} from '../utils/canvas/creerObjets';
+import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
 
 /**
  * Hook pour gérer tous les event listeners du canvas
@@ -18,10 +27,8 @@ export const useCanvasEvents = ({
   echelle,
   afficherMenuContextuel,
   cacherMenuContextuel,
-  cacherTooltipValidation,
   validerPositionArbre,
   revaliderTous, // Nouvelle fonction pour re-valider tous les arbres
-  afficherTooltipValidation,
   cacherCercleTronc,
   exporterPlan,
   ajouterMesuresLive,
@@ -74,9 +81,7 @@ export const useCanvasEvents = ({
       ajouterMesuresLive(canvas);
       cacherCercleTronc(canvas);
       
-      if (e.target && e.target.customType === 'arbre-a-planter') {
-        afficherTooltipValidation(e.target, canvas);
-      }
+      // afficherTooltipValidation supprimé - infos maintenant dans Config
       
       // RE-VALIDER TOUS LES ARBRES après TOUT déplacement
       // Cela permet de détecter tous les conflits (arbres, maison, canalisations, etc.)
@@ -121,21 +126,45 @@ export const useCanvasEvents = ({
       
       if (e.ctrlKey && e.key === 'd') {
         e.preventDefault();
+        console.log('🔧 DEBUG: Ctrl+D détecté');
         const actifs = canvas.getActiveObjects();
+        console.log('🔧 DEBUG: Objets actifs:', actifs.length);
+        
         if (actifs.length > 0) {
-          actifs.forEach(obj => {
-            if (!obj.isGridLine && !obj.measureLabel) {
-              obj.clone((cloned) => {
-                cloned.set({
-                  left: obj.left + echelle,
-                  top: obj.top + echelle
+          actifs.forEach((obj, index) => {
+            console.log(`🔧 DEBUG: Objet ${index}:`, {
+              customType: obj.customType,
+              left: obj.left,
+              top: obj.top,
+              width: obj.width,
+              height: obj.height
+            });
+            
+            // ✅ CONDITION PLUS LARGE : Dupliquer tous les objets sauf les éléments d'interface
+            if (!obj.isGridLine && 
+                !obj.measureLabel && 
+                !obj.isBoussole && 
+                !obj.isImageFond &&
+                !obj.alignmentGuide &&
+                !obj.isDimensionBox &&
+                !obj.isAideButton &&
+                !obj.isCenterMark) {
+              console.log('🔧 DEBUG: Début clonage via fonction unifiée...');
+              
+              // ✅ UTILISER LA FONCTION UNIFIÉE
+              dupliquerObjet(obj, canvas, echelle, exporterPlan, revaliderTous)
+                .then((cloned) => {
+                  console.log('🔧 DEBUG: Duplication Ctrl+D terminée!');
+                })
+                .catch((error) => {
+                  console.error('🔧 DEBUG: Erreur lors de la duplication Ctrl+D:', error);
                 });
-                canvas.add(cloned);
-                canvas.setActiveObject(cloned);
-                canvas.renderAll();
-              });
+            } else {
+              console.log('🔧 DEBUG: Objet ignoré (élément d\'interface)');
             }
           });
+        } else {
+          console.log('🔧 DEBUG: Aucun objet actif');
         }
       }
       
@@ -173,6 +202,9 @@ export const useCanvasEvents = ({
         canvas.bringObjectToFront(cloture);
       });
       
+      // Maintenir le repère de centre au premier plan pour qu'il soit toujours visible
+      maintenirCentreAuPremierPlan(canvas);
+      
       // Afficher les indicateurs de connexion
       afficherIndicateursConnexion(canvas);
     };
@@ -193,7 +225,7 @@ export const useCanvasEvents = ({
         
         if (e.target.customType === 'arbre-a-planter') {
           validerPositionArbre(canvas, e.target);
-          afficherTooltipValidation(e.target, canvas);
+          // afficherTooltipValidation supprimé - infos maintenant dans Config
         }
         
         // Gérer les clôtures connectées
@@ -209,7 +241,7 @@ export const useCanvasEvents = ({
         afficherMenuContextuel(obj, canvas);
         if (obj.customType === 'arbre-a-planter') {
           validerPositionArbre(canvas, obj);
-          afficherTooltipValidation(obj, canvas);
+          // afficherTooltipValidation supprimé - infos maintenant dans Config
         }
       }
     };
@@ -220,13 +252,13 @@ export const useCanvasEvents = ({
         afficherMenuContextuel(obj, canvas);
         if (obj.customType === 'arbre-a-planter') {
           validerPositionArbre(canvas, obj);
-          afficherTooltipValidation(obj, canvas);
+          // afficherTooltipValidation supprimé - infos maintenant dans Config
         }
       }
     };
 
     const handleSelectionCleared = () => {
-      cacherTooltipValidation();
+      // cacherTooltipValidation supprimé - infos maintenant dans Config
       cacherMenuContextuel();
     };
 
@@ -250,6 +282,19 @@ export const useCanvasEvents = ({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
+      // Nettoyer tous les event listeners du canvas
+      canvas.off('object:moving', handleMoving);
+      canvas.off('object:moving', handleMovingGuides);
+      canvas.off('object:scaling', handleScaling);
+      canvas.off('object:modified', handleMovingWithValidation);
+      canvas.off('object:added', handleAddedOrRemoved);
+      canvas.off('object:removed', handleAddedOrRemoved);
+      canvas.off('selection:created', handleSelectionCreated);
+      canvas.off('selection:updated', handleSelectionUpdated);
+      canvas.off('selection:cleared', handleSelectionCleared);
+      canvas.off('mouse:dblclick', handleDblClick);
+      
+      // Nettoyer l'event listener global
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [
@@ -257,10 +302,8 @@ export const useCanvasEvents = ({
     echelle,
     afficherMenuContextuel,
     cacherMenuContextuel,
-    cacherTooltipValidation,
     validerPositionArbre,
     revaliderTous,
-    afficherTooltipValidation,
     cacherCercleTronc,
     exporterPlan,
     ajouterMesuresLive,

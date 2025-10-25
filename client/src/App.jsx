@@ -4,8 +4,11 @@ import Navigation from './components/Navigation';
 import Disclaimer from './components/Disclaimer';
 import ModeSelector from './components/ModeSelector';
 import LogViewer from './components/LogViewer';
+import ErrorBoundary from './components/ErrorBoundary';
 import plantesData from './data/arbustesData';
 import './App.css';
+import './styles/theme-unified.css';
+
 
 // 🚀 Lazy loading des composants lourds pour optimiser le chargement initial
 const ArbusteDetail = lazy(() => import('./components/ArbusteDetail'));
@@ -29,7 +32,7 @@ function LoadingFallback() {
 }
 
 function App() {
-  const [selectedPlante, setSelectedPlante] = useState(plantesData[0]);
+  const [selectedPlante, setSelectedPlante] = useState(plantesData[0]); // Premier arbre par défaut
   const [mode, setMode] = useState('normal'); // 'normal', 'comparaison', ou 'planification'
   const [menuOpen, setMenuOpen] = useState(true);
   const [disclaimerClosed, setDisclaimerClosed] = useState(false);
@@ -52,7 +55,8 @@ function App() {
   }, []);
 
   return (
-    <div className="app">
+    <ErrorBoundary>
+      <div className="app">
       
       {/* Sélecteur de mode unifié */}
       <ModeSelector 
@@ -64,18 +68,36 @@ function App() {
       <Suspense fallback={<LoadingFallback />}>
         {mode === 'normal' ? (
           // Mode Normal - Fiches détaillées
-          <div className="main-layout">
-            <Navigation 
-              plantes={plantesData}
-              selectedId={selectedPlante.id}
-              onSelect={handleSelectPlante}
-              onMenuToggle={handleMenuToggle}
-              disclaimerClosed={disclaimerClosed}
-            />
-            <main className={`content ${menuOpen ? 'menu-open' : ''}`}>
-              <ArbusteDetail arbuste={selectedPlante} menuOpen={menuOpen} />
-            </main>
-          </div>
+          selectedPlante ? (
+            <div className="main-layout">
+              <Navigation 
+                plantes={plantesData}
+                selectedId={selectedPlante.id}
+                onSelect={handleSelectPlante}
+                onMenuToggle={handleMenuToggle}
+                disclaimerClosed={disclaimerClosed}
+              />
+              <main className={`content ${menuOpen ? 'menu-open' : ''}`}>
+                <ArbusteDetail arbuste={selectedPlante} menuOpen={menuOpen} />
+              </main>
+            </div>
+          ) : (
+            <div className="main-layout">
+              <Navigation 
+                plantes={plantesData}
+                selectedId={null}
+                onSelect={handleSelectPlante}
+                onMenuToggle={handleMenuToggle}
+                disclaimerClosed={disclaimerClosed}
+              />
+              <main className="content">
+                <div style={{ padding: '2rem', textAlign: 'center' }}>
+                  <h2>🌳 Les Haies de l'Écocartier de Bessancourt</h2>
+                  <p>Sélectionnez un arbre ou un arbuste pour commencer</p>
+                </div>
+              </main>
+            </div>
+          )
         ) : (
           // Mode Comparaison ou Planification
           <main className="content full-width">
@@ -99,6 +121,7 @@ function App() {
         onClose={() => setLogViewerOpen(false)}
       />
     </div>
+    </ErrorBoundary>
   );
 }
 

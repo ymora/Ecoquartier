@@ -1,0 +1,368 @@
+/**
+ * Thème unifié professionnel - Application complète
+ * Remplace tous les styles existants par un design cohérent
+ */
+
+/* Variables CSS globales */
+:root {
+  /* Couleurs principales */
+  --primary: #1976d2;
+  --primary-light: #42a5f5;
+  --primary-dark: #1565c0;
+  --secondary: #424242;
+  --accent: #ff9800;
+  
+  /* Couleurs de statut */
+  --success: #2e7d32;
+  --warning: #f57c00;
+  --error: #d32f2f;
+  --info: #1976d2;
+  
+  /* Couleurs de fond */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #eeeeee;
+  
+  /* Couleurs de texte */
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  --text-light: #9e9e9e;
+  --text-white: #ffffff;
+  
+  /* Couleurs de bordure */
+  --border-light: #e0e0e0;
+  --border-medium: #bdbdbd;
+  --border-dark: #757575;
+  
+  /* Ombres */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
+  
+  /* Rayons */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* Espacements */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  
+  /* Transitions */
+  --transition: 0.2s ease;
+}
+
+/* Reset et base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Boutons unifiés */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+  min-height: 2.5rem;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Variantes de boutons */
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-white);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+}
+
+.btn-success {
+  background: var(--success);
+  color: var(--text-white);
+}
+
+.btn-warning {
+  background: var(--warning);
+  color: var(--text-white);
+}
+
+.btn-error {
+  background: var(--error);
+  color: var(--text-white);
+}
+
+.btn-info {
+  background: var(--info);
+  color: var(--text-white);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Panneau latéral unifié */
+.panneau-lateral {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  margin: 0 var(--space-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Onglets unifiés */
+.tabs {
+  display: flex;
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--primary);
+}
+
+.tab {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+.tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: var(--bg-primary);
+}
+
+/* Sections unifiées */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--primary);
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Info boxes unifiées */
+.info-box {
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid;
+  margin-bottom: var(--space-sm);
+  font-size: 0.875rem;
+}
+
+.info-box-success {
+  background: rgba(46, 125, 50, 0.1);
+  border-color: var(--success);
+  color: #1b5e20;
+}
+
+.info-box-warning {
+  background: rgba(245, 124, 0, 0.1);
+  border-color: var(--warning);
+  color: #e65100;
+}
+
+.info-box-error {
+  background: rgba(211, 47, 47, 0.1);
+  border-color: var(--error);
+  color: #c62828;
+}
+
+.info-box-info {
+  background: rgba(25, 118, 210, 0.1);
+  border-color: var(--info);
+  color: #1565c0;
+}
+
+/* Contrôles canvas unifiés */
+.canvas-controls {
+  position: relative;
+}
+
+.canvas-controls .btn {
+  position: absolute;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+}
+
+/* Navigation unifiée */
+.navigation {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-toggle {
+  background: var(--primary);
+  color: var(--text-white);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.nav-toggle:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-item {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-xs);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+  width: 100%;
+}
+
+.nav-item:hover {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-item.active {
+  background: var(--primary);
+  color: var(--text-white);
+  border-color: var(--primary);
+}
+
+/* Comparateur unifié */
+.comparateur-content {
+  background: var(--bg-primary);
+}
+
+.comparison-table {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.comparison-header-cell {
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--primary);
+}
+
+/* Loading states */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .panneau-lateral {
+    width: 280px;
+    margin: 0 var(--space-sm);
+  }
+  
+  .btn {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.875rem;
+  }
+  
+  .section-header {
+    padding: var(--space-sm);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease;
+}

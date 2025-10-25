@@ -331,7 +331,6 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
             onDimensionsChange={setDimensions}
             onOrientationChange={setOrientation}
             onPlanComplete={() => {}}
-            arbresAPlanter={selectedPlantes}
           />
         </div>
       ) : selectedPlantes.length > 0 ? (
@@ -341,7 +340,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
               <thead>
                 <tr className="comparison-header-row">
                   <th className="comparison-label-cell header-spacer">
-                    <button onClick={() => toggleAll(true)} className="btn-show-all-table">
+                    <button onClick={() => toggleAll(true)} className="btn btn-primary">
                       <FaEye /> Tout afficher
                     </button>
                   </th>
@@ -369,7 +368,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
                 <div className="label-content">
                   <div className="label-row">
                     <button 
-                      className="toggle-critere-btn"
+                      className="btn btn-secondary toggle-critere-btn"
                       onClick={() => toggleCritere('images')}
                       aria-label="Masquer les photos"
                       title="Masquer"
@@ -488,7 +487,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
                       <tr key={critere.key} className="comparison-row">
                         <td className="comparison-label-cell">
                           <button 
-                            className="toggle-critere-btn"
+                            className="btn btn-secondary toggle-critere-btn"
                             onClick={() => toggleCritere(critere.id)}
                             aria-label="Masquer ce critère"
                             title="Masquer"

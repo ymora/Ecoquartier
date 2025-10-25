@@ -6,19 +6,47 @@ function Maison3D({
   largeur = 10, 
   profondeur = 8, 
   hauteur = 7,
-  profondeurFondations = 1.2,
+  elevationSol = 0,
   angle = 0,
+  typeToit = 'deux-pentes', // 'plan', 'monopente', 'deux-pentes'
   onClick
 }) {
-  const hauteurToit = 2.5;
+  // Profondeur des fondations fixe à 1.2m (standard)
+  const profondeurFondations = 1.2;
+  const hauteurToit = typeToit === 'plan' ? 0.1 : 2.5;
   
   // Convertir l'angle en radians et inverser pour correspondre à Fabric.js
   // Fabric.js : angle positif = rotation horaire (vers le bas)
   // Three.js : angle positif = rotation antihoraire (vers le haut)
   const angleRad = -(angle * Math.PI) / 180;
   
-  // Créer un toit à 2 pans réaliste
+  // Créer différents types de toits
   const createToitGeometry = () => {
+    if (typeToit === 'plan') {
+      // Toit plan - simple boîte plate
+      return new THREE.BoxGeometry(largeur, 0.1, profondeur);
+    }
+    
+    if (typeToit === 'monopente') {
+      // Toit monopente - forme de prisme
+      const shape = new THREE.Shape();
+      const penteY = hauteurToit;
+      
+      shape.moveTo(-largeur / 2, 0);
+      shape.lineTo(largeur / 2, 0);
+      shape.lineTo(largeur / 2, penteY);
+      shape.lineTo(-largeur / 2, 0);
+      
+      const extrudeSettings = {
+        steps: 1,
+        depth: profondeur,
+        bevelEnabled: false
+      };
+      
+      return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    }
+    
+    // Toit à deux pentes (défaut)
     const shape = new THREE.Shape();
     const penteY = hauteurToit;
     
@@ -102,32 +130,67 @@ function Maison3D({
         <meshStandardMaterial color="#ffd700" roughness={0.2} metalness={0.9} />
       </mesh>
       
-      {/* TOIT à 2 pans (tuiles rouges) */}
-      <mesh 
-        position={[0, hauteur, -profondeur / 2]} 
-        rotation={[0, 0, 0]}
-        castShadow
-      >
-        <primitive object={createToitGeometry()} />
-        <meshStandardMaterial 
-          color="#b71c1c"
-          roughness={0.7}
-          metalness={0.1}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
+      {/* TOIT selon le type */}
+      {typeToit === 'plan' ? (
+        // Toit plan
+        <mesh 
+          position={[0, hauteur + 0.05, 0]} 
+          castShadow
+        >
+          <primitive object={createToitGeometry()} />
+          <meshStandardMaterial 
+            color="#8b4513"
+            roughness={0.8}
+            metalness={0.1}
+          />
+        </mesh>
+      ) : typeToit === 'monopente' ? (
+        // Toit monopente
+        <mesh 
+          position={[0, hauteur, -profondeur / 2]} 
+          rotation={[0, 0, 0]}
+          castShadow
+        >
+          <primitive object={createToitGeometry()} />
+          <meshStandardMaterial 
+            color="#b71c1c"
+            roughness={0.7}
+            metalness={0.1}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ) : (
+        // Toit à deux pentes (défaut)
+        <mesh 
+          position={[0, hauteur, -profondeur / 2]} 
+          rotation={[0, 0, 0]}
+          castShadow
+        >
+          <primitive object={createToitGeometry()} />
+          <meshStandardMaterial 
+            color="#b71c1c"
+            roughness={0.7}
+            metalness={0.1}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      )}
       
-      {/* Faîtage du toit (arête supérieure) */}
-      <mesh position={[0, hauteur + hauteurToit, 0]} castShadow>
-        <boxGeometry args={[0.15, 0.15, profondeur + 0.2]} />
-        <meshStandardMaterial color="#8b0000" roughness={0.5} />
-      </mesh>
+      {/* Faîtage du toit (seulement pour les toits à DEUX pentes) */}
+      {typeToit === 'deux-pentes' && (
+        <mesh position={[0, hauteur + hauteurToit, 0]} castShadow>
+          <boxGeometry args={[0.15, 0.15, profondeur + 0.2]} />
+          <meshStandardMaterial color="#8b0000" roughness={0.5} />
+        </mesh>
+      )}
       
-      {/* Cheminée */}
-      <mesh position={[-largeur * 0.25, hauteur + hauteurToit * 0.7, 0]} castShadow>
-        <boxGeometry args={[0.6, 1.2, 0.6]} />
-        <meshStandardMaterial color="#8b4513" roughness={0.8} />
-      </mesh>
+      {/* Cheminée (seulement pour les toits à DEUX pentes) */}
+      {typeToit === 'deux-pentes' && (
+        <mesh position={[-largeur * 0.25, hauteur + hauteurToit * 0.7, 0]} castShadow>
+          <boxGeometry args={[0.6, 1.2, 0.6]} />
+          <meshStandardMaterial color="#8b4513" roughness={0.8} />
+        </mesh>
+      )}
       
       {/* ✅ Pas de label - la maison est reconnaissable visuellement */}
     </group>

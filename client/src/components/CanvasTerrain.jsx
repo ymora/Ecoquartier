@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react';
 import { FaMap, FaCube } from 'react-icons/fa';
+import * as fabric from 'fabric';
 import PanneauLateral from './PanneauLateral';
 import GaugeHeure from './GaugeHeure';
 import TimelineSection from './TimelineSection';
 import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
+import { notifications } from '../utils/notifications';
+import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
 
 // Dynamic import pour Three.js (évite bundle 3x trop gros)
 const CanvasTerrain3D = lazy(() => import('./CanvasTerrain3D'));
@@ -17,14 +20,17 @@ import {
   creerCaissonEau,
   creerCloture,
   creerTerrasse,
+  recentrerVueSurContenu,
   creerPaves,
   creerGrille,
+  creerBoussole,
   creerIndicateurSud,
   creerMaisonObjet,
   creerTerrasseObjet,
   creerPavesObjet,
   creerCiterneObjet,
-  creerCaissonEauObjet
+  creerCaissonEauObjet,
+  maintenirCentreAuPremierPlan
 } from '../utils/canvas/creerObjets';
 
 import {
@@ -46,11 +52,12 @@ import {
   toggleVerrouObjetActif as toggleVerrouUtils,
   supprimerObjetActif as supprimerObjetUtils
 } from '../utils/canvas/menuContextuel';
+// Import supprimé - on revient au système original
 
-import {
-  afficherTooltipValidation as afficherTooltipUtils,
-  cacherTooltipValidation as cacherTooltipUtils
-} from '../utils/canvas/tooltipValidation';
+// import {
+//   afficherTooltipValidation as afficherTooltipUtils,
+//   cacherTooltipValidation as cacherTooltipUtils
+// } from '../utils/canvas/tooltipValidation'; // SUPPRIMÉ - infos maintenant dans Config
 
 import {
   exporterPlan as exporterPlanUtils,
@@ -74,15 +81,14 @@ import {
 import { useCanvasInit } from '../hooks/useCanvasInit';
 import { useCanvasEvents } from '../hooks/useCanvasEvents';
 import { useTimelineSync } from '../hooks/useTimelineSync';
-import { useArbresPlacement } from '../hooks/useArbresPlacement';
 
 import './CanvasTerrain.css';
 
-function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete, arbresAPlanter: arbresAPlanterExterne = [] }) {
+function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete }) {
   // ========== REFS ==========
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
-  const validationTooltipRef = useRef(null);
+  // const validationTooltipRef = useRef(null); // SUPPRIMÉ - plus de tooltip
   const pointsClotureRef = useRef([]);
   const contextMenuRef = useRef(null);
   const imageFondRef = useRef(null);
@@ -102,8 +108,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [mode3D, setMode3D] = useState(false);
   const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D
   const syncTimerRef = useRef(null); // Timer pour throttle de la sync
-  const [arbresAPlanter, setArbresAPlanter] = useState(arbresAPlanterExterne); // Gestion interne des arbres
   const [objetEnPlacement, setObjetEnPlacement] = useState(null); // Objet en cours de placement
+  const [syncKey, setSyncKey] = useState(0); // Clé pour forcer la synchronisation 3D
 
   // ========== WRAPPERS POUR ADAPTER LES SIGNATURES ==========
   
@@ -134,11 +140,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     canvas.renderAll();
   }, []);
   
+  // useEffect supprimé - on revient au système original
+  
   const afficherLignesMesure = useCallback((canvas, arbreGroup) => {
     return afficherLignesMesureUtils(canvas, arbreGroup, echelle);
   }, [echelle]);
   
-  // Menu contextuel - useCallback
+  // Menu contextuel - useCallback (SYSTÈME ORIGINAL)
   const afficherMenuContextuel = useCallback((obj, canvas) => {
     afficherMenuUtils(obj, canvas, canvasRef, contextMenuRef);
   }, []);
@@ -155,22 +163,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     supprimerObjetUtils(fabricCanvasRef.current);
   }, []);
   
-  // Tooltip validation - useCallback
-  const afficherTooltipValidation = useCallback((arbreGroup, canvas) => {
-    afficherTooltipUtils(
-      arbreGroup, 
-      canvas, 
-      validationTooltipRef, 
-      anneeProjection, 
-      calculerTailleSelonAnnee,
-      afficherCercleTronc,
-      afficherLignesMesure
-    );
-  }, [anneeProjection, calculerTailleSelonAnnee, afficherCercleTronc, afficherLignesMesure]);
-  
-  const cacherTooltipValidation = useCallback(() => {
-    cacherTooltipUtils(validationTooltipRef);
-  }, []);
+  // Tooltip validation SUPPRIMÉ - infos maintenant dans Config
   
   // Export/Import - useCallback simple (le throttle est dans loggerPositionsPlanCopiable)
   const exporterPlan = useCallback((canvas) => {
@@ -206,18 +199,18 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     // Effacer le localStorage pour forcer le plan par défaut
     localStorage.removeItem('planTerrain');
     
-    // Réinitialiser la liste des arbres
-    setArbresAPlanter([]);
+    // Plus de liste d'arbres à réinitialiser - les arbres sont gérés directement sur le canvas
     
     // Charger le plan par défaut
     chargerPlanDemoUtils(canvas, echelle, ajouterGrille);
     
+    // Recentrer la vue sur le plan
+    setTimeout(() => {
+      recentrerVueSurContenu(canvas);
+    }, 200);
+    
     // Notification
-    const notification = document.createElement('div');
-    notification.textContent = '🔄 Plan par défaut chargé';
-    notification.style.cssText = 'position: fixed; top: 80px; right: 20px; background: #ff9800; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 2000);
+    notifications.planLoaded();
     
     logger.info('Plan', '✅ Plan par défaut rechargé (canvas nettoyé, arbres réinitialisés)');
   };
@@ -239,11 +232,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     loggerPositionsPlanCopiable(planData, echelle);
     
     // Notification
-    const notification = document.createElement('div');
-    notification.textContent = '📋 Log généré ! Ouvrez la console (F12)';
-    notification.style.cssText = 'position: fixed; top: 80px; right: 20px; background: #9c27b0; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 3000);
+    notifications.info('📋 Log généré ! Ouvrez la console (F12)');
     
     logger.info('Plan', '✅ Log copiable généré dans console');
   };
@@ -263,18 +252,25 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   // Navigation canvas 2D et 3D
   const resetZoom = () => {
     if (mode3D) {
-      // ✅ Réinitialiser caméra 3D
-      // La caméra 3D se réinitialise via le bouton dans CanvasTerrain3D
+      // ✅ Réinitialiser caméra 3D vers le centre (0,0,0)
       window.dispatchEvent(new CustomEvent('reset3DCamera'));
-      logger.info('3D', 'Caméra 3D réinitialisée');
+      logger.info('3D', 'Caméra 3D réinitialisée vers le centre (0,0,0)');
     } else {
-      // Réinitialiser zoom 2D
+      // Réinitialiser zoom 2D et centrer sur le centre (0,0)
       const canvas = fabricCanvasRef.current;
       if (!canvas) return;
       
-      canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+      // Centrer la vue sur le centre du canvas (0,0)
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      
+      // Calculer le décalage pour centrer sur (0,0)
+      const offsetX = centerX;
+      const offsetY = centerY;
+      
+      canvas.setViewportTransform([1, 0, 0, 1, offsetX, offsetY]);
       canvas.requestRenderAll();
-      logger.info('Canvas', 'Zoom 2D réinitialisé (100%)');
+      logger.info('Canvas', 'Vue 2D centrée sur le centre (0,0)');
     }
   };
   
@@ -338,6 +334,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       setObjetEnPlacement(nouvelObjet);
       canvas.renderAll();
       
+      // ✅ Recentrer la vue sur le nouvel objet
+      setTimeout(() => {
+        recentrerVueSurContenu(canvas);
+      }, 100);
+      
       logger.info('Placement', `${typeObjet} en cours de placement - cliquez pour déposer`);
     }
   }, [echelle]);
@@ -358,34 +359,66 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const ajouterPaves = () => preparerPlacement('paves');
   
   const ajouterArbrePlante = (plante) => {
-    // Ajouter l'arbre à la liste
-    setArbresAPlanter(prev => [...prev, plante]);
-    logger.info('Arbres', `${plante.name} ajouté à la liste`);
-  };
-  
-  const retirerArbrePlante = (index) => {
-    const arbreARetirer = arbresAPlanter[index];
-    setArbresAPlanter(prev => prev.filter((_, i) => i !== index));
-    
-    // Supprimer aussi l'arbre du canvas
-    if (fabricCanvasRef.current && arbreARetirer) {
+    // Ajouter l'arbre directement au canvas (sans liste interne)
+    if (fabricCanvasRef.current) {
       const canvas = fabricCanvasRef.current;
-      const arbresCanvas = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
       
-      // Trouver l'arbre correspondant sur le canvas
-      const arbreCanvas = arbresCanvas.find(a => a.arbreData?.id === arbreARetirer.id);
-      if (arbreCanvas) {
-        canvas.remove(arbreCanvas);
+      // Créer un cercle pour représenter l'arbre
+      const cercleArbre = new fabric.Circle({
+        left: 200,
+        top: 200,
+        radius: 20,
+        fill: '#4caf50',
+        stroke: '#2e7d32',
+        strokeWidth: 2,
+        originX: 'center',
+        originY: 'center',
+        selectable: true,
+        evented: true
+      });
+      
+      // Créer un label pour l'arbre
+      const labelArbre = new fabric.Text(plante.name, {
+        left: 200,
+        top: 200,
+        fontSize: 12,
+        fill: '#2e7d32',
+        originX: 'center',
+        originY: 'center',
+        selectable: false,
+        evented: false
+      });
+      
+      // Calculer les tailles initiales (année 0)
+      const taillesInitiales = calculerTailleSelonAnnee(plante, 0);
+      
+      // Grouper l'arbre
+      const arbreGroup = new fabric.Group([cercleArbre, labelArbre], {
+        customType: 'arbre-a-planter',
+        arbreData: plante,
+        originX: 'center',
+        originY: 'center',
+        // Propriétés de validation
+        validationStatus: 'ok',
+        validationMessages: [],
+        tailles: taillesInitiales, // Tailles calculées
+        iconeType: '🌱' // Icône par défaut pour les jeunes arbres
+      });
+      
+      canvas.add(arbreGroup);
+      canvas.setActiveObject(arbreGroup);
         canvas.renderAll();
-        exporterPlan(canvas);
-        logger.info('Arbres', `${arbreARetirer.name} retiré du plan et de la liste`);
-      }
+      // Compter les arbres existants pour ajouter un numéro
+      const arbresExistants = canvas.getObjects().filter(o => o.customType === 'arbre-a-planter');
+      const numeroArbre = arbresExistants.length > 1 ? ` #${arbresExistants.length}` : '';
+      logger.info('Arbres', `${plante.name}${numeroArbre} ajouté au canvas`);
     }
   };
   
-  // Plus de synchronisation automatique - l'utilisateur gère la liste manuellement
+  
   const ajouterGrille = (canvas) => creerGrille(canvas, echelle);
-  const ajouterIndicateurSud = (canvas) => creerIndicateurSud(canvas, orientation, onOrientationChange, echelle);
+  const ajouterBoussole = (canvas) => creerBoussole(canvas, orientation, onOrientationChange, echelle);
+  const ajouterIndicateurSud = (canvas) => creerIndicateurSud(canvas, orientation, onOrientationChange, echelle, saison, heureJournee);
 
   // ========== HOOKS PERSONNALISÉS ==========
   
@@ -395,6 +428,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     fabricCanvasRef,
     echelle,
     ajouterGrille,
+    ajouterBoussole,
     ajouterIndicateurSud,
     chargerPlanDemo
   });
@@ -405,15 +439,22 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     echelle,
     afficherMenuContextuel,
     cacherMenuContextuel,
-    cacherTooltipValidation,
+    // cacherTooltipValidation, // SUPPRIMÉ
     validerPositionArbre,
     revaliderTous,
-    afficherTooltipValidation,
+    // afficherTooltipValidation, // SUPPRIMÉ
     cacherCercleTronc,
     exporterPlan,
     ajouterMesuresLive,
     ajouterPointIntermediaire
   });
+
+  // Mettre à jour le soleil 2D quand la saison ou l'heure change
+  useEffect(() => {
+    if (fabricCanvasRef.current) {
+      ajouterIndicateurSud(fabricCanvasRef.current);
+    }
+  }, [saison, heureJournee]);
 
   // Synchronisation timeline
   useTimelineSync({
@@ -423,16 +464,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     validerPositionArbre
   });
 
-  // Placement automatique des arbres
-  useArbresPlacement({
-    fabricCanvasRef,
-    arbresAPlanter,
-    echelle,
-    anneeProjection,
-    calculerTailleSelonAnnee,
-    trouverPositionValide,
-    validerPositionArbre
-  });
 
   // ========== EFFECTS SIMPLES ==========
   
@@ -479,48 +510,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     };
   }, []);
 
-  useEffect(() => {
-    const panel = validationTooltipRef.current;
-    if (!panel) return;
-
-    let isDragging = false;
-    let currentX, currentY, initialX, initialY;
-
-    const dragStart = (e) => {
-      if (panel.style.display === 'none') return;
-      if (!e.target.classList.contains('panel-validation-header') && 
-          !e.target.closest('.panel-validation-header')) return;
-      
-      initialX = e.clientX - panel.offsetLeft;
-      initialY = e.clientY - panel.offsetTop;
-      isDragging = true;
-      panel.style.cursor = 'grabbing';
-    };
-
-    const drag = (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      currentX = e.clientX - initialX;
-      currentY = e.clientY - initialY;
-      panel.style.left = currentX + 'px';
-      panel.style.top = currentY + 'px';
-    };
-
-    const dragEnd = () => {
-      isDragging = false;
-      panel.style.cursor = 'move';
-    };
-
-    panel.addEventListener('mousedown', dragStart);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', dragEnd);
-
-    return () => {
-      panel.removeEventListener('mousedown', dragStart);
-      document.removeEventListener('mousemove', drag);
-      document.removeEventListener('mouseup', dragEnd);
-    };
-  }, []);
+  // useEffect pour tooltip SUPPRIMÉ - plus de tooltip
 
   // ========== SYNCHRONISATION 2D ↔ 3D ==========
   
@@ -577,7 +567,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   // Synchroniser au montage et quand les arbres changent
   useEffect(() => {
     syncCanvasTo3D();
-  }, [arbresAPlanter, syncCanvasTo3D]);
+  }, [syncCanvasTo3D]);
   
   // Écouter les modifications du canvas pour resynchroniser
   useEffect(() => {
@@ -743,7 +733,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           detailObjet = ` (${objetData.hauteur?.toFixed(1)}m hauteur)`;
           break;
       }
-      logger.info('Selection3D', `✅ ${objetData.type}${detailObjet} sélectionné depuis la 3D`);
+      // Compter les objets du même type pour ajouter un numéro
+      const objetsDuMemeType = canvas.getObjects().filter(o => o.customType === objetData.type);
+      const numeroObjet = objetsDuMemeType.length > 1 ? ` #${objetsDuMemeType.indexOf(objet) + 1}` : '';
+      
+      logger.info('Selection3D', `✅ ${objetData.type}${detailObjet}${numeroObjet} sélectionné depuis la 3D`);
     } else {
       // Filtrer uniquement les objets du même type pour le debug
       const objetsDuMemeType = canvas.getObjects()
@@ -972,7 +966,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         {/* Panneau latéral avec outils et stats - TOUJOURS VISIBLE */}
         <PanneauLateral
             canvas={fabricCanvasRef.current} 
-        arbresAPlanter={arbresAPlanter}
             couchesSol={couchesSol}
             onCouchesSolChange={setCouchesSol}
         dimensions={dimensions}
@@ -998,7 +991,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onExporterPlan={exporterPlan}
         onGenererLogCopiable={genererLogCopiable}
         onAjouterArbrePlante={ajouterArbrePlante}
-        onRetirerArbrePlante={retirerArbrePlante}
+        onSyncKeyChange={setSyncKey}
         ongletActifExterne={ongletActif}
         />
 
@@ -1006,33 +999,37 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         {mode3D && (
           <Suspense fallback={<div className="loading-3d">🌳 Chargement 3D...</div>}>
             <div style={{ flex: 1, position: 'relative' }}>
-              <CanvasTerrain3D 
-                dimensions={dimensions}
-                planData={planDataSync}
-                arbresAPlanter={arbresAPlanter}
-                anneeProjection={anneeProjection}
-                saison={saison}
-                heureJournee={heureJournee}
-                couchesSol={couchesSol}
-                onObjetPositionChange={handleObjetPositionChange3D}
-                onObjetSelectionChange={handleObjetSelection3D}
-              />
+        <CanvasTerrain3D 
+          dimensions={dimensions}
+          planData={planDataSync}
+          anneeProjection={anneeProjection}
+          saison={saison}
+          heureJournee={heureJournee}
+          syncKey={syncKey}
+          couchesSol={couchesSol}
+          onObjetPositionChange={handleObjetPositionChange3D}
+          onObjetSelectionChange={handleObjetSelection3D}
+          canvas2D={fabricCanvasRef.current}
+          exporterPlan={exporterPlan}
+          revaliderTous={revaliderTous}
+          contextMenuRef2D={contextMenuRef}
+        />
             </div>
           </Suspense>
         )}
         
         {/* Vue 2D (cachée si mode 3D, mais toujours montée pour Fabric.js) */}
         <div style={{ flex: 1, position: 'relative', display: mode3D ? 'none' : 'block' }}>
-          {/* Panneau de validation latéral fixe */}
-          <div className="panel-validation" ref={validationTooltipRef} style={{ display: 'none' }}>
-          </div>
+          {/* Panneau de validation SUPPRIMÉ - infos maintenant dans Config */}
           
           {/* Canvas plein écran */}
           <div className="canvas-wrapper" style={{ width: '100%', height: '100%', position: 'relative' }}>
             <canvas id="canvas-terrain" ref={canvasRef}></canvas>
+          </div>
+        </div>
 
-            {/* Menu contextuel en bulle */}
-            <div className="context-menu" ref={contextMenuRef}>
+        {/* ✅ Menu contextuel TOUJOURS VISIBLE (2D et 3D) */}
+        <div className="context-menu" ref={contextMenuRef}>
               <button 
                 className="context-btn context-rotate"
                 onClick={() => {
@@ -1042,7 +1039,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                     actif.set({ angle: newAngle });
                     actif.setCoords();
                     fabricCanvasRef.current.renderAll();
-                    setTimeout(() => exporterPlan(fabricCanvasRef.current), 50);
+                    setTimeout(() => exporterPlan(fabricCanvasRef.current), 100);
+                    logger.info('Rotation', `✅ ${actif.customType} rotation +90° → ${newAngle}°`);
                   }
                 }}
                 title="Rotation +90°"
@@ -1058,7 +1056,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                     actif.set({ angle: newAngle });
                     actif.setCoords();
                     fabricCanvasRef.current.renderAll();
-                    setTimeout(() => exporterPlan(fabricCanvasRef.current), 50);
+                    setTimeout(() => exporterPlan(fabricCanvasRef.current), 100);
+                    logger.info('Rotation', `✅ ${actif.customType} rotation -90° → ${newAngle}°`);
                   }
                 }}
                 title="Rotation -90°"
@@ -1067,38 +1066,26 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
               </button>
               <button 
                 className="context-btn context-duplicate"
-                onClick={() => {
+                onClick={async () => {
                   const actif = fabricCanvasRef.current?.getActiveObject();
-                  if (actif && !actif.isGridLine && !actif.isBoussole && !actif.isImageFond) {
-                    actif.clone().then((cloned) => {
-                      // Copier les propriétés custom manuellement
-                      if (actif.arbreData) {
-                        cloned.arbreData = { ...actif.arbreData };
-                      }
-                      if (actif.tailles) {
-                        cloned.tailles = { ...actif.tailles };
-                      }
-                      if (actif.iconeType) {
-                        cloned.iconeType = actif.iconeType;
-                      }
-                      if (actif.validationStatus) {
-                        cloned.validationStatus = actif.validationStatus;
-                      }
-                      
-                      cloned.set({
-                        left: actif.left + echelle,
-                        top: actif.top + echelle
-                      });
-                      fabricCanvasRef.current.add(cloned);
-                      fabricCanvasRef.current.setActiveObject(cloned);
-                      fabricCanvasRef.current.renderAll();
-                      
-                      // Utiliser setTimeout pour éviter les conflits
-                      setTimeout(() => {
-                        exporterPlan(fabricCanvasRef.current);
-                        revaliderTous(fabricCanvasRef.current);
-                      }, 50);
-                    });
+                  if (actif && 
+                      !actif.isGridLine && 
+                      !actif.measureLabel && 
+                      !actif.isBoussole && 
+                      !actif.isImageFond &&
+                      !actif.alignmentGuide &&
+                      !actif.isDimensionBox &&
+                      !actif.isAideButton &&
+                      !actif.isCenterMark) {
+                    console.log('🔧 DEBUG: Duplication via bouton modal');
+                    
+                    // ✅ UTILISER LA FONCTION UNIFIÉE
+                    try {
+                      await dupliquerObjet(actif, fabricCanvasRef.current, echelle, exporterPlan, revaliderTous);
+                      console.log('🔧 DEBUG: Duplication bouton modal terminée!');
+                    } catch (error) {
+                      console.error('🔧 DEBUG: Erreur lors de la duplication bouton modal:', error);
+                    }
                   }
                 }}
                 title="Dupliquer"
@@ -1120,11 +1107,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                 🗑️
               </button>
             </div>
-          </div>
-        </div>
-      </div>
-
       
+      </div>
     </div>
   );
 }

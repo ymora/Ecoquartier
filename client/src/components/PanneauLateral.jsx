@@ -14,7 +14,6 @@ import {
  */
 function PanneauLateral({ 
   canvas,
-  arbresAPlanter,
   couchesSol,
   onCouchesSolChange,
   dimensions,
@@ -41,6 +40,7 @@ function PanneauLateral({
   onGenererLogCopiable, // ✅ Génération manuelle du log console
   onAjouterArbrePlante, // ✅ Ajouter un arbre à planter
   onRetirerArbrePlante, // ✅ Retirer un arbre de la liste
+  onSyncKeyChange, // ✅ Callback pour forcer la synchronisation 3D
   ongletActifExterne = null // ✅ Onglet externe pour forcer l'ouverture depuis 3D
 }) {
   const [ongletActif, setOngletActif] = useState('outils');
@@ -49,6 +49,7 @@ function PanneauLateral({
   const [arbresOuvert, setArbresOuvert] = useState(false);
   const [arbustesOuvert, setArbustesOuvert] = useState(false);
   const [batimentsOuvert, setBatimentsOuvert] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(0); // ✅ Pour forcer le re-render
   const [reseauxOuvert, setReseauxOuvert] = useState(false);
   const [actionsOuvert, setActionsOuvert] = useState(false);
   const [surPlanOuvert, setSurPlanOuvert] = useState(true); // Ouvert par défaut
@@ -57,6 +58,7 @@ function PanneauLateral({
   const [dimensionsOuvert, setDimensionsOuvert] = useState(true);
   const [positionOuvert, setPositionOuvert] = useState(true);
   const [profondeursOuvert, setProfondeursOuvert] = useState(true);
+  const [toitOuvert, setToitOuvert] = useState(true);
   
   // Ref pour stocker l'objet précédemment sélectionné (évite boucle infinie)
   const objetSelectionnePrecedentRef = useRef(null);
@@ -237,12 +239,80 @@ function PanneauLateral({
   // ✅ FIXE : Mise à jour avec sauvegarde du plan
   const updateObjetProp = (prop, value) => {
     if (objetSelectionne && canvas) {
-      const numValue = parseFloat(value);
-      if (isNaN(numValue)) return;
+      // Gérer les propriétés non-numériques comme typeToit
+      if (prop === 'typeToit') {
+        objetSelectionne.set({ [prop]: value });
+        // ✅ Forcer la synchronisation 3D pour typeToit
+        if (onSyncKeyChange) {
+          onSyncKeyChange(Date.now());
+        }
+      } else {
+        // ✅ CORRECTION : Gérer les objets et les strings
+        let numValue;
+        if (typeof value === 'object' && value.target) {
+          numValue = parseFloat(value.target.value);
+        } else {
+          numValue = parseFloat(value);
+        }
+        if (isNaN(numValue)) return;
+        
+        // ✅ GESTION SPÉCIALE POUR CHAQUE PROPRIÉTÉ
+        if (prop === 'angle') {
+          // ✅ ROTATION : Appliquer la rotation correctement
+          objetSelectionne.set({ angle: numValue });
+          objetSelectionne.rotate(numValue); // Forcer la rotation visuelle
+        } else if (prop === 'width' || prop === 'height') {
+          // ✅ DIMENSIONS FABRIC.JS : Utiliser scaleX/scaleY comme avec la souris
+          const currentWidth = objetSelectionne.getScaledWidth();
+          const currentHeight = objetSelectionne.getScaledHeight();
+          
+          if (prop === 'width') {
+            const newScaleX = numValue / objetSelectionne.width;
+            objetSelectionne.set({ scaleX: newScaleX });
+          } else {
+            const newScaleY = numValue / objetSelectionne.height;
+            objetSelectionne.set({ scaleY: newScaleY });
+          }
+          
+          // ✅ CORRECTION : Mettre à jour les éléments du groupe
+          if (objetSelectionne._objects && objetSelectionne._objects.length > 0) {
+            // Recalculer la taille de l'icône proportionnellement
+            const newWidth = objetSelectionne.getScaledWidth();
+            const newHeight = objetSelectionne.getScaledHeight();
+            const tailleIcone = Math.min(newWidth, newHeight) * 0.4;
+            
+            // Mettre à jour l'icône (généralement le 2ème élément du groupe)
+            if (objetSelectionne._objects[1] && objetSelectionne._objects[1].fontSize !== undefined) {
+              objetSelectionne._objects[1].set({
+                fontSize: Math.max(tailleIcone, 24)
+              });
+            }
+          }
+        } else {
+          // ✅ AUTRES PROPRIÉTÉS : largeur, profondeur, hauteur, elevationSol, etc.
+          objetSelectionne.set({ [prop]: numValue });
+        }
+      }
       
-      objetSelectionne.set({ [prop]: numValue });
-      objetSelectionne.setCoords();
-      canvas.requestRenderAll();
+      // ✅ CORRECTION : Mise à jour du pourtour vert comme avec la souris
+      objetSelectionne.setCoords(); // Met à jour les coordonnées de sélection
+      canvas.requestRenderAll(); // Force le rendu
+      
+      // ✅ CORRECTION : Forcer la mise à jour du highlight après modification
+      if (objetSelectionne) {
+        // Retirer l'ancien highlight
+        unhighlightSelection(objetSelectionne, canvas);
+        // Appliquer le nouveau highlight avec les nouvelles dimensions
+        highlightSelection(objetSelectionne, canvas);
+      }
+      
+      // ✅ Forcer la synchronisation 3D pour toutes les propriétés
+      if (onSyncKeyChange) {
+        onSyncKeyChange(Date.now());
+      }
+      
+      // ✅ Forcer le re-render de l'interface
+      setForceUpdate(prev => prev + 1);
       
       // ✅ Déclencher la sauvegarde du plan
       if (onExporterPlan) {
@@ -344,22 +414,20 @@ function PanneauLateral({
   const renderDimensionInput = (label, prop, min, max, step) => {
     const getValue = () => {
       if (prop === 'width') {
-        return ((objetSelectionne.getScaledWidth ? objetSelectionne.getScaledWidth() : objetSelectionne.width) / echelle).toFixed(1);
+        return ((objetSelectionne.getScaledWidth ? objetSelectionne.getScaledWidth() : objetSelectionne.width) / echelle).toFixed(2);
       } else {
-        return ((objetSelectionne.getScaledHeight ? objetSelectionne.getScaledHeight() : objetSelectionne.height) / echelle).toFixed(1);
+        return ((objetSelectionne.getScaledHeight ? objetSelectionne.getScaledHeight() : objetSelectionne.height) / echelle).toFixed(2);
       }
     };
     
     const handleChange = (e) => {
       const value = parseFloat(e.target.value);
+      // ✅ CORRECTION : Utiliser updateObjetProp pour la cohérence
       if (prop === 'width') {
-        objetSelectionne.set({ width: value * echelle });
+        updateObjetProp('width', (value * echelle).toString());
       } else {
-        objetSelectionne.set({ height: value * echelle });
+        updateObjetProp('height', (value * echelle).toString());
       }
-      objetSelectionne.setCoords();
-      canvas.requestRenderAll();
-      if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
     };
     
     return renderNumberInput(label, getValue(), handleChange, min, max, step, 'm');
@@ -367,19 +435,59 @@ function PanneauLateral({
 
   return (
     <div className="panneau-lateral">
+      {/* Bouton Charger plan par défaut - TOUJOURS VISIBLE */}
+      <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)' }}>
+        <button
+          className="btn btn-warning btn-full"
+          onClick={onChargerPlanParDefaut}
+          title="Charger le plan par défaut avec 2 maisons, terrasses, pavés..."
+          style={{ 
+            background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.7rem 1rem',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 3px 6px rgba(255, 152, 0, 0.3)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)';
+            e.target.style.transform = 'translateY(-2px)';
+            e.target.style.boxShadow = '0 6px 12px rgba(255, 152, 0, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 3px 6px rgba(255, 152, 0, 0.3)';
+          }}
+        >
+          🏠 Charger plan par défaut
+        </button>
+      </div>
+
       {/* En-tête avec onglets */}
-      <div className="panneau-tabs">
+      <div className="tabs">
         <button 
-          className={`tab-btn ${ongletActif === 'outils' ? 'active' : ''}`}
+          className={`tab ${ongletActif === 'outils' ? 'active' : ''}`}
           onClick={() => setOngletActif('outils')}
         >
-          🛠️ Outils
+          ⚙️ Outils
         </button>
         <button 
-          className={`tab-btn ${ongletActif === 'config' ? 'active' : ''}`}
+          className={`tab ${ongletActif === 'config' ? 'active' : ''}`}
           onClick={() => setOngletActif('config')}
         >
-          ⚙️ Config
+          📋 Config
         </button>
       </div>
 
@@ -387,13 +495,15 @@ function PanneauLateral({
       {ongletActif === 'config' ? (
         <div className="panneau-outils-content">
           {/* COMPOSITION DU SOL */}
-          <div className="section-title">🌍 Composition du sol</div>
+          <div className="section-header">
+            <h3 className="section-title">🌍 Composition du sol</h3>
+          </div>
           <SolInteractif 
             couchesSol={couchesSol} 
             onCouchesSolChange={onCouchesSolChange} 
           />
           
-          <div className="info-box" style={{ marginTop: '0.5rem' }}>
+          <div className="info-box info-box-info" style={{ marginTop: '0.5rem' }}>
             📏 Profondeur totale : {couchesSol ? (couchesSol.reduce((sum, c) => sum + c.profondeur, 0) / 100).toFixed(2) : 0} m
           </div>
           
@@ -401,18 +511,8 @@ function PanneauLateral({
           {!objetSelectionne && (
             <button
               onClick={() => setOngletActif('config')}
-              style={{
-                width: '100%',
-                padding: '0.6rem',
-                background: '#4caf50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '0.85rem',
-                marginTop: '0.5rem'
-              }}
+              className="btn btn-primary btn-full"
+              style={{ marginTop: '0.5rem' }}
             >
               ⚙️ Ouvrir configuration des couches
             </button>
@@ -479,17 +579,48 @@ function PanneauLateral({
                         {renderDimensionInput('Largeur', 'width', 2, 30, 0.1)}
                         {renderDimensionInput('Profondeur', 'height', 2, 30, 0.1)}
                         {renderNumberInput(
-                          'Hauteur maison',
-                          (objetSelectionne.hauteurBatiment || 7).toString(),
-                          (e) => updateObjetProp('hauteurBatiment', e.target.value),
+                          'Hauteur',
+                          (objetSelectionne.hauteur || 7).toString(),
+                          (e) => updateObjetProp('hauteur', e.target.value),
                           3, 15, 0.5, 'm'
                         )}
-                        {renderNumberInput(
-                          'Prof. fondations',
-                          (objetSelectionne.profondeurFondations || 1.2).toString(),
-                          (e) => updateObjetProp('profondeurFondations', e.target.value),
-                          -2, 3, 0.1, 'm'
-                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* TYPE DE TOIT */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setToitOuvert(!toitOuvert)}
+                      style={styles.boutonSection(toitOuvert, '#ff9800')}
+                    >
+                      <span>🏠 Type de toit</span>
+                      <span style={{ fontSize: '1rem' }}>{toitOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {toitOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div style={{ padding: '0.5rem', fontSize: '0.85rem' }}>
+                          <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold' }}>
+                            Sélectionner le type de toit :
+                          </label>
+                          {['plan', 'monopente', 'deux-pentes'].map((type) => (
+                            <label key={type} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.2rem', cursor: 'pointer' }}>
+                              <input
+                                type="radio"
+                                name="typeToit"
+                                value={type}
+                                checked={(objetSelectionne.typeToit || 'deux-pentes') === type}
+                                onChange={(e) => updateObjetProp('typeToit', e.target.value)}
+                                style={{ marginRight: '0.5rem' }}
+                              />
+                              <span style={{ textTransform: 'capitalize' }}>
+                                {type === 'deux-pentes' ? 'Deux pentes traditionnelles' : 
+                                 type === 'monopente' ? 'Monopente' : 
+                                 'Plan'}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -517,12 +648,12 @@ function PanneauLateral({
                         )}
                         {renderNumberInput(
                           'Longueur',
-                          (objetSelectionne.profondeur || 2.5).toString(),
-                          (e) => updateObjetProp('profondeur', e.target.value),
+                          (objetSelectionne.longueur || 2.5).toString(),
+                          (e) => updateObjetProp('longueur', e.target.value),
                           1, 5, 0.5, 'm'
                         )}
                         <div className="info-box">
-                          💧 Volume : {(Math.PI * Math.pow((objetSelectionne.diametre || 1.5) / 2, 2) * (objetSelectionne.profondeur || 2.5)).toFixed(1)}m³
+                          💧 Volume : {(Math.PI * Math.pow((objetSelectionne.diametre || 1.5) / 2, 2) * (objetSelectionne.longueur || 2.5)).toFixed(2)}m³
                         </div>
                       </div>
                     )}
@@ -599,24 +730,24 @@ function PanneauLateral({
                       <div style={styles.conteneurListe}>
                         {renderNumberInput(
                           'Largeur',
-                          (objetSelectionne.largeurCaisson || 5).toString(),
-                          (e) => updateObjetProp('largeurCaisson', e.target.value),
+                          (objetSelectionne.largeur || 5).toString(),
+                          (e) => updateObjetProp('largeur', e.target.value),
                           1, 10, 0.5, 'm'
                         )}
                         {renderNumberInput(
                           'Profondeur',
-                          (objetSelectionne.profondeurCaisson || 3).toString(),
-                          (e) => updateObjetProp('profondeurCaisson', e.target.value),
+                          (objetSelectionne.profondeur || 3).toString(),
+                          (e) => updateObjetProp('profondeur', e.target.value),
                           1, 10, 0.5, 'm'
                         )}
                         {renderNumberInput(
                           'Hauteur',
-                          (objetSelectionne.hauteurCaisson || 1).toString(),
-                          (e) => updateObjetProp('hauteurCaisson', e.target.value),
+                          (objetSelectionne.hauteur || 1).toString(),
+                          (e) => updateObjetProp('hauteur', e.target.value),
                           0.5, 3, 0.1, 'm'
                         )}
                   <div className="info-box">
-                    💧 Volume : {((objetSelectionne.largeurCaisson || 5) * (objetSelectionne.profondeurCaisson || 3) * (objetSelectionne.hauteurCaisson || 1)).toFixed(1)}m³
+                    💧 Volume : {((objetSelectionne.largeur || 5) * (objetSelectionne.profondeur || 3) * (objetSelectionne.hauteur || 1)).toFixed(2)}m³
                   </div>
                 </div>
                     )}
@@ -665,17 +796,13 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
+                        {renderDimensionInput('Largeur', 'width', 1, 20, 0.1)}
+                        {renderDimensionInput('Profondeur', 'height', 1, 20, 0.1)}
                         {renderNumberInput(
-                          'Hauteur dalle',
-                          (objetSelectionne.hauteurDalle || 0.15).toString(),
-                          (e) => updateObjetProp('hauteurDalle', e.target.value),
-                          -1, 1, 0.05, 'm'
-                        )}
-                        {renderNumberInput(
-                          'Prof. fondation',
-                          (objetSelectionne.profondeurFondation || 0.3).toString(),
-                          (e) => updateObjetProp('profondeurFondation', e.target.value),
-                          -1, 1, 0.1, 'm'
+                          'Hauteur',
+                          (objetSelectionne.hauteur || 0.15).toString(),
+                          (e) => updateObjetProp('hauteur', e.target.value),
+                          0.05, 1, 0.05, 'm'
                         )}
                       </div>
                     )}
@@ -723,17 +850,13 @@ function PanneauLateral({
                     </button>
                     {dimensionsOuvert && (
                       <div style={styles.conteneurListe}>
+                        {renderDimensionInput('Largeur', 'width', 1, 20, 0.1)}
+                        {renderDimensionInput('Profondeur', 'height', 1, 20, 0.1)}
                         {renderNumberInput(
-                          'Hauteur pavés',
-                          (objetSelectionne.hauteurPaves || 0.08).toString(),
-                          (e) => updateObjetProp('hauteurPaves', e.target.value),
-                          -0.5, 0.5, 0.05, 'm'
-                        )}
-                        {renderNumberInput(
-                          'Prof. gravier',
-                          (objetSelectionne.profondeurGravier || 0.15).toString(),
-                          (e) => updateObjetProp('profondeurGravier', e.target.value),
-                          -0.5, 0.5, 0.05, 'm'
+                          'Hauteur',
+                          (objetSelectionne.hauteur || 0.08).toString(),
+                          (e) => updateObjetProp('hauteur', e.target.value),
+                          0.05, 0.2, 0.01, 'm'
                         )}
                       </div>
                     )}
@@ -780,8 +903,8 @@ function PanneauLateral({
                       <div style={styles.conteneurListe}>
                         {renderNumberInput(
                           'Diamètre',
-                          (objetSelectionne.diametreCanalisation || 0.1).toString(),
-                          (e) => updateObjetProp('diametreCanalisation', e.target.value),
+                          (objetSelectionne.diametre || 0.1).toString(),
+                          (e) => updateObjetProp('diametre', e.target.value),
                           0.05, 0.5, 0.05, 'm'
                         )}
                       </div>
@@ -793,9 +916,9 @@ function PanneauLateral({
               {objetSelectionne.customType === 'cloture' && (
                 <div className="objet-controls">
                   {renderNumberInput(
-                    'Hauteur (m)',
-                    (objetSelectionne.hauteurCloture || 1.5).toString(),
-                    (e) => updateObjetProp('hauteurCloture', e.target.value),
+                    'Hauteur',
+                    (objetSelectionne.hauteur || 1.5).toString(),
+                    (e) => updateObjetProp('hauteur', e.target.value),
                     0.5, 3, 0.1, 'm'
                   )}
                   <div className="objet-controls">
@@ -845,22 +968,119 @@ function PanneauLateral({
                   )}
                 </div>
               )}
+              
+              {/* ✅ Arbre à planter : Informations de validation et placement */}
+              {objetSelectionne.customType === 'arbre-a-planter' && (
+                <div className="objet-controls">
+                  {/* Dimensions actuelles */}
+                  <div className="info-box info-box-success">
+                    {objetSelectionne.tailles ? (
+                      <div style={{ fontSize: '0.8rem', color: '#495057' }}>
+                        <div>📏 <strong>Plantation:</strong> {objetSelectionne.tailles.envergureActuelle?.toFixed(2) || 'N/A'}m × {objetSelectionne.tailles.hauteurActuelle?.toFixed(2) || 'N/A'}m</div>
+                        <div>🌳 <strong>Tronc:</strong> ⌀{((objetSelectionne.tailles.diametreTroncActuel || 0) * 100).toFixed(2)}cm {objetSelectionne.iconeType || ''}</div>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.8rem', color: '#6c757d', fontStyle: 'italic' }}>
+                        📏 Dimensions en cours de calcul...
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Statut de validation */}
+                  <div className="info-box" style={{ 
+                    background: objetSelectionne.validationStatus === 'ok' ? '#d4edda' : 
+                              objetSelectionne.validationStatus === 'warning' ? '#fff3cd' : '#f8d7da',
+                    borderColor: objetSelectionne.validationStatus === 'ok' ? '#c3e6cb' : 
+                                objetSelectionne.validationStatus === 'warning' ? '#ffeaa7' : '#f5c6cb'
+                  }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                      {objetSelectionne.validationStatus === 'ok' ? '✅ Position conforme' : 
+                       objetSelectionne.validationStatus === 'warning' ? '⚠️ Avertissement' : 
+                       '❌ Problème de placement'}
+                    </div>
+                    
+                    {/* Messages de validation */}
+                    {objetSelectionne.validationMessages && objetSelectionne.validationMessages.length > 0 && (
+                      <div style={{ fontSize: '0.8rem' }}>
+                        {objetSelectionne.validationMessages.map((msg, index) => {
+                          // Identifier les types de problèmes
+                          const isRacines = msg.includes('Racines') || msg.includes('racines');
+                          const isFondations = msg.includes('🏠') || msg.includes('fondations');
+                          const isCanalisations = msg.includes('🚰') || msg.includes('canalisations');
+                          const isCritique = msg.includes('CRITIQUE') || msg.includes('ILLÉGAL');
+                          
+                          return (
+                            <div key={index} className={`info-box ${isCritique ? 'info-box-error' : 'info-box-warning'}`} style={{ 
+                              marginBottom: '0.3rem',
+                              padding: '0.3rem',
+                              fontSize: '0.8rem'
+                            }}>
+                              {isRacines && <span style={{ fontWeight: 'bold' }}>🌱 RACINES: </span>}
+                              {isFondations && <span style={{ fontWeight: 'bold' }}>🏠 FONDATIONS: </span>}
+                              {isCanalisations && <span style={{ fontWeight: 'bold' }}>🚰 CANALISATIONS: </span>}
+                              {msg}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Conseils de racines */}
+                  {objetSelectionne.validationConseils && objetSelectionne.validationConseils.length > 0 && (
+                    <div className="info-box" style={{ background: '#e3f2fd', borderColor: '#2196f3' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '0.5rem', color: '#1976d2' }}>
+                        💡 Conseils de plantation
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#1565c0' }}>
+                        {objetSelectionne.validationConseils.map((conseil, index) => (
+                          <div key={index} style={{ marginBottom: '0.3rem' }}>
+                            • {conseil}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Actions */}
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <button
+                      className="btn-outil"
+                      onClick={() => {
+                        // Supprimer l'arbre du canvas
+                        if (canvas) {
+                          canvas.remove(objetSelectionne);
+                          canvas.renderAll();
+                          if (onExporterPlan) {
+                            setTimeout(() => onExporterPlan(canvas), 100);
+                          }
+                        }
+                      }}
+                      style={{
+                        background: '#dc3545',
+                        color: 'white',
+                        width: '100%'
+                      }}
+                    >
+                      🗑️ Supprimer cet arbre
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
       ) : ongletActif === 'outils' ? (
         <div className="panneau-outils-content">
-          {/* IMAGE DE FOND */}
-          <div style={{ marginBottom: '0.5rem' }}>
+          {/* 📷 PLAN DE FOND */}
+          <div className="section-header">
+            <h3 className="section-title">📷 Plan de fond</h3>
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
             <button
-              className="btn-outil-full"
+              className={`btn btn-full ${imageFondChargee ? 'btn-success' : 'btn-primary'}`}
               onClick={onChargerImageFond}
               title="Charger plan cadastral, photo aérienne..."
-              style={{
-                background: imageFondChargee ? '#4caf50' : '#2196f3',
-                color: 'white',
-                fontWeight: 'bold'
-              }}
             >
               📷 {imageFondChargee ? 'Image chargée' : 'Charger plan de fond'}
             </button>
@@ -905,7 +1125,11 @@ function PanneauLateral({
             )}
           </div>
           
-          {/* STRUCTURES */}
+          
+          {/* 🏗️ STRUCTURES */}
+          <div className="section-header">
+            <h3 className="section-title">🏗️ Structures</h3>
+          </div>
           <div style={{ marginBottom: '0.5rem' }}>
             <button
               onClick={() => setBatimentsOuvert(!batimentsOuvert)}
@@ -1292,7 +1516,7 @@ function PanneauLateral({
               !obj.isLigneMesure
             );
             
-            const nbObjets = objetsCanvas.length + arbresAPlanter.length;
+            const nbObjets = objetsCanvas.length; // arbresAPlanter supprimé
             
             if (nbObjets === 0) return null;
             
@@ -1331,61 +1555,6 @@ function PanneauLateral({
                       overflowY: 'auto'
                     }}>
                     {/* Arbres à planter */}
-                    {arbresAPlanter.map((arbre, index) => (
-                      <div 
-                        key={`arbre-${arbre.id}-${index}`}
-                        onMouseEnter={() => {
-                          // Trouver l'objet arbre sur le canvas et l'encadrer
-                          const arbreObjet = canvas.getObjects().find(obj => 
-                            obj.customType === 'arbre-a-planter' && 
-                            obj.arbreData?.id === arbre.id &&
-                            obj.arbreIndex === index
-                          );
-                          highlightHover(arbreObjet, canvas);
-                        }}
-                        onMouseLeave={() => {
-                          // Retirer l'encadrement de l'arbre
-                          const arbreObjet = canvas.getObjects().find(obj => 
-                            obj.customType === 'arbre-a-planter' && 
-                            obj.arbreData?.id === arbre.id &&
-                            obj.arbreIndex === index
-                          );
-                          unhighlightHover(arbreObjet, canvas);
-                        }}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          padding: '0.3rem',
-                          marginBottom: '0.2rem',
-                          background: 'white',
-                          borderRadius: '3px',
-                          fontSize: '0.75rem',
-                          border: '1px solid #c8e6c9',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
-                          🌸 {arbre.name}
-                        </span>
-                        <button 
-                          onClick={() => onRetirerArbrePlante && onRetirerArbrePlante(index)}
-                          style={{
-                            background: '#f44336',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '3px',
-                            padding: '0.2rem 0.4rem',
-                            cursor: 'pointer',
-                            fontSize: '0.7rem',
-                            transition: 'transform 0.2s'
-                          }}
-                          title="Retirer cet arbre"
-                        >
-                          🗑️
-                        </button>
-          </div>
-                    ))}
                     
                     {/* Autres objets du canvas */}
                     {objetsCanvas.map((obj, index) => {
@@ -1550,27 +1719,6 @@ function PanneauLateral({
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
                   ⚠️ Effacer tout
-                </button>
-                <button 
-                  onClick={onChargerPlanParDefaut} 
-                  title="Charger plan par défaut personnalisé"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#ff9800',
-                    border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#fff3e0'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-                  🔄 Plan défaut
                 </button>
                 <button 
                   onClick={onGenererLogCopiable} 
