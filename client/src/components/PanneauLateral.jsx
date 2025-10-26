@@ -36,13 +36,13 @@ function PanneauLateral({
   onAjusterOpaciteImage,
   onSupprimerImageFond,
   onResetZoom,
-  onExporterPlan, // ✅ Ajout pour sauvegarder après modification
-  onLoggerComplet, // ✅ Log complet de tous les paramètres
-  onExporterComplet, // ✅ Export complet en JSON
-  onAjouterArbrePlante, // ✅ Ajouter un arbre à planter
-  onRetirerArbrePlante, // ✅ Retirer un arbre de la liste
-  onSyncKeyChange, // ✅ Callback pour forcer la synchronisation 3D
-  ongletActifExterne = null // ✅ Onglet externe pour forcer l'ouverture depuis 3D
+  onExporterPlan,
+  onLoggerComplet,
+  onExporterComplet,
+  onAjouterArbrePlante,
+  onRetirerArbrePlante,
+  onSyncKeyChange,
+  ongletActifExterne = null
 }) {
   const [ongletActif, setOngletActif] = useState('outils');
   const [objetSelectionne, setObjetSelectionne] = useState(null);
@@ -50,7 +50,7 @@ function PanneauLateral({
   const [arbresOuvert, setArbresOuvert] = useState(false);
   const [arbustesOuvert, setArbustesOuvert] = useState(false);
   const [batimentsOuvert, setBatimentsOuvert] = useState(false);
-  const [forceUpdate, setForceUpdate] = useState(0); // ✅ Pour forcer le re-render
+  const [forceUpdate, setForceUpdate] = useState(0);
   const [reseauxOuvert, setReseauxOuvert] = useState(false);
   const [actionsOuvert, setActionsOuvert] = useState(false);
   const [surPlanOuvert, setSurPlanOuvert] = useState(true); // Ouvert par défaut
@@ -67,7 +67,6 @@ function PanneauLateral({
   // Ref pour stocker l'objet précédemment sélectionné (évite boucle infinie)
   const objetSelectionnePrecedentRef = useRef(null);
   
-  // ✅ Synchroniser l'onglet externe (depuis sélection 3D)
   useEffect(() => {
     if (ongletActifExterne) {
       setOngletActif(ongletActifExterne);
@@ -78,7 +77,6 @@ function PanneauLateral({
   const arbres = plantesData.filter(p => p.type === 'arbre');
   const arbustes = plantesData.filter(p => !p.type || p.type === 'arbuste');
   
-  // ✅ Styles unifiés pour les boutons et conteneurs
   const styles = {
     boutonSection: (ouvert, couleur) => ({
       width: '100%',
@@ -149,7 +147,6 @@ function PanneauLateral({
     }
   };
   
-  // ✅ Fonction unifiée pour créer les boutons d'action (supprimer, effacer, etc.)
   const creerBoutonAction = (onClick, texte, couleur = '#333', estDanger = false) => (
     <button 
       onClick={onClick}
@@ -165,7 +162,6 @@ function PanneauLateral({
     </button>
   );
   
-  // ✅ Fonction unifiée pour créer les boutons dans les sections d'outils
   const creerBoutonOutil = (onClick, icone, texte, titre, estDernier = false) => (
     <button 
       onClick={onClick}
@@ -178,7 +174,6 @@ function PanneauLateral({
     </button>
   );
   
-  // ✅ Fonction unifiée pour créer les en-têtes de sections repliables
   const creerEnTeteSection = (ouvert, setOuvert, titre, couleur) => (
     <button
       onClick={() => setOuvert(!ouvert)}
@@ -208,7 +203,6 @@ function PanneauLateral({
         objetSelectionnePrecedentRef.current = obj;
         // Mettre en évidence visuellement l'objet sélectionné (vert)
         highlightSelection(obj, canvas);
-        // ✅ Ouvrir automatiquement l'onglet Config
         setOngletActif('config');
       } else {
         // Retirer la mise en évidence de l'objet précédent
@@ -240,11 +234,8 @@ function PanneauLateral({
     };
   }, [canvas]);
   
-  // ✅ FIXE : Mise à jour avec sauvegarde du plan
   const updateObjetProp = (prop, value) => {
     if (objetSelectionne && canvas) {
-<<<<<<< HEAD
-      // Gérer les propriétés non-numériques (comme typeToit)
       if (prop === 'typeToit') {
         objetSelectionne.set({ [prop]: value });
       } else {
@@ -255,94 +246,19 @@ function PanneauLateral({
       
       objetSelectionne.setCoords();
       canvas.requestRenderAll();
-=======
-      // Gérer les propriétés non-numériques comme typeToit
-      if (prop === 'typeToit') {
-        objetSelectionne.set({ [prop]: value });
-        // ✅ Forcer la synchronisation 3D pour typeToit
-        if (onSyncKeyChange) {
-          onSyncKeyChange(Date.now());
-        }
-      } else {
-        // ✅ CORRECTION : Gérer les objets et les strings
-        let numValue;
-        if (typeof value === 'object' && value.target) {
-          numValue = parseFloat(value.target.value);
-        } else {
-          numValue = parseFloat(value);
-        }
-        if (isNaN(numValue)) return;
-        
-        // ✅ GESTION SPÉCIALE POUR CHAQUE PROPRIÉTÉ
-        if (prop === 'angle') {
-          // ✅ ROTATION : Appliquer la rotation correctement
-          objetSelectionne.set({ angle: numValue });
-          objetSelectionne.rotate(numValue); // Forcer la rotation visuelle
-        } else if (prop === 'width' || prop === 'height') {
-          // ✅ DIMENSIONS FABRIC.JS : Utiliser scaleX/scaleY comme avec la souris
-          const currentWidth = objetSelectionne.getScaledWidth();
-          const currentHeight = objetSelectionne.getScaledHeight();
-          
-          if (prop === 'width') {
-            const newScaleX = numValue / objetSelectionne.width;
-            objetSelectionne.set({ scaleX: newScaleX });
-          } else {
-            const newScaleY = numValue / objetSelectionne.height;
-            objetSelectionne.set({ scaleY: newScaleY });
-          }
-          
-          // ✅ CORRECTION : Mettre à jour les éléments du groupe
-          if (objetSelectionne._objects && objetSelectionne._objects.length > 0) {
-            // Recalculer la taille de l'icône proportionnellement
-            const newWidth = objetSelectionne.getScaledWidth();
-            const newHeight = objetSelectionne.getScaledHeight();
-            const tailleIcone = Math.min(newWidth, newHeight) * 0.4;
-            
-            // Mettre à jour l'icône (généralement le 2ème élément du groupe)
-            if (objetSelectionne._objects[1] && objetSelectionne._objects[1].fontSize !== undefined) {
-              objetSelectionne._objects[1].set({
-                fontSize: Math.max(tailleIcone, 24)
-              });
-            }
-          }
-        } else {
-          // ✅ AUTRES PROPRIÉTÉS : largeur, profondeur, hauteur, elevationSol, etc.
-          objetSelectionne.set({ [prop]: numValue });
-        }
-      }
       
-      // ✅ CORRECTION : Mise à jour du pourtour vert comme avec la souris
-      objetSelectionne.setCoords(); // Met à jour les coordonnées de sélection
-      canvas.requestRenderAll(); // Force le rendu
-      
-      // ✅ CORRECTION : Forcer la mise à jour du highlight après modification
-      if (objetSelectionne) {
-        // Retirer l'ancien highlight
-        unhighlightSelection(objetSelectionne, canvas);
-        // Appliquer le nouveau highlight avec les nouvelles dimensions
-        highlightSelection(objetSelectionne, canvas);
-      }
-      
-      // ✅ Forcer la synchronisation 3D pour toutes les propriétés
       if (onSyncKeyChange) {
         onSyncKeyChange(Date.now());
       }
       
-      // ✅ Forcer le re-render de l'interface
-      setForceUpdate(prev => prev + 1);
->>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
-      
-      // Déclencher manuellement la synchronisation 2D→3D
       canvas.fire('object:modified', { target: objetSelectionne });
       
-      // ✅ Déclencher la sauvegarde du plan
       if (onExporterPlan) {
         setTimeout(() => onExporterPlan(canvas), 100);
       }
     }
   };
 
-  // ✅ Helper pour créer un champ numérique avec boutons +/-
   const renderNumberInput = (label, value, onChange, min, max, step, unit = 'm', disabled = false) => {
     const isDisabled = disabled || (min === max && value === min.toString());
     
@@ -357,7 +273,6 @@ function PanneauLateral({
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.max(min, currentValue - step);
-              // Appeler directement onChange avec la nouvelle valeur
               onChange({ target: { value: newValue.toString() } });
             }}
             disabled={isDisabled}
@@ -403,7 +318,6 @@ function PanneauLateral({
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.min(max, currentValue + step);
-              // Appeler directement onChange avec la nouvelle valeur
               onChange({ target: { value: newValue.toString() } });
             }}
             disabled={isDisabled}
@@ -431,7 +345,6 @@ function PanneauLateral({
     );
   };
 
-  // ✅ Helper pour largeur/profondeur avec gestion des groupes Fabric.js
   const renderDimensionInput = (label, prop, min, max, step) => {
     const getValue = () => {
       if (prop === 'width') {
@@ -443,7 +356,6 @@ function PanneauLateral({
     
     const handleChange = (e) => {
       const value = parseFloat(e.target.value);
-<<<<<<< HEAD
       
       if (objetSelectionne.type === 'group') {
         // Pour les groupes, mettre à jour les éléments internes
@@ -463,28 +375,14 @@ function PanneauLateral({
         });
       }
       
-      // Mettre à jour les dimensions du groupe principal
-=======
-      // ✅ CORRECTION : Utiliser updateObjetProp pour la cohérence
->>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
       if (prop === 'width') {
         updateObjetProp('width', (value * echelle).toString());
       } else {
         updateObjetProp('height', (value * echelle).toString());
       }
-<<<<<<< HEAD
-      
-      objetSelectionne.setCoords();
-      canvas.requestRenderAll();
-      if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
-      
-      // Déclencher manuellement la synchronisation 2D→3D
       canvas.fire('object:modified', { target: objetSelectionne });
       
-      // Forcer le re-render
       setDimensionUpdate(prev => prev + 1);
-=======
->>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
     };
     
     return renderNumberInput(label, getValue(), handleChange, min, max, step, 'm');
@@ -992,17 +890,10 @@ function PanneauLateral({
                         {renderDimensionInput('Largeur', 'width', 1, 20, 0.1)}
                         {renderDimensionInput('Profondeur', 'height', 1, 20, 0.1)}
                         {renderNumberInput(
-<<<<<<< HEAD
                           'Hauteur dalle',
                           (objetSelectionne.hauteurDalle || 0.15).toString(),
                           (e) => updateObjetProp('hauteurDalle', e.target.value),
                           -1, 1, 0.05, 'm'
-=======
-                          'Hauteur',
-                          (objetSelectionne.hauteur || 0.15).toString(),
-                          (e) => updateObjetProp('hauteur', e.target.value),
-                          0.05, 1, 0.05, 'm'
->>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
                         )}
                       </div>
                     )}
@@ -1325,7 +1216,6 @@ function PanneauLateral({
             )}
           </div>
           
-<<<<<<< HEAD
           {/* CHARGER PLAN PAR DÉFAUT */}
           <div style={{ marginBottom: '0.5rem' }}>
             <button
@@ -1343,13 +1233,6 @@ function PanneauLateral({
           </div>
           
           {/* STRUCTURES */}
-=======
-          
-          {/* 🏗️ STRUCTURES */}
-          <div className="section-header">
-            <h3 className="section-title">🏗️ Structures</h3>
-          </div>
->>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
           <div style={{ marginBottom: '0.5rem' }}>
             <button
               onClick={() => setBatimentsOuvert(!batimentsOuvert)}
