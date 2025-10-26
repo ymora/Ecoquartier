@@ -82,49 +82,6 @@ function Maison3D({
         
         return new THREE.ExtrudeGeometry(shape2pans, extrudeSettings2pans);
     }
-  // Créer différents types de toits
-  const createToitGeometry = () => {
-    if (typeToit === 'plan') {
-      // Toit plan - simple boîte plate
-      return new THREE.BoxGeometry(largeur, 0.1, profondeur);
-    }
-    
-    if (typeToit === 'monopente') {
-      // Toit monopente - forme de prisme
-      const shape = new THREE.Shape();
-      const penteY = hauteurToit;
-      
-      shape.moveTo(-largeur / 2, 0);
-      shape.lineTo(largeur / 2, 0);
-      shape.lineTo(largeur / 2, penteY);
-      shape.lineTo(-largeur / 2, 0);
-      
-      const extrudeSettings = {
-        steps: 1,
-        depth: profondeur,
-        bevelEnabled: false
-      };
-      
-      return new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    }
-    
-    // Toit à deux pentes (défaut)
-    const shape = new THREE.Shape();
-    const penteY = hauteurToit;
-    
-    // Dessiner le profil du toit (triangle)
-    shape.moveTo(-largeur / 2, 0);
-    shape.lineTo(0, penteY);
-    shape.lineTo(largeur / 2, 0);
-    shape.lineTo(-largeur / 2, 0);
-    
-    const extrudeSettings = {
-      steps: 1,
-      depth: profondeur,
-      bevelEnabled: false
-    };
-    
-    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
   };
   
   // Dimensions sous-sol
