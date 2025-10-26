@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
 import { forcerTriObjets } from '../utils/canvas/depthSorting';
+import { recentrerVueSurContenu } from '../utils/canvas/creerObjets';
 
 /**
  * Hook pour initialiser le canvas Fabric.js
@@ -11,6 +12,7 @@ export const useCanvasInit = ({
   canvasRef,
   fabricCanvasRef,
   ajouterGrille,
+  ajouterBoussole,
   ajouterIndicateurSud,
   chargerPlanDemo
 }) => {
@@ -137,6 +139,7 @@ export const useCanvasInit = ({
     };
 
     ajouterGrille(canvas);
+    ajouterBoussole(canvas);
     ajouterIndicateurSud(canvas);
 
     // ✅ CHARGEMENT DU PLAN : Uniquement au premier chargement
@@ -148,6 +151,11 @@ export const useCanvasInit = ({
         if (chargerPlanDemo) {
           chargerPlanDemo();
           logger.info('Canvas', '✅ Plan par défaut personnalisé chargé (première fois)');
+          
+          // Recentrer la vue sur le contenu chargé
+          setTimeout(() => {
+            recentrerVueSurContenu(canvas);
+          }, 300); // Délai supplémentaire pour s'assurer que tous les objets sont chargés
           
           // Afficher notification
           const notification = document.createElement('div');
@@ -180,6 +188,11 @@ export const useCanvasInit = ({
     }
 
     logger.info('Canvas', '✅ Zoom molette et Pan activés');
+
+    // ✅ Recentrer la vue après initialisation (même sans plan)
+    setTimeout(() => {
+      recentrerVueSurContenu(canvas);
+    }, 500);
 
     return () => {
       // Nettoyer les event listeners DOM

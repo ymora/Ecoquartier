@@ -18,7 +18,8 @@ export const useTimelineSync = ({
     const arbresPlantes = canvas.getObjects().filter(obj => obj.customType === 'arbre-a-planter');
     
     if (arbresPlantes.length === 0) {
-      logger.warn('Timeline', 'Aucun arbre à redimensionner', { annee: anneeProjection });
+      // Pas d'arbres à redimensionner - c'est normal si l'utilisateur n'en a pas ajouté
+      // logger.debug('Timeline', 'Aucun arbre à redimensionner', { annee: anneeProjection });
       return;
     }
     

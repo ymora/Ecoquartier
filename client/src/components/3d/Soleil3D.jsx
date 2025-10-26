@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Html } from '@react-three/drei';
+import { calculerSoleilSimple, soleil3D } from '../../utils/soleilSimple';
 
 /**
  * Composant Soleil 3D avec position selon la saison et l'angle fluide
@@ -14,42 +15,17 @@ function Soleil3D({
   saison = 'ete',
   angleJournee = 90, // Angle de 0° (matin) à 180° (soir)
   heureJournee = null, // DEPRECATED: gardé pour compatibilité
-  distance = 30
+  distance = 1000, // Distance astronomique pour rayon parallèle
+  terrainCentreX = 0,
+  terrainCentreZ = 0
 }) {
-  // Angles solaires selon la saison (élévation à midi)
-  const anglesSolaires = {
-    hiver: 18,
-    printemps: 41,
-    automne: 41,
-    ete: 64
-  };
-  
-  // Élévation maximale à midi selon la saison
-  const elevationMax = anglesSolaires[saison] || 41;
-  
-  // Convertir l'angle de la journée (0-180°) en azimut et élévation
-  // angleJournee: 0° = lever (Est), 90° = midi (Sud), 180° = coucher (Ouest)
-  
-  // Azimut : -90° (Est) → 0° (Sud) → +90° (Ouest)
-  const azimuth = (angleJournee - 90) * 1; // Linéaire de -90 à +90
-  
-  // Élévation : courbe parabolique (bas au lever/coucher, haut à midi)
-  // Utiliser une courbe en sin pour simuler la trajectoire du soleil
-  const angleNormalized = (angleJournee / 180) * Math.PI; // 0 à π
-  const elevationFactor = Math.sin(angleNormalized); // 0 → 1 → 0
-  
-  // Élévation minimale (lever/coucher) = 5°, maximale (midi) = elevationMax
-  const elevationMin = 5;
-  const elevation = elevationMin + (elevationMax - elevationMin) * elevationFactor;
-  
-  // Conversion en radians
-  const elevationRad = (elevation * Math.PI) / 180;
-  const azimuthRad = (azimuth * Math.PI) / 180;
+  // Calcul simplifié pour les ombres réalistes
+  const heure = (angleJournee / 180) * 12 + 6; // Convertir 0-180° en 6h-18h
+  const positionSoleil = calculerSoleilSimple(heure, saison);
   
   // Position 3D du soleil
-  const x = distance * Math.cos(elevationRad) * Math.sin(azimuthRad);
-  const y = distance * Math.sin(elevationRad);
-  const z = distance * Math.cos(elevationRad) * Math.cos(azimuthRad);
+  const position3D = soleil3D(positionSoleil.azimuth, positionSoleil.elevation, distance);
+  const { x, y, z } = position3D;
   
   // Taille du soleil uniforme et réaliste
   const tailleSoleil = 3.5;
@@ -147,19 +123,28 @@ function Soleil3D({
         </div>
       </Html>
       
-      {/* Ligne pointillée vers le sol (rayon incliné selon l'élévation du soleil) */}
-      <mesh 
-        position={[0, -y / 2, 0]}
-        rotation={[Math.PI / 2 - elevationRad, azimuthRad, 0]}
-      >
-        <cylinderGeometry args={[0.05, 0.05, y, 8]} />
-        <meshBasicMaterial 
+      {/* Rayon de lumière parallèle du soleil */}
+      {/* Direction du soleil normalisée */}
+      <line>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={2}
+            array={new Float32Array([
+              // Point de départ : centre du terrain
+              0, 0, 0,
+              // Point d'arrivée : dans la direction du soleil (rayon parallèle)
+              -x * 0.05, 0, -z * 0.05  // Direction du soleil, échelle réduite
+            ])}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial 
           color="#FFD700"
           transparent
-          opacity={0.3}
-          wireframe
+          opacity={0.4}
         />
-      </mesh>
+      </line>
     </group>
   );
 }

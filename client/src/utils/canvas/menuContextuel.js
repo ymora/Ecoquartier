@@ -7,7 +7,15 @@
  * Afficher le menu contextuel au-dessus d'un objet sélectionné
  */
 export const afficherMenuContextuel = (obj, canvas, canvasRef, contextMenuRef) => {
-  if (!obj || obj.isGridLine || obj.isBoussole || obj.measureLabel || obj.isImageFond) {
+  if (!obj || 
+      obj.isGridLine || 
+      obj.isBoussole || 
+      obj.measureLabel || 
+      obj.isImageFond ||
+      obj.alignmentGuide ||
+      obj.isDimensionBox ||
+      obj.isAideButton ||
+      obj.isCenterMark) {
     cacherMenuContextuel(contextMenuRef);
     return;
   }

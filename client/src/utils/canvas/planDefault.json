@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "generated": "2025-01-24T10:00:00Z",
+    "dimensions": "30m × 30m",
+    "orientation": "nord-gauche",
+    "description": "Plan par défaut avec 2 maisons, 1 caisson, 3 terrasses, 2 pavés, 2 canalisations"
+  },
+  "objets": [
+    {
+      "type": "maison",
+      "id": "maison-1",
+      "position": { "x": -200, "y": -100 },
+      "dimensions": { "largeur": 10, "profondeur": 10 },
+      "proprietes": {
+        "hauteur": 7,
+        "elevationSol": 0,
+        "typeToit": "deux-pentes",
+        "angle": 0
+      }
+    },
+    {
+      "type": "maison",
+      "id": "maison-2", 
+      "position": { "x": 200, "y": 100 },
+      "dimensions": { "largeur": 10, "profondeur": 10 },
+      "proprietes": {
+        "hauteur": 7,
+        "elevationSol": 0,
+        "typeToit": "deux-pentes",
+        "angle": 0
+      }
+    },
+    {
+      "type": "terrasse",
+      "id": "terrasse-1",
+      "position": { "x": -100, "y": -200 },
+      "dimensions": { "largeur": 5, "profondeur": 4 },
+      "proprietes": {
+        "hauteur": 0.15,
+        "elevationSol": 0,
+        "angle": 0
+      }
+    },
+    {
+      "type": "paves",
+      "id": "paves-1",
+      "position": { "x": 100, "y": -200 },
+      "dimensions": { "largeur": 5, "profondeur": 5 },
+      "proprietes": {
+        "hauteur": 0.08,
+        "elevationSol": 0,
+        "angle": 0
+      }
+    }
+  ]
+}

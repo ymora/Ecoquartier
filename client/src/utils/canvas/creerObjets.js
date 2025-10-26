@@ -6,12 +6,76 @@
 
 import * as fabric from 'fabric';
 import logger from '../logger';
+import { calculerSoleilSimple, soleil2D } from '../soleilSimple';
 
 /**
  * Générer un ID unique pour un objet
  */
 const genererIdUnique = (type) => {
   return `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+/**
+ * Recentrer la vue sur le contenu du canvas
+ * Calcule les limites de tous les objets et centre la vue avec un zoom approprié
+ */
+export const recentrerVueSurContenu = (canvas) => {
+  if (!canvas) return;
+  
+  // Calculer les limites de tous les objets (exclure les éléments d'interface)
+  const objects = canvas.getObjects().filter(obj => 
+    !obj.isGridLine && 
+    !obj.isBoussole && 
+    !obj.isSolIndicator &&
+    !obj.alignmentGuide &&
+    !obj.isDimensionBox &&
+    !obj.isAideButton &&
+    !obj.isImageFond &&
+    !obj.isCenterMark &&
+    !obj.measureLabel
+  );
+  
+  if (objects.length > 0) {
+    // Calculer les limites du contenu
+    const bounds = objects.reduce((acc, obj) => {
+      const objBounds = obj.getBoundingRect();
+      return {
+        minX: Math.min(acc.minX, objBounds.left),
+        minY: Math.min(acc.minY, objBounds.top),
+        maxX: Math.max(acc.maxX, objBounds.left + objBounds.width),
+        maxY: Math.max(acc.maxY, objBounds.top + objBounds.height)
+      };
+    }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+    
+    // Calculer le centre du contenu
+    const centerX = (bounds.minX + bounds.maxX) / 2;
+    const centerY = (bounds.minY + bounds.maxY) / 2;
+    
+    // Calculer la taille du contenu
+    const contentWidth = bounds.maxX - bounds.minX;
+    const contentHeight = bounds.maxY - bounds.minY;
+    
+    // Calculer le zoom pour que le contenu rentre dans la vue
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+    const scaleX = canvasWidth / (contentWidth + 100); // +100 pour la marge
+    const scaleY = canvasHeight / (contentHeight + 100);
+    const scale = Math.min(scaleX, scaleY, 1); // Ne pas zoomer plus que 100%
+    
+    // Centrer la vue
+    const offsetX = (canvasWidth / 2) - (centerX * scale);
+    const offsetY = (canvasHeight / 2) - (centerY * scale);
+    
+    canvas.setViewportTransform([scale, 0, 0, scale, offsetX, offsetY]);
+    canvas.renderAll();
+    
+    logger.info('Canvas', `✅ Vue recentrée sur le contenu (zoom: ${(scale * 100).toFixed(1)}%)`);
+  } else {
+    // Si pas d'objets, reset simple
+    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    canvas.renderAll();
+    logger.info('Canvas', '✅ Vue réinitialisée (aucun objet)');
+  }
 };
 
 /**
@@ -49,9 +113,12 @@ export const creerMaisonObjet = (echelle) => {
 
   const group = new fabric.Group([maisonRect, labelIcone], {
     customType: 'maison',
-    customId: genererIdUnique('maison'), // ✅ ID unique
-    profondeurFondations: 1.2,
-    hauteurBatiment: 7,
+    customId: genererIdUnique('maison'),
+    largeur: largeur,
+    profondeur: hauteur,
+    hauteur: 7,
+    elevationSol: 0,
+    typeToit: 'deux-pentes', // Type de toit par défaut
     originX: 'center',
     originY: 'center'
   });
@@ -69,7 +136,10 @@ export const creerMaison = (canvas, echelle) => {
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
-  logger.info('Objets', 'Maison ajoutée');
+  // Compter les maisons existantes pour ajouter un numéro
+  const maisonsExistantes = canvas.getObjects().filter(o => o.customType === 'maison');
+  const numeroMaison = maisonsExistantes.length > 1 ? ` #${maisonsExistantes.length}` : '';
+  logger.info('Objets', `Maison${numeroMaison} ajoutée`);
 };
 
 /**
@@ -91,8 +161,8 @@ export const creerCanalisation = (canvas) => {
     lockScalingX: false,
     lockRotation: false,
     strokeUniform: true,
-    profondeur: 0.6,
-    diametreCanalisation: 0.1 // 10cm
+    diametre: 0.1,
+    elevationSol: -0.6
   });
 
   canvas.add(canalisation);
@@ -108,7 +178,7 @@ export const creerCanalisation = (canvas) => {
  */
 export const creerCiterneObjet = (echelle) => {
   const diametre = 1.5;
-  const profondeur = 2.5;
+  const longueur = 2.5;
   const rayon = (diametre * echelle) / 2;
   
   const citerne = new fabric.Circle({
@@ -139,10 +209,12 @@ export const creerCiterneObjet = (echelle) => {
 
   const group = new fabric.Group([citerne, labelIcone], {
     customType: 'citerne',
-    customId: genererIdUnique('citerne'), // ✅ ID unique
+    customId: genererIdUnique('citerne'),
     diametre: diametre,
-    profondeur: profondeur,
-    elevationSol: 0,
+    longueur: longueur,
+    hauteur: diametre,
+    volume: 3000,
+    elevationSol: -2.5,
     originX: 'center',
     originY: 'center'
   });
@@ -160,7 +232,10 @@ export const creerCiterne = (canvas, echelle) => {
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
-  logger.info('Objets', 'Citerne ajoutée');
+  // Compter les citernes existantes pour ajouter un numéro
+  const citernesExistantes = canvas.getObjects().filter(o => o.customType === 'citerne');
+  const numeroCiterne = citernesExistantes.length > 1 ? ` #${citernesExistantes.length}` : '';
+  logger.info('Objets', `Citerne${numeroCiterne} ajoutée`);
 };
 
 /**
@@ -191,7 +266,7 @@ export const creerCloture = (canvas, pointsClotureRef) => {
       lockScalingX: true,
       lockScalingY: true,
       customType: 'cloture',
-      hauteurCloture: 1.5, // Hauteur par défaut 1.5m
+      hauteur: 1.5, // Hauteur par défaut 1.5m
       epaisseur: 0.05, // 5cm
       strokeUniform: true,
       hasBorders: true,
@@ -244,9 +319,10 @@ export const creerTerrasseObjet = (echelle) => {
 
   const group = new fabric.Group([terrasseRect, labelIcone], {
     customType: 'terrasse',
-    customId: genererIdUnique('terrasse'), // ✅ ID unique
-    hauteurDalle: 0.15,
-    profondeurFondation: 0.3,
+    customId: genererIdUnique('terrasse'),
+    largeur: largeur,
+    profondeur: hauteur,
+    hauteur: 0.15,
     elevationSol: 0,
     originX: 'center',
     originY: 'center'
@@ -265,7 +341,10 @@ export const creerTerrasse = (canvas, echelle) => {
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
-  logger.info('Objets', 'Terrasse ajoutée');
+  // Compter les terrasses existantes pour ajouter un numéro
+  const terrassesExistantes = canvas.getObjects().filter(o => o.customType === 'terrasse');
+  const numeroTerrasse = terrassesExistantes.length > 1 ? ` #${terrassesExistantes.length}` : '';
+  logger.info('Objets', `Terrasse${numeroTerrasse} ajoutée`);
 };
 
 /**
@@ -303,9 +382,10 @@ export const creerPavesObjet = (echelle) => {
 
   const group = new fabric.Group([pavesRect, labelIcone], {
     customType: 'paves',
-    customId: genererIdUnique('paves'), // ✅ ID unique
-    hauteurPaves: 0.08,
-    profondeurGravier: 0.15,
+    customId: genererIdUnique('paves'),
+    largeur: largeur,
+    profondeur: hauteur,
+    hauteur: 0.08,
     elevationSol: 0,
     originX: 'center',
     originY: 'center'
@@ -324,7 +404,10 @@ export const creerPaves = (canvas, echelle) => {
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
-  logger.info('Objets', 'Pavés enherbés ajoutés');
+  // Compter les pavés existants pour ajouter un numéro
+  const pavesExistants = canvas.getObjects().filter(o => o.customType === 'paves');
+  const numeroPaves = pavesExistants.length > 1 ? ` #${pavesExistants.length}` : '';
+  logger.info('Objets', `Pavés enherbés${numeroPaves} ajoutés`);
 };
 
 /**
@@ -367,11 +450,11 @@ export const creerCaissonEauObjet = (echelle) => {
 
   const group = new fabric.Group([caissonRect, labelIcone], {
     customType: 'caisson-eau',
-    profondeurEnterree: 1.0,
-    largeurCaisson: largeurMetres,
-    profondeurCaisson: profondeurMetres,
-    hauteurCaisson: hauteurMetres,
-    elevationSol: 0,
+    customId: genererIdUnique('caisson-eau'),
+    largeur: largeurMetres,
+    profondeur: profondeurMetres,
+    hauteur: hauteurMetres,
+    elevationSol: -1.0,
     originX: 'center',
     originY: 'center'
   });
@@ -389,7 +472,10 @@ export const creerCaissonEau = (canvas, echelle) => {
   canvas.add(group);
   canvas.setActiveObject(group);
   canvas.renderAll();
-  logger.info('Objets', 'Caisson rétention ajouté');
+  // Compter les caissons existants pour ajouter un numéro
+  const caissonsExistants = canvas.getObjects().filter(o => o.customType === 'caisson-eau');
+  const numeroCaisson = caissonsExistants.length > 1 ? ` #${caissonsExistants.length}` : '';
+  logger.info('Objets', `Caisson rétention${numeroCaisson} ajouté`);
 };
 
 
@@ -442,9 +528,9 @@ export const creerGrille = (canvas, echelle) => {
     canvas.sendObjectToBack(line);
   });
   
-  // Marque du centre du terrain (croix centrale)
-  const centreX = canvas.width / 2;
-  const centreY = canvas.height / 2;
+  // Marque du centre du terrain (centre fixe à 0,0)
+  const centreX = 0;
+  const centreY = 0;
   const tailleMarque = 20; // pixels
   
   // Supprimer l'ancienne marque du centre si elle existe
@@ -489,7 +575,8 @@ export const creerGrille = (canvas, echelle) => {
   });
   
   canvas.add(markGroup);
-  canvas.sendObjectToBack(markGroup);
+  // Placer le repère de centre au premier plan pour qu'il soit toujours visible
+  canvas.bringObjectToFront(markGroup);
   
   // Si une image de fond existe, la placer encore plus en arrière que la grille
   const imageFond = canvas.getObjects().find(obj => obj.isImageFond);
@@ -503,33 +590,210 @@ export const creerGrille = (canvas, echelle) => {
 };
 
 /**
+ * Maintenir le repère de centre au premier plan
+ */
+export const maintenirCentreAuPremierPlan = (canvas) => {
+  const centreMark = canvas.getObjects().find(obj => obj.isCenterMark);
+  if (centreMark) {
+    canvas.bringObjectToFront(centreMark);
+  }
+  
+  // Maintenir aussi la boussole au premier plan
+  const boussole = canvas.getObjects().find(obj => obj.isBoussole);
+  if (boussole) {
+    canvas.bringObjectToFront(boussole);
+  }
+};
+
+/**
+ * Créer la boussole pour orienter le terrain
+ */
+export const creerBoussole = (canvas, orientation, onOrientationChange, echelle) => {
+  // Supprimer l'ancienne boussole si elle existe
+  const ancienneBoussole = canvas.getObjects().find(obj => obj.isBoussole);
+  if (ancienneBoussole) canvas.remove(ancienneBoussole);
+  
+  // Position de la boussole au centre du canvas (temporaire pour debug)
+  const boussoleX = canvas.width / 2; // Centre horizontal
+  const boussoleY = canvas.height / 2; // Centre vertical
+  const rayon = 60; // Plus grande pour être plus visible
+  
+  // Créer le cercle de la boussole (toujours visible)
+  const cercleBoussole = new fabric.Circle({
+    left: boussoleX,
+    top: boussoleY,
+    radius: rayon,
+    fill: '#ffffff',
+    stroke: '#ff0000',
+    strokeWidth: 4,
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    alwaysOnTop: true, // Toujours au premier plan
+    visible: true,
+    opacity: 1
+  });
+  
+  // Créer les points cardinaux
+  const pointsCardinaux = [
+    { angle: 0, label: 'N', color: '#ff0000' },
+    { angle: 90, label: 'E', color: '#000' },
+    { angle: 180, label: 'S', color: '#000' },
+    { angle: 270, label: 'O', color: '#000' }
+  ];
+  
+  const elementsBoussole = [cercleBoussole];
+  
+  pointsCardinaux.forEach(point => {
+    const angleRad = (point.angle - 90) * Math.PI / 180; // -90° pour commencer en haut
+    const x = boussoleX + Math.cos(angleRad) * (rayon - 10);
+    const y = boussoleY + Math.sin(angleRad) * (rayon - 10);
+    
+    const texte = new fabric.Text(point.label, {
+      left: x,
+      top: y,
+      fontSize: 16,
+      fontWeight: 'bold',
+      fill: point.color,
+      originX: 'center',
+      originY: 'center',
+      selectable: false,
+      evented: false,
+      alwaysOnTop: true // Toujours au premier plan
+    });
+    
+    elementsBoussole.push(texte);
+  });
+  
+  // Créer l'aiguille de la boussole (pointe vers le SUD)
+  const aiguille = new fabric.Line([0, 0, 0, -rayon + 5], {
+    left: boussoleX,
+    top: boussoleY,
+    stroke: '#ff0000',
+    strokeWidth: 3,
+    originX: 'center',
+    originY: 'center',
+    angle: 0, // Toujours vers le haut (Nord), l'orientation indique où est le Sud
+    selectable: false,
+    evented: false,
+    alwaysOnTop: true // Toujours au premier plan
+  });
+  
+  // Créer l'indicateur SUD (flèche rouge)
+  const indicateurSud = new fabric.Triangle({
+    left: boussoleX,
+    top: boussoleY + rayon - 15,
+    width: 8,
+    height: 12,
+    fill: '#ff0000',
+    originX: 'center',
+    originY: 'center',
+    angle: 0, // Pointe vers le bas (Sud)
+    selectable: false,
+    evented: false,
+    alwaysOnTop: true // Toujours au premier plan
+  });
+  
+  elementsBoussole.push(aiguille);
+  elementsBoussole.push(indicateurSud);
+  
+  // Ajouter un label "BOUSSOLE" pour la rendre plus visible
+  const labelBoussole = new fabric.Text('BOUSSOLE', {
+    left: boussoleX,
+    top: boussoleY + rayon + 20,
+    fontSize: 14,
+    fontWeight: 'bold',
+    fill: '#ff0000',
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    evented: false,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    padding: 4,
+    alwaysOnTop: true // Toujours au premier plan
+  });
+  
+  elementsBoussole.push(labelBoussole);
+  
+  // Créer le groupe de la boussole
+  const boussoleGroup = new fabric.Group(elementsBoussole, {
+    left: boussoleX,
+    top: boussoleY,
+    originX: 'center',
+    originY: 'center',
+    selectable: true,
+    evented: true,
+    isBoussole: true,
+    onOrientationChange: onOrientationChange,
+    visible: true,
+    opacity: 1
+  });
+  
+  // Gérer la rotation de la boussole
+  boussoleGroup.on('rotating', (e) => {
+    const newOrientation = e.target.angle;
+    if (onOrientationChange) {
+      onOrientationChange(newOrientation);
+    }
+  });
+  
+  canvas.add(boussoleGroup);
+  canvas.bringObjectToFront(boussoleGroup);
+  
+  // Marquer la boussole pour qu'elle soit toujours au premier plan
+  boussoleGroup.alwaysOnTop = true;
+  
+  // Debug temporaire pour vérifier la boussole
+  console.log('🧭 Boussole créée:', {
+    position: { x: boussoleX, y: boussoleY },
+    rayon: rayon,
+    canvasSize: { width: canvas.width, height: canvas.height },
+    elements: elementsBoussole.length
+  });
+  
+  // Forcer le rendu
+  canvas.renderAll();
+  
+  return boussoleGroup;
+};
+
+/**
  * Créer l'indicateur Sud
  */
-export const creerIndicateurSud = (canvas, orientation, onOrientationChange) => {
+export const creerIndicateurSud = (canvas, orientation, onOrientationChange, echelle, saison = 'ete', heureJournee = 90) => {
   // Supprimer les anciens indicateurs SUD s'ils existent
   const anciensIndicateurs = canvas.getObjects().filter(obj => obj.isBoussole);
   anciensIndicateurs.forEach(obj => canvas.remove(obj));
   
-  // Position initiale du soleil selon l'orientation
-  let soleilX, soleilY;
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
+  // Calcul simplifié pour les ombres réalistes
+  const heure = (heureJournee / 180) * 12 + 6; // Convertir 0-180° en 6h-18h
+  const positionSoleil = calculerSoleilSimple(heure, saison);
+  
+  // Centre fixe du terrain
+  const centerX = 0; // Centre fixe du terrain
+  const centerY = 0; // Centre fixe du terrain
+  
+  // Distance du soleil (en pixels)
+  const distance = 200;
+  
+  // Position 2D du soleil (seule l'azimut affecte la position en 2D)
+  // Le soleil ne dépend QUE de l'heure et de la saison, PAS de l'orientation
+  const position2D = soleil2D(positionSoleil.azimuth, distance);
+  const soleilX = centerX + position2D.x;
+  const soleilY = centerY + position2D.y;
 
-  if (orientation === 'nord-haut') {
-    soleilX = centerX;
-    soleilY = canvas.height - 60;
-  } else if (orientation === 'nord-droite') {
-    soleilX = 60;
-    soleilY = centerY;
-  } else if (orientation === 'nord-bas') {
-    soleilX = centerX;
-    soleilY = 60;
-  } else {
-    soleilX = canvas.width - 60;
-    soleilY = centerY;
-  }
-
-  // Soleil "SUD" (midi)
+  // Couleur du soleil selon la saison
+  const couleursSoleil = {
+    hiver: { center: '#FFD700', middle: '#FFA726', edge: '#FF6F00' },
+    printemps: { center: '#FFA500', middle: '#FF8C00', edge: '#FF6F00' },
+    automne: { center: '#FF8C00', middle: '#FF6F00', edge: '#E65100' },
+    ete: { center: '#FFD700', middle: '#FFA726', edge: '#FF6F00' }
+  };
+  
+  const couleur = couleursSoleil[saison] || couleursSoleil.ete;
+  
+  // Soleil synchronisé avec le soleil 3D
   const soleil = new fabric.Circle({
     left: soleilX,
     top: soleilY,
@@ -538,12 +802,12 @@ export const creerIndicateurSud = (canvas, orientation, onOrientationChange) => 
       type: 'radial',
       coords: { x1: 0, y1: 0, x2: 0, y2: 0, r1: 0, r2: 20 },
       colorStops: [
-        { offset: 0, color: '#ffeb3b' },
-        { offset: 0.7, color: '#ffa726' },
-        { offset: 1, color: '#ff6f00' }
+        { offset: 0, color: couleur.center },
+        { offset: 0.7, color: couleur.middle },
+        { offset: 1, color: couleur.edge }
       ]
     }),
-    stroke: '#ff6f00',
+    stroke: couleur.edge,
     strokeWidth: 2,
     originX: 'center',
     originY: 'center',
@@ -563,84 +827,11 @@ export const creerIndicateurSud = (canvas, orientation, onOrientationChange) => 
     })
   });
 
-  const label = new fabric.Text('SUD', {
-    left: soleilX,
-    top: soleilY + 30,
-    fontSize: 12,
-    fontWeight: 'bold',
-    fill: '#ff6f00',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false,
-    isBoussole: true,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    padding: 3
-  });
+  // Label SUD supprimé - la boussole indique maintenant le SUD
 
-  // Fonction pour calculer et mettre à jour l'orientation
-  const updateOrientation = () => {
-    label.set({
-      left: soleil.left,
-      top: soleil.top + 30
-    });
-
-    const dx = soleil.left - centerX;
-    const dy = soleil.top - centerY;
-    
-    let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-    angle = ((angle % 360) + 360) % 360;
-    
-    let newOrientation;
-    if (angle >= 315 || angle < 45) {
-      newOrientation = 'nord-gauche';
-    } else if (angle >= 45 && angle < 135) {
-      newOrientation = 'nord-haut';
-    } else if (angle >= 135 && angle < 225) {
-      newOrientation = 'nord-droite';
-    } else {
-      newOrientation = 'nord-bas';
-    }
-    
-    if (newOrientation !== orientation) {
-      onOrientationChange(newOrientation);
-    }
-    
-    canvas.renderAll();
-  };
+  // Le soleil ne dépend que de l'heure et de la saison
+  // Plus de logique d'orientation automatique
   
-  // Variable pour tracker si le soleil est en train d'être déplacé
-  let isMovingSoleil = false;
-  
-  soleil.on('moving', () => {
-    isMovingSoleil = true;
-    updateOrientation();
-  });
-  
-  soleil.on('modified', () => {
-    updateOrientation();
-    isMovingSoleil = false;
-  });
-  
-  soleil.on('mousedown', () => {
-    isMovingSoleil = false;
-  });
-  
-  soleil.on('mouseup', () => {
-    if (isMovingSoleil) {
-      setTimeout(() => {
-        canvas.discardActiveObject();
-        canvas.renderAll();
-        // Debug désactivé pour performance
-        // logger.debug('Boussole', 'Soleil déposé après drag');
-      }, 50);
-    }
-  });
-
   canvas.add(soleil);
-  canvas.add(label);
-  
-  // Debug désactivé pour performance
-  // logger.debug('Boussole', 'Indicateur Sud ajouté', { orientation });
 };
 

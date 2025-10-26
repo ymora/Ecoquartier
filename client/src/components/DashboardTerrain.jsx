@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo, useMemo } from 'react';
 import './DashboardTerrain.css';
 
 function DashboardTerrain({ 
@@ -11,42 +11,37 @@ function DashboardTerrain({
   onToggleArbre,
   ongletActif = 'arbres' // Reçu depuis CanvasTerrain
 }) {
-  const [stats, setStats] = useState(null);
   const echelle = 30;
 
-  useEffect(() => {
-    if (!canvas) return;
+  // Mémoriser les calculs coûteux des statistiques
+  const stats = useMemo(() => {
+    if (!canvas) return null;
     
-    const calculer = () => {
-      const objets = canvas.getObjects();
-      
-      // Debug désactivé pour performance (calcul fréquent)
-      // console.log('📊 Calcul stats - Objets canvas:', objets.length);
-      // console.log('📊 Arbres détectés:', objets.filter(obj => obj.customType === 'arbre-a-planter').length);
-      
-      // Arbres plantés
-      const arbresPlantes = objets.filter(obj => obj.customType === 'arbre-a-planter');
-      const arbresExistants = objets.filter(obj => obj.customType === 'arbre-existant');
-      const totalArbres = arbresPlantes.length + arbresExistants.length;
-      
-      // Surface plantée (somme des couronnes)
-      let surfacePlantee = 0;
-      arbresPlantes.forEach(arbreGroup => {
-        const arbre = arbreGroup.arbreData;
-        if (arbre) {
-          const envergure = parseFloat(arbre.envergure?.split('-').pop() || '5');
-          surfacePlantee += Math.PI * Math.pow(envergure / 2, 2);
-        }
-      });
-      
-      // Surface minéralisée (terrasses + pavés)
-      let surfaceMinerale = 0;
-      const terrasses = objets.filter(obj => obj.customType === 'paves');
-      terrasses.forEach(t => {
-        const w = t.getScaledWidth() / echelle;
-        const h = t.getScaledHeight() / echelle;
-        surfaceMinerale += w * h;
-      });
+    const objets = canvas.getObjects();
+    
+    // Arbres plantés
+    const arbresPlantes = objets.filter(obj => obj.customType === 'arbre-a-planter');
+    const arbresExistants = objets.filter(obj => obj.customType === 'arbre-existant');
+    const totalArbres = arbresPlantes.length + arbresExistants.length;
+    
+    // Surface plantée (somme des couronnes)
+    let surfacePlantee = 0;
+    arbresPlantes.forEach(arbreGroup => {
+      const arbre = arbreGroup.arbreData;
+      if (arbre) {
+        const envergure = parseFloat(arbre.envergure?.split('-').pop() || '5');
+        surfacePlantee += Math.PI * Math.pow(envergure / 2, 2);
+      }
+    });
+    
+    // Surface minéralisée (terrasses + pavés)
+    let surfaceMinerale = 0;
+    const terrasses = objets.filter(obj => obj.customType === 'paves');
+    terrasses.forEach(t => {
+      const w = t.getScaledWidth() / echelle;
+      const h = t.getScaledHeight() / echelle;
+      surfaceMinerale += w * h;
+    });
       
       // Surface totale (approximation canvas)
       const surfaceTotale = (canvas.width * canvas.height) / (echelle * echelle);
@@ -133,55 +128,27 @@ function DashboardTerrain({
       
       conformite = Math.max(0, conformite);
       
-      setStats({
-        totalArbres,
-        arbresPlantes: arbresPlantes.length,
-        arbresExistants: arbresExistants.length,
-        surfaceTotale: surfaceTotale.toFixed(0),
-        surfacePlantee: surfacePlantee.toFixed(1),
-        surfaceMinerale: surfaceMinerale.toFixed(1),
-        surfaceLibre: surfaceLibre.toFixed(1),
-        pourcentagePlante: ((surfacePlantee / surfaceTotale) * 100).toFixed(0),
-        pourcentageMinerale: ((surfaceMinerale / surfaceTotale) * 100).toFixed(0),
-        pourcentageLibre: ((surfaceLibre / surfaceTotale) * 100).toFixed(0),
-        arrosageEstime,
-        tempsEntretien: tempsEntretien.toFixed(1),
-        scoreBiodiversite,
-        melliferes,
-        fructification,
-        conformite,
-        nbProblemes,
-        nbAvertissements
-      });
+    return {
+      totalArbres,
+      arbresPlantes: arbresPlantes.length,
+      arbresExistants: arbresExistants.length,
+      surfaceTotale: surfaceTotale.toFixed(0),
+      surfacePlantee: surfacePlantee.toFixed(1),
+      surfaceMinerale: surfaceMinerale.toFixed(1),
+      surfaceLibre: surfaceLibre.toFixed(1),
+      pourcentagePlante: ((surfacePlantee / surfaceTotale) * 100).toFixed(0),
+      pourcentageMinerale: ((surfaceMinerale / surfaceTotale) * 100).toFixed(0),
+      pourcentageLibre: ((surfaceLibre / surfaceTotale) * 100).toFixed(0),
+      arrosageEstime,
+      tempsEntretien: tempsEntretien.toFixed(1),
+      scoreBiodiversite,
+      melliferes,
+      fructification,
+      conformite,
+      nbProblemes,
+      nbAvertissements
     };
-    
-    calculer();
-    
-    // Écouter les événements canvas pour recalcul immédiat
-    const handleCanvasChange = () => {
-      // Debug désactivé pour performance (événement très fréquent)
-      // console.log('📊 Événement canvas détecté - Recalcul stats');
-      calculer();
-    };
-    
-    if (canvas) {
-      canvas.on('object:added', handleCanvasChange);
-      canvas.on('object:removed', handleCanvasChange);
-      canvas.on('object:modified', handleCanvasChange);
-    }
-    
-    // Recalcul toutes les secondes en backup
-    const interval = setInterval(calculer, 1000);
-    
-    return () => {
-      clearInterval(interval);
-      if (canvas) {
-        canvas.off('object:added', handleCanvasChange);
-        canvas.off('object:removed', handleCanvasChange);
-        canvas.off('object:modified', handleCanvasChange);
-      }
-    };
-  }, [canvas, arbres]);
+  }, [canvas]);
 
   if (!stats) return null;
 

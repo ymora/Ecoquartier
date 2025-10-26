@@ -18,6 +18,8 @@ import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
 // GrilleReference, SelecteurHeure et CubeNavigation3D ne sont plus nécessaires
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 import { validerArbres3D } from '../utils/validation3D';
+import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
+import { afficherMenuContextuel, cacherMenuContextuel } from '../utils/canvas/menuContextuel';
 import './CanvasTerrain3D.css';
 
 // Fonction utilitaire pour parser la taille à maturité depuis arbustesData
@@ -53,8 +55,13 @@ function CanvasTerrain3D({
     { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
     { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' }
   ],
+  syncKey = 0, // ✅ Clé pour forcer la synchronisation
   onObjetPositionChange = null,
-  onObjetSelectionChange = null // ✅ Callback pour sélectionner un objet 3D
+  onObjetSelectionChange = null, // ✅ Callback pour sélectionner un objet 3D
+  canvas2D = null, // ✅ Référence au canvas 2D pour les actions
+  exporterPlan = null, // ✅ Fonction d'export du plan
+  revaliderTous = null, // ✅ Fonction de revalidation
+  contextMenuRef2D = null // ✅ Référence au modal 2D existant
 }) {
   // Passer l'angle directement au soleil pour un mouvement fluide
   // heureJournee est maintenant un angle de 0° (matin) à 180° (soir)
@@ -114,15 +121,20 @@ function CanvasTerrain3D({
         
         return {
           position: [posX, 0, posZ],
-          largeur,
-          profondeur,
-          hauteur: maison.hauteurBatiment || 7,
-          profondeurFondations: maison.profondeurFondations || 1.2,
+          largeur: maison.largeur || largeur,
+          profondeur: maison.profondeur || profondeur,
+          hauteur: maison.hauteur || 7,
+          elevationSol: maison.elevationSol || 0,
           angle: maison.angle || 0,
+<<<<<<< HEAD
           typeToit: maison.typeToit || '2pans', // ✅ Ajout du type de toit
           penteToit: maison.penteToit || 3, // ✅ Ajout de la pente du toit en degrés
           orientationToit: maison.orientationToit || 0, // ✅ Ajout de l'orientation du toit
           customType: 'maison' // ✅ Ajout pour synchronisation avec le canvas 2D
+=======
+          typeToit: maison.typeToit || 'deux-pentes',
+          customType: 'maison'
+>>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
         };
       });
     }
@@ -141,12 +153,12 @@ function CanvasTerrain3D({
         
         return {
           position: [posX, 0, posZ],
-          largeur: diametre,
-          profondeur: diametre,
-          profondeurEnterree: c.profondeur || 2.5,
+          diametre: diametre,
+          longueur: c.longueur || 2.5,
+          hauteur: diametre,
           volume: c.volume || 3000,
-          elevationSol: c.elevationSol || 0,
-          customType: 'citerne' // ✅ Ajout pour synchronisation avec le canvas 2D
+          elevationSol: c.elevationSol || -2.5,
+          customType: 'citerne'
         };
       });
     }
@@ -154,28 +166,25 @@ function CanvasTerrain3D({
     // Caissons d'eau rectangulaires
     if (planData.caissonsEau && planData.caissonsEau.length > 0) {
       planData.caissonsEau.forEach(c => {
-        const largeur = c.largeurCaisson || 5;
-        const profondeur = c.profondeurCaisson || 3;
-        const hauteur = c.hauteurCaisson || 1;
+        const largeur = c.largeur || 5;
+        const profondeur = c.profondeur || 3;
+        const hauteur = c.hauteur || 1;
         
         // Position centrée
         const posX = c.left / echelle;
         const posZ = c.top / echelle;
         
-        // Debug désactivé pour performance
-        
         if (!data3D.citernes) data3D.citernes = [];
         data3D.citernes.push({
-          position: [posX, 0, posZ], // Position au sol, profondeurEnterree appliquée dans Caisson3D
+          position: [posX, 0, posZ],
           largeur,
           profondeur,
-          profondeurEnterree: c.profondeurEnterree || 1.0,
-          hauteur: hauteur,
+          hauteur,
           volume: largeur * profondeur * hauteur,
           angle: c.angle || 0,
-          elevationSol: c.elevationSol || 0,
+          elevationSol: c.elevationSol || -1.0,
           type: 'caisson',
-          customType: 'caisson-eau' // ✅ Ajout pour synchronisation avec le canvas 2D
+          customType: 'caisson-eau'
         });
         
         updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
@@ -196,9 +205,9 @@ function CanvasTerrain3D({
           y1: y1 / echelle,
           x2: x2 / echelle,
           y2: y2 / echelle,
-          profondeur: c.profondeur || 0.6,
           diametre: c.diametre || 0.1,
-          customType: 'canalisation' // ✅ Ajout pour synchronisation avec le canvas 2D
+          elevationSol: c.elevationSol || -0.6,
+          customType: 'canalisation'
         };
       });
     }
@@ -217,7 +226,7 @@ function CanvasTerrain3D({
           y1: y1 / echelle,
           x2: x2 / echelle,
           y2: y2 / echelle,
-          hauteur: c.hauteurCloture || 1.5,
+          hauteur: c.hauteur || 1.5,
           epaisseur: c.epaisseur || 0.05,
           customType: 'cloture' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
@@ -241,13 +250,13 @@ function CanvasTerrain3D({
         
         data3D.terrasses.push({
           position: [posX, 0, posZ],
-          largeur,
-          profondeur,
-          hauteur: t.hauteurDalle || 0.15, // Hauteur de la dalle
+          largeur: t.largeur || largeur,
+          profondeur: t.profondeur || profondeur,
+          hauteur: t.hauteur || 0.15,
           angle: t.angle || 0,
-          elevationSol: t.elevationSol || 0, // Élévation par rapport au sol
+          elevationSol: t.elevationSol || 0,
           type: 'terrasse',
-          customType: 'terrasse' // ✅ Ajout pour synchronisation avec le canvas 2D
+          customType: 'terrasse'
         });
         
         updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
@@ -268,12 +277,12 @@ function CanvasTerrain3D({
         
         data3D.terrasses.push({
           position: [posX, 0, posZ],
-          largeur,
-          profondeur,
-          hauteur: p.hauteurPaves || 0.08, // Hauteur des pavés
+          largeur: p.largeur || largeur,
+          profondeur: p.profondeur || profondeur,
+          hauteur: p.hauteur || 0.08,
           angle: p.angle || 0,
           type: 'pave-enherbe',
-          customType: 'paves' // ✅ Ajout pour synchronisation avec le canvas 2D
+          customType: 'paves'
         });
         
         updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
@@ -343,6 +352,7 @@ function CanvasTerrain3D({
   
   // Optimisation : Mémoriser la conversion 2D→3D (calcul coûteux)
   // eslint-disable-next-line react-hooks/exhaustive-deps
+<<<<<<< HEAD
   const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, forceUpdate]);
   
   // Écouter les changements dans planData pour forcer la mise à jour
@@ -351,6 +361,9 @@ function CanvasTerrain3D({
       setForceUpdate(prev => prev + 1);
     }
   }, [planData]);
+=======
+  const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, syncKey]);
+>>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
   
   // Valider tous les arbres en 3D pour avoir les statuts à jour
   const validationMap3D = useMemo(() => {
@@ -380,8 +393,9 @@ function CanvasTerrain3D({
   const terrainDimensions = useMemo(() => ({
     largeur: data3D.bounds.maxX - data3D.bounds.minX,
     hauteur: data3D.bounds.maxZ - data3D.bounds.minZ,
-    centreX: (data3D.bounds.minX + data3D.bounds.maxX) / 2,
-    centreZ: (data3D.bounds.minZ + data3D.bounds.maxZ) / 2
+    // Centre FIXE du terrain (toujours à 0,0) - ne dépend pas des objets
+    centreX: 0,
+    centreZ: 0
   }), [data3D.bounds]);
   
   const { largeur: terrainLargeur, hauteur: terrainHauteur, centreX: terrainCentreX, centreZ: terrainCentreZ } = terrainDimensions;
@@ -410,14 +424,31 @@ function CanvasTerrain3D({
   }, [terrainLargeur, terrainHauteur, terrainCentreX, terrainCentreZ]);
   
   const handleObjetClick = useCallback((objet) => {
-    // ✅ Stocker l'objet sélectionné pour highlight visuel
     setObjetSelectionne3D(objet);
     
-    // ✅ Transmettre la sélection au parent pour ouvrir le menu Config
+    // ✅ Trouver l'objet 2D correspondant
+    if (canvas2D && contextMenuRef2D) {
+      const objets2D = canvas2D.getObjects();
+      const objet2D = objets2D.find(obj => 
+        obj.customType === objet.customType && 
+        Math.abs(obj.left - objet.position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
+        Math.abs(obj.top - objet.position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
+      );
+      
+      if (objet2D) {
+        // ✅ Sélectionner l'objet 2D
+        canvas2D.setActiveObject(objet2D);
+        canvas2D.renderAll();
+        
+        // ✅ Afficher le modal 2D (système original)
+        afficherMenuContextuel(objet2D, canvas2D, contextMenuRef2D, contextMenuRef2D);
+      }
+    }
+    
     if (onObjetSelectionChange) {
       onObjetSelectionChange(objet);
     }
-  }, [onObjetSelectionChange]);
+  }, [onObjetSelectionChange, canvas2D, contextMenuRef2D]);
   
   // handleProprieteChange supprimé - modal d'édition non nécessaire
   
@@ -436,8 +467,12 @@ function CanvasTerrain3D({
   useEffect(() => {
     const handleResetCamera = () => {
       if (orbitControlsRef.current) {
-        // Réinitialiser les contrôles OrbitControls
+        // Réinitialiser les contrôles OrbitControls vers le centre (0,0,0)
         orbitControlsRef.current.reset();
+        
+        // S'assurer que la caméra regarde le centre (0,0,0)
+        orbitControlsRef.current.target.set(0, 0, 0);
+        orbitControlsRef.current.update();
         
         // Revenir en vue perspective si on est dans une autre vue
         setVueMode('perspective');
@@ -450,6 +485,9 @@ function CanvasTerrain3D({
       window.removeEventListener('reset3DCamera', handleResetCamera);
     };
   }, []);
+
+  // ✅ Le modal 2D gère déjà le clic extérieur
+
   
   return (
     <div className="canvas-terrain-3d">
@@ -474,7 +512,27 @@ function CanvasTerrain3D({
         <Sky sunPosition={[100, 20, 100]} />
         
         {/* Soleil 3D visuel selon la saison et l'angle fluide */}
-        <Soleil3D saison={saison} angleJournee={heureJournee} distance={60} />
+        <Soleil3D 
+          saison={saison} 
+          angleJournee={heureJournee} 
+          distance={60}
+          terrainCentreX={terrainCentreX}
+          terrainCentreZ={terrainCentreZ}
+        />
+        
+        {/* Repères visuels au centre du terrain */}
+        <mesh position={[terrainCentreX, 2.0, terrainCentreZ]}>
+          <sphereGeometry args={[0.5, 16, 16]} />
+          <meshStandardMaterial 
+            color="#ff0000"
+            emissive="#ff0000"
+            emissiveIntensity={0.8}
+          />
+        </mesh>
+        <mesh position={[terrainCentreX, 0.1, terrainCentreZ]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[1.2, 1.5, 32]} />
+          <meshBasicMaterial color="#ff0000" side={2} />
+        </mesh>
         
         {/* Lumière ambiante (éclairage global) */}
         <ambientLight intensity={0.5} />
@@ -504,6 +562,7 @@ function CanvasTerrain3D({
           <Maison3D 
             key={`maison-${idx}`}
             {...maison}
+            typeToit={maison.typeToit || 'deux-pentes'}
             onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
           />
         ))}
@@ -517,7 +576,7 @@ function CanvasTerrain3D({
               type: 'citerne', 
               ...citerne, 
               index: idx,
-              position: [citerne.position[0], citerne.elevationSol - citerne.profondeurEnterree / 2, citerne.position[2]] // ✅ Position réelle rendue
+              position: [citerne.position[0], citerne.elevationSol, citerne.position[2]]
             })}
           />
         ))}
@@ -531,7 +590,7 @@ function CanvasTerrain3D({
               type: 'caisson-eau', 
               ...caisson, 
               index: idx,
-              position: [caisson.position[0], caisson.elevationSol - caisson.profondeurEnterree, caisson.position[2]] // ✅ Position réelle rendue
+              position: [caisson.position[0], caisson.elevationSol, caisson.position[2]]
             })}
           />
         ))}
@@ -548,7 +607,7 @@ function CanvasTerrain3D({
                 type: 'canalisation', 
                 ...canal, 
                 index: idx,
-                position: [centerX, -canal.profondeur, centerY] // ✅ Position réelle rendue
+                position: [centerX, canal.elevationSol, centerY]
               })}
             />
           );
@@ -717,6 +776,8 @@ function CanvasTerrain3D({
           intensity={0.6} 
         />
       </Canvas>
+      
+      {/* ✅ Pas de modal 3D - on utilise le modal 2D existant */}
       
       {/* Panneau d'édition supprimé - pas nécessaire */}
     </div>

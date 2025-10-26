@@ -3,8 +3,8 @@ function Canalisation3D({
   y1 = 0, 
   x2 = 5, 
   y2 = 5, 
-  profondeur = 0.6,
   diametre = 0.1,
+  elevationSol = -0.6,
   onClick = null
 }) {
   // Calculer position centrale et rotation
@@ -17,7 +17,7 @@ function Canalisation3D({
   const centerY = (y1 + y2) / 2;
   
   return (
-    <group position={[centerX, -profondeur, centerY]} onClick={onClick}>
+    <group position={[centerX, elevationSol, centerY]} onClick={onClick}>
       {/* ✅ Tuyau HORIZONTAL sous terre (rotation corrigée) */}
       <mesh rotation={[0, angle, Math.PI / 2]} castShadow>
         <cylinderGeometry args={[diametre / 2, diametre / 2, longueur, 12]} />

@@ -6,8 +6,9 @@ function Maison3D({
   largeur = 10, 
   profondeur = 8, 
   hauteur = 7,
-  profondeurFondations = 1.2,
+  elevationSol = 0,
   angle = 0,
+<<<<<<< HEAD
   typeToit = '2pans', // ✅ Ajout du type de toit : 'plat', 'monopente', '2pans'
   penteToit = 3, // ✅ Pente du toit en degrés (angle d'inclinaison)
   orientationToit = 0, // ✅ Orientation du toit monopente (0°, 90°, 180°, 270°)
@@ -18,12 +19,21 @@ function Maison3D({
   // Pour le toit monopente : utiliser la dimension appropriée selon l'orientation
   const dimensionPente = typeToit === 'monopente' && (orientationToit === 90 || orientationToit === 270) ? profondeur : largeur;
   const hauteurToit = Math.tan((penteToit * Math.PI) / 180) * (dimensionPente / 2);
+=======
+  typeToit = 'deux-pentes', // 'plan', 'monopente', 'deux-pentes'
+  onClick
+}) {
+  // Profondeur des fondations fixe à 1.2m (standard)
+  const profondeurFondations = 1.2;
+  const hauteurToit = typeToit === 'plan' ? 0.1 : 2.5;
+>>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
   
   // Convertir l'angle en radians et inverser pour correspondre à Fabric.js
   // Fabric.js : angle positif = rotation horaire (vers le bas)
   // Three.js : angle positif = rotation antihoraire (vers le haut)
   const angleRad = -(angle * Math.PI) / 180;
   
+<<<<<<< HEAD
   // Créer la géométrie du toit selon le type
   const createToitGeometry = () => {
     switch (typeToit) {
@@ -83,6 +93,51 @@ function Maison3D({
         
         return new THREE.ExtrudeGeometry(shape2pans, extrudeSettings2pans);
     }
+=======
+  // Créer différents types de toits
+  const createToitGeometry = () => {
+    if (typeToit === 'plan') {
+      // Toit plan - simple boîte plate
+      return new THREE.BoxGeometry(largeur, 0.1, profondeur);
+    }
+    
+    if (typeToit === 'monopente') {
+      // Toit monopente - forme de prisme
+      const shape = new THREE.Shape();
+      const penteY = hauteurToit;
+      
+      shape.moveTo(-largeur / 2, 0);
+      shape.lineTo(largeur / 2, 0);
+      shape.lineTo(largeur / 2, penteY);
+      shape.lineTo(-largeur / 2, 0);
+      
+      const extrudeSettings = {
+        steps: 1,
+        depth: profondeur,
+        bevelEnabled: false
+      };
+      
+      return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    }
+    
+    // Toit à deux pentes (défaut)
+    const shape = new THREE.Shape();
+    const penteY = hauteurToit;
+    
+    // Dessiner le profil du toit (triangle)
+    shape.moveTo(-largeur / 2, 0);
+    shape.lineTo(0, penteY);
+    shape.lineTo(largeur / 2, 0);
+    shape.lineTo(-largeur / 2, 0);
+    
+    const extrudeSettings = {
+      steps: 1,
+      depth: profondeur,
+      bevelEnabled: false
+    };
+    
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+>>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
   };
   
   // Dimensions sous-sol
@@ -150,6 +205,7 @@ function Maison3D({
         <meshStandardMaterial color="#ffd700" roughness={0.2} metalness={0.9} />
       </mesh>
       
+<<<<<<< HEAD
       {/* TOIT selon le type - GROUPE COMPLET avec tous les éléments */}
       <group 
         position={[
@@ -166,20 +222,46 @@ function Maison3D({
         {/* Toit principal */}
         <mesh 
           position={[0, 0, typeToit === 'plat' ? 0 : -profondeur / 2]}
+=======
+      {/* TOIT selon le type */}
+      {typeToit === 'plan' ? (
+        // Toit plan
+        <mesh 
+          position={[0, hauteur + 0.05, 0]} 
+>>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
           castShadow
         >
           <primitive object={createToitGeometry()} />
           <meshStandardMaterial 
+<<<<<<< HEAD
             color={
               typeToit === 'plat' ? "#666666" : 
               typeToit === 'monopente' ? "#8B0000" : 
               "#b71c1c"
             } // ✅ Couleurs différentes selon le type de toit
+=======
+            color="#8b4513"
+            roughness={0.8}
+            metalness={0.1}
+          />
+        </mesh>
+      ) : typeToit === 'monopente' ? (
+        // Toit monopente
+        <mesh 
+          position={[0, hauteur, -profondeur / 2]} 
+          rotation={[0, 0, 0]}
+          castShadow
+        >
+          <primitive object={createToitGeometry()} />
+          <meshStandardMaterial 
+            color="#b71c1c"
+>>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
             roughness={0.7}
             metalness={0.1}
             side={THREE.DoubleSide}
           />
         </mesh>
+<<<<<<< HEAD
         
         {/* Faîtage du toit (arête supérieure) - seulement pour toit à 2 pans */}
         {typeToit === '2pans' && (
@@ -197,6 +279,40 @@ function Maison3D({
           </mesh>
         )}
       </group>
+=======
+      ) : (
+        // Toit à deux pentes (défaut)
+        <mesh 
+          position={[0, hauteur, -profondeur / 2]} 
+          rotation={[0, 0, 0]}
+          castShadow
+        >
+          <primitive object={createToitGeometry()} />
+          <meshStandardMaterial 
+            color="#b71c1c"
+            roughness={0.7}
+            metalness={0.1}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      )}
+      
+      {/* Faîtage du toit (seulement pour les toits à DEUX pentes) */}
+      {typeToit === 'deux-pentes' && (
+        <mesh position={[0, hauteur + hauteurToit, 0]} castShadow>
+          <boxGeometry args={[0.15, 0.15, profondeur + 0.2]} />
+          <meshStandardMaterial color="#8b0000" roughness={0.5} />
+        </mesh>
+      )}
+      
+      {/* Cheminée (seulement pour les toits à DEUX pentes) */}
+      {typeToit === 'deux-pentes' && (
+        <mesh position={[-largeur * 0.25, hauteur + hauteurToit * 0.7, 0]} castShadow>
+          <boxGeometry args={[0.6, 1.2, 0.6]} />
+          <meshStandardMaterial color="#8b4513" roughness={0.8} />
+        </mesh>
+      )}
+>>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
       
       {/* ✅ Pas de label - la maison est reconnaissable visuellement */}
     </group>

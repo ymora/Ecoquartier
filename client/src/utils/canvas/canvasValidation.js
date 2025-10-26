@@ -245,7 +245,7 @@ const ajouterLigneMesureProbleme = (canvas, arbreGroup, x1, y1, x2, y2, distActu
     arbreId: arbreGroup.id // Lier à l'arbre
   });
   canvas.add(ligne);
-  canvas.bringToFront(ligne);
+  canvas.bringObjectToFront(ligne);
   
   // Label de distance au milieu
   const midX = (x1 + x2) / 2;
@@ -267,7 +267,7 @@ const ajouterLigneMesureProbleme = (canvas, arbreGroup, x1, y1, x2, y2, distActu
     arbreId: arbreGroup.id // Lier à l'arbre
   });
   canvas.add(label);
-  canvas.bringToFront(label);
+  canvas.bringObjectToFront(label);
 };
 
 /**

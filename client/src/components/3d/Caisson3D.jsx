@@ -5,17 +5,13 @@ function Caisson3D({
   largeur = 5, 
   profondeur = 3,
   hauteur = 1,
-  profondeurEnterree = 1.0,
   volume = 15,
   angle = 0,
-  elevationSol = 0,
+  elevationSol = -1.0,
   onClick = null
 }) {
-  // La profondeur enterrée détermine à quelle profondeur le caisson est enterré
-  // Le caisson doit être positionné sous terre avec le haut à la profondeur enterrée
-  
   return (
-    <group position={[position[0], elevationSol - profondeurEnterree, position[2]]} rotation={[0, -(angle * Math.PI / 180), 0]} onClick={onClick}>
+    <group position={[position[0], elevationSol, position[2]]} rotation={[0, -(angle * Math.PI / 180), 0]} onClick={onClick}>
       {/* Caisson rectangulaire enterré */}
       <mesh castShadow receiveShadow>
         <boxGeometry args={[largeur, hauteur, profondeur]} />
