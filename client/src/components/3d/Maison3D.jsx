@@ -238,11 +238,10 @@ function Maison3D({
         )}
       </group>
       
-      {/* ✅ Pas de label - la maison est reconnaissable visuellement */}
+      {/* Pas de label - la maison est reconnaissable visuellement */}
     </group>
   );
 }
 
-// Optimisation : Éviter re-renders de la maison 3D
 export default memo(Maison3D);
 
