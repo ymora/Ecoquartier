@@ -192,7 +192,7 @@ function Maison3D({
         <meshStandardMaterial color="#ffd700" roughness={0.2} metalness={0.9} />
       </mesh>
       
-      {/* TOIT selon le type - GROUPE COMPLET avec tous les éléments */}
+      {/* TOIT selon le type */}
       <group 
         position={[
           0, 
@@ -205,14 +205,8 @@ function Maison3D({
           0
         ]}
       >
-        {/* Toit principal */}
         <mesh 
           position={[0, 0, typeToit === 'plat' ? 0 : -profondeur / 2]}
-      {/* TOIT selon le type */}
-      {typeToit === 'plan' ? (
-        // Toit plan
-        <mesh 
-          position={[0, hauteur + 0.05, 0]} 
           castShadow
         >
           <primitive object={createToitGeometry()} />
@@ -221,29 +215,13 @@ function Maison3D({
               typeToit === 'plat' ? "#666666" : 
               typeToit === 'monopente' ? "#8B0000" : 
               "#b71c1c"
-            } // ✅ Couleurs différentes selon le type de toit
-            color="#8b4513"
+            }
             roughness={0.8}
             metalness={0.1}
           />
         </mesh>
-      ) : typeToit === 'monopente' ? (
-        // Toit monopente
-        <mesh 
-          position={[0, hauteur, -profondeur / 2]} 
-          rotation={[0, 0, 0]}
-          castShadow
-        >
-          <primitive object={createToitGeometry()} />
-          <meshStandardMaterial 
-            color="#b71c1c"
-            roughness={0.7}
-            metalness={0.1}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
         
-        {/* Faîtage du toit (arête supérieure) - seulement pour toit à 2 pans */}
+        {/* Faîtage du toit - seulement pour toit à 2 pans */}
         {typeToit === '2pans' && (
           <mesh position={[0, hauteurToit, 0]} castShadow>
             <boxGeometry args={[0.15, 0.15, profondeur + 0.2]} />
@@ -259,38 +237,6 @@ function Maison3D({
           </mesh>
         )}
       </group>
-      ) : (
-        // Toit à deux pentes (défaut)
-        <mesh 
-          position={[0, hauteur, -profondeur / 2]} 
-          rotation={[0, 0, 0]}
-          castShadow
-        >
-          <primitive object={createToitGeometry()} />
-          <meshStandardMaterial 
-            color="#b71c1c"
-            roughness={0.7}
-            metalness={0.1}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
-      )}
-      
-      {/* Faîtage du toit (seulement pour les toits à DEUX pentes) */}
-      {typeToit === 'deux-pentes' && (
-        <mesh position={[0, hauteur + hauteurToit, 0]} castShadow>
-          <boxGeometry args={[0.15, 0.15, profondeur + 0.2]} />
-          <meshStandardMaterial color="#8b0000" roughness={0.5} />
-        </mesh>
-      )}
-      
-      {/* Cheminée (seulement pour les toits à DEUX pentes) */}
-      {typeToit === 'deux-pentes' && (
-        <mesh position={[-largeur * 0.25, hauteur + hauteurToit * 0.7, 0]} castShadow>
-          <boxGeometry args={[0.6, 1.2, 0.6]} />
-          <meshStandardMaterial color="#8b4513" roughness={0.8} />
-        </mesh>
-      )}
       
       {/* ✅ Pas de label - la maison est reconnaissable visuellement */}
     </group>
