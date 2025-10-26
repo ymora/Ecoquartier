@@ -258,7 +258,12 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           hasControls: true,
           hasBorders: true,
           isImageFond: true,
-          evented: true
+          evented: true,
+          // S'assurer que l'image est visible
+          visible: true,
+          // Positionner au centre du canvas
+          originX: 'left',
+          originY: 'top'
         });
         
         canvas.add(img);
@@ -278,7 +283,21 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         
         canvas.renderAll();
         
-        logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scale.toFixed(2)})`);
+        // Debug pour vérifier la visibilité
+        console.log('🔍 Debug Image Fond:', {
+          width: img.width,
+          height: img.height,
+          scale: scale,
+          left: img.left,
+          top: img.top,
+          opacity: img.opacity,
+          visible: img.visible,
+          isImageFond: img.isImageFond,
+          canvasWidth: canvas.width,
+          canvasHeight: canvas.height
+        });
+        
+        logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scale.toFixed(2)}, opacité: ${opaciteImage})`);
       });
     };
     reader.readAsDataURL(file);

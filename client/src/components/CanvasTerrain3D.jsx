@@ -62,6 +62,7 @@ function CanvasTerrain3D({
   const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
   const [solTransparent, setSolTransparent] = useState(true); // ✅ Sol transparent TOUJOURS ACTIF = voir racines, fondations, citernes, canalisations
   const [objetSelectionne3D, setObjetSelectionne3D] = useState(null); // ✅ Objet sélectionné en 3D pour highlight
+  const [forceUpdate, setForceUpdate] = useState(0); // ✅ Force la mise à jour de la conversion 2D→3D
   const orbitControlsRef = useRef();
   
   // Convertir les données 2D en 3D
@@ -118,6 +119,9 @@ function CanvasTerrain3D({
           hauteur: maison.hauteurBatiment || 7,
           profondeurFondations: maison.profondeurFondations || 1.2,
           angle: maison.angle || 0,
+          typeToit: maison.typeToit || '2pans', // ✅ Ajout du type de toit
+          penteToit: maison.penteToit || 3, // ✅ Ajout de la pente du toit en degrés
+          orientationToit: maison.orientationToit || 0, // ✅ Ajout de l'orientation du toit
           customType: 'maison' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
@@ -339,7 +343,14 @@ function CanvasTerrain3D({
   
   // Optimisation : Mémoriser la conversion 2D→3D (calcul coûteux)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur]);
+  const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, forceUpdate]);
+  
+  // Écouter les changements dans planData pour forcer la mise à jour
+  useEffect(() => {
+    if (planData) {
+      setForceUpdate(prev => prev + 1);
+    }
+  }, [planData]);
   
   // Valider tous les arbres en 3D pour avoir les statuts à jour
   const validationMap3D = useMemo(() => {
@@ -668,6 +679,7 @@ function CanvasTerrain3D({
                   validationStatus={validationStatus}
                   anneeProjection={anneeProjection}
                   saison={saison}
+                  elevationSol={arbre.elevationSol || 0} // ✅ Ajout de l'élévation du sol
                   onClick={() => handleObjetClick({ type: 'arbre', ...arbre, customType: 'arbre-a-planter' })}
                 />
               )}

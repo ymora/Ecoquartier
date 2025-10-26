@@ -21,9 +21,17 @@ function Arbre3D({
   validationStatus = 'ok',
   anneeProjection = 0,
   saison = 'ete',
+  elevationSol = 0, // ✅ Ajout de l'élévation du sol
   onClick
 }) {
   const groupRef = useRef();
+  
+  // ========== CALCUL DE LA POSITION AVEC ÉLÉVATION DU SOL ==========
+  const positionAjustee = [
+    position[0], 
+    position[1] + elevationSol, // ✅ Ajuster la position Y selon l'élévation du sol
+    position[2]
+  ];
   
   // ========== CALCUL DES TAILLES SELON L'ÂGE ==========
   const hauteurPlantation = 2;
@@ -320,7 +328,7 @@ function Arbre3D({
   // ========== RENDU JSX 3D ==========
   
   return (
-    <group ref={groupRef} position={position} onClick={onClick}>
+    <group ref={groupRef} position={positionAjustee} onClick={onClick}>
       
       {/* TRONC avec texture écorce réaliste */}
       <mesh position={[0, hauteurActuelle / 2, 0]} castShadow receiveShadow>
@@ -538,7 +546,7 @@ function Arbre3D({
       {/* INDICATEURS VISUELS DE VALIDATION - HALO PULSANT ANIMÉ */}
       <HaloPulsant 
         status={validationStatus}
-        position={[0, 0, 0]}
+        position={[0, elevationSol, 0]} // ✅ Ajuster la position du halo selon l'élévation
         envergure={envergureActuelle}
       />
       

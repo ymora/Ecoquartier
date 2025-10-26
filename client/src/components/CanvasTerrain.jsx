@@ -60,6 +60,7 @@ import {
   supprimerImageFond as supprimerImageUtils,
   ajouterMesuresLive as ajouterMesuresUtils
 } from '../utils/canvas/exportImport';
+import { logAllCanvasObjects, exportCompleteData } from '../utils/canvas/completeObjectLogger';
 import { chargerPlanDemo as chargerPlanDemoUtils } from '../utils/canvas/planDemo';
 
 import {
@@ -247,6 +248,16 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     logger.info('Plan', '✅ Log copiable généré dans console');
   };
+
+  // Log complet de tous les objets
+  const loggerComplet = useCallback(() => {
+    logAllCanvasObjects(fabricCanvasRef.current, echelle);
+  }, [echelle]);
+
+  // Export complet des données
+  const exporterComplet = useCallback(() => {
+    exportCompleteData(fabricCanvasRef.current, echelle);
+  }, [echelle]);
   
   const chargerImageFond = () => {
     chargerImageUtils(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille);
@@ -997,6 +1008,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onResetZoom={resetZoom}
         onExporterPlan={exporterPlan}
         onGenererLogCopiable={genererLogCopiable}
+        onLoggerComplet={loggerComplet}
+        onExporterComplet={exporterComplet}
         onAjouterArbrePlante={ajouterArbrePlante}
         onRetirerArbrePlante={retirerArbrePlante}
         ongletActifExterne={ongletActif}

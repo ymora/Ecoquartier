@@ -39,6 +39,8 @@ function PanneauLateral({
   onResetZoom,
   onExporterPlan, // ✅ Ajout pour sauvegarder après modification
   onGenererLogCopiable, // ✅ Génération manuelle du log console
+  onLoggerComplet, // ✅ Log complet de tous les paramètres
+  onExporterComplet, // ✅ Export complet en JSON
   onAjouterArbrePlante, // ✅ Ajouter un arbre à planter
   onRetirerArbrePlante, // ✅ Retirer un arbre de la liste
   ongletActifExterne = null // ✅ Onglet externe pour forcer l'ouverture depuis 3D
@@ -57,6 +59,9 @@ function PanneauLateral({
   const [dimensionsOuvert, setDimensionsOuvert] = useState(true);
   const [positionOuvert, setPositionOuvert] = useState(true);
   const [profondeursOuvert, setProfondeursOuvert] = useState(true);
+  
+  // État pour forcer le re-render des dimensions
+  const [dimensionUpdate, setDimensionUpdate] = useState(0);
   
   // Ref pour stocker l'objet précédemment sélectionné (évite boucle infinie)
   const objetSelectionnePrecedentRef = useRef(null);
@@ -237,12 +242,20 @@ function PanneauLateral({
   // ✅ FIXE : Mise à jour avec sauvegarde du plan
   const updateObjetProp = (prop, value) => {
     if (objetSelectionne && canvas) {
-      const numValue = parseFloat(value);
-      if (isNaN(numValue)) return;
+      // Gérer les propriétés non-numériques (comme typeToit)
+      if (prop === 'typeToit') {
+        objetSelectionne.set({ [prop]: value });
+      } else {
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) return;
+        objetSelectionne.set({ [prop]: numValue });
+      }
       
-      objetSelectionne.set({ [prop]: numValue });
       objetSelectionne.setCoords();
       canvas.requestRenderAll();
+      
+      // Déclencher manuellement la synchronisation 2D→3D
+      canvas.fire('object:modified', { target: objetSelectionne });
       
       // ✅ Déclencher la sauvegarde du plan
       if (onExporterPlan) {
@@ -352,14 +365,41 @@ function PanneauLateral({
     
     const handleChange = (e) => {
       const value = parseFloat(e.target.value);
+      
+      if (objetSelectionne.type === 'group') {
+        // Pour les groupes, mettre à jour les éléments internes
+        const objects = objetSelectionne.getObjects();
+        objects.forEach(obj => {
+          if (obj.type === 'rect') {
+            if (prop === 'width') {
+              obj.set({ width: value * echelle });
+            } else {
+              obj.set({ height: value * echelle });
+            }
+          } else if (obj.type === 'text') {
+            // Ajuster la taille de l'icône proportionnellement
+            const newSize = Math.min(value * echelle * 0.4, value * echelle * 0.4);
+            obj.set({ fontSize: Math.max(newSize, 24) });
+          }
+        });
+      }
+      
+      // Mettre à jour les dimensions du groupe principal
       if (prop === 'width') {
         objetSelectionne.set({ width: value * echelle });
       } else {
         objetSelectionne.set({ height: value * echelle });
       }
+      
       objetSelectionne.setCoords();
       canvas.requestRenderAll();
       if (onExporterPlan) setTimeout(() => onExporterPlan(canvas), 100);
+      
+      // Déclencher manuellement la synchronisation 2D→3D
+      canvas.fire('object:modified', { target: objetSelectionne });
+      
+      // Forcer le re-render
+      setDimensionUpdate(prev => prev + 1);
     };
     
     return renderNumberInput(label, getValue(), handleChange, min, max, step, 'm');
@@ -489,6 +529,142 @@ function PanneauLateral({
                           (objetSelectionne.profondeurFondations || 1.2).toString(),
                           (e) => updateObjetProp('profondeurFondations', e.target.value),
                           -2, 3, 0.1, 'm'
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* TYPE DE TOIT */}
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <button
+                      onClick={() => setProfondeursOuvert(!profondeursOuvert)}
+                      style={styles.boutonSection(profondeursOuvert, '#ff9800')}
+                    >
+                      <span>🏠 Type de toit</span>
+                      <span style={{ fontSize: '1rem' }}>{profondeursOuvert ? '▼' : '▶'}</span>
+                    </button>
+                    {profondeursOuvert && (
+                      <div style={styles.conteneurListe}>
+                        <div className="config-row">
+                          <label>Type de toit</label>
+                          <select
+                            value={objetSelectionne.typeToit || '2pans'}
+                            onChange={(e) => updateObjetProp('typeToit', e.target.value)}
+                            style={{
+                              width: '100%',
+                              padding: '0.3rem',
+                              border: '1px solid #ddd',
+                              borderRadius: '4px',
+                              fontSize: '0.8rem'
+                            }}
+                          >
+                            <option value="2pans">🏠 2 pans (classique)</option>
+                            <option value="monopente">🏠 Monopente</option>
+                            <option value="plat">🏠 Plat</option>
+                          </select>
+                        </div>
+                        {(objetSelectionne.typeToit === 'monopente' || objetSelectionne.typeToit === '2pans') && (
+                          <div className="config-row" style={{ marginTop: '0.5rem' }}>
+                            <label>Pente du toit</label>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                              <button
+                                onClick={() => updateObjetProp('penteToit', Math.max(1, (objetSelectionne.penteToit || 3) - 1))}
+                                style={{
+                                  background: '#f44336',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '3px',
+                                  padding: '0.2rem 0.4rem',
+                                  fontSize: '0.7rem',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                value={Math.round(objetSelectionne.penteToit || 3)}
+                                onChange={(e) => updateObjetProp('penteToit', e.target.value)}
+                                min="1"
+                                max="60"
+                                step="1"
+                                style={{
+                                  width: '60px',
+                                  padding: '0.2rem',
+                                  border: '1px solid #ddd',
+                                  borderRadius: '3px',
+                                  fontSize: '0.8rem',
+                                  textAlign: 'center'
+                                }}
+                              />
+                              <button
+                                onClick={() => updateObjetProp('penteToit', Math.min(60, (objetSelectionne.penteToit || 3) + 1))}
+                                style={{
+                                  background: '#4caf50',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '3px',
+                                  padding: '0.2rem 0.4rem',
+                                  fontSize: '0.7rem',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                +
+                              </button>
+                              <span style={{ fontSize: '0.7rem', color: '#666' }}>°</span>
+                            </div>
+                          </div>
+                        )}
+                        {(objetSelectionne.typeToit === 'monopente' || objetSelectionne.typeToit === '2pans') && (
+                          <div className="config-row" style={{ marginTop: '0.5rem' }}>
+                            <label>Orientation pente</label>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                              <button
+                                onClick={() => updateObjetProp('orientationToit', ((objetSelectionne.orientationToit || 0) - 90 + 360) % 360)}
+                                style={{
+                                  background: '#f44336',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '3px',
+                                  padding: '0.2rem 0.4rem',
+                                  fontSize: '0.7rem',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                ↺
+                              </button>
+                              <select
+                                value={objetSelectionne.orientationToit || 0}
+                                onChange={(e) => updateObjetProp('orientationToit', parseInt(e.target.value))}
+                                style={{
+                                  width: '100px',
+                                  padding: '0.2rem',
+                                  border: '1px solid #ddd',
+                                  borderRadius: '3px',
+                                  fontSize: '0.8rem'
+                                }}
+                              >
+                                <option value={0}>Nord (0°)</option>
+                                <option value={90}>Est (90°)</option>
+                                <option value={180}>Sud (180°)</option>
+                                <option value={270}>Ouest (270°)</option>
+                              </select>
+                              <button
+                                onClick={() => updateObjetProp('orientationToit', ((objetSelectionne.orientationToit || 0) + 90) % 360)}
+                                style={{
+                                  background: '#4caf50',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '3px',
+                                  padding: '0.2rem 0.4rem',
+                                  fontSize: '0.7rem',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                ↻
+                              </button>
+                            </div>
+                          </div>
                         )}
                       </div>
                     )}
@@ -670,12 +846,6 @@ function PanneauLateral({
                           (objetSelectionne.hauteurDalle || 0.15).toString(),
                           (e) => updateObjetProp('hauteurDalle', e.target.value),
                           -1, 1, 0.05, 'm'
-                        )}
-                        {renderNumberInput(
-                          'Prof. fondation',
-                          (objetSelectionne.profondeurFondation || 0.3).toString(),
-                          (e) => updateObjetProp('profondeurFondation', e.target.value),
-                          -1, 1, 0.1, 'm'
                         )}
                       </div>
                     )}
@@ -903,6 +1073,22 @@ function PanneauLateral({
                 </button>
               </div>
             )}
+          </div>
+          
+          {/* CHARGER PLAN PAR DÉFAUT */}
+          <div style={{ marginBottom: '0.5rem' }}>
+            <button
+              className="btn-outil-full"
+              onClick={onChargerPlanParDefaut}
+              title="Charger plan par défaut personnalisé"
+              style={{
+                background: '#ff9800',
+                color: 'white',
+                fontWeight: 'bold'
+              }}
+            >
+              🔄 Charger plan par défaut
+            </button>
           </div>
           
           {/* STRUCTURES */}
@@ -1552,27 +1738,6 @@ function PanneauLateral({
                   ⚠️ Effacer tout
                 </button>
                 <button 
-                  onClick={onChargerPlanParDefaut} 
-                  title="Charger plan par défaut personnalisé"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#ff9800',
-                    border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#fff3e0'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-                  🔄 Plan défaut
-                </button>
-                <button 
                   onClick={onGenererLogCopiable} 
                   title="Générer log dans console (F12) pour créer config par défaut"
                   style={{
@@ -1581,6 +1746,7 @@ function PanneauLateral({
                     background: 'white',
                     color: '#9c27b0',
                     border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
                     fontSize: '0.85rem',
                     fontWeight: '500',
@@ -1591,6 +1757,47 @@ function PanneauLateral({
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
                   📋 Log console
+                </button>
+                <button 
+                  onClick={onLoggerComplet} 
+                  title="Log complet de tous les paramètres de tous les objets"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#2196f3',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#e3f2fd'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  🔍 Log complet
+                </button>
+                <button 
+                  onClick={onExporterComplet} 
+                  title="Exporter toutes les données en JSON"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#4caf50',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#e8f5e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  💾 Export JSON
                 </button>
               </div>
             )}
