@@ -126,15 +126,10 @@ function CanvasTerrain3D({
           hauteur: maison.hauteur || 7,
           elevationSol: maison.elevationSol || 0,
           angle: maison.angle || 0,
-<<<<<<< HEAD
-          typeToit: maison.typeToit || '2pans', // ✅ Ajout du type de toit
-          penteToit: maison.penteToit || 3, // ✅ Ajout de la pente du toit en degrés
-          orientationToit: maison.orientationToit || 0, // ✅ Ajout de l'orientation du toit
-          customType: 'maison' // ✅ Ajout pour synchronisation avec le canvas 2D
-=======
-          typeToit: maison.typeToit || 'deux-pentes',
+          typeToit: maison.typeToit || '2pans',
+          penteToit: maison.penteToit || 3,
+          orientationToit: maison.orientationToit || 0,
           customType: 'maison'
->>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
         };
       });
     }
@@ -352,18 +347,7 @@ function CanvasTerrain3D({
   
   // Optimisation : Mémoriser la conversion 2D→3D (calcul coûteux)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-<<<<<<< HEAD
-  const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, forceUpdate]);
-  
-  // Écouter les changements dans planData pour forcer la mise à jour
-  useEffect(() => {
-    if (planData) {
-      setForceUpdate(prev => prev + 1);
-    }
-  }, [planData]);
-=======
   const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, syncKey]);
->>>>>>> 919d988e5a225390d7f1a00a8fa300c5c1a7500e
   
   // Valider tous les arbres en 3D pour avoir les statuts à jour
   const validationMap3D = useMemo(() => {
