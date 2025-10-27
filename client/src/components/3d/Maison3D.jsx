@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import * as THREE from 'three';
 
 function Maison3D({ 
@@ -13,38 +13,84 @@ function Maison3D({
   orientationToit = 0,
   onClick
 }) {
+  // Constantes et calculs
   const profondeurFondations = 1.2;
+  const hauteurFondationsSemelles = 0.4;
+  const hauteurMursSousSol = 2.1;
+  const profondeurTotaleSousSol = hauteurFondationsSemelles + hauteurMursSousSol;
   
+  // Calculs du toit
   const dimensionPente = typeToit === 'monopente' && (orientationToit === 90 || orientationToit === 270) ? profondeur : largeur;
   const hauteurToit = Math.tan((penteToit * Math.PI) / 180) * (dimensionPente / 2);
-  
-  // Convertir l'angle en radians et inverser pour correspondre à Fabric.js
-  // Fabric.js : angle positif = rotation horaire (vers le bas)
-  // Three.js : angle positif = rotation antihoraire (vers le haut)
   const angleRad = -(angle * Math.PI) / 180;
   
-  // Créer la géométrie du toit selon le type
-  const createToitGeometry = () => {
+  // Matériaux optimisés avec useMemo
+  const materials = useMemo(() => ({
+    fondations: new THREE.MeshStandardMaterial({
+      color: "#666666",
+      transparent: true,
+      opacity: 0.4,
+      wireframe: true
+    }),
+    sousSol: new THREE.MeshStandardMaterial({
+      color: "#999999",
+      transparent: true,
+      opacity: 0.6,
+      roughness: 0.9
+    }),
+    murs: new THREE.MeshStandardMaterial({
+      color: "#f5e6d3",
+      roughness: 0.8,
+      metalness: 0.05
+    }),
+    fenetres: new THREE.MeshStandardMaterial({
+      color: "#4a90e2",
+      roughness: 0.1,
+      metalness: 0.8
+    }),
+    porte: new THREE.MeshStandardMaterial({
+      color: "#8b4513",
+      roughness: 0.7,
+      metalness: 0.1
+    }),
+    poignee: new THREE.MeshStandardMaterial({
+      color: "#ffd700",
+      roughness: 0.2,
+      metalness: 0.9
+    }),
+    toit: new THREE.MeshStandardMaterial({
+      color: typeToit === 'plat' ? "#666666" : 
+             typeToit === 'monopente' ? "#8B0000" : "#b71c1c",
+      roughness: 0.8,
+      metalness: 0.1
+    }),
+    faitage: new THREE.MeshStandardMaterial({
+      color: "#8b0000",
+      roughness: 0.5
+    }),
+    cheminee: new THREE.MeshStandardMaterial({
+      color: "#8b4513",
+      roughness: 0.8
+    })
+  }), [typeToit]);
+
+  // Géométrie du toit optimisée
+  const toitGeometry = useMemo(() => {
     switch (typeToit) {
       case 'plat':
-        // Toit plat - simple boîte
         return new THREE.BoxGeometry(largeur, 0.2, profondeur);
         
       case 'monopente':
-        // Toit monopente - forme triangulaire adaptée à l'orientation et aux dimensions
         const shape = new THREE.Shape();
         const penteY = hauteurToit;
         
-        // Adapter la géométrie selon l'orientation pour optimiser la couverture
         if (orientationToit === 0 || orientationToit === 180) {
-          // Pente vers l'avant/arrière - utiliser la largeur (côté le plus long si rectangulaire)
           const dimensionPente = Math.max(largeur, profondeur);
           shape.moveTo(-dimensionPente / 2, 0);
           shape.lineTo(dimensionPente / 2, 0);
           shape.lineTo(dimensionPente / 2, penteY);
           shape.lineTo(-dimensionPente / 2, 0);
         } else {
-          // Pente vers les côtés - utiliser la profondeur (côté le plus court si rectangulaire)
           const dimensionPente = Math.min(largeur, profondeur);
           shape.moveTo(-dimensionPente / 2, 0);
           shape.lineTo(dimensionPente / 2, 0);
@@ -64,11 +110,9 @@ function Maison3D({
         
       case '2pans':
       default:
-        // Toit à 2 pans - forme triangulaire
         const shape2pans = new THREE.Shape();
         const penteY2pans = hauteurToit;
         
-        // Dessiner le profil du toit (triangle)
         shape2pans.moveTo(-largeur / 2, 0);
         shape2pans.lineTo(0, penteY2pans);
         shape2pans.lineTo(largeur / 2, 0);
@@ -82,74 +126,56 @@ function Maison3D({
         
         return new THREE.ExtrudeGeometry(shape2pans, extrudeSettings2pans);
     }
-  };
-  
-  // Dimensions sous-sol
-  const hauteurFondationsSemelles = 0.4; // 40cm de hauteur pour les semelles
-  const hauteurMursSousSol = 2.1; // 2.1m de hauteur pour les murs du sous-sol
-  const profondeurTotaleSousSol = hauteurFondationsSemelles + hauteurMursSousSol; // 2.5m total
-  
+  }, [typeToit, largeur, profondeur, hauteurToit, orientationToit]);
+
+  // Configuration des fenêtres
+  const fenetres = [
+    { position: [0, hauteur * 0.6, profondeur / 2 + 0.02] },
+    { position: [-2.5, hauteur * 0.6, profondeur / 2 + 0.02] },
+    { position: [2.5, hauteur * 0.6, profondeur / 2 + 0.02] }
+  ];
+
   return (
     <group position={position} rotation={[0, angleRad, 0]} onClick={onClick}>
-      {/* FONDATIONS / SEMELLES sous terre (40cm, plus larges que la maison) */}
+      {/* Fondations */}
       <mesh position={[0, -profondeurTotaleSousSol + hauteurFondationsSemelles / 2, 0]}>
         <boxGeometry args={[largeur + 1, hauteurFondationsSemelles, profondeur + 1]} />
-        <meshStandardMaterial 
-          color="#666666" 
-          transparent 
-          opacity={0.4}
-          wireframe
-        />
+        <primitive object={materials.fondations} />
       </mesh>
       
-      {/* MURS DU SOUS-SOL (2.1m, même taille que la maison) */}
+      {/* Murs sous-sol */}
       <mesh position={[0, -hauteurMursSousSol / 2, 0]}>
         <boxGeometry args={[largeur, hauteurMursSousSol, profondeur]} />
-        <meshStandardMaterial 
-          color="#999999" 
-          transparent 
-          opacity={0.6}
-          roughness={0.9}
-        />
+        <primitive object={materials.sousSol} />
       </mesh>
       
-      {/* MURS RDC + ÉTAGES (beige avec texture brique simulée) */}
+      {/* Murs RDC + étages */}
       <mesh position={[0, hauteur / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[largeur, hauteur, profondeur]} />
-        <meshStandardMaterial 
-          color="#f5e6d3"
-          roughness={0.8}
-          metalness={0.05}
-        />
+        <primitive object={materials.murs} />
       </mesh>
       
-      {/* Détails fenêtres (façade avant) */}
-      <mesh position={[0, hauteur * 0.6, profondeur / 2 + 0.02]} castShadow>
-        <boxGeometry args={[1.2, 1.5, 0.1]} />
-        <meshStandardMaterial color="#4a90e2" roughness={0.1} metalness={0.8} />
-      </mesh>
-      <mesh position={[-2.5, hauteur * 0.6, profondeur / 2 + 0.02]} castShadow>
-        <boxGeometry args={[1.2, 1.5, 0.1]} />
-        <meshStandardMaterial color="#4a90e2" roughness={0.1} metalness={0.8} />
-      </mesh>
-      <mesh position={[2.5, hauteur * 0.6, profondeur / 2 + 0.02]} castShadow>
-        <boxGeometry args={[1.2, 1.5, 0.1]} />
-        <meshStandardMaterial color="#4a90e2" roughness={0.1} metalness={0.8} />
-      </mesh>
+      {/* Fenêtres */}
+      {fenetres.map((fenetre, index) => (
+        <mesh key={index} position={fenetre.position} castShadow>
+          <boxGeometry args={[1.2, 1.5, 0.1]} />
+          <primitive object={materials.fenetres} />
+        </mesh>
+      ))}
       
-      {/* Porte d'entrée */}
+      {/* Porte */}
       <mesh position={[0, hauteur * 0.2, profondeur / 2 + 0.02]} castShadow>
         <boxGeometry args={[1, 2.2, 0.15]} />
-        <meshStandardMaterial color="#8b4513" roughness={0.7} metalness={0.1} />
+        <primitive object={materials.porte} />
       </mesh>
       
-      {/* Poignée de porte */}
+      {/* Poignée */}
       <mesh position={[0.3, hauteur * 0.2, profondeur / 2 + 0.1]} castShadow>
         <sphereGeometry args={[0.08, 8, 8]} />
-        <meshStandardMaterial color="#ffd700" roughness={0.2} metalness={0.9} />
+        <primitive object={materials.poignee} />
       </mesh>
       
-      {/* TOIT selon le type */}
+      {/* Toit */}
       <group 
         position={[
           0, 
@@ -166,23 +192,15 @@ function Maison3D({
           position={[0, 0, typeToit === 'plat' ? 0 : -profondeur / 2]}
           castShadow
         >
-          <primitive object={createToitGeometry()} />
-          <meshStandardMaterial 
-            color={
-              typeToit === 'plat' ? "#666666" : 
-              typeToit === 'monopente' ? "#8B0000" : 
-              "#b71c1c"
-            }
-            roughness={0.8}
-            metalness={0.1}
-          />
+          <primitive object={toitGeometry} />
+          <primitive object={materials.toit} />
         </mesh>
         
-        {/* Faîtage du toit - seulement pour toit à 2 pans */}
+        {/* Faîtage - seulement pour toit à 2 pans */}
         {typeToit === '2pans' && (
           <mesh position={[0, hauteurToit, 0]} castShadow>
             <boxGeometry args={[0.15, 0.15, profondeur + 0.2]} />
-            <meshStandardMaterial color="#8b0000" roughness={0.5} />
+            <primitive object={materials.faitage} />
           </mesh>
         )}
         
@@ -190,15 +208,12 @@ function Maison3D({
         {typeToit === '2pans' && (
           <mesh position={[-largeur * 0.25, hauteurToit * 0.7, 0]} castShadow>
             <boxGeometry args={[0.6, 1.2, 0.6]} />
-            <meshStandardMaterial color="#8b4513" roughness={0.8} />
+            <primitive object={materials.cheminee} />
           </mesh>
         )}
       </group>
-      
-      {/* Pas de label - la maison est reconnaissable visuellement */}
     </group>
   );
 }
 
 export default memo(Maison3D);
-

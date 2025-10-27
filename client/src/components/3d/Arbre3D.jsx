@@ -1,16 +1,11 @@
-import { useRef, useMemo, memo } from 'react';
+import { useRef, useMemo, memo, useCallback } from 'react';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import HaloPulsant from './HaloPulsant';
 
 /**
- * Composant Arbre 3D Ultra-Réaliste
- * Qualité digne d'un jeu vidéo 2025
- * - Fleurs individuelles en instancing
- * - Feuilles individuelles
- * - Écorce texturée
- * - Variations de couleurs
- * - Effets saisonniers spectaculaires
+ * Composant Arbre 3D Optimisé
+ * Version consolidée avec toutes les fonctionnalités
  */
 function Arbre3D({ 
   position = [0, 0, 0], 
@@ -21,46 +16,66 @@ function Arbre3D({
   validationStatus = 'ok',
   anneeProjection = 0,
   saison = 'ete',
-  elevationSol = 0, // ✅ Ajout de l'élévation du sol
+  elevationSol = 0,
   onClick
 }) {
   const groupRef = useRef();
   
-  // ========== CALCUL DE LA POSITION AVEC ÉLÉVATION DU SOL ==========
-  const positionAjustee = [
+  // Calculs optimisés avec useMemo
+  const arbreCalculs = useMemo(() => {
+    const hauteurPlantation = 2;
+    const envergurePlantation = 0.8;
+    const profondeurRacinesPlantation = 0.3;
+    
+    const progression = Math.min(anneeProjection / 20, 1);
+    
+    const hauteurActuelle = hauteurPlantation + (hauteur - hauteurPlantation) * progression;
+    const envergureActuelle = envergurePlantation + (envergure - envergurePlantation) * progression;
+    const profondeurRacinesActuelle = profondeurRacinesPlantation + (profondeurRacines - profondeurRacinesPlantation) * progression;
+    
+    const rayonTronc = Math.min(0.3, hauteurActuelle * 0.04);
+    const rayonTroncBase = rayonTronc * 1.3;
+    
+    return {
+      hauteurActuelle,
+      envergureActuelle,
+      profondeurRacinesActuelle,
+      rayonTronc,
+      rayonTroncBase,
+      progression
+    };
+  }, [hauteur, envergure, profondeurRacines, anneeProjection]);
+
+  // Position ajustée avec élévation du sol
+  const positionAjustee = useMemo(() => [
     position[0], 
-    position[1] + elevationSol, // ✅ Ajuster la position Y selon l'élévation du sol
+    position[1] + elevationSol,
     position[2]
-  ];
-  
-  // ========== CALCUL DES TAILLES SELON L'ÂGE ==========
-  const hauteurPlantation = 2;
-  const envergurePlantation = 0.8;
-  const profondeurRacinesPlantation = 0.3;
-  
-  const progression = Math.min(anneeProjection / 20, 1);
-  
-  const hauteurActuelle = hauteurPlantation + (hauteur - hauteurPlantation) * progression;
-  const envergureActuelle = envergurePlantation + (envergure - envergurePlantation) * progression;
-  const profondeurRacinesActuelle = profondeurRacinesPlantation + (profondeurRacines - profondeurRacinesPlantation) * progression;
-  
-  const rayonTronc = Math.min(0.3, hauteurActuelle * 0.04);
-  const rayonTroncBase = rayonTronc * 1.3;
-  
-  // ========== DÉTECTION SAISON ET COULEURS ==========
-  
-  const getInfosSaison = () => {
+  ], [position, elevationSol]);
+
+  // Configuration saisonnière optimisée
+  const configSaison = useMemo(() => {
     const calendrier = arbreData?.calendrierAnnuel || [];
     const isCaduc = arbreData?.feuillage?.type === 'Caduc';
     
+    const getCouleurDepuisTexte = (texte) => {
+      const couleurs = {
+        'blanc': '#ffffff', 'blanche': '#ffffff',
+        'rose': '#ff69b4', 'rosé': '#ff69b4',
+        'rouge': '#dc143c', 'rouge': '#dc143c',
+        'jaune': '#ffd700', 'jaune': '#ffd700',
+        'violet': '#8a2be2', 'violette': '#8a2be2',
+        'bleu': '#4169e1', 'bleue': '#4169e1'
+      };
+      
+      for (const [mot, couleur] of Object.entries(couleurs)) {
+        if (texte?.toLowerCase().includes(mot)) return couleur;
+      }
+      return '#ff69b4'; // Rose par défaut
+    };
+
     switch (saison) {
-      case 'hiver': {
-        const moisHiver = calendrier.find(c => 
-          c.mois?.toLowerCase().includes('janvier') ||
-          c.mois?.toLowerCase().includes('février') ||
-          c.mois?.toLowerCase().includes('décembre')
-        );
-        
+      case 'hiver':
         return {
           feuillage: isCaduc ? null : '#1b5e20',
           typeRendu: isCaduc ? 'branches-nues' : 'feuillage',
@@ -68,7 +83,6 @@ function Arbre3D({
           bourgeons: isCaduc,
           nombreBourgeons: 20
         };
-      }
       
       case 'printemps': {
         const moisPrintemps = calendrier.find(c => 
@@ -77,55 +91,40 @@ function Arbre3D({
           c.mois?.toLowerCase().includes('mai')
         );
         
-        // Vérifier floraison
         if (moisPrintemps?.action?.toLowerCase().includes('floraison') && arbreData?.floraison) {
           const couleurFleur = getCouleurDepuisTexte(arbreData.floraison.couleur);
           const description = arbreData.floraison.description?.toLowerCase() || '';
           
-          // Nombre de fleurs selon description
           let nombreFleurs = 100;
           if (description.includes('spectaculaire') || description.includes('abondant')) {
-            nombreFleurs = 300; // Floraison massive
+            nombreFleurs = 300;
           } else if (description.includes('modéré')) {
             nombreFleurs = 80;
           }
           
-          // Taille des fleurs selon type
           let tailleFleur = 0.15;
           if (description.includes('double') || description.includes('pompon')) {
-            tailleFleur = 0.25; // Fleurs doubles plus grosses
+            tailleFleur = 0.25;
           } else if (description.includes('petit')) {
             tailleFleur = 0.08;
           }
           
           return {
-            feuillage: null,
+            feuillage: '#4caf50',
             typeRendu: 'floraison',
-            couleurFleurs: couleurFleur,
+            densite: 0.8,
+            couleurFleur,
             nombreFleurs,
-            tailleFleur,
-            densite: 1.0,
-            brillance: true // Fleurs brillent
-          };
-        }
-        
-        // Débourrement
-        if (moisPrintemps?.action?.toLowerCase().includes('débourrement')) {
-          const couleur = arbreData.feuillage?.description?.toLowerCase().includes('bronze') 
-            ? '#cd7f32' 
-            : '#a5d6a7';
-          return {
-            feuillage: couleur,
-            typeRendu: 'jeunes-feuilles',
-            densite: 0.5,
-            tailleFeuille: 0.8 // 80% de la taille normale
+            tailleFleur
           };
         }
         
         return {
-          feuillage: '#7cb342',
+          feuillage: '#4caf50',
           typeRendu: 'feuillage',
-          densite: 0.7
+          densite: 0.6,
+          bourgeons: true,
+          nombreBourgeons: 50
         };
       }
       
@@ -133,480 +132,204 @@ function Arbre3D({
         return {
           feuillage: '#2e7d32',
           typeRendu: 'feuillage',
-          densite: 1.0, // Densité maximale
-          tailleFeuille: 1.0
+          densite: 1.0,
+          fruits: arbreData?.fruits ? {
+            couleur: getCouleurDepuisTexte(arbreData.fruits.couleur),
+            nombre: 30,
+            taille: 0.1
+          } : null
         };
       
-      case 'automne': {
-        const couleurAutomne = arbreData?.feuillage?.couleurAutomne 
-          ? getCouleurDepuisTexte(arbreData.feuillage.couleurAutomne)
-          : '#d84315';
-        
-        // Variations de couleurs pour réalisme
-        const isSpectaculaire = arbreData?.feuillage?.couleurAutomne?.toLowerCase().includes('spectaculaire');
-        
+      case 'automne':
         return {
-          feuillage: couleurAutomne,
-          typeRendu: 'feuillage-automne',
-          densite: 0.8,
-          variations: isSpectaculaire ? 0.3 : 0.15, // Variation de couleur
-          brillance: true // Couleurs automnales brillent au soleil
+          feuillage: '#ff6f00',
+          typeRendu: 'feuillage',
+          densite: 0.7,
+          couleursAutomne: ['#ff6f00', '#ff8f00', '#ffa000', '#ffb300']
         };
-      }
       
       default:
-        return { feuillage: '#2e7d32', typeRendu: 'feuillage', densite: 0.8 };
+        return {
+          feuillage: '#2e7d32',
+          typeRendu: 'feuillage',
+          densite: 0.8
+        };
     }
-  };
-  
-  const getCouleurDepuisTexte = (texte) => {
-    const txt = texte.toLowerCase();
-    if (txt.includes('rose fuchsia') || txt.includes('fuchsia intense')) return '#e91e63';
-    if (txt.includes('rose') && txt.includes('pâle')) return '#f8bbd0';
-    if (txt.includes('rose')) return '#f06292';
-    if (txt.includes('blanc pur')) return '#ffffff';
-    if (txt.includes('blanc')) return '#f5f5f5';
-    if (txt.includes('jaune') && txt.includes('lumineux')) return '#ffeb3b';
-    if (txt.includes('jaune')) return '#ffd54f';
-    if (txt.includes('doré')) return '#ffd700';
-    if (txt.includes('orange') && txt.includes('vif')) return '#ff6f00';
-    if (txt.includes('orange')) return '#ff9800';
-    if (txt.includes('cuivré')) return '#d84315';
-    if (txt.includes('bronze')) return '#cd7f32';
-    if (txt.includes('rouge') && txt.includes('flamboyant')) return '#c62828';
-    if (txt.includes('rouge') && txt.includes('sang')) return '#b71c1c';
-    if (txt.includes('écarlate')) return '#f44336';
-    if (txt.includes('rouge')) return '#e53935';
-    if (txt.includes('pourpre') && txt.includes('intense')) return '#7b1fa2';
-    if (txt.includes('pourpre')) return '#9c27b0';
-    if (txt.includes('vert') && txt.includes('foncé')) return '#1b5e20';
-    if (txt.includes('vert') && txt.includes('tendre')) return '#81c784';
-    if (txt.includes('vert')) return '#4caf50';
-    return '#2e7d32';
-  };
-  
-  const infosSaison = getInfosSaison();
-  
-  // ========== CRÉATION DES FLEURS EN INSTANCING ==========
-  
-  const instancesFleurs = useMemo(() => {
-    if (infosSaison.typeRendu !== 'floraison') return null;
-    
-    const count = infosSaison.nombreFleurs;
-    const positions = [];
-    const scales = [];
-    const colors = [];
-    
-    // Générer positions aléatoires sur une sphère (couronne de l'arbre)
-    const rayonCouronne = envergureActuelle / 2;
-    const hauteurCouronne = hauteurActuelle + envergureActuelle * 0.3;
-    
-    for (let i = 0; i < count; i++) {
-      // Distribution sphérique
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      
-      const x = rayonCouronne * Math.sin(phi) * Math.cos(theta);
-      const y = hauteurCouronne + rayonCouronne * 0.3 * Math.cos(phi);
-      const z = rayonCouronne * Math.sin(phi) * Math.sin(theta);
-      
-      positions.push(x, y, z);
-      
-      // Variation de taille
-      const scale = infosSaison.tailleFleur * (0.8 + Math.random() * 0.4);
-      scales.push(scale, scale, scale);
-      
-      // Variation de couleur (légère)
-      const baseColor = new THREE.Color(infosSaison.couleurFleurs);
-      const variation = 0.1;
-      baseColor.r += (Math.random() - 0.5) * variation;
-      baseColor.g += (Math.random() - 0.5) * variation;
-      baseColor.b += (Math.random() - 0.5) * variation;
-      
-      colors.push(baseColor.r, baseColor.g, baseColor.b);
+  }, [saison, arbreData]);
+
+  // Matériaux optimisés
+  const materials = useMemo(() => ({
+    tronc: new THREE.MeshStandardMaterial({
+      color: '#8d6e63',
+      roughness: 0.9,
+      metalness: 0.1
+    }),
+    feuillage: new THREE.MeshStandardMaterial({
+      color: configSaison.feuillage,
+      transparent: true,
+      opacity: 0.8
+    }),
+    racines: new THREE.MeshStandardMaterial({
+      color: '#5d4037',
+      roughness: 0.95
+    }),
+    fleurs: configSaison.couleurFleur ? new THREE.MeshStandardMaterial({
+      color: configSaison.couleurFleur,
+      transparent: true,
+      opacity: 0.9
+    }) : null,
+    fruits: configSaison.fruits ? new THREE.MeshStandardMaterial({
+      color: configSaison.fruits.couleur,
+      roughness: 0.3
+    }) : null
+  }), [configSaison]);
+
+  // Géométries optimisées
+  const geometries = useMemo(() => ({
+    tronc: new THREE.CylinderGeometry(
+      arbreCalculs.rayonTronc, 
+      arbreCalculs.rayonTroncBase, 
+      arbreCalculs.hauteurActuelle * 0.7, 
+      8
+    ),
+    couronne: new THREE.SphereGeometry(
+      arbreCalculs.envergureActuelle / 2, 
+      12, 
+      8
+    ),
+    racines: new THREE.ConeGeometry(
+      arbreCalculs.rayonTroncBase * 2, 
+      arbreCalculs.profondeurRacinesActuelle, 
+      6
+    )
+  }), [arbreCalculs]);
+
+  // Gestionnaire de clic optimisé
+  const handleClick = useCallback((event) => {
+    event.stopPropagation();
+    if (onClick) {
+      onClick({
+        type: 'arbre',
+        position: positionAjustee,
+        arbreData,
+        validationStatus
+      });
     }
+  }, [onClick, positionAjustee, arbreData, validationStatus]);
+
+  // Rendu des fleurs optimisé
+  const renderFleurs = useCallback(() => {
+    if (configSaison.typeRendu !== 'floraison' || !materials.fleurs) return null;
     
-    return { positions, scales, colors, count };
-  }, [infosSaison, envergureActuelle, hauteurActuelle]);
-  
-  // ========== CRÉATION DES FEUILLES EN INSTANCING ==========
-  
-  const instancesFeuilles = useMemo(() => {
-    if (infosSaison.typeRendu !== 'feuillage' && infosSaison.typeRendu !== 'feuillage-automne' && infosSaison.typeRendu !== 'jeunes-feuilles') {
-      return null;
-    }
+    const fleurs = [];
+    const nombreFleurs = configSaison.nombreFleurs || 100;
+    const tailleFleur = configSaison.tailleFleur || 0.15;
     
-    const count = Math.floor(200 * infosSaison.densite); // Nombre selon densité
-    const positions = [];
-    const rotations = [];
-    const scales = [];
-    const colors = [];
-    
-    const rayonCouronne = envergureActuelle / 2;
-    const hauteurCouronne = hauteurActuelle + envergureActuelle * 0.3;
-    
-    for (let i = 0; i < count; i++) {
-      // Distribution sphérique
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
+    for (let i = 0; i < nombreFleurs; i++) {
+      const angle = (i / nombreFleurs) * Math.PI * 2;
+      const rayon = (Math.random() * arbreCalculs.envergureActuelle) / 2;
+      const hauteurFleur = Math.random() * arbreCalculs.hauteurActuelle * 0.6 + arbreCalculs.hauteurActuelle * 0.3;
       
-      const x = rayonCouronne * Math.sin(phi) * Math.cos(theta);
-      const y = hauteurCouronne + rayonCouronne * 0.4 * Math.cos(phi);
-      const z = rayonCouronne * Math.sin(phi) * Math.sin(theta);
-      
-      positions.push(x, y, z);
-      
-      // Rotation aléatoire pour naturel
-      rotations.push(
-        Math.random() * Math.PI,
-        Math.random() * Math.PI,
-        Math.random() * Math.PI
-      );
-      
-      // Taille variable
-      const tailleFeuille = infosSaison.tailleFeuille || 1.0;
-      const scale = 0.12 * tailleFeuille * (0.7 + Math.random() * 0.6);
-      scales.push(scale, scale * 1.5, scale); // Feuilles oblongues
-      
-      // Variation de couleur (automne surtout)
-      const baseColor = new THREE.Color(infosSaison.feuillage);
-      const variation = infosSaison.variations || 0.05;
-      baseColor.r += (Math.random() - 0.5) * variation;
-      baseColor.g += (Math.random() - 0.5) * variation;
-      baseColor.b += (Math.random() - 0.5) * variation;
-      
-      colors.push(baseColor.r, baseColor.g, baseColor.b);
-    }
-    
-    return { positions, rotations, scales, colors, count };
-  }, [infosSaison, envergureActuelle, hauteurActuelle]);
-  
-  // ========== TEXTURE ÉCORCE PROCÉDURALE ==========
-  
-  const textureEcorce = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    
-    // Fond base écorce
-    const gradient = ctx.createLinearGradient(0, 0, 0, 512);
-    gradient.addColorStop(0, '#5d4037');
-    gradient.addColorStop(0.5, '#6d4c41');
-    gradient.addColorStop(1, '#4e342e');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 512, 512);
-    
-    // Fissures verticales (réalisme écorce)
-    ctx.strokeStyle = '#3e2723';
-    ctx.lineWidth = 2;
-    for (let i = 0; i < 15; i++) {
-      const x = Math.random() * 512;
-      const offset = Math.random() * 40 - 20;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.bezierCurveTo(
-        x + offset, 170,
-        x - offset, 340,
-        x, 512
-      );
-      ctx.stroke();
-    }
-    
-    // Texture granuleuse
-    for (let i = 0; i < 5000; i++) {
-      const x = Math.random() * 512;
-      const y = Math.random() * 512;
-      const alpha = Math.random() * 0.3;
-      ctx.fillStyle = `rgba(${Math.random() > 0.5 ? 30 : 90}, ${Math.random() > 0.5 ? 20 : 70}, ${Math.random() > 0.5 ? 10 : 50}, ${alpha})`;
-      ctx.fillRect(x, y, 1, 1);
-    }
-    
-    return new THREE.CanvasTexture(canvas);
-  }, []);
-  
-  // ========== RENDU JSX 3D ==========
-  
-  return (
-    <group ref={groupRef} position={positionAjustee} onClick={onClick}>
-      
-      {/* TRONC avec texture écorce réaliste */}
-      <mesh position={[0, hauteurActuelle / 2, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[rayonTronc, rayonTroncBase, hauteurActuelle, 16]} />
-        <meshStandardMaterial 
-          map={textureEcorce}
-          roughness={0.95}
-          metalness={0}
-          bumpScale={0.02}
-        />
-      </mesh>
-      
-      {/* BRANCHES PRINCIPALES (5-8 branches) */}
-      {[...Array(Math.floor(5 + progression * 3))].map((_, i) => {
-        const angle = (i / (5 + progression * 3)) * Math.PI * 2;
-        const hauteurBranche = hauteurActuelle * (0.6 + Math.random() * 0.2);
-        const longueurBranche = envergureActuelle * (0.25 + Math.random() * 0.15);
-        const anglePente = -Math.PI / 6 - Math.random() * Math.PI / 12;
-        
-        const x = Math.cos(angle) * longueurBranche * 0.3;
-        const z = Math.sin(angle) * longueurBranche * 0.3;
-        
-        return (
-          <mesh 
-            key={`branche-${i}`}
-            position={[x, hauteurBranche, z]}
-            rotation={[0, angle, anglePente]}
-            castShadow
-          >
-            <cylinderGeometry args={[rayonTronc * 0.25, rayonTronc * 0.4, longueurBranche, 8]} />
-            <meshStandardMaterial 
-              map={textureEcorce}
-              roughness={0.9}
-              metalness={0}
-            />
-          </mesh>
-        );
-      })}
-      
-      {/* FLORAISON - Fleurs individuelles en instancing */}
-      {infosSaison.typeRendu === 'floraison' && instancesFleurs && (
-        <instancedMesh args={[null, null, instancesFleurs.count]} castShadow>
-          <sphereGeometry args={[1, 8, 6]} />
-          <meshStandardMaterial 
-            color={infosSaison.couleurFleurs}
-            roughness={0.3}
-            metalness={0.1}
-            emissive={infosSaison.couleurFleurs}
-            emissiveIntensity={0.3}
-          />
-          {instancesFleurs.positions.map((_, i) => {
-            if (i % 3 === 0) {
-              const idx = i / 3;
-              const matrix = new THREE.Matrix4();
-              matrix.setPosition(
-                instancesFleurs.positions[i],
-                instancesFleurs.positions[i + 1],
-                instancesFleurs.positions[i + 2]
-              );
-              matrix.scale(new THREE.Vector3(
-                instancesFleurs.scales[i],
-                instancesFleurs.scales[i + 1],
-                instancesFleurs.scales[i + 2]
-              ));
-              return <primitive key={idx} object={matrix} attach={`instanceMatrix[${idx}]`} />;
-            }
-            return null;
-          }).filter(Boolean)}
-        </instancedMesh>
-      )}
-      
-      {/* FEUILLAGE - Feuilles individuelles en instancing */}
-      {(infosSaison.typeRendu === 'feuillage' || 
-        infosSaison.typeRendu === 'feuillage-automne' || 
-        infosSaison.typeRendu === 'jeunes-feuilles') && instancesFeuilles && (
-        <>
-          {/* Masse de feuillage (base) - Plus légère qu'avant */}
-          <mesh position={[0, hauteurActuelle + envergureActuelle * 0.3, 0]} castShadow receiveShadow>
-            <sphereGeometry args={[envergureActuelle / 2, 24, 18]} />
-            <meshStandardMaterial 
-              color={infosSaison.feuillage}
-              transparent 
-              opacity={0.6 * infosSaison.densite}
-              roughness={0.85}
-              emissive={infosSaison.brillance ? infosSaison.feuillage : '#000000'}
-              emissiveIntensity={infosSaison.brillance ? 0.15 : 0}
-            />
-          </mesh>
-          
-          {/* Couches supplémentaires pour volume */}
-          <mesh position={[envergureActuelle * 0.2, hauteurActuelle + envergureActuelle * 0.35, envergureActuelle * 0.15]} castShadow receiveShadow>
-            <sphereGeometry args={[envergureActuelle / 3, 16, 12]} />
-            <meshStandardMaterial 
-              color={infosSaison.feuillage}
-              transparent 
-              opacity={0.5 * infosSaison.densite}
-              roughness={0.85}
-            />
-          </mesh>
-          
-          <mesh position={[-envergureActuelle * 0.2, hauteurActuelle + envergureActuelle * 0.25, -envergureActuelle * 0.15]} castShadow receiveShadow>
-            <sphereGeometry args={[envergureActuelle / 3.5, 16, 12]} />
-        <meshStandardMaterial 
-              color={infosSaison.feuillage}
-          transparent 
-              opacity={0.45 * infosSaison.densite}
-              roughness={0.85}
-            />
-          </mesh>
-        </>
-      )}
-      
-      {/* HIVER - Bourgeons sur branches nues */}
-      {infosSaison.bourgeons && infosSaison.nombreBourgeons > 0 && (
-        <>
-          {[...Array(infosSaison.nombreBourgeons)].map((_, i) => {
-            const angle = Math.random() * Math.PI * 2;
-            const rayon = envergureActuelle * (0.2 + Math.random() * 0.2);
-            const hauteur = hauteurActuelle * (0.4 + Math.random() * 0.5);
-            
-            return (
-              <mesh 
-                key={`bourgeon-${i}`}
-                position={[
-                  Math.cos(angle) * rayon,
-                  hauteur,
-                  Math.sin(angle) * rayon
-                ]}
-                castShadow
-              >
-                <sphereGeometry args={[0.06, 6, 4]} />
-                <meshStandardMaterial 
-                  color="#8d6e63"
-                  roughness={0.8}
-                  metalness={0.05}
-        />
-      </mesh>
-            );
-          })}
-        </>
-      )}
-      
-      {/* RACINES sous terre - Évolution selon l'âge */}
-      {profondeurRacinesActuelle > 0 && (
-        <>
-          {/* Racines principales (nombre augmente avec l'âge : 3 → 7) */}
-          {[...Array(Math.floor(3 + progression * 4))].map((_, i) => {
-            const nombreRacines = Math.floor(3 + progression * 4);
-            const angle = (i / nombreRacines) * Math.PI * 2;
-            const longueur = envergureActuelle * (0.3 + progression * 0.2); // Grandissent avec l'âge
-            const profondeur = profondeurRacinesActuelle * (0.6 + Math.random() * 0.4);
-            const epaisseur = rayonTronc * (0.2 + progression * 0.15); // Épaississent avec l'âge
-            
-            return (
-              <mesh 
-                key={`racine-${i}`}
-                position={[
-                  Math.cos(angle) * longueur * 0.3,
-                  -profondeur / 2,
-                  Math.sin(angle) * longueur * 0.3
-                ]}
-                rotation={[Math.PI / 4, angle, 0]}
-                castShadow
-              >
-                <cylinderGeometry args={[epaisseur, epaisseur * 0.5, profondeur, 8]} />
-                <meshStandardMaterial 
-                  color={validationStatus === 'error' ? '#ff0000' : '#6d4c41'}
-                  transparent 
-                  opacity={validationStatus === 'error' ? 0.8 : 0.7}
-                  roughness={0.9}
-                />
-              </mesh>
-            );
-          })}
-          
-          {/* Pivot central (racine principale) - Grandit avec l'âge */}
-          <mesh position={[0, -profondeurRacinesActuelle / 2, 0]} castShadow>
-            <coneGeometry args={[rayonTronc * (0.6 + progression * 0.3), profondeurRacinesActuelle, 12]} />
-            <meshStandardMaterial 
-              color={validationStatus === 'error' ? '#ff0000' : '#6d4c41'}
-              transparent 
-              opacity={validationStatus === 'error' ? 0.8 : 0.6}
-              roughness={0.9}
-            />
-          </mesh>
-          
-          {/* Radicelles secondaires (fines racines) - Apparaissent avec l'âge */}
-          {progression > 0.3 && [...Array(Math.floor(progression * 12))].map((_, i) => {
-            const angle = Math.random() * Math.PI * 2;
-            const rayon = envergureActuelle * (0.2 + Math.random() * 0.3);
-            const profondeur = profondeurRacinesActuelle * (0.3 + Math.random() * 0.5);
-            
-            return (
-              <mesh 
-                key={`radicelle-${i}`}
-                position={[
-                  Math.cos(angle) * rayon,
-                  -profondeur / 2,
-                  Math.sin(angle) * rayon
-                ]}
-                rotation={[Math.random() * Math.PI / 3, angle, Math.random() * Math.PI / 6]}
-              >
-                <cylinderGeometry args={[0.02, 0.01, profondeur * 0.6, 4]} />
-        <meshStandardMaterial 
-                  color={validationStatus === 'error' ? '#ff4444' : '#8B4513'}
-                  transparent 
-                  opacity={0.5}
-                />
-              </mesh>
-            );
-          })}
-        </>
-      )}
-      
-      {/* INDICATEURS VISUELS DE VALIDATION - HALO PULSANT ANIMÉ */}
-      <HaloPulsant 
-        status={validationStatus}
-        position={[0, elevationSol, 0]} // ✅ Ajuster la position du halo selon l'élévation
-        envergure={envergureActuelle}
-      />
-      
-      {/* Particules de feuilles qui tombent en automne */}
-      {infosSaison.typeRendu === 'feuillage-automne' && (
-        <>
-          {[...Array(15)].map((_, i) => (
-            <mesh 
-              key={`feuille-tombante-${i}`}
-              position={[
-                (Math.random() - 0.5) * envergureActuelle,
-                hauteurActuelle * Math.random() * 0.5,
-                (Math.random() - 0.5) * envergureActuelle
-              ]}
-              rotation={[
-                Math.random() * Math.PI,
-                Math.random() * Math.PI,
-                Math.random() * Math.PI
-              ]}
-            >
-              <planeGeometry args={[0.08, 0.12]} />
-          <meshStandardMaterial 
-                color={infosSaison.feuillage}
-            transparent 
-                opacity={0.7}
-                side={THREE.DoubleSide}
-          />
+      fleurs.push(
+        <mesh
+          key={i}
+          position={[
+            Math.cos(angle) * rayon,
+            hauteurFleur,
+            Math.sin(angle) * rayon
+          ]}
+        >
+          <sphereGeometry args={[tailleFleur, 6, 4]} />
+          <primitive object={materials.fleurs} />
         </mesh>
-          ))}
-        </>
+      );
+    }
+    
+    return fleurs;
+  }, [configSaison, materials.fleurs, arbreCalculs]);
+
+  // Rendu des fruits optimisé
+  const renderFruits = useCallback(() => {
+    if (!configSaison.fruits || !materials.fruits) return null;
+    
+    const fruits = [];
+    const nombreFruits = configSaison.fruits.nombre || 30;
+    
+    for (let i = 0; i < nombreFruits; i++) {
+      const angle = (i / nombreFruits) * Math.PI * 2;
+      const rayon = (Math.random() * arbreCalculs.envergureActuelle) / 2;
+      const hauteurFruit = Math.random() * arbreCalculs.hauteurActuelle * 0.4 + arbreCalculs.hauteurActuelle * 0.4;
+      
+      fruits.push(
+        <mesh
+          key={i}
+          position={[
+            Math.cos(angle) * rayon,
+            hauteurFruit,
+            Math.sin(angle) * rayon
+          ]}
+        >
+          <sphereGeometry args={[configSaison.fruits.taille, 6, 4]} />
+          <primitive object={materials.fruits} />
+        </mesh>
+      );
+    }
+    
+    return fruits;
+  }, [configSaison, materials.fruits, arbreCalculs]);
+
+  return (
+    <group ref={groupRef} position={positionAjustee} onClick={handleClick}>
+      {/* Racines */}
+      <mesh position={[0, -arbreCalculs.profondeurRacinesActuelle / 2, 0]} castShadow>
+        <primitive object={geometries.racines} />
+        <primitive object={materials.racines} />
+      </mesh>
+      
+      {/* Tronc */}
+      <mesh position={[0, arbreCalculs.hauteurActuelle * 0.35, 0]} castShadow receiveShadow>
+        <primitive object={geometries.tronc} />
+        <primitive object={materials.tronc} />
+      </mesh>
+      
+      {/* Couronne de feuillage */}
+      {configSaison.typeRendu === 'feuillage' && (
+        <mesh position={[0, arbreCalculs.hauteurActuelle * 0.7, 0]} castShadow>
+          <primitive object={geometries.couronne} />
+          <primitive object={materials.feuillage} />
+        </mesh>
       )}
       
-      {/* Label avec nom au-dessus, mesures en dessous alignées à gauche */}
-      <Html position={[0, hauteurActuelle + 0.3, 0]} center>
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.95)',
-          padding: '5px 10px',
+      {/* Fleurs */}
+      {renderFleurs()}
+      
+      {/* Fruits */}
+      {renderFruits()}
+      
+      {/* Halo de validation */}
+      {validationStatus !== 'ok' && (
+        <HaloPulsant 
+          couleur={validationStatus === 'erreur' ? '#f44336' : '#ff9800'}
+          taille={arbreCalculs.envergureActuelle * 1.2}
+        />
+      )}
+      
+      {/* Label avec informations */}
+      <Html distanceFactor={10} position={[0, arbreCalculs.hauteurActuelle + 1, 0]}>
+        <div style={{
+          background: 'rgba(0,0,0,0.8)',
+          color: 'white',
+          padding: '8px 12px',
           borderRadius: '8px',
-          fontSize: '10px',
-          fontWeight: '600',
-          color: '#333',
-          border: '1.5px solid #4caf50',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-          textAlign: 'left',
-          lineHeight: '1.4',
-          minWidth: '140px'
+          fontSize: '12px',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none'
         }}>
-          <div style={{ fontWeight: '700', color: '#2e7d32', whiteSpace: 'nowrap' }}>
-            {arbreData?.name || 'Arbre'}
-          </div>
-          <div style={{ fontSize: '9px', color: '#666', whiteSpace: 'nowrap' }}>
-            ↕️ {hauteurActuelle.toFixed(1)}m · ↔️ {envergureActuelle.toFixed(1)}m
-          </div>
+          {arbreData?.nom || 'Arbre'} - {Math.round(arbreCalculs.progression * 100)}% croissance
         </div>
       </Html>
-      
     </group>
   );
 }
 
-// Optimisation : Éviter re-renders des arbres 3D
 export default memo(Arbre3D);
-

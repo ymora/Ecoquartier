@@ -140,6 +140,7 @@ body {
   border-radius: var(--radius-small);
   cursor: pointer;
   transition: all var(--transition-normal);
+  -webkit-user-select: none;
   user-select: none;
 }
 
