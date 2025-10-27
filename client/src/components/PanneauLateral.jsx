@@ -390,8 +390,9 @@ function PanneauLateral({
 
   return (
     <div className="panneau-lateral">
-      {/* Bouton Charger plan par défaut - TOUJOURS VISIBLE */}
+      {/* Boutons de chargement - TOUJOURS VISIBLES */}
       <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)' }}>
+        {/* Bouton Charger plan par défaut */}
         <button
           className="btn btn-warning btn-full"
           onClick={onChargerPlanParDefaut}
@@ -413,7 +414,8 @@ function PanneauLateral({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '0.5rem'
+            gap: '0.5rem',
+            marginBottom: '0.5rem'
           }}
           onMouseEnter={(e) => {
             e.target.style.background = 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)';
@@ -428,6 +430,99 @@ function PanneauLateral({
         >
           🏠 Charger plan par défaut
         </button>
+        
+        {/* Bouton Charger plan de fond */}
+        <button
+          className={`btn btn-full ${imageFondChargee ? 'btn-success' : 'btn-primary'}`}
+          onClick={onChargerImageFond}
+          title="Charger plan cadastral, photo aérienne..."
+          style={{
+            background: imageFondChargee ? 
+              'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)' : 
+              'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.7rem 1rem',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: imageFondChargee ? 
+              '0 3px 6px rgba(76, 175, 80, 0.3)' : 
+              '0 3px 6px rgba(33, 150, 243, 0.3)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}
+          onMouseEnter={(e) => {
+            if (imageFondChargee) {
+              e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
+              e.target.style.boxShadow = '0 6px 12px rgba(76, 175, 80, 0.4)';
+            } else {
+              e.target.style.background = 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)';
+              e.target.style.boxShadow = '0 6px 12px rgba(33, 150, 243, 0.4)';
+            }
+            e.target.style.transform = 'translateY(-2px)';
+          }}
+          onMouseLeave={(e) => {
+            if (imageFondChargee) {
+              e.target.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
+              e.target.style.boxShadow = '0 3px 6px rgba(76, 175, 80, 0.3)';
+            } else {
+              e.target.style.background = 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)';
+              e.target.style.boxShadow = '0 3px 6px rgba(33, 150, 243, 0.3)';
+            }
+            e.target.style.transform = 'translateY(0)';
+          }}
+        >
+          📷 {imageFondChargee ? 'Image chargée' : 'Charger plan de fond'}
+        </button>
+        
+        {/* Contrôles d'opacité si image chargée */}
+        {imageFondChargee && (
+          <div style={{ 
+            marginTop: '0.5rem',
+            background: 'white',
+            borderRadius: '6px',
+            border: '1px solid #ddd',
+            padding: '0.5rem'
+          }}>
+            <label style={{ fontSize: '0.75rem', color: '#1976d2', fontWeight: 'bold', display: 'block', marginBottom: '0.3rem' }}>
+              Opacité: {Math.round(opaciteImage * 100)}%
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={opaciteImage}
+              onChange={(e) => onAjusterOpaciteImage(parseFloat(e.target.value))}
+              style={{ width: '100%' }}
+            />
+            <button
+              onClick={onSupprimerImageFond}
+              style={{
+                width: '100%',
+                marginTop: '0.3rem',
+                padding: '0.4rem',
+                background: '#f44336',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+                fontWeight: 'bold'
+              }}
+            >
+              🗑️ Supprimer image
+            </button>
+          </div>
+        )}
       </div>
 
       {/* En-tête avec onglets */}
@@ -1163,59 +1258,6 @@ function PanneauLateral({
         </div>
       ) : ongletActif === 'outils' ? (
         <div className="panneau-outils-content">
-          {/* 📷 PLAN DE FOND */}
-          <div className="section-header">
-            <h3 className="section-title">📷 Plan de fond</h3>
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <button
-              className={`btn btn-full ${imageFondChargee ? 'btn-success' : 'btn-primary'}`}
-              onClick={onChargerImageFond}
-              title="Charger plan cadastral, photo aérienne..."
-            >
-              📷 {imageFondChargee ? 'Image chargée' : 'Charger plan de fond'}
-            </button>
-            {imageFondChargee && (
-              <div style={{ 
-                marginTop: '0.3rem',
-                background: 'white',
-                borderRadius: '4px',
-                border: '1px solid #ddd',
-                padding: '0.5rem'
-              }}>
-                <label style={{ fontSize: '0.75rem', color: '#1976d2', fontWeight: 'bold', display: 'block', marginBottom: '0.3rem' }}>
-                  Opacité: {Math.round(opaciteImage * 100)}%
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={opaciteImage}
-                  onChange={(e) => onAjusterOpaciteImage(parseFloat(e.target.value))}
-                  style={{ width: '100%' }}
-                />
-                <button
-                  onClick={onSupprimerImageFond}
-                  style={{
-                    width: '100%',
-                    marginTop: '0.3rem',
-                    padding: '0.4rem',
-                    background: '#f44336',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  🗑️ Supprimer image
-                </button>
-              </div>
-            )}
-          </div>
-          
           {/* STRUCTURES */}
           <div style={{ marginBottom: '0.5rem' }}>
             <button
