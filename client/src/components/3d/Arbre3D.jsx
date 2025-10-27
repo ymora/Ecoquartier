@@ -62,8 +62,8 @@ function Arbre3D({
       const couleurs = {
         'blanc': '#ffffff', 'blanche': '#ffffff',
         'rose': '#ff69b4', 'rosé': '#ff69b4',
-        'rouge': '#dc143c', 'rouge': '#dc143c',
-        'jaune': '#ffd700', 'jaune': '#ffd700',
+        'rouge': '#dc143c',
+        'jaune': '#ffd700',
         'violet': '#8a2be2', 'violette': '#8a2be2',
         'bleu': '#4169e1', 'bleue': '#4169e1'
       };

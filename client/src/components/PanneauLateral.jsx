@@ -1216,22 +1216,6 @@ function PanneauLateral({
             )}
           </div>
           
-          {/* CHARGER PLAN PAR DÉFAUT */}
-          <div style={{ marginBottom: '0.5rem' }}>
-            <button
-              className="btn-outil-full"
-              onClick={onChargerPlanParDefaut}
-              title="Charger plan par défaut personnalisé"
-              style={{
-                background: '#ff9800',
-                color: 'white',
-                fontWeight: 'bold'
-              }}
-            >
-              🔄 Charger plan par défaut
-            </button>
-          </div>
-          
           {/* STRUCTURES */}
           <div style={{ marginBottom: '0.5rem' }}>
             <button
