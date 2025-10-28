@@ -18,12 +18,12 @@ import logger from '../logger';
  * Charger un plan depuis un fichier JSON
  * ✅ RÉUTILISE les fonctions existantes - pas de duplication
  */
-export const chargerPlanFromJSON = async (canvas, echelle, ajouterGrille) => {
+export const chargerPlanFromJSON = async (canvas, echelle, ajouterGrille, planFile = '/src/utils/canvas/planPersonnalise.json') => {
   if (!canvas) return;
   
   try {
-    // Charger le JSON du plan par défaut
-    const response = await fetch('/src/utils/canvas/planDefault.json');
+    // Charger le JSON du plan spécifié
+    const response = await fetch(planFile);
     const planData = await response.json();
     
     logger.info('PlanLoader', 'Chargement du plan depuis JSON');
@@ -64,7 +64,7 @@ export const chargerPlanFromJSON = async (canvas, echelle, ajouterGrille) => {
  * ✅ RÉUTILISE creerMaisonObjet, creerTerrasseObjet, etc.
  */
 const chargerObjet = async (canvas, objetData, echelle) => {
-  const { type, position, dimensions, proprietes } = objetData;
+  const { type, pos, dim, props } = objetData;
   
   let objet;
   
@@ -74,12 +74,12 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       objet = creerMaisonObjet(echelle);
       // Appliquer les dimensions personnalisées
       objet.set({
-        largeur: dimensions.largeur,
-        profondeur: dimensions.profondeur,
-        hauteur: proprietes.hauteur,
-        elevationSol: proprietes.elevationSol,
-        typeToit: proprietes.typeToit,
-        angle: proprietes.angle || 0
+        largeur: dim[0],
+        profondeur: dim[1],
+        hauteur: props.hauteur,
+        elevationSol: props.elevationSol || 0,
+        typeToit: props.typeToit || 'deux-pentes',
+        angle: props.angle || 0
       });
       break;
       
@@ -87,11 +87,11 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       // ✅ RÉUTILISE creerCaissonEauObjet existant
       objet = creerCaissonEauObjet(echelle);
       objet.set({
-        largeur: dimensions.largeur,
-        profondeur: dimensions.profondeur,
-        hauteur: proprietes.hauteur,
-        elevationSol: proprietes.elevationSol,
-        angle: proprietes.angle || 0
+        largeur: dim[0],
+        profondeur: dim[1],
+        hauteur: props.hauteur,
+        elevationSol: props.elevationSol || -1.0,
+        angle: props.angle || 0
       });
       break;
       
@@ -99,11 +99,11 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       // ✅ RÉUTILISE creerTerrasseObjet existant
       objet = creerTerrasseObjet(echelle);
       objet.set({
-        largeur: dimensions.largeur,
-        profondeur: dimensions.profondeur,
-        hauteur: proprietes.hauteur,
-        elevationSol: proprietes.elevationSol,
-        angle: proprietes.angle || 0
+        largeur: dim[0],
+        profondeur: dim[1],
+        hauteur: props.hauteur,
+        elevationSol: props.elevationSol || 0,
+        angle: props.angle || 0
       });
       break;
       
@@ -111,11 +111,11 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       // ✅ RÉUTILISE creerPavesObjet existant
       objet = creerPavesObjet(echelle);
       objet.set({
-        largeur: dimensions.largeur,
-        profondeur: dimensions.profondeur,
-        hauteur: proprietes.hauteur,
-        elevationSol: proprietes.elevationSol,
-        angle: proprietes.angle || 0
+        largeur: dim[0],
+        profondeur: dim[1],
+        hauteur: props.hauteur,
+        elevationSol: props.elevationSol || 0,
+        angle: props.angle || 0
       });
       break;
       
@@ -132,11 +132,55 @@ const chargerObjet = async (canvas, objetData, echelle) => {
   if (objet) {
     // Positionner l'objet
     objet.set({
-      left: position.x,
-      top: position.y
+      left: pos[0],
+      top: pos[1]
     });
     
     canvas.add(objet);
+  }
+};
+
+/**
+ * Charger un plan depuis un fichier JSON externe
+ * Permet de charger n'importe quel plan depuis un fichier JSON
+ */
+export const chargerPlanDepuisFichier = async (canvas, echelle, ajouterGrille, fichierJson) => {
+  if (!canvas || !fichierJson) return;
+  
+  try {
+    const response = await fetch(fichierJson);
+    const planData = await response.json();
+    
+    logger.info('PlanLoader', `Chargement du plan depuis ${fichierJson}`);
+    
+    // Nettoyer le canvas
+    const objets = canvas.getObjects().filter(obj => 
+      !obj.isGridLine && 
+      !obj.measureLabel && 
+      !obj.isBoussole && 
+      !obj.isSolIndicator &&
+      !obj.alignmentGuide &&
+      !obj.isDimensionBox &&
+      !obj.isAideButton &&
+      !obj.isImageFond &&
+      !obj.isCenterMark
+    );
+    objets.forEach(obj => canvas.remove(obj));
+    
+    // Charger chaque objet
+    for (const objet of planData.objets) {
+      await chargerObjet(canvas, objet, echelle);
+    }
+    
+    // Re-ajouter la grille
+    if (ajouterGrille) ajouterGrille(canvas);
+    
+    canvas.renderAll();
+    
+    logger.info('PlanLoader', `✅ Plan chargé depuis fichier (${planData.objets.length} objets)`);
+    
+  } catch (error) {
+    logger.error('PlanLoader', 'Erreur lors du chargement du plan depuis fichier:', error);
   }
 };
 

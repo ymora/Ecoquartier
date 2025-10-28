@@ -1,6 +1,5 @@
-import React, { memo, Suspense, useEffect, useMemo, useRef } from 'react';
+import React, { memo, Suspense, useMemo, useRef } from 'react';
 import { useGLTF, Html } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import Arbre3D from './Arbre3D';
 import HaloPulsant from './HaloPulsant';
@@ -25,7 +24,6 @@ function Arbre3DModel({
   rotation = [0, 0, 0],
   onClick,
   anneeProjection = 20,
-  saison = 'ete',
   arbreData = null,
   envergure = 5, // Envergure pour le cercle de validation
   validationStatus = 'ok', // 'ok', 'warning', 'error'
@@ -49,7 +47,6 @@ function Arbre3DModel({
           rotation={rotation}
           onClick={onClick}
           anneeProjection={anneeProjection}
-          saison={saison}
           arbreData={arbreData}
         />
       </ErrorBoundary>
@@ -59,7 +56,7 @@ function Arbre3DModel({
 
 // Composant interne pour charger le GLB - SANS modification de couleur
 // Les modèles GLB gardent leur apparence originale
-function GLBModel({ modelPath, position, scale, hauteurMaturite = 7, envergure = 5, validationStatus = 'ok', rotation, onClick, anneeProjection, saison = 'ete', arbreData }) {
+function GLBModel({ modelPath, position, scale, hauteurMaturite = 7, envergure = 5, validationStatus = 'ok', rotation, onClick, anneeProjection, arbreData }) {
   const { scene } = useGLTF(modelPath);
   const groupRef = useRef();
   

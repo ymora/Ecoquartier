@@ -7,7 +7,7 @@ import TimelineSection from './TimelineSection';
 import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 import { notifications } from '../utils/notifications';
-import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
+import { ajouterTerrainAuCanvas } from '../utils/canvas/terrainUtils';
 
 // Dynamic import pour Three.js (évite bundle 3x trop gros)
 const CanvasTerrain3D = lazy(() => import('./CanvasTerrain3D'));
@@ -100,7 +100,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   // ========== STATES ==========
   const [couchesSol, setCouchesSol] = useState(COUCHES_SOL_DEFAUT);
   const [imageFondChargee, setImageFondChargee] = useState(false);
-  const [opaciteImage, setOpaciteImage] = useState(0.5);
+  const [opaciteImage, setOpaciteImage] = useState(0.8);
+  const [solTransparent, setSolTransparent] = useState(false);
   const [anneeProjection, setAnneeProjection] = useState(0);
   const [timelineVisible, setTimelineVisible] = useState(true);
   const [saison, setSaison] = useState('ete');
@@ -204,6 +205,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     // Charger le plan par défaut
     chargerPlanDemoUtils(canvas, echelle, ajouterGrille);
+    
+    // Ajouter un terrain sélectionnable pour voir les couches de sol
+    ajouterTerrainAuCanvas(canvas, echelle, dimensions);
     
     // Recentrer la vue sur le plan
     setTimeout(() => {
@@ -962,6 +966,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onDimensionsChange={onDimensionsChange}
         imageFondChargee={imageFondChargee}
         opaciteImage={opaciteImage}
+        solTransparent={solTransparent}
+        onSolTransparentChange={setSolTransparent}
         onAjouterMaison={ajouterMaison}
         onAjouterTerrasse={ajouterTerrasse}
         onAjouterPaves={ajouterPaves}
@@ -997,6 +1003,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           heureJournee={heureJournee}
           syncKey={syncKey}
           couchesSol={couchesSol}
+          solTransparent={solTransparent}
           onObjetPositionChange={handleObjetPositionChange3D}
           onObjetSelectionChange={handleObjetSelection3D}
           canvas2D={fabricCanvasRef.current}

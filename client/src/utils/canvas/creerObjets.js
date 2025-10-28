@@ -7,13 +7,8 @@
 import * as fabric from 'fabric';
 import logger from '../logger';
 import { calculerSoleilSimple, soleil2D } from '../soleilSimple';
-
-/**
- * Générer un ID unique pour un objet
- */
-const genererIdUnique = (type) => {
-  return `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-};
+import { creerObjetRectangulaire, creerObjetCirculaire, genererIdUnique } from './creerObjetsGeneriques';
+import { canvasOperations } from './canvasOperations';
 
 /**
  * Recentrer la vue sur le contenu du canvas
@@ -82,48 +77,21 @@ export const recentrerVueSurContenu = (canvas) => {
  * Créer un objet maison (retourne l'objet sans l'ajouter au canvas)
  */
 export const creerMaisonObjet = (echelle) => {
-  const largeur = 10;
-  const hauteur = 10;
-  
-  const maisonRect = new fabric.Rect({
-    left: 0,
-    top: 0,
-    width: largeur * echelle,
-    height: hauteur * echelle,
-    fill: '#bdbdbd',
-    stroke: '#757575',
-    strokeWidth: 3,
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-
-  const tailleIcone = Math.min(largeur * echelle, hauteur * echelle) * 0.4;
-  const labelIcone = new fabric.Text('🏠', {
-    left: 0,
-    top: 0,
-    fontSize: Math.max(tailleIcone, 24),
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-
-  const group = new fabric.Group([maisonRect, labelIcone], {
-    customType: 'maison',
-    customId: genererIdUnique('maison'),
-    largeur: largeur,
-    profondeur: hauteur,
-    hauteur: 7,
-    elevationSol: 0,
-    typeToit: 'deux-pentes', // Type de toit par défaut
-    originX: 'center',
-    originY: 'center'
-  });
-
-  return group;
+  return creerObjetRectangulaire({
+    type: 'maison',
+    largeur: 10,
+    profondeur: 10,
+    icone: '🏠',
+    couleurFond: '#bdbdbd',
+    couleurBordure: '#757575',
+    proprietes: {
+      hauteur: 7,
+      elevationSol: 0,
+      typeToit: 'deux-pentes',
+      penteToit: 15,
+      orientationToit: 0
+    }
+  }, echelle);
 };
 
 /**
@@ -133,9 +101,8 @@ export const creerMaison = (canvas, echelle) => {
   if (!canvas) return;
   const group = creerMaisonObjet(echelle);
   group.set({ left: 300, top: 200 });
-  canvas.add(group);
-  canvas.setActiveObject(group);
-  canvas.renderAll();
+  canvasOperations.ajouter(canvas, group);
+  canvasOperations.selectionner(canvas, group);
   // Compter les maisons existantes pour ajouter un numéro
   const maisonsExistantes = canvas.getObjects().filter(o => o.customType === 'maison');
   const numeroMaison = maisonsExistantes.length > 1 ? ` #${maisonsExistantes.length}` : '';
@@ -177,49 +144,19 @@ export const creerCanalisation = (canvas) => {
  * Créer un objet citerne (retourne l'objet sans l'ajouter au canvas)
  */
 export const creerCiterneObjet = (echelle) => {
-  const diametre = 1.5;
-  const longueur = 2.5;
-  const rayon = (diametre * echelle) / 2;
-  
-  const citerne = new fabric.Circle({
-    left: 0,
-    top: 0,
-    radius: rayon,
-    fill: 'rgba(33, 150, 243, 0.3)',
-    stroke: '#1976d2',
-    strokeWidth: 3,
-    strokeDashArray: [5, 3],
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-
-  const tailleIcone = rayon * 0.8;
-  const labelIcone = new fabric.Text('💧', {
-    left: 0,
-    top: 0,
-    fontSize: Math.max(tailleIcone, 24),
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-
-  const group = new fabric.Group([citerne, labelIcone], {
-    customType: 'citerne',
-    customId: genererIdUnique('citerne'),
-    diametre: diametre,
-    longueur: longueur,
-    hauteur: diametre,
-    volume: 3000,
-    elevationSol: -2.5,
-    originX: 'center',
-    originY: 'center'
-  });
-
-  return group;
+  return creerObjetCirculaire({
+    type: 'citerne',
+    diametre: 1.5,
+    icone: '💧',
+    couleurFond: 'rgba(33, 150, 243, 0.3)',
+    couleurBordure: '#1976d2',
+    proprietes: {
+      longueur: 2.5,
+      hauteur: 1.5,
+      volume: 3000,
+      elevationSol: -2.5
+    }
+  }, echelle);
 };
 
 /**
@@ -229,9 +166,8 @@ export const creerCiterne = (canvas, echelle) => {
   if (!canvas) return;
   const group = creerCiterneObjet(echelle);
   group.set({ left: 400, top: 400 });
-  canvas.add(group);
-  canvas.setActiveObject(group);
-  canvas.renderAll();
+  canvasOperations.ajouter(canvas, group);
+  canvasOperations.selectionner(canvas, group);
   // Compter les citernes existantes pour ajouter un numéro
   const citernesExistantes = canvas.getObjects().filter(o => o.customType === 'citerne');
   const numeroCiterne = citernesExistantes.length > 1 ? ` #${citernesExistantes.length}` : '';
@@ -288,47 +224,18 @@ export const creerCloture = (canvas, pointsClotureRef) => {
  * Créer un objet terrasse (retourne l'objet sans l'ajouter au canvas)
  */
 export const creerTerrasseObjet = (echelle) => {
-  const largeur = 5;
-  const hauteur = 4;
-  
-  const terrasseRect = new fabric.Rect({
-    left: 0,
-    top: 0,
-    width: largeur * echelle,
-    height: hauteur * echelle,
-    fill: 'rgba(158, 158, 158, 0.4)',
-    stroke: '#757575',
-    strokeWidth: 2,
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-  
-  const tailleIcone = Math.min(largeur * echelle, hauteur * echelle) * 0.4;
-  const labelIcone = new fabric.Text('🪴', {
-    left: 0,
-    top: 0,
-    fontSize: Math.max(tailleIcone, 24),
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-
-  const group = new fabric.Group([terrasseRect, labelIcone], {
-    customType: 'terrasse',
-    customId: genererIdUnique('terrasse'),
-    largeur: largeur,
-    profondeur: hauteur,
-    hauteur: 0.15,
-    elevationSol: 0,
-    originX: 'center',
-    originY: 'center'
-  });
-
-  return group;
+  return creerObjetRectangulaire({
+    type: 'terrasse',
+    largeur: 5,
+    profondeur: 4,
+    icone: '🪴',
+    couleurFond: 'rgba(158, 158, 158, 0.4)',
+    couleurBordure: '#757575',
+    proprietes: {
+      hauteur: 0.15,
+      elevationSol: 0
+    }
+  }, echelle);
 };
 
 /**
@@ -338,9 +245,8 @@ export const creerTerrasse = (canvas, echelle) => {
   if (!canvas) return;
   const group = creerTerrasseObjet(echelle);
   group.set({ left: 150, top: 150 });
-  canvas.add(group);
-  canvas.setActiveObject(group);
-  canvas.renderAll();
+  canvasOperations.ajouter(canvas, group);
+  canvasOperations.selectionner(canvas, group);
   // Compter les terrasses existantes pour ajouter un numéro
   const terrassesExistantes = canvas.getObjects().filter(o => o.customType === 'terrasse');
   const numeroTerrasse = terrassesExistantes.length > 1 ? ` #${terrassesExistantes.length}` : '';
@@ -351,47 +257,18 @@ export const creerTerrasse = (canvas, echelle) => {
  * Créer un objet pavés (retourne l'objet sans l'ajouter au canvas)
  */
 export const creerPavesObjet = (echelle) => {
-  const largeur = 5;
-  const hauteur = 5;
-  
-  const pavesRect = new fabric.Rect({
-    left: 0,
-    top: 0,
-    width: largeur * echelle,
-    height: hauteur * echelle,
-    fill: 'rgba(139, 195, 74, 0.3)',
-    stroke: '#7cb342',
-    strokeWidth: 2,
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-  
-  const tailleIcone = Math.min(largeur * echelle, hauteur * echelle) * 0.4;
-  const labelIcone = new fabric.Text('🌿', {
-    left: 0,
-    top: 0,
-    fontSize: Math.max(tailleIcone, 24),
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-
-  const group = new fabric.Group([pavesRect, labelIcone], {
-    customType: 'paves',
-    customId: genererIdUnique('paves'),
-    largeur: largeur,
-    profondeur: hauteur,
-    hauteur: 0.08,
-    elevationSol: 0,
-    originX: 'center',
-    originY: 'center'
-  });
-
-  return group;
+  return creerObjetRectangulaire({
+    type: 'paves',
+    largeur: 5,
+    profondeur: 5,
+    icone: '🌿',
+    couleurFond: 'rgba(139, 195, 74, 0.3)',
+    couleurBordure: '#7cb342',
+    proprietes: {
+      hauteur: 0.08,
+      elevationSol: 0
+    }
+  }, echelle);
 };
 
 /**
@@ -401,9 +278,8 @@ export const creerPaves = (canvas, echelle) => {
   if (!canvas) return;
   const group = creerPavesObjet(echelle);
   group.set({ left: 500, top: 500 });
-  canvas.add(group);
-  canvas.setActiveObject(group);
-  canvas.renderAll();
+  canvasOperations.ajouter(canvas, group);
+  canvasOperations.selectionner(canvas, group);
   // Compter les pavés existants pour ajouter un numéro
   const pavesExistants = canvas.getObjects().filter(o => o.customType === 'paves');
   const numeroPaves = pavesExistants.length > 1 ? ` #${pavesExistants.length}` : '';
@@ -414,52 +290,18 @@ export const creerPaves = (canvas, echelle) => {
  * Créer un objet caisson d'eau (retourne l'objet sans l'ajouter au canvas)
  */
 export const creerCaissonEauObjet = (echelle) => {
-  const largeurMetres = 5;
-  const profondeurMetres = 3;
-  const hauteurMetres = 1;
-  
-  const largeur = largeurMetres * echelle;
-  const profondeur = profondeurMetres * echelle;
-  
-  const caissonRect = new fabric.Rect({
-    left: 0,
-    top: 0,
-    width: largeur,
-    height: profondeur,
-    fill: 'rgba(33, 150, 243, 0.25)',
-    stroke: '#1565c0',
-    strokeWidth: 3,
-    strokeDashArray: [5, 3],
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-  
-  const tailleIcone = Math.min(largeur, profondeur) * 0.4;
-  const labelIcone = new fabric.Text('💦', {
-    left: 0,
-    top: 0,
-    fontSize: Math.max(tailleIcone, 24),
-    textAlign: 'center',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false
-  });
-
-  const group = new fabric.Group([caissonRect, labelIcone], {
-    customType: 'caisson-eau',
-    customId: genererIdUnique('caisson-eau'),
-    largeur: largeurMetres,
-    profondeur: profondeurMetres,
-    hauteur: hauteurMetres,
-    elevationSol: -1.0,
-    originX: 'center',
-    originY: 'center'
-  });
-
-  return group;
+  return creerObjetRectangulaire({
+    type: 'caisson-eau',
+    largeur: 5,
+    profondeur: 3,
+    icone: '💦',
+    couleurFond: 'rgba(33, 150, 243, 0.25)',
+    couleurBordure: '#1565c0',
+    proprietes: {
+      hauteur: 1,
+      elevationSol: -1.0
+    }
+  }, echelle);
 };
 
 /**
@@ -469,9 +311,8 @@ export const creerCaissonEau = (canvas, echelle) => {
   if (!canvas) return;
   const group = creerCaissonEauObjet(echelle);
   group.set({ left: 300, top: 300 });
-  canvas.add(group);
-  canvas.setActiveObject(group);
-  canvas.renderAll();
+  canvasOperations.ajouter(canvas, group);
+  canvasOperations.selectionner(canvas, group);
   // Compter les caissons existants pour ajouter un numéro
   const caissonsExistants = canvas.getObjects().filter(o => o.customType === 'caisson-eau');
   const numeroCaisson = caissonsExistants.length > 1 ? ` #${caissonsExistants.length}` : '';

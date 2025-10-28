@@ -11,16 +11,16 @@ import logger from '../logger';
 
 /**
  * Charger le plan personnalisé par défaut (version JSON)
- * ✅ RÉUTILISE les fonctions existantes de creerObjets.js
+ * ✅ Utilise maintenant votre plan personnalisé par défaut
  */
 export const chargerPlanDemo = async (canvas, echelle, ajouterGrille) => {
   if (!canvas) return;
   
-  logger.info('Plan', 'Chargement du plan personnalisé (version JSON)');
+  logger.info('Plan', 'Chargement de votre plan personnalisé par défaut');
   
   // Forcer le rechargement en supprimant le localStorage
   localStorage.removeItem('planTerrain');
   
-  // Utiliser le loader JSON qui réutilise le code existant
-  await chargerPlanFromJSON(canvas, echelle, ajouterGrille);
+  // Utiliser votre plan personnalisé par défaut
+  await chargerPlanFromJSON(canvas, echelle, ajouterGrille, '/src/utils/canvas/planPersonnalise.json');
 };

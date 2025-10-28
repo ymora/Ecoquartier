@@ -543,40 +543,64 @@ function CanvasTerrain3D({
         
         {/* Maisons */}
         {data3D?.maisons?.map((maison, idx) => (
-          <Maison3D 
+          <ObjetDraggable3D
             key={`maison-${idx}`}
-            {...maison}
-            typeToit={maison.typeToit || 'deux-pentes'}
-            onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
-          />
+            position={maison.position}
+            type="maison"
+            enabled={modeDeplacement}
+            onDragEnd={handleObjetDragEnd}
+            maisonBounds={maisonsBounds}
+          >
+            <Maison3D 
+              {...maison}
+              typeToit={maison.typeToit || 'deux-pentes'}
+              onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
+            />
+          </ObjetDraggable3D>
         ))}
         
         {/* Citernes cylindriques */}
         {data3D?.citernes?.filter(c => c.type !== 'caisson').map((citerne, idx) => (
-          <Citerne3D 
+          <ObjetDraggable3D
             key={`citerne-${idx}`}
-            {...citerne}
-            onClick={() => handleObjetClick({ 
-              type: 'citerne', 
-              ...citerne, 
-              index: idx,
-              position: [citerne.position[0], citerne.elevationSol, citerne.position[2]]
-            })}
-          />
+            position={citerne.position}
+            type="citerne"
+            enabled={modeDeplacement}
+            onDragEnd={handleObjetDragEnd}
+            maisonBounds={maisonsBounds}
+          >
+            <Citerne3D 
+              {...citerne}
+              onClick={() => handleObjetClick({ 
+                type: 'citerne', 
+                ...citerne, 
+                index: idx,
+                position: [citerne.position[0], citerne.elevationSol, citerne.position[2]]
+              })}
+            />
+          </ObjetDraggable3D>
         ))}
         
         {/* Caissons d'eau rectangulaires */}
         {data3D?.citernes?.filter(c => c.type === 'caisson').map((caisson, idx) => (
-          <Caisson3D 
+          <ObjetDraggable3D
             key={`caisson-${idx}`}
-            {...caisson}
-            onClick={() => handleObjetClick({ 
-              type: 'caisson-eau', 
-              ...caisson, 
-              index: idx,
-              position: [caisson.position[0], caisson.elevationSol, caisson.position[2]]
-            })}
-          />
+            position={caisson.position}
+            type="caisson-eau"
+            enabled={modeDeplacement}
+            onDragEnd={handleObjetDragEnd}
+            maisonBounds={maisonsBounds}
+          >
+            <Caisson3D 
+              {...caisson}
+              onClick={() => handleObjetClick({ 
+                type: 'caisson-eau', 
+                ...caisson, 
+                index: idx,
+                position: [caisson.position[0], caisson.elevationSol, caisson.position[2]]
+              })}
+            />
+          </ObjetDraggable3D>
         ))}
         
         {/* Canalisations - Visibles uniquement si sol transparent */}
@@ -619,50 +643,58 @@ function CanvasTerrain3D({
         {data3D?.terrasses?.map((terrasse, idx) => (
           terrasse.type === 'pave-enherbe' ? (
             // ✅ Pavés enherbés ultra-réalistes avec herbe qui bouge au vent
-            <PaveEnherbe3D
+            <ObjetDraggable3D
               key={`pave-${idx}`}
-              position={[
-                terrasse.position[0],
-                0,
-                terrasse.position[2]
-              ]}
-              largeur={terrasse.largeur}
-              profondeur={terrasse.profondeur}
-              onClick={() => handleObjetClick({ 
-                ...terrasse, 
-                type: 'paves',
-                customType: 'paves',
-                index: idx,
-                position: [terrasse.position[0], 0, terrasse.position[2]]
-              })}
-            />
+              position={[terrasse.position[0], 0, terrasse.position[2]]}
+              type="paves"
+              enabled={modeDeplacement}
+              onDragEnd={handleObjetDragEnd}
+              maisonBounds={maisonsBounds}
+            >
+              <PaveEnherbe3D
+                position={[0, 0, 0]} // Position relative dans le groupe
+                largeur={terrasse.largeur}
+                profondeur={terrasse.profondeur}
+                onClick={() => handleObjetClick({ 
+                  ...terrasse, 
+                  type: 'paves',
+                  customType: 'paves',
+                  index: idx,
+                  position: [terrasse.position[0], 0, terrasse.position[2]]
+                })}
+              />
+            </ObjetDraggable3D>
           ) : (
             // Terrasse classique (béton gris)
-            <mesh 
+            <ObjetDraggable3D
               key={`terrasse-${idx}`}
-              position={[
-                terrasse.position[0],
-                terrasse.elevationSol || 0, // Positionner à l'élévation du sol
-                terrasse.position[2]
-              ]}
-              rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
-              receiveShadow
-              castShadow
-              onClick={() => handleObjetClick({ 
-                ...terrasse, 
-                type: 'terrasse',
-                customType: 'terrasse',
-                index: idx,
-                position: [terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]
-              })}
+              position={[terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]}
+              type="terrasse"
+              enabled={modeDeplacement}
+              onDragEnd={handleObjetDragEnd}
+              maisonBounds={maisonsBounds}
             >
-              <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
-              <meshStandardMaterial 
-                color="#8d6e63"
-                roughness={0.9}
-                metalness={0.1}
-              />
-            </mesh>
+              <mesh 
+                position={[0, 0, 0]} // Position relative dans le groupe
+                rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
+                receiveShadow
+                castShadow
+                onClick={() => handleObjetClick({ 
+                  ...terrasse, 
+                  type: 'terrasse',
+                  customType: 'terrasse',
+                  index: idx,
+                  position: [terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]
+                })}
+              >
+                <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
+                <meshStandardMaterial 
+                  color="#8d6e63"
+                  roughness={0.9}
+                  metalness={0.1}
+                />
+              </mesh>
+            </ObjetDraggable3D>
           )
         ))}
         

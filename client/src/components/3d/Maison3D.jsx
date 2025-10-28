@@ -6,7 +6,6 @@ function Maison3D({
   largeur = 10, 
   profondeur = 8, 
   hauteur = 7,
-  elevationSol = 0,
   angle = 0,
   typeToit = '2pans',
   penteToit = 3,
@@ -14,7 +13,6 @@ function Maison3D({
   onClick
 }) {
   // Constantes et calculs
-  const profondeurFondations = 1.2;
   const hauteurFondationsSemelles = 0.4;
   const hauteurMursSousSol = 2.1;
   const profondeurTotaleSousSol = hauteurFondationsSemelles + hauteurMursSousSol;
@@ -80,7 +78,7 @@ function Maison3D({
       case 'plat':
         return new THREE.BoxGeometry(largeur, 0.2, profondeur);
         
-      case 'monopente':
+      case 'monopente': {
         const shape = new THREE.Shape();
         const penteY = hauteurToit;
         
@@ -107,9 +105,10 @@ function Maison3D({
         };
         
         return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      }
         
       case '2pans':
-      default:
+      default: {
         const shape2pans = new THREE.Shape();
         const penteY2pans = hauteurToit;
         
@@ -125,6 +124,7 @@ function Maison3D({
         };
         
         return new THREE.ExtrudeGeometry(shape2pans, extrudeSettings2pans);
+      }
     }
   }, [typeToit, largeur, profondeur, hauteurToit, orientationToit]);
 

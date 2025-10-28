@@ -62,8 +62,6 @@ const extractAllObjectProperties = (obj) => {
     
     // === PROPRIÉTÉS DE POSITION ===
     absolutePositioned: obj.absolutePositioned,
-    centeredRotation: obj.centeredRotation,
-    centeredScaling: obj.centeredScaling,
     
     // === PROPRIÉTÉS CUSTOM (MÉTIER) ===
     customType: obj.customType,

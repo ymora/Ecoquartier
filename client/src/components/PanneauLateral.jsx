@@ -8,6 +8,7 @@ import {
   highlightSelection, 
   unhighlightSelection 
 } from '../utils/canvas/highlightUtils';
+import { mettreAJourCouchesSol } from '../utils/canvas/terrainUtils';
 
 /**
  * Panneau latéral avec onglets pour outils et configuration
@@ -21,6 +22,8 @@ function PanneauLateral({
   onDimensionsChange,
   imageFondChargee,
   opaciteImage,
+  solTransparent,
+  onSolTransparentChange,
   onAjouterMaison,
   onAjouterTerrasse,
   onAjouterPaves,
@@ -32,12 +35,12 @@ function PanneauLateral({
   onSupprimerSelection,
   onEffacerTout,
   onChargerPlanParDefaut,
+  onChargerPlanDepuisFichier,
   onChargerImageFond,
   onAjusterOpaciteImage,
   onSupprimerImageFond,
   onResetZoom,
   onExporterPlan,
-  onLoggerComplet,
   onExporterComplet,
   onAjouterArbrePlante,
   onRetirerArbrePlante,
@@ -194,7 +197,7 @@ function PanneauLateral({
                   obj.customType === 'caisson-eau' || obj.customType === 'canalisation' || 
                   obj.customType === 'cloture' || obj.customType === 'terrasse' || 
                   obj.customType === 'paves' || obj.customType === 'arbre-a-planter' ||
-                  obj.customType === 'arbre-existant')) {
+                  obj.customType === 'arbre-existant' || obj.customType === 'sol')) {
         // Retirer la mise en évidence de l'objet précédent s'il y en a un
         if (objetSelectionnePrecedentRef.current) {
           unhighlightSelection(objetSelectionnePrecedentRef.current, canvas);
@@ -238,10 +241,13 @@ function PanneauLateral({
     if (objetSelectionne && canvas) {
       if (prop === 'typeToit') {
         objetSelectionne.set({ [prop]: value });
+        // Définir la pente par défaut selon le type de toit
+        const penteDefaut = value === 'monopente' ? 2 : value === 'deux-pentes' ? 15 : 3;
+        objetSelectionne.set({ penteToit: penteDefaut });
       } else {
-      const numValue = parseFloat(value);
-      if (isNaN(numValue)) return;
-      objetSelectionne.set({ [prop]: numValue });
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) return;
+        objetSelectionne.set({ [prop]: numValue });
       }
       
       objetSelectionne.setCoords();
@@ -358,7 +364,7 @@ function PanneauLateral({
       const value = parseFloat(e.target.value);
       
       if (objetSelectionne.type === 'group') {
-        // Pour les groupes, mettre à jour les éléments internes
+        // Pour les groupes (pavés, terrasses, etc.), mettre à jour les éléments internes
         const objects = objetSelectionne.getObjects();
         objects.forEach(obj => {
           if (obj.type === 'rect') {
@@ -373,13 +379,30 @@ function PanneauLateral({
             obj.set({ fontSize: Math.max(newSize, 24) });
           }
         });
+        
+        // Mettre à jour les propriétés personnalisées du groupe
+        if (prop === 'width') {
+          objetSelectionne.set({ 
+            width: value * echelle,
+            largeur: value  // Propriété personnalisée pour les pavés/terrasses
+          });
+        } else {
+          objetSelectionne.set({ 
+            height: value * echelle,
+            profondeur: value  // Propriété personnalisée pour les pavés/terrasses
+          });
+        }
+      } else {
+        // Pour les objets simples
+        if (prop === 'width') {
+          objetSelectionne.set({ width: value * echelle });
+        } else {
+          objetSelectionne.set({ height: value * echelle });
+        }
       }
       
-      if (prop === 'width') {
-        updateObjetProp('width', (value * echelle).toString());
-      } else {
-        updateObjetProp('height', (value * echelle).toString());
-      }
+      objetSelectionne.setCoords();
+      canvas.requestRenderAll();
       canvas.fire('object:modified', { target: objetSelectionne });
       
       setDimensionUpdate(prev => prev + 1);
@@ -392,11 +415,11 @@ function PanneauLateral({
     <div className="panneau-lateral">
       {/* Boutons de chargement - TOUJOURS VISIBLES */}
       <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)' }}>
-        {/* Bouton Charger plan par défaut */}
+        {/* Bouton Charger mon plan */}
         <button
           className="btn btn-warning btn-full"
           onClick={onChargerPlanParDefaut}
-          title="Charger le plan par défaut avec 2 maisons, terrasses, pavés..."
+          title="Charger un plan sauvegardé depuis votre ordinateur"
           style={{ 
             background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
             color: 'white',
@@ -428,10 +451,41 @@ function PanneauLateral({
             e.target.style.boxShadow = '0 3px 6px rgba(255, 152, 0, 0.3)';
           }}
         >
-          🏠 Charger plan par défaut
+          📁 Charger plan par défaut
         </button>
         
-        {/* Bouton Charger plan de fond */}
+        {/* Bouton Charger plan depuis JSON */}
+        <button
+          className="btn btn-info btn-full"
+          onClick={() => {
+            chargerPlanJSONAvecExplorateur((planData, fileName) => {
+              console.log(`Plan chargé depuis: ${fileName}`);
+              // Appeler la fonction de chargement avec les données du plan
+              if (onChargerPlanDepuisFichier) {
+                // Créer un objet temporaire pour simuler le fichier
+                const tempFile = { name: fileName, content: planData };
+                onChargerPlanDepuisFichier(tempFile);
+              }
+            });
+          }}
+          title="Charger un plan depuis un fichier JSON (Explorateur Windows)"
+          style={{ 
+            background: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.7rem 1rem',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            marginTop: '0.5rem',
+            width: '100%',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }}
+        >
+          📄 Charger plan JSON
+        </button>
         <button
           className={`btn btn-full ${imageFondChargee ? 'btn-success' : 'btn-primary'}`}
           onClick={onChargerImageFond}
@@ -526,15 +580,15 @@ function PanneauLateral({
       </div>
 
       {/* En-tête avec onglets */}
-      <div className="tabs">
+      <div className="tabs-unified">
         <button 
-          className={`tab ${ongletActif === 'outils' ? 'active' : ''}`}
+          className={`tab-unified ${ongletActif === 'outils' ? 'active' : ''}`}
           onClick={() => setOngletActif('outils')}
         >
           ⚙️ Outils
         </button>
         <button 
-          className={`tab ${ongletActif === 'config' ? 'active' : ''}`}
+          className={`tab-unified ${ongletActif === 'config' ? 'active' : ''}`}
           onClick={() => setOngletActif('config')}
         >
           📋 Config
@@ -544,30 +598,6 @@ function PanneauLateral({
       {/* Contenu selon onglet actif */}
       {ongletActif === 'config' ? (
         <div className="panneau-outils-content">
-          {/* COMPOSITION DU SOL */}
-          <div className="section-header">
-            <h3 className="section-title">🌍 Composition du sol</h3>
-          </div>
-          <SolInteractif 
-            couchesSol={couchesSol} 
-            onCouchesSolChange={onCouchesSolChange} 
-          />
-          
-          <div className="info-box info-box-info" style={{ marginTop: '0.5rem' }}>
-            📏 Profondeur totale : {couchesSol ? (couchesSol.reduce((sum, c) => sum + c.profondeur, 0) / 100).toFixed(2) : 0} m
-          </div>
-          
-          {/* Bouton pour accéder aux couches végétales dans l'onglet Config */}
-          {!objetSelectionne && (
-            <button
-              onClick={() => setOngletActif('config')}
-              className="btn btn-primary btn-full"
-              style={{ marginTop: '0.5rem' }}
-            >
-              ⚙️ Ouvrir configuration des couches
-            </button>
-          )}
-          
           {/* OBJET SÉLECTIONNÉ */}
           {objetSelectionne && (
             <>
@@ -583,6 +613,7 @@ function PanneauLateral({
                   {objetSelectionne.customType === 'paves' && '🟩 Pavés'}
                   {objetSelectionne.customType === 'arbre-a-planter' && `🌳 ${objetSelectionne.arbreData?.name || 'Arbre'}`}
                   {objetSelectionne.customType === 'arbre-existant' && '🌳 Arbre existant'}
+                  {objetSelectionne.customType === 'sol' && '🌍 Sol'}
                 </div>
               </div>
               
@@ -671,6 +702,38 @@ function PanneauLateral({
                             </label>
                           ))}
                         </div>
+                        
+                        {/* Contrôles de pente pour toits inclinés */}
+                        {(objetSelectionne.typeToit === 'monopente' || objetSelectionne.typeToit === 'deux-pentes') && (
+                          <div style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#f9f9f9', borderRadius: '4px' }}>
+                            {renderNumberInput(
+                              'Pente du toit',
+                              Math.round(objetSelectionne.penteToit || (objetSelectionne.typeToit === 'monopente' ? 2 : 15)).toString(),
+                              (e) => updateObjetProp('penteToit', e.target.value),
+                              1, 60, 1, '°'
+                            )}
+                            
+                            {/* Orientation pour monopente */}
+                            {objetSelectionne.typeToit === 'monopente' && (
+                              <div style={{ marginTop: '0.5rem' }}>
+                                {renderNumberInput(
+                                  'Orientation de la pente',
+                                  (objetSelectionne.orientationToit || 0).toString(),
+                                  (e) => updateObjetProp('orientationToit', e.target.value),
+                                  0, 360, 90, '°',
+                                  (value) => {
+                                    const deg = parseInt(value);
+                                    if (deg === 0) return 'Nord (0°)';
+                                    if (deg === 90) return 'Est (90°)';
+                                    if (deg === 180) return 'Sud (180°)';
+                                    if (deg === 270) return 'Ouest (270°)';
+                                    return `${deg}°`;
+                                  }
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1115,6 +1178,28 @@ function PanneauLateral({
                     >
                       🗑️ Supprimer cet arbre
                     </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* ✅ Sol : Composition du sol */}
+              {objetSelectionne.customType === 'sol' && (
+                <div className="objet-controls">
+                  <div className="section-header">
+                    <h3 className="section-title">🌍 Composition du sol</h3>
+                  </div>
+                  <SolInteractif 
+                    couchesSol={couchesSol} 
+                    onCouchesSolChange={(nouvellesCouches) => {
+                      // Mettre à jour les couches dans l'objet terrain sélectionné
+                      mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
+                      // Mettre à jour l'état global
+                      onCouchesSolChange(nouvellesCouches);
+                    }} 
+                  />
+                  
+                  <div className="info-box info-box-info" style={{ marginTop: '0.5rem' }}>
+                    📏 Profondeur totale : {couchesSol ? (couchesSol.reduce((sum, c) => sum + c.profondeur, 0) / 100).toFixed(2) : 0} m
                   </div>
                 </div>
               )}
@@ -1713,27 +1798,6 @@ function PanneauLateral({
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
                   ⚠️ Effacer tout
-                </button>
-                <button 
-                  onClick={onLoggerComplet} 
-                  title="Log complet de tous les paramètres de tous les objets"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#2196f3',
-                    border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#e3f2fd'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-                  🔍 Log complet
                 </button>
                 <button 
                   onClick={onExporterComplet} 

@@ -1,3 +1,6 @@
+/* Import des styles d'onglets unifiés */
+@import '../styles/tabs-unified.css';
+
 /* Panneau latéral avec onglets - OPTIMISÉ COMPACT + CONTOUR */
 .panneau-lateral {
   width: 320px; /* Élargi encore plus */
@@ -11,39 +14,16 @@
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(25, 118, 210, 0.15);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-/* En-tête avec onglets */
+/* En-tête avec onglets - utilise le système unifié */
 .panneau-tabs {
-  display: flex;
-  background: #f5f5f5;
-  border-bottom: 3px solid #1976d2;
+  /* Hérite des styles .tabs-unified */
 }
 
 .tab-btn {
-  flex: 1;
-  padding: 0.6rem 0.5rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #666;
-  transition: all 0.3s ease;
-  border-bottom: 3px solid transparent;
-}
-
-.tab-btn:hover {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.tab-btn.active {
-  background: #1976d2;
-  color: white;
-  border-bottom-color: #1976d2;
-  font-weight: 700;
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.3);
+  /* Hérite des styles .tab-unified */
 }
 
 /* Contenu du panneau outils - COMPACT */
@@ -51,10 +31,11 @@
   padding: 0.75rem;
   overflow-y: auto;
   flex: 1;
+  font-size: 1rem; /* Augmenté de 0.8rem */
 }
 
 .section-title {
-  font-size: 0.9rem;
+  font-size: 1.1rem; /* Augmenté de 0.9rem */
   font-weight: 700;
   color: #1976d2;
   margin: 0.75rem 0 0.4rem 0;

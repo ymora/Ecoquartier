@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getLogHistory, exportLogs, clearLogs, showLogStats } from '../utils/logger';
+import logger from '../utils/logger';
 import './LogViewer.css';
 
 function LogViewer({ isOpen, onClose }) {

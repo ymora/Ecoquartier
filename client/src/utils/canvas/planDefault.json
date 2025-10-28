@@ -1,55 +1,56 @@
 {
   "metadata": {
     "version": "1.0",
-    "generated": "2025-01-24T10:00:00Z",
-    "dimensions": "30m × 30m",
-    "orientation": "nord-gauche",
-    "description": "Plan par défaut avec 2 maisons, 1 caisson, 3 terrasses, 2 pavés, 2 canalisations"
+    "description": "Plan simplifié - positions et dimensions essentielles"
   },
   "objets": [
     {
       "type": "maison",
       "id": "maison-1",
-      "position": { "x": -200, "y": -100 },
-      "dimensions": { "largeur": 10, "profondeur": 10 },
-      "proprietes": {
+      "pos": [-200, -100],
+      "dim": [10, 10],
+      "props": {
         "hauteur": 7,
-        "elevationSol": 0,
-        "typeToit": "deux-pentes",
         "angle": 0
       }
     },
     {
-      "type": "maison",
-      "id": "maison-2", 
-      "position": { "x": 200, "y": 100 },
-      "dimensions": { "largeur": 10, "profondeur": 10 },
-      "proprietes": {
+      "type": "maison", 
+      "id": "maison-2",
+      "pos": [200, 100],
+      "dim": [10, 10],
+      "props": {
         "hauteur": 7,
-        "elevationSol": 0,
-        "typeToit": "deux-pentes",
         "angle": 0
       }
     },
     {
       "type": "terrasse",
-      "id": "terrasse-1",
-      "position": { "x": -100, "y": -200 },
-      "dimensions": { "largeur": 5, "profondeur": 4 },
-      "proprietes": {
+      "id": "terrasse-1", 
+      "pos": [-100, -200],
+      "dim": [5, 4],
+      "props": {
         "hauteur": 0.15,
-        "elevationSol": 0,
         "angle": 0
       }
     },
     {
       "type": "paves",
       "id": "paves-1",
-      "position": { "x": 100, "y": -200 },
-      "dimensions": { "largeur": 5, "profondeur": 5 },
-      "proprietes": {
+      "pos": [100, -200], 
+      "dim": [5, 5],
+      "props": {
         "hauteur": 0.08,
-        "elevationSol": 0,
+        "angle": 0
+      }
+    },
+    {
+      "type": "caisson-eau",
+      "id": "caisson-1",
+      "pos": [0, 0],
+      "dim": [5, 3],
+      "props": {
+        "hauteur": 1,
         "angle": 0
       }
     }

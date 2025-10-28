@@ -3,6 +3,8 @@
  * Gestion du menu contextuel (verrouiller/supprimer) affiché au-dessus des objets sélectionnés
  */
 
+import logger from '../logger';
+
 /**
  * Afficher le menu contextuel au-dessus d'un objet sélectionné
  */

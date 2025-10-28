@@ -10,7 +10,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     // Mettre à jour l'état pour afficher l'UI de fallback
     return { hasError: true };
   }
@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component {
             <h2>{ICONS.error} Erreur de l'application</h2>
             <p>Une erreur inattendue s'est produite. Veuillez recharger la page.</p>
             
-            {process.env.NODE_ENV === 'development' && (
+            {typeof process !== 'undefined' && process.env.NODE_ENV === 'development' && (
               <details className="error-details">
                 <summary>Détails techniques</summary>
                 <pre>{this.state.error && this.state.error.toString()}</pre>

@@ -37,7 +37,7 @@ function Sol3D({
   
   return (
     <group position={[centreX, 0, centreZ]}>
-      {/* SOL SURFACE (herbe verte) - ✅ TOUJOURS OPAQUE pour voir les pavés enherbés */}
+      {/* SOL SURFACE (herbe verte) - Semi-transparente si mode transparent activé */}
       <mesh 
         rotation={[-Math.PI / 2, 0, 0]} 
         position={[0, 0.07, 0]} 
@@ -48,6 +48,8 @@ function Sol3D({
         <meshStandardMaterial 
           color="#8bc34a"
           roughness={0.9}
+          transparent={transparent}
+          opacity={transparent ? 0.3 : 1.0} // Semi-transparente en mode transparent pour voir le plan de fond
         />
       </mesh>
       

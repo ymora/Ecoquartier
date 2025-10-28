@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaPlus, FaTimes } from 'react-icons/fa';
+import logger from '../utils/logger';
 import './SelecteurArbres.css';
 
 function SelecteurArbres({ plantes, onArbresSelectionnes }) {
