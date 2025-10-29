@@ -15,7 +15,8 @@ function ObjetDraggable3D({
   onDragStart,
   onDrag,
   onDragEnd,
-  maisonBounds = null // Pour validation collision (peut être tableau pour multi-maisons)
+  maisonBounds = null, // Pour validation collision (peut être tableau pour multi-maisons)
+  isSelected = false // Nouveau : indique si cet objet est sélectionné
 }) {
   const groupRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
@@ -32,6 +33,11 @@ function ObjetDraggable3D({
     if (!enabled) return;
     
     e.stopPropagation();
+    
+    // ✅ DIFFÉRENCIATION DES BOUTONS
+    // Bouton gauche (0) : Déplacement normal de l'objet
+    // Bouton droit (2) : Déplacement linéaire (panning) sans rotation
+    if (e.button !== 0 && e.button !== 2) return;
     
     // Enregistrer position de départ
     startPosition.current = [...position];
@@ -51,7 +57,7 @@ function ObjetDraggable3D({
     setIsDragging(true);
     if (onDragStart) onDragStart();
     
-    // ✅ Désactiver OrbitControls proprement
+    // ✅ Désactiver OrbitControls pour le déplacement d'objet
     if (controls) controls.enabled = false;
     gl.domElement.style.cursor = 'grabbing';
   };

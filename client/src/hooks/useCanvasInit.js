@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
-import { forcerTriObjets } from '../utils/canvas/depthSorting';
 import { recentrerVueSurContenu } from '../utils/canvas/creerObjets';
 
 /**

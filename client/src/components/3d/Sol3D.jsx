@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { Html } from '@react-three/drei';
 
 function Sol3D({ 
@@ -11,10 +11,26 @@ function Sol3D({
     { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63' },
     { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd' },
     { nom: 'Sous-sol', profondeur: 200, couleur: '#a1887f' }
-  ]
+  ],
+  onTerrainClick
 }) {
   // Icônes par couche
   const icones = ['🌱', '🪨', '⛰️'];
+  
+  // Gestionnaire de clic sur le terrain
+  const handleTerrainClick = useCallback((event) => {
+    event.stopPropagation();
+    if (onTerrainClick) {
+      onTerrainClick({
+        customType: 'sol',
+        name: 'Terrain',
+        position: [offsetX, 0, offsetZ],
+        largeur,
+        hauteur,
+        couchesSol
+      });
+    }
+  }, [onTerrainClick, offsetX, offsetZ, largeur, hauteur, couchesSol]);
   
   // Calculer les profondeurs cumulées
   let profondeurCumulee = 0;
@@ -42,7 +58,7 @@ function Sol3D({
         rotation={[-Math.PI / 2, 0, 0]} 
         position={[0, 0.07, 0]} 
         receiveShadow
-        raycast={() => null} // ✅ Désactiver l'interaction pour permettre clic sur objets en dessous
+        onClick={handleTerrainClick}
       >
         <planeGeometry args={[largeur, hauteur]} />
         <meshStandardMaterial 

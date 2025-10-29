@@ -8,7 +8,8 @@ import {
   highlightSelection, 
   unhighlightSelection 
 } from '../utils/canvas/highlightUtils';
-import { mettreAJourCouchesSol } from '../utils/canvas/terrainUtils';
+import { mettreAJourCouchesSol, selectionnerTerrainParDessous } from '../utils/canvas/terrainUtils';
+import { chargerPlanJSONAvecExplorateur } from '../utils/fileLoader';
 
 /**
  * Panneau latéral avec onglets pour outils et configuration
@@ -18,7 +19,7 @@ function PanneauLateral({
   couchesSol,
   onCouchesSolChange,
   dimensions,
-  echelle = 40, // Échelle par défaut (40 pixels = 1 mètre)
+  echelle = 30, // Échelle par défaut (30 pixels = 1 mètre)
   onDimensionsChange,
   imageFondChargee,
   opaciteImage,
@@ -404,6 +405,42 @@ function PanneauLateral({
       objetSelectionne.setCoords();
       canvas.requestRenderAll();
       canvas.fire('object:modified', { target: objetSelectionne });
+      
+      // ✅ Mettre à jour les dimensions du terrain si nécessaire
+      if (onDimensionsChange) {
+        // Calculer les nouvelles dimensions basées sur tous les objets
+        const objets = canvas.getObjects().filter(obj => 
+          obj.customType && 
+          obj.customType !== 'grille' && 
+          obj.customType !== 'boussole' && 
+          obj.customType !== 'indicateur-sud' &&
+          obj.customType !== 'aide-button' &&
+          obj.customType !== 'dimension-box' &&
+          obj.customType !== 'center-mark'
+        );
+        
+        if (objets.length > 0) {
+          let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+          
+          objets.forEach(obj => {
+            const left = obj.left - (obj.getScaledWidth ? obj.getScaledWidth() : obj.width) / 2;
+            const right = obj.left + (obj.getScaledWidth ? obj.getScaledWidth() : obj.width) / 2;
+            const top = obj.top - (obj.getScaledHeight ? obj.getScaledHeight() : obj.height) / 2;
+            const bottom = obj.top + (obj.getScaledHeight ? obj.getScaledHeight() : obj.height) / 2;
+            
+            minX = Math.min(minX, left);
+            maxX = Math.max(maxX, right);
+            minY = Math.min(minY, top);
+            maxY = Math.max(maxY, bottom);
+          });
+          
+          // Convertir en mètres
+          const largeur = Math.max((maxX - minX) / echelle, 10); // Minimum 10m
+          const hauteur = Math.max((maxY - minY) / echelle, 10); // Minimum 10m
+          
+          onDimensionsChange({ largeur, hauteur });
+        }
+      }
       
       setDimensionUpdate(prev => prev + 1);
     };

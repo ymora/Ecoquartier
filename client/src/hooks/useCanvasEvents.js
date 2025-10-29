@@ -8,15 +8,9 @@ import {
   afficherIndicateursConnexion
 } from '../utils/canvas/cloturesHelpers';
 import { createProtectedEventHandler } from '../utils/canvas/eventManager';
-import { 
-  maintenirCentreAuPremierPlan,
-  creerMaisonObjet, 
-  creerCiterneObjet, 
-  creerCaissonEauObjet,
-  creerTerrasseObjet,
-  creerPavesObjet
-} from '../utils/canvas/creerObjets';
 import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
+import { agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
+import { forcerTerrainEnArrierePlan } from '../utils/canvas/depthSorting';
 
 /**
  * Hook pour gérer tous les event listeners du canvas
@@ -32,7 +26,8 @@ export const useCanvasEvents = ({
   cacherCercleTronc,
   exporterPlan,
   ajouterMesuresLive,
-  ajouterPointIntermediaire
+  ajouterPointIntermediaire,
+  onDimensionsChange
 }) => {
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
@@ -47,6 +42,9 @@ export const useCanvasEvents = ({
       const newTop = Math.round(obj.top / snapSize) * snapSize;
       
       obj.set({ left: newLeft, top: newTop });
+      
+      // ✅ Forcer le terrain en arrière-plan pendant le déplacement
+      forcerTerrainEnArrierePlan(canvas);
     };
 
     // Guides d'alignement
@@ -92,6 +90,11 @@ export const useCanvasEvents = ({
       // Réinitialiser la position de référence des clôtures
       if (e.target && e.target.customType === 'cloture') {
         resetClotureLastPos(e.target, canvas);
+      }
+      
+      // AGRANDIR LE TERRAIN si un objet sort de ses limites
+      if (e.target && e.target.customType !== 'sol' && onDimensionsChange) {
+        agrandirTerrainSiNecessaire(canvas, e.target, echelle, onDimensionsChange);
       }
       
       // Forcer le tri par profondeur après modification
@@ -203,7 +206,7 @@ export const useCanvasEvents = ({
       });
       
       // Maintenir le repère de centre au premier plan pour qu'il soit toujours visible
-      maintenirCentreAuPremierPlan(canvas);
+      // maintenirCentreAuPremierPlan(canvas); // Fonction supprimée
       
       // Afficher les indicateurs de connexion
       afficherIndicateursConnexion(canvas);
@@ -220,6 +223,9 @@ export const useCanvasEvents = ({
 
     const handleMovingWithValidation = (e) => {
       if (e.target && !e.target.measureLabel && !e.target.alignmentGuide && !e.target.isGridLine) {
+        // ✅ FORCER LE TERRAIN EN ARRIÈRE-PLAN lors du déplacement
+        forcerTerrainEnArrierePlan(canvas);
+        
         ajouterMesuresLive(canvas);
         if (!e.target.isBoussole) afficherMenuContextuel(e.target, canvas);
         
@@ -238,6 +244,9 @@ export const useCanvasEvents = ({
     const handleSelectionCreated = (e) => {
       const obj = e.selected[0];
       if (obj && !obj.isAideButton && !obj.isBoussole && !obj.isDimensionBox) {
+        // ✅ FORCER LE TERRAIN EN ARRIÈRE-PLAN lors de la sélection
+        forcerTerrainEnArrierePlan(canvas);
+        
         afficherMenuContextuel(obj, canvas);
         if (obj.customType === 'arbre-a-planter') {
           validerPositionArbre(canvas, obj);
@@ -249,6 +258,9 @@ export const useCanvasEvents = ({
     const handleSelectionUpdated = (e) => {
       const obj = e.selected[0];
       if (obj && !obj.isAideButton && !obj.isBoussole && !obj.isDimensionBox) {
+        // ✅ FORCER LE TERRAIN EN ARRIÈRE-PLAN lors de la mise à jour de sélection
+        forcerTerrainEnArrierePlan(canvas);
+        
         afficherMenuContextuel(obj, canvas);
         if (obj.customType === 'arbre-a-planter') {
           validerPositionArbre(canvas, obj);

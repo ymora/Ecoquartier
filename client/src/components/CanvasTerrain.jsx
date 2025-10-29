@@ -7,21 +7,16 @@ import TimelineSection from './TimelineSection';
 import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 import { notifications } from '../utils/notifications';
-import { ajouterTerrainAuCanvas } from '../utils/canvas/terrainUtils';
+import { ajouterTerrainAuCanvas, agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
 
 // Dynamic import pour Three.js (évite bundle 3x trop gros)
 const CanvasTerrain3D = lazy(() => import('./CanvasTerrain3D'));
 
 // ========== IMPORTS UTILS CANVAS ==========
 import {
-  creerMaison,
   creerCanalisation,
-  creerCiterne,
-  creerCaissonEau,
   creerCloture,
-  creerTerrasse,
   recentrerVueSurContenu,
-  creerPaves,
   creerGrille,
   creerBoussole,
   creerIndicateurSud,
@@ -29,8 +24,7 @@ import {
   creerTerrasseObjet,
   creerPavesObjet,
   creerCiterneObjet,
-  creerCaissonEauObjet,
-  maintenirCentreAuPremierPlan
+  creerCaissonEauObjet
 } from '../utils/canvas/creerObjets';
 
 import {
@@ -42,7 +36,6 @@ import { calculerTailleSelonAnnee as calculerTailleUtils } from '../utils/canvas
 
 import {
   validerPositionArbre as validerPositionUtils,
-  afficherLignesMesure as afficherLignesMesureUtils,
   revaliderTousLesArbres
 } from '../utils/canvas/canvasValidation';
 
@@ -61,7 +54,6 @@ import {
 
 import {
   exporterPlan as exporterPlanUtils,
-  loggerPositionsPlanCopiable,
   chargerImageFond as chargerImageUtils,
   ajusterOpaciteImage as ajusterOpaciteUtils,
   supprimerImageFond as supprimerImageUtils,
@@ -419,7 +411,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   useCanvasInit({
     canvasRef,
     fabricCanvasRef,
-    echelle,
     ajouterGrille,
     ajouterBoussole,
     ajouterIndicateurSud,
@@ -439,7 +430,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     cacherCercleTronc,
     exporterPlan,
     ajouterMesuresLive,
-    ajouterPointIntermediaire
+    ajouterPointIntermediaire,
+    onDimensionsChange
   });
 
   // Mettre à jour le soleil 2D quand la saison ou l'heure change
@@ -533,6 +525,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       paves: canvas.getObjects().filter(o => o.customType === 'paves' && objetValide(o)),
       caissonsEau: canvas.getObjects().filter(o => o.customType === 'caisson-eau' && objetValide(o)),
       arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter' && objetValide(o)),
+      terrain: canvas.getObjects().filter(o => o.customType === 'sol' && objetValide(o)),
       echelle: echelle3D
     };
     
@@ -657,6 +650,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     objet.setCoords();
     canvas.requestRenderAll();
     
+    // ✅ AGRANDIR LE TERRAIN si nécessaire lors du déplacement 3D→2D
+    if (onDimensionsChange) {
+      agrandirTerrainSiNecessaire(canvas, objet, echelle, onDimensionsChange);
+    }
+    
     // Resynchroniser vers la 3D après un court délai
     setTimeout(() => throttledSync(), 150);
   }, [throttledSync]);
@@ -700,10 +698,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       // Logger pour debug avec détails spécifiques selon le type
       let detailObjet = '';
       switch(objetData.type) {
-        case 'arbre':
+        case 'arbre': {
           const nomArbre = objetData.arbreData?.name || objetData.arbreData?.id || 'inconnu';
           detailObjet = ` "${nomArbre}"`;
           break;
+        }
         case 'maison':
           detailObjet = ` #${(objetData.index || 0) + 1}`;
           break;
@@ -782,6 +781,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       // Finaliser le placement
       objetEnPlacement.set({ opacity: 1 });
       setObjetEnPlacement(null);
+      
+      // ✅ AGRANDIR LE TERRAIN si nécessaire lors du placement
+      if (onDimensionsChange) {
+        agrandirTerrainSiNecessaire(canvas, objetEnPlacement, ECHELLE_PIXELS_PAR_METRE, onDimensionsChange);
+      }
+      
       exporterPlan(canvas);
       revaliderTous(canvas);
       logger.info('Placement', 'Objet déposé avec succès');
@@ -1076,9 +1081,16 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                       !actif.isCenterMark) {
                     console.log('🔧 DEBUG: Duplication via bouton modal');
                     
-                    // ✅ UTILISER LA FONCTION UNIFIÉE
+                    // ✅ DUPLICATION DIRECTE
                     try {
-                      await dupliquerObjet(actif, fabricCanvasRef.current, echelle, exporterPlan, revaliderTous);
+                      const objetDuplique = fabric.util.object.clone(actif);
+                      objetDuplique.set({
+                        left: actif.left + 20,
+                        top: actif.top + 20
+                      });
+                      fabricCanvasRef.current.add(objetDuplique);
+                      fabricCanvasRef.current.setActiveObject(objetDuplique);
+                      fabricCanvasRef.current.renderAll();
                       console.log('🔧 DEBUG: Duplication bouton modal terminée!');
                     } catch (error) {
                       console.error('🔧 DEBUG: Erreur lors de la duplication bouton modal:', error);

@@ -33,7 +33,7 @@ export const calculerDistanceCercle = (px, py, cercleGroup) => {
   const cy = cercleGroup.top;
   
   // Rayon du cercle
-  const rayon = cercle.radius || (cercleGroup.diametre / 2) * 40; // echelle 40 par défaut
+  const rayon = cercle.radius || (cercleGroup.diametre / 2) * 30; // echelle 30 par défaut
   
   // Distance centre à centre
   const distCentre = Math.sqrt((px - cx) ** 2 + (py - cy) ** 2);

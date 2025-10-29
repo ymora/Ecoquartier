@@ -5,6 +5,22 @@
   },
   "objets": [
     {
+      "type": "sol",
+      "id": "terrain-principal",
+      "pos": [0, 0],
+      "dim": [30, 30],
+      "props": {
+        "couchesSol": [
+          { "nom": "Terre végétale", "profondeur": 30, "couleur": "#795548", "type": "terre" },
+          { "nom": "Marne calcaire", "profondeur": 70, "couleur": "#bdbdbd", "type": "marne" }
+        ],
+        "selectable": true,
+        "evented": true,
+        "hasBorders": true,
+        "hasControls": true
+      }
+    },
+    {
       "type": "fond-terrain",
       "id": "fond-terrain-principal",
       "pos": [0, 0],

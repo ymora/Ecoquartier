@@ -6,7 +6,7 @@
 /**
  * Calculer la taille d'un arbre selon l'année de projection
  */
-export const calculerTailleSelonAnnee = (arbre, annee, echelle = 40) => {
+export const calculerTailleSelonAnnee = (arbre, annee, echelle = 30) => {
   // Tailles à la plantation (jeune plant) - Valeurs configurables
   const hauteurPlantation = 2.0;    // 2m à la plantation (jeune plant standard)
   const envergurePlantation = 0.8;  // 0.8m couronne initiale

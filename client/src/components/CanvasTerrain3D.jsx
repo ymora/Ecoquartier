@@ -1,6 +1,7 @@
 import { useRef, useState, useMemo, useCallback, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Sky } from '@react-three/drei';
+import * as THREE from 'three'; // ✅ Import pour les constantes MOUSE
 import Arbre3D from './3d/Arbre3D';
 import Arbre3DModel from './3d/Arbre3DModel';
 import { getModelPourArbre } from '../config/modeles3D';
@@ -18,8 +19,6 @@ import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
 // GrilleReference, SelecteurHeure et CubeNavigation3D ne sont plus nécessaires
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 import { validerArbres3D } from '../utils/validation3D';
-import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
-import { afficherMenuContextuel, cacherMenuContextuel } from '../utils/canvas/menuContextuel';
 import './CanvasTerrain3D.css';
 
 // Fonction utilitaire pour parser la taille à maturité depuis arbustesData
@@ -66,7 +65,6 @@ function CanvasTerrain3D({
   // Passer l'angle directement au soleil pour un mouvement fluide
   // heureJournee est maintenant un angle de 0° (matin) à 180° (soir)
   const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote (coupe supprimée)
-  const [modeDeplacement, setModeDeplacement] = useState(false); // Mode déplacement d'objets
   const [solTransparent, setSolTransparent] = useState(true); // ✅ Sol transparent TOUJOURS ACTIF = voir racines, fondations, citernes, canalisations
   const [objetSelectionne3D, setObjetSelectionne3D] = useState(null); // ✅ Objet sélectionné en 3D pour highlight
   const [forceUpdate, setForceUpdate] = useState(0); // ✅ Force la mise à jour de la conversion 2D→3D
@@ -75,7 +73,7 @@ function CanvasTerrain3D({
   // Convertir les données 2D en 3D
   // Recalculer quand planData OU anneeProjection change
   const convertir2DTo3D = () => {
-    const echelle = ECHELLE_PIXELS_PAR_METRE; // Utilisation de la constante globale : 40 pixels = 1 mètre
+    const echelle = ECHELLE_PIXELS_PAR_METRE; // Utilisation de la constante globale : 30 pixels = 1 mètre
     
     // Debug désactivé pour performance (produit des logs volumineux)
     
@@ -94,11 +92,15 @@ function CanvasTerrain3D({
     // Tracker les limites de tous les objets
     let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
     
-    const updateBounds = (x, z, largeur = 0, profondeur = 0) => {
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x + largeur);
-      minZ = Math.min(minZ, z);
-      maxZ = Math.max(maxZ, z + profondeur);
+    const updateBounds = (centreX, centreZ, largeur = 0, profondeur = 0) => {
+      // ✅ CORRECTION : Calculer les limites depuis le CENTRE de l'objet
+      const demiLargeur = largeur / 2;
+      const demiProfondeur = profondeur / 2;
+      
+      minX = Math.min(minX, centreX - demiLargeur);
+      maxX = Math.max(maxX, centreX + demiLargeur);
+      minZ = Math.min(minZ, centreZ - demiProfondeur);
+      maxZ = Math.max(maxZ, centreZ + demiProfondeur);
     };
     
     // Maisons (tableau)
@@ -117,7 +119,9 @@ function CanvasTerrain3D({
         
         // Debug désactivé pour performance
         
-        updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
+        // ✅ CORRECTION : Les bounds doivent être calculés depuis le CENTRE de l'objet
+        // car la position 3D est le centre, pas le coin
+        updateBounds(posX, posZ, largeur, profondeur);
         
         return {
           position: [posX, 0, posZ],
@@ -144,7 +148,8 @@ function CanvasTerrain3D({
         
         // Debug désactivé pour performance
         
-        updateBounds(posX - diametre/2, posZ - diametre/2, diametre, diametre);
+        // ✅ CORRECTION : Les bounds doivent être calculés depuis le CENTRE de l'objet
+        updateBounds(posX, posZ, diametre, diametre);
         
         return {
           position: [posX, 0, posZ],
@@ -254,7 +259,8 @@ function CanvasTerrain3D({
           customType: 'terrasse'
         });
         
-        updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
+        // ✅ CORRECTION : Les bounds doivent être calculés depuis le CENTRE de l'objet
+        updateBounds(posX, posZ, largeur, profondeur);
       });
     }
     
@@ -374,13 +380,37 @@ function CanvasTerrain3D({
   }, [data3D]);
   
   // Calculer les dimensions du terrain adaptatif (mémorisé)
-  const terrainDimensions = useMemo(() => ({
-    largeur: data3D.bounds.maxX - data3D.bounds.minX,
-    hauteur: data3D.bounds.maxZ - data3D.bounds.minZ,
-    // Centre FIXE du terrain (toujours à 0,0) - ne dépend pas des objets
-    centreX: 0,
-    centreZ: 0
-  }), [data3D.bounds]);
+  const terrainDimensions = useMemo(() => {
+    // Si un terrain 2D existe, utiliser ses dimensions
+    const terrain2D = data3D?.terrain?.[0];
+    if (terrain2D) {
+      const dimensions = {
+        largeur: terrain2D.width / ECHELLE_PIXELS_PAR_METRE, // Convertir pixels en mètres
+        hauteur: terrain2D.height / ECHELLE_PIXELS_PAR_METRE,
+        centreX: 0,
+        centreZ: 0
+      };
+      
+      // ✅ DEBUG : Log des dimensions du terrain
+      console.log('🌍 Dimensions terrain 2D→3D:', {
+        'Terrain 2D (pixels)': { width: terrain2D.width, height: terrain2D.height },
+        'Échelle': ECHELLE_PIXELS_PAR_METRE,
+        'Terrain 3D (mètres)': dimensions
+      });
+      
+      return dimensions;
+    }
+    
+    // Sinon, calculer à partir des objets
+    const largeur = data3D.bounds.maxX - data3D.bounds.minX;
+    const hauteur = data3D.bounds.maxZ - data3D.bounds.minZ;
+    return {
+      largeur: Math.max(largeur, 20), // Minimum 20m
+      hauteur: Math.max(hauteur, 20), // Minimum 20m
+      centreX: 0,
+      centreZ: 0
+    };
+  }, [data3D]);
   
   const { largeur: terrainLargeur, hauteur: terrainHauteur, centreX: terrainCentreX, centreZ: terrainCentreZ } = terrainDimensions;
   
@@ -425,7 +455,7 @@ function CanvasTerrain3D({
         canvas2D.renderAll();
         
         // ✅ Afficher le modal 2D (système original)
-        afficherMenuContextuel(objet2D, canvas2D, contextMenuRef2D, contextMenuRef2D);
+        // afficherMenuContextuel(objet2D, canvas2D, contextMenuRef2D, contextMenuRef2D);
       }
     }
     
@@ -480,18 +510,27 @@ function CanvasTerrain3D({
         
         {/* ✅ Vue sous terre TOUJOURS ACTIVE - racines, fondations, citernes et canalisations toujours visibles */}
         
-        <label className="checkbox-3d">
-          <input 
-            type="checkbox" 
-            checked={modeDeplacement}
-            onChange={(e) => setModeDeplacement(e.target.checked)}
-          />
-          <span>✋ Mode déplacement d'objets</span>
-        </label>
       </div>
       
       {/* Canvas 3D */}
-      <Canvas shadows dpr={[1, 2]} className="canvas-3d">
+      <Canvas 
+        shadows 
+        dpr={[1, 2]} 
+        className="canvas-3d"
+        onCreated={({ gl }) => {
+          // ✅ Gestion du contexte WebGL perdu
+          gl.domElement.addEventListener('webglcontextlost', (e) => {
+            console.warn('⚠️ Contexte WebGL perdu, tentative de récupération...');
+            e.preventDefault();
+          });
+          
+          gl.domElement.addEventListener('webglcontextrestored', () => {
+            console.log('✅ Contexte WebGL restauré');
+            // Recharger la page pour réinitialiser
+            window.location.reload();
+          });
+        }}
+      >
         {/* Ciel */}
         <Sky sunPosition={[100, 20, 100]} />
         
@@ -539,69 +578,88 @@ function CanvasTerrain3D({
           offsetZ={data3D.bounds.minZ}
           couchesSol={couchesSol}
           transparent={solTransparent}
+          onTerrainClick={handleObjetClick}
         />
         
         {/* Maisons */}
-        {data3D?.maisons?.map((maison, idx) => (
-          <ObjetDraggable3D
-            key={`maison-${idx}`}
-            position={maison.position}
-            type="maison"
-            enabled={modeDeplacement}
-            onDragEnd={handleObjetDragEnd}
-            maisonBounds={maisonsBounds}
-          >
+        {data3D?.maisons?.map((maison, idx) => {
+          // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
+          const elevationY = maison.elevationSol || 0;
+          const positionY = elevationY > 0 ? elevationY : 0.1; // Au-dessus du terrain
+          
+          return (
+            <ObjetDraggable3D
+              key={`maison-${idx}`}
+              position={[maison.position[0], positionY, maison.position[2]]}
+              type="maison"
+              enabled={true}
+              onDragEnd={handleObjetDragEnd}
+              maisonBounds={maisonsBounds}
+            >
             <Maison3D 
               {...maison}
               typeToit={maison.typeToit || 'deux-pentes'}
               onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
             />
           </ObjetDraggable3D>
-        ))}
+          );
+        })}
         
         {/* Citernes cylindriques */}
-        {data3D?.citernes?.filter(c => c.type !== 'caisson').map((citerne, idx) => (
-          <ObjetDraggable3D
-            key={`citerne-${idx}`}
-            position={citerne.position}
-            type="citerne"
-            enabled={modeDeplacement}
-            onDragEnd={handleObjetDragEnd}
-            maisonBounds={maisonsBounds}
-          >
+        {data3D?.citernes?.filter(c => c.type !== 'caisson').map((citerne, idx) => {
+          // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
+          const elevationY = citerne.elevationSol || 0;
+          const positionY = elevationY > 0 ? elevationY : 0.1; // Au-dessus du terrain
+          
+          return (
+            <ObjetDraggable3D
+              key={`citerne-${idx}`}
+              position={[citerne.position[0], positionY, citerne.position[2]]}
+              type="citerne"
+              enabled={true}
+              onDragEnd={handleObjetDragEnd}
+              maisonBounds={maisonsBounds}
+            >
             <Citerne3D 
               {...citerne}
               onClick={() => handleObjetClick({ 
                 type: 'citerne', 
                 ...citerne, 
                 index: idx,
-                position: [citerne.position[0], citerne.elevationSol, citerne.position[2]]
+                position: [citerne.position[0], elevationY, citerne.position[2]]
               })}
             />
           </ObjetDraggable3D>
-        ))}
+          );
+        })}
         
         {/* Caissons d'eau rectangulaires */}
-        {data3D?.citernes?.filter(c => c.type === 'caisson').map((caisson, idx) => (
-          <ObjetDraggable3D
-            key={`caisson-${idx}`}
-            position={caisson.position}
-            type="caisson-eau"
-            enabled={modeDeplacement}
-            onDragEnd={handleObjetDragEnd}
-            maisonBounds={maisonsBounds}
-          >
+        {data3D?.citernes?.filter(c => c.type === 'caisson').map((caisson, idx) => {
+          // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
+          const elevationY = caisson.elevationSol || 0;
+          const positionY = elevationY > 0 ? elevationY : 0.1; // Au-dessus du terrain
+          
+          return (
+            <ObjetDraggable3D
+              key={`caisson-${idx}`}
+              position={[caisson.position[0], positionY, caisson.position[2]]}
+              type="caisson-eau"
+              enabled={true}
+              onDragEnd={handleObjetDragEnd}
+              maisonBounds={maisonsBounds}
+            >
             <Caisson3D 
               {...caisson}
               onClick={() => handleObjetClick({ 
                 type: 'caisson-eau', 
                 ...caisson, 
                 index: idx,
-                position: [caisson.position[0], caisson.elevationSol, caisson.position[2]]
+                position: [caisson.position[0], elevationY, caisson.position[2]]
               })}
             />
           </ObjetDraggable3D>
-        ))}
+          );
+        })}
         
         {/* Canalisations - Visibles uniquement si sol transparent */}
         {solTransparent && data3D?.canalisations?.map((canal, idx) => {
@@ -647,7 +705,7 @@ function CanvasTerrain3D({
               key={`pave-${idx}`}
               position={[terrasse.position[0], 0, terrasse.position[2]]}
               type="paves"
-              enabled={modeDeplacement}
+              enabled={true}
               onDragEnd={handleObjetDragEnd}
               maisonBounds={maisonsBounds}
             >
@@ -670,7 +728,7 @@ function CanvasTerrain3D({
               key={`terrasse-${idx}`}
               position={[terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]}
               type="terrasse"
-              enabled={modeDeplacement}
+              enabled={true}
               onDragEnd={handleObjetDragEnd}
               maisonBounds={maisonsBounds}
             >
@@ -707,15 +765,16 @@ function CanvasTerrain3D({
           const validation3D = validationMap3D.arbres.get(idx) || { status: 'ok', messages: [] };
           const validationStatus = validation3D.status;
           
-          if (model3D) {
-          }
+          // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
+          const elevationY = arbre.elevationSol || 0;
+          const positionY = elevationY > 0 ? elevationY : 0.1; // Au-dessus du terrain
           
           return (
             <ObjetDraggable3D
               key={arbre.arbreData?.id ? `arbre-${arbre.arbreData.id}-${idx}` : `arbre-plante-${idx}`}
-              position={arbre.position}
+              position={[arbre.position[0], positionY, arbre.position[2]]}
               type="arbre-a-planter"
-              enabled={modeDeplacement}
+              enabled={true}
               onDragEnd={handleObjetDragEnd}
               maisonBounds={maisonsBounds}
             >
@@ -766,10 +825,17 @@ function CanvasTerrain3D({
         {/* Caméra contrôlable */}
         <OrbitControls 
           ref={orbitControlsRef}
-          enablePan={!modeDeplacement} 
-          enableZoom 
-          enableRotate={!modeDeplacement}
-          enabled={!modeDeplacement} // Désactiver OrbitControls en mode déplacement
+          enablePan={true} // ✅ Réactiver le panning
+          enableZoom={true}
+          enableRotate={true} // ✅ Rotation avec bouton gauche
+          // ✅ Configuration des boutons
+          mouseButtons={{
+            LEFT: THREE.MOUSE.ROTATE,    // Bouton gauche = rotation
+            MIDDLE: THREE.MOUSE.DOLLY,   // Molette = zoom
+            RIGHT: THREE.MOUSE.PAN       // Bouton droit = déplacement linéaire
+          }}
+          // ✅ Désactiver la rotation automatique pendant le drag d'objets
+          enabled={!objetSelectionne3D} // Rotation seulement si aucun objet sélectionné
           minPolarAngle={0}
           maxPolarAngle={Math.PI} // ✅ Permet de voir par dessous (fondations, racines)
           target={[terrainCentreX, 0, terrainCentreZ]}

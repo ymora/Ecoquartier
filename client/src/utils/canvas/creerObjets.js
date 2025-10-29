@@ -9,6 +9,7 @@ import logger from '../logger';
 import { calculerSoleilSimple, soleil2D } from '../soleilSimple';
 import { creerObjetRectangulaire, creerObjetCirculaire, genererIdUnique } from './creerObjetsGeneriques';
 import { canvasOperations } from './canvasOperations';
+import { appliquerProprietesSelection } from './proprietesSelection';
 
 /**
  * Recentrer la vue sur le contenu du canvas

@@ -12,6 +12,7 @@ import {
   creerTerrasseObjet,
   creerPavesObjet
 } from './creerObjets';
+import { creerObjetTerrain } from './terrainUtils';
 import logger from '../logger';
 
 /**
@@ -118,6 +119,20 @@ const chargerObjet = async (canvas, objetData, echelle) => {
         angle: props.angle || 0
       });
       break;
+      
+    case 'sol': {
+      // ✅ RÉUTILISE creerObjetTerrain existant
+      const dimensions = { largeur: dim[0], hauteur: dim[1] };
+      objet = creerObjetTerrain(echelle, dimensions);
+      // Appliquer les propriétés personnalisées
+      if (props.couchesSol) {
+        objet.set('couchesSol', props.couchesSol);
+      }
+      // ✅ TERRAIN : Ne pas repositionner car il est déjà centré
+      // Le terrain est créé centré à (0,0) dans creerObjetTerrain
+      canvas.add(objet);
+      return; // Sortir sans repositionner
+    }
       
     case 'canalisation':
       // Créer une canalisation (pas de fonction existante)

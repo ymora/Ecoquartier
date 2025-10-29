@@ -1,4 +1,5 @@
 import { useEffect, useState, memo, useMemo } from 'react';
+import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 import './DashboardTerrain.css';
 
 function DashboardTerrain({ 
@@ -11,7 +12,7 @@ function DashboardTerrain({
   onToggleArbre,
   ongletActif = 'arbres' // Reçu depuis CanvasTerrain
 }) {
-  const echelle = 30;
+  const echelle = ECHELLE_PIXELS_PAR_METRE; // Utilisation de la constante globale
 
   // Mémoriser les calculs coûteux des statistiques
   const stats = useMemo(() => {

@@ -185,21 +185,36 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
  * Charger une image de fond
  */
 export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille) => {
+  console.log('🔍 chargerImageFond appelée');
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/png,image/jpeg,image/jpg';
   
   input.onchange = (e) => {
     const file = e.target.files[0];
+    console.log('📁 Fichier sélectionné:', file ? file.name : 'Aucun fichier');
     if (!file) return;
     
     const reader = new FileReader();
     reader.onload = (event) => {
+      console.log('📖 Fichier lu avec succès');
       const imgUrl = event.target.result;
       
-      fabric.Image.fromURL(imgUrl, (img) => {
-        const canvas = fabricCanvasRef.current;
-        if (!canvas) return;
+      try {
+        console.log('🔄 Tentative de création de l\'image Fabric...');
+        
+        // Créer une URL temporaire pour l'image
+        const blob = new Blob([file], { type: file.type });
+        const url = URL.createObjectURL(blob);
+        
+        // Utiliser fabric.Image.fromURL avec l'URL temporaire
+        fabric.Image.fromURL(url, (img) => {
+          console.log('🖼️ Image Fabric chargée:', img);
+          const canvas = fabricCanvasRef.current;
+          if (!canvas) {
+            console.error('❌ Canvas non disponible');
+            return;
+          }
         
         if (imageFondRef.current) {
           canvas.remove(imageFondRef.current);
@@ -210,9 +225,16 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           canvas.height / img.height
         );
         
+        console.log('📏 Dimensions:', {
+          image: { width: img.width, height: img.height },
+          canvas: { width: canvas.width, height: canvas.height },
+          scale: scale,
+          center: { x: canvas.width / 2, y: canvas.height / 2 }
+        });
+        
         img.set({
-          left: 0,
-          top: 0,
+          left: canvas.width / 2,
+          top: canvas.height / 2,
           scaleX: scale,
           scaleY: scale,
           opacity: opaciteImage,
@@ -223,9 +245,9 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           evented: true,
           // S'assurer que l'image est visible
           visible: true,
-          // Positionner au centre du canvas
-          originX: 'left',
-          originY: 'top'
+          // Centrer l'image sur le canvas
+          originX: 'center',
+          originY: 'center'
         });
         
         canvas.add(img);
@@ -246,21 +268,29 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         canvas.renderAll();
         
         // Debug pour vérifier la visibilité
-        console.log('🔍 Debug Image Fond:', {
-          width: img.width,
-          height: img.height,
-          scale: scale,
-          left: img.left,
-          top: img.top,
+        console.log('Image de fond chargée:', {
+          position: { left: img.left, top: img.top },
+          scale: { x: img.scaleX, y: img.scaleY },
           opacity: img.opacity,
           visible: img.visible,
-          isImageFond: img.isImageFond,
-          canvasWidth: canvas.width,
-          canvasHeight: canvas.height
+          origin: { x: img.originX, y: img.originY },
+          canvasSize: { width: canvas.width, height: canvas.height }
         });
         
         logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scale.toFixed(2)}, opacité: ${opaciteImage})`);
-      });
+        
+        // Nettoyer l'URL temporaire
+        URL.revokeObjectURL(url);
+        
+        }, (error) => {
+          console.error('❌ Erreur lors du chargement de l\'image:', error);
+          // Nettoyer l'URL temporaire même en cas d'erreur
+          URL.revokeObjectURL(url);
+        });
+        
+      } catch (error) {
+        console.error('❌ Erreur lors de la création de l\'image:', error);
+      }
     };
     reader.readAsDataURL(file);
   };

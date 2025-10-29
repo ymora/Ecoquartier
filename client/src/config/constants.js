@@ -9,9 +9,9 @@
 /**
  * Échelle de conversion pixels/mètres
  * IMPORTANT : Utilisé à la fois en 2D et 3D pour la cohérence
- * 40 pixels = 1 mètre
+ * 30 pixels = 1 mètre (unifié avec le code 3D)
  */
-export const ECHELLE_PIXELS_PAR_METRE = 40;
+export const ECHELLE_PIXELS_PAR_METRE = 30;
 
 /**
  * Dimensions par défaut du terrain (en mètres)

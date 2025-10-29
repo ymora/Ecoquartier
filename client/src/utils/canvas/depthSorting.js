@@ -24,22 +24,40 @@ export function trierObjetsParProfondeur(canvas) {
     !obj.isSoleilIndicator
   );
   
-  // Trier par position Y (top)
-  // Les objets avec top plus petit (plus haut visuellement) doivent être en arrière
+  // Trier par zIndex d'abord, puis par position Y (top)
+  // Le terrain doit toujours rester en arrière-plan (zIndex négatif)
   objets.sort((a, b) => {
+    const zIndexA = a.zIndex || 0;
+    const zIndexB = b.zIndex || 0;
+    
+    // Si zIndex différent, trier par zIndex (terrain = -1000 en premier)
+    if (zIndexA !== zIndexB) {
+      return zIndexA - zIndexB;
+    }
+    
+    // Si même zIndex, trier par position Y (top)
     const topA = getTopPosition(a);
     const topB = getTopPosition(b);
+    
+    // Si les positions sont très proches (moins de 5px), utiliser l'ordre d'ajout
+    if (Math.abs(topA - topB) < 5) {
+      return a._id - b._id;
+    }
+    
     return topA - topB;
   });
   
-  // Réorganiser dans le canvas
-  // Utiliser sendObjectToBack de Fabric.js (méthode correcte)
+  // Réorganiser dans le canvas selon le tri
+  // Le terrain (zIndex = -1000) doit toujours être en arrière-plan
   objets.forEach((obj) => {
-    canvas.sendObjectToBack(obj);
+    if (obj.zIndex === -1000) {
+      // Terrain : toujours en arrière-plan
+      canvas.sendObjectToBack(obj);
+    } else {
+      // Autres objets : position selon leur ordre dans le tableau trié
+      canvas.bringObjectToFront(obj);
+    }
   });
-  
-  // Maintenant les objets sont triés : le premier du tableau (top le plus petit) est en arrière
-  // Les suivants se superposent progressivement
 }
 
 /**
@@ -56,18 +74,47 @@ function getTopPosition(obj) {
   return bounds.top;
 }
 
-/**
- * Obtenir la position Y la plus basse d'un objet (bas de l'objet)
- * @param {fabric.Object} obj - L'objet
- * @returns {number} - Position Y du point le plus bas
- */
-function getBottomPosition(obj) {
-  const bounds = obj.getBoundingRect();
-  return bounds.top + bounds.height;
-}
-
 // Les fonctions autoSortOnMove et disableAutoSort ont été supprimées
 // Le tri est géré manuellement dans useCanvasEvents pour éviter les doubles renderAll()
+
+/**
+ * Forcer le terrain à rester en arrière-plan
+ * @param {fabric.Canvas} canvas - Le canvas Fabric.js
+ */
+export function forcerTerrainEnArrierePlan(canvas) {
+  if (!canvas) return;
+  
+  const terrain = canvas.getObjects().find(obj => obj.customType === 'sol');
+  if (terrain) {
+    // ✅ FORCER LE TERRAIN AU FOND avec sendObjectToBack
+    canvas.sendObjectToBack(terrain);
+    
+    // ✅ S'assurer que l'image de fond reste encore plus en arrière
+    const imageFond = canvas.getObjects().find(obj => obj.isImageFond);
+    if (imageFond) {
+      canvas.sendObjectToBack(imageFond);
+    }
+    
+    // ✅ S'assurer que les zones de contraintes sont en arrière aussi
+    const zonesContraintes = canvas.getObjects().filter(obj => obj.isZoneContrainte);
+    zonesContraintes.forEach(zone => {
+      canvas.sendObjectToBack(zone);
+    });
+    
+    // ✅ Les ombres doivent être juste au-dessus des zones
+    const ombres = canvas.getObjects().filter(obj => obj.isOmbre);
+    ombres.forEach(ombre => {
+      canvas.sendObjectToBack(ombre);
+    });
+    
+    // ✅ Rendre le terrain visible mais en arrière-plan
+    terrain.set({
+      opacity: 0.7, // Légèrement transparent pour voir les objets au-dessus
+      selectable: true, // Reste sélectionnable
+      evented: true
+    });
+  }
+}
 
 /**
  * Forcer le tri immédiat de tous les objets
@@ -75,6 +122,10 @@ function getBottomPosition(obj) {
  * @param {fabric.Canvas} canvas - Le canvas
  */
 export function forcerTriObjets(canvas) {
+  // D'abord, forcer le terrain en arrière-plan
+  forcerTerrainEnArrierePlan(canvas);
+  
+  // Ensuite, trier les autres objets
   trierObjetsParProfondeur(canvas);
   
   // S'assurer que l'image de fond reste en arrière

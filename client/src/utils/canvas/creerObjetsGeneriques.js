@@ -78,6 +78,21 @@ export const creerObjetRectangulaire = (config, echelle) => {
 
   // Appliquer les propriétés de sélection standardisées
   appliquerProprietesSelection(group, type);
+  
+  // ✅ zIndex selon le type d'objet pour la gestion des profondeurs
+  const zIndexMap = {
+    'maison': 100,
+    'citerne': 90,
+    'caisson-eau': 90,
+    'terrasse': 80,
+    'paves': 80,
+    'arbre-a-planter': 70,
+    'arbre-existant': 70,
+    'cloture': 60,
+    'canalisation': 50
+  };
+  
+  group.set('zIndex', zIndexMap[type] || 50);
 
   return group;
 };
@@ -145,6 +160,21 @@ export const creerObjetCirculaire = (config, echelle) => {
 
   // Appliquer les propriétés de sélection standardisées
   appliquerProprietesSelection(group, type);
+  
+  // ✅ zIndex selon le type d'objet pour la gestion des profondeurs
+  const zIndexMap = {
+    'maison': 100,
+    'citerne': 90,
+    'caisson-eau': 90,
+    'terrasse': 80,
+    'paves': 80,
+    'arbre-a-planter': 70,
+    'arbre-existant': 70,
+    'cloture': 60,
+    'canalisation': 50
+  };
+  
+  group.set('zIndex', zIndexMap[type] || 50);
 
   return group;
 };
