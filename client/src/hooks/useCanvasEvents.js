@@ -11,6 +11,7 @@ import { createProtectedEventHandler } from '../utils/canvas/eventManager';
 import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
 import { agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
 import { forcerTerrainEnArrierePlan } from '../utils/canvas/depthSorting';
+import { canvasOperations } from '../utils/canvas/canvasOperations';
 
 /**
  * Hook pour gérer tous les event listeners du canvas
@@ -72,7 +73,7 @@ export const useCanvasEvents = ({
     // object:modified
     const handleModified = (e) => {
       canvas.getObjects().forEach(obj => {
-        if (obj.alignmentGuide) canvas.remove(obj);
+        if (obj.alignmentGuide) canvasOperations.supprimer(canvas, obj);
       });
       
       exporterPlan(canvas);
@@ -101,7 +102,7 @@ export const useCanvasEvents = ({
       forcerTriObjets(canvas);
       
       // renderAll() est appelé UNE SEULE FOIS à la fin
-      canvas.renderAll();
+      canvasOperations.rendre(canvas);
       // Debug désactivé pour performance (événement fréquent)
       // logger.debug('ObjectModified', 'Objet modifié, validation et tri OK');
     };
@@ -119,10 +120,10 @@ export const useCanvasEvents = ({
         
         if (activeObjects.length > 0) {
           activeObjects.forEach(obj => {
-            if (!obj.isGridLine && !obj.isImageFond) canvas.remove(obj);
+            if (!obj.isGridLine && !obj.isImageFond) canvasOperations.supprimer(canvas, obj);
           });
           canvas.discardActiveObject();
-          canvas.renderAll();
+          canvasOperations.rendre(canvas);
           exporterPlan(canvas);
         }
       }
@@ -143,7 +144,7 @@ export const useCanvasEvents = ({
               height: obj.height
             });
             
-            // ✅ CONDITION PLUS LARGE : Dupliquer tous les objets sauf les éléments d'interface
+            // ✅ CONDITION PLUS LARGE : Dupliquer tous les objets sauf les éléments d'interface et le terrain
             if (!obj.isGridLine && 
                 !obj.measureLabel && 
                 !obj.isBoussole && 
@@ -151,12 +152,13 @@ export const useCanvasEvents = ({
                 !obj.alignmentGuide &&
                 !obj.isDimensionBox &&
                 !obj.isAideButton &&
-                !obj.isCenterMark) {
+                !obj.isCenterMark &&
+                obj.customType !== 'sol') {
               console.log('🔧 DEBUG: Début clonage via fonction unifiée...');
               
               // ✅ UTILISER LA FONCTION UNIFIÉE
               dupliquerObjet(obj, canvas, echelle, exporterPlan, revaliderTous)
-                .then((cloned) => {
+                .then(() => {
                   console.log('🔧 DEBUG: Duplication Ctrl+D terminée!');
                 })
                 .catch((error) => {
@@ -188,7 +190,7 @@ export const useCanvasEvents = ({
             }
           });
           
-          canvas.renderAll();
+          canvasOperations.rendre(canvas);
           ajouterMesuresLive(canvas);
         }
       }
@@ -218,6 +220,11 @@ export const useCanvasEvents = ({
       if (e.target && !e.target.measureLabel && !e.target.alignmentGuide && !e.target.isGridLine) {
         ajouterMesuresLive(canvas);
         if (!e.target.isBoussole) afficherMenuContextuel(e.target, canvas);
+
+        // ✅ Agrandir le terrain EN DIRECT pendant le redimensionnement
+        if (e.target.customType !== 'sol' && onDimensionsChange) {
+          agrandirTerrainSiNecessaire(canvas, e.target, echelle, onDimensionsChange);
+        }
       }
     };
 
@@ -238,6 +245,11 @@ export const useCanvasEvents = ({
         if (e.target.customType === 'cloture') {
           deplacerClotureAvecConnexions(e.target, canvas, e);
         }
+
+        // ✅ Agrandir le terrain EN DIRECT pendant le déplacement
+        if (e.target.customType !== 'sol' && onDimensionsChange) {
+          agrandirTerrainSiNecessaire(canvas, e.target, echelle, onDimensionsChange);
+        }
       }
     };
 
@@ -246,6 +258,15 @@ export const useCanvasEvents = ({
       if (obj && !obj.isAideButton && !obj.isBoussole && !obj.isDimensionBox) {
         // ✅ FORCER LE TERRAIN EN ARRIÈRE-PLAN lors de la sélection
         forcerTerrainEnArrierePlan(canvas);
+        
+        // ✅ Si c'est le terrain qui est sélectionné, s'assurer qu'il reste au fond
+        if (obj.customType === 'sol') {
+          // Forcer le terrain au fond même quand sélectionné
+          setTimeout(() => {
+            canvas.sendObjectToBack(obj);
+            canvasOperations.rendre(canvas);
+          }, 0);
+        }
         
         afficherMenuContextuel(obj, canvas);
         if (obj.customType === 'arbre-a-planter') {
@@ -260,6 +281,15 @@ export const useCanvasEvents = ({
       if (obj && !obj.isAideButton && !obj.isBoussole && !obj.isDimensionBox) {
         // ✅ FORCER LE TERRAIN EN ARRIÈRE-PLAN lors de la mise à jour de sélection
         forcerTerrainEnArrierePlan(canvas);
+        
+        // ✅ Si c'est le terrain qui est sélectionné, s'assurer qu'il reste au fond
+        if (obj.customType === 'sol') {
+          // Forcer le terrain au fond même quand sélectionné
+          setTimeout(() => {
+            canvas.sendObjectToBack(obj);
+            canvasOperations.rendre(canvas);
+          }, 0);
+        }
         
         afficherMenuContextuel(obj, canvas);
         if (obj.customType === 'arbre-a-planter') {
@@ -280,6 +310,17 @@ export const useCanvasEvents = ({
       }
     };
 
+    // ✅ Clic sur le fond/sol/image de fond → désélectionner (permet la rotation en 3D côté sync)
+    const handleBackgroundDown = (e) => {
+      const t = e.target;
+      if (!t || t.isImageFond || t.customType === 'sol') {
+        canvas.discardActiveObject();
+        canvasOperations.rendre(canvas);
+        // On laisse le tri forcer le terrain en arrière-plan
+        forcerTerrainEnArrierePlan(canvas);
+      }
+    };
+
     // Attacher tous les event listeners
     canvas.on('object:moving', handleMovingGuides);
     canvas.on('object:moving', handleMovingWithValidation);
@@ -291,6 +332,7 @@ export const useCanvasEvents = ({
     canvas.on('selection:updated', handleSelectionUpdated);
     canvas.on('selection:cleared', handleSelectionCleared);
     canvas.on('mouse:dblclick', handleDblClick);
+    canvas.on('mouse:down', handleBackgroundDown);
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
@@ -298,7 +340,7 @@ export const useCanvasEvents = ({
       canvas.off('object:moving', handleMoving);
       canvas.off('object:moving', handleMovingGuides);
       canvas.off('object:scaling', handleScaling);
-      canvas.off('object:modified', handleMovingWithValidation);
+      canvas.off('object:modified', handleModified);
       canvas.off('object:added', handleAddedOrRemoved);
       canvas.off('object:removed', handleAddedOrRemoved);
       canvas.off('selection:created', handleSelectionCreated);
@@ -308,6 +350,7 @@ export const useCanvasEvents = ({
       
       // Nettoyer l'event listener global
       window.removeEventListener('keydown', handleKeyDown);
+      canvas.off('mouse:down', handleBackgroundDown);
     };
   }, [
     fabricCanvasRef,

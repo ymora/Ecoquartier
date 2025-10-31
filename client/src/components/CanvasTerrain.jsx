@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { FaMap, FaCube } from 'react-icons/fa';
 import * as fabric from 'fabric';
 import PanneauLateral from './PanneauLateral';
@@ -28,7 +28,6 @@ import {
 } from '../utils/canvas/creerObjets';
 
 import {
-  afficherCercleTronc as afficherCercleTroncUtils,
   cacherCercleTronc as cacherCercleTroncUtils
 } from '../utils/canvas/affichage';
 
@@ -66,8 +65,7 @@ import {
   supprimerSelection as supprimerSelectionUtils,
   verrouillerSelection as verrouillerSelectionUtils,
   effacerTout as effacerToutUtils,
-  ajouterPointIntermediaire as ajouterPointUtils,
-  trouverPositionValide as trouverPositionUtils
+  ajouterPointIntermediaire as ajouterPointUtils
 } from '../utils/canvas/actionsCanvas';
 
 // ========== IMPORTS HOOKS ==========
@@ -76,6 +74,7 @@ import { useCanvasEvents } from '../hooks/useCanvasEvents';
 import { useTimelineSync } from '../hooks/useTimelineSync';
 
 import './CanvasTerrain.css';
+import { canvasOperations } from '../utils/canvas/canvasOperations';
 
 function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete }) {
   // ========== REFS ==========
@@ -123,22 +122,20 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   }, [echelle]);
   
   // ❌ Ombres désactivées en mode 2D (uniquement en 3D)
-  
-  const afficherCercleTronc = useCallback((canvas, arbreGroup) => {
-    afficherCercleTroncUtils(canvas, arbreGroup, echelle, anneeProjection, calculerTailleSelonAnnee);
-  }, [echelle, anneeProjection, calculerTailleSelonAnnee]);
+
+  // ✅ Afficher la timeline uniquement s'il y a des arbres sur le plan
+  const hasArbres = useMemo(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return false;
+    const objs = canvas.getObjects();
+    return objs.some(o => o.customType === 'arbre-a-planter' || o.customType === 'arbre-existant');
+  }, []);
   
   const cacherCercleTronc = useCallback((canvas) => {
     cacherCercleTroncUtils(canvas);
-    canvas.getObjects().filter(obj => obj.isLigneMesure).forEach(obj => canvas.remove(obj));
-    canvas.renderAll();
+    canvas.getObjects().filter(obj => obj.isLigneMesure).forEach(obj => canvasOperations.supprimer(canvas, obj));
+    canvasOperations.rendre(canvas);
   }, []);
-  
-  // useEffect supprimé - on revient au système original
-  
-  const afficherLignesMesure = useCallback((canvas, arbreGroup) => {
-    return afficherLignesMesureUtils(canvas, arbreGroup, echelle);
-  }, [echelle]);
   
   // Menu contextuel - useCallback (SYSTÈME ORIGINAL)
   const afficherMenuContextuel = useCallback((obj, canvas) => {
@@ -188,7 +185,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       !obj.isCenterMark &&
       !obj.measureLabel
     );
-    objets.forEach(obj => canvas.remove(obj));
+    objets.forEach(obj => canvasOperations.supprimer(canvas, obj));
     
     // Effacer le localStorage pour forcer le plan par défaut
     localStorage.removeItem('planTerrain');
@@ -234,6 +231,42 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     supprimerImageUtils(fabricCanvasRef, imageFondRef, setImageFondChargee);
   };
   
+  // ✅ Obtenir l'URL de l'image de fond pour la vue 3D
+  const getImageFondUrl = useCallback(() => {
+    if (!imageFondRef.current || !imageFondChargee) return null;
+    
+    const img = imageFondRef.current;
+    // Fabric.js Image : essayer différentes méthodes pour obtenir l'URL
+    try {
+      // Méthode 1 : getSrc() (Fabric.js v5+)
+      if (typeof img.getSrc === 'function') {
+        const src = img.getSrc();
+        if (src) return src;
+      }
+      
+      // Méthode 2 : Accéder directement à _element si disponible
+      if (img._element && img._element.src) {
+        return img._element.src;
+      }
+      
+      // Méthode 3 : getElement() pour obtenir l'élément HTML
+      if (typeof img.getElement === 'function') {
+        const imgElement = img.getElement();
+        if (imgElement && imgElement.src) {
+          return imgElement.src;
+        }
+      }
+      
+      // Méthode 4 : toDataURL() comme fallback
+      if (typeof img.toDataURL === 'function') {
+        return img.toDataURL();
+      }
+    } catch (error) {
+      logger.warn('ImageFond', 'Erreur extraction URL image:', error);
+    }
+    return null;
+  }, [imageFondChargee]);
+  
   // Navigation canvas 2D et 3D
   const resetZoom = () => {
     if (mode3D) {
@@ -277,9 +310,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     ajouterPointUtils(canvas, ligne, pointer);
   }, []);
   
-  const trouverPositionValide = useCallback((canvas, arbre, largeur, hauteur, index) => {
-    return trouverPositionUtils(canvas, arbre, largeur, hauteur, index, echelle);
-  }, [echelle]);
   
   
   // Création d'objets en mode placement
@@ -387,7 +417,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         validationStatus: 'ok',
         validationMessages: [],
         tailles: taillesInitiales, // Tailles calculées
-        iconeType: '🌱' // Icône par défaut pour les jeunes arbres
+        iconeType: '🌱', // Icône par défaut pour les jeunes arbres
+        elevationSol: 0 // ✅ Par défaut, arbre au niveau du sol (peut être modifié dans Config)
       });
       
       canvas.add(arbreGroup);
@@ -401,9 +432,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   };
   
   
-  const ajouterGrille = (canvas) => creerGrille(canvas, echelle);
-  const ajouterBoussole = (canvas) => creerBoussole(canvas, orientation, onOrientationChange, echelle);
-  const ajouterIndicateurSud = (canvas) => creerIndicateurSud(canvas, orientation, onOrientationChange, echelle, saison, heureJournee);
+  const ajouterGrille = useCallback((canvas) => creerGrille(canvas, echelle), [echelle]);
+  const ajouterBoussole = useCallback((canvas) => creerBoussole(canvas, orientation, onOrientationChange, echelle), [orientation, onOrientationChange, echelle]);
+  const ajouterIndicateurSud = useCallback((canvas) => creerIndicateurSud(canvas, orientation, onOrientationChange, echelle, saison, heureJournee), [orientation, onOrientationChange, echelle, saison, heureJournee]);
 
   // ========== HOOKS PERSONNALISÉS ==========
   
@@ -657,7 +688,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     
     // Resynchroniser vers la 3D après un court délai
     setTimeout(() => throttledSync(), 150);
-  }, [throttledSync]);
+  }, [throttledSync, onDimensionsChange, echelle]);
   
   // ✅ Callback pour sélectionner un objet depuis la 3D
   const handleObjetSelection3D = useCallback((objetData) => {
@@ -772,7 +803,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     };
     
     // Déposer l'objet au clic
-    const handleMouseDown = (e) => {
+    const handleMouseDown = () => {
       if (firstClick) {
         firstClick = false;
         return;
@@ -811,23 +842,24 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       canvas.off('mouse:down', handleMouseDown);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [objetEnPlacement, exporterPlan, revaliderTous]);
+  }, [objetEnPlacement, exporterPlan, revaliderTous, onDimensionsChange]);
 
   // ========== JSX ==========
 
   return (
     <div className="canvas-terrain-container">
-      {/* Bouton toggle timeline */}
+      {/* Bouton toggle timeline (désactivé s'il n'y a pas d'arbres) */}
       <button 
-        className="timeline-toggle-btn"
-        onClick={() => setTimelineVisible(!timelineVisible)}
-        title={timelineVisible ? 'Masquer la projection temporelle' : 'Afficher la projection temporelle'}
+        className={`timeline-toggle-btn ${!hasArbres ? 'disabled' : ''}`}
+        onClick={() => hasArbres && setTimelineVisible(!timelineVisible)}
+        title={hasArbres ? (timelineVisible ? 'Masquer la projection temporelle' : 'Afficher la projection temporelle') : 'Ajoutez un arbre pour activer la projection'}
+        disabled={!hasArbres}
       >
-        {timelineVisible ? '📅 Masquer' : '📅 Projection'}
+        {timelineVisible && hasArbres ? '📅 Masquer' : '📅 Projection'}
       </button>
 
       {/* Timeline de croissance (slider temporel) - EN BAS, DÉPLAÇABLE */}
-      {timelineVisible && (
+      {timelineVisible && hasArbres && (
       <div className="timeline-croissance">
         {/* Handle de déplacement */}
         <div 
@@ -1015,6 +1047,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
           exporterPlan={exporterPlan}
           revaliderTous={revaliderTous}
           contextMenuRef2D={contextMenuRef}
+          imageFondUrl={getImageFondUrl()}
+          opaciteImageFond={opaciteImage}
         />
             </div>
           </Suspense>
@@ -1078,19 +1112,20 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
                       !actif.alignmentGuide &&
                       !actif.isDimensionBox &&
                       !actif.isAideButton &&
-                      !actif.isCenterMark) {
+                      !actif.isCenterMark &&
+                      actif.customType !== 'sol') {
                     console.log('🔧 DEBUG: Duplication via bouton modal');
                     
-                    // ✅ DUPLICATION DIRECTE
+                    // ✅ UTILISER LA FONCTION UNIFIÉE
                     try {
-                      const objetDuplique = fabric.util.object.clone(actif);
-                      objetDuplique.set({
-                        left: actif.left + 20,
-                        top: actif.top + 20
-                      });
-                      fabricCanvasRef.current.add(objetDuplique);
-                      fabricCanvasRef.current.setActiveObject(objetDuplique);
-                      fabricCanvasRef.current.renderAll();
+                      const { dupliquerObjet } = await import('../utils/canvas/duplicationUtils');
+                      await dupliquerObjet(
+                        actif, 
+                        fabricCanvasRef.current, 
+                        echelle, 
+                        exporterPlan, 
+                        revaliderTous
+                      );
                       console.log('🔧 DEBUG: Duplication bouton modal terminée!');
                     } catch (error) {
                       console.error('🔧 DEBUG: Erreur lors de la duplication bouton modal:', error);

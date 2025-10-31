@@ -165,7 +165,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
       });
       
       return validImages;
-    } catch (error) {
+    } catch {
       // Erreur chargement images - images par défaut utilisées
       return [];
     }

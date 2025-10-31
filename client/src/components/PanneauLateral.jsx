@@ -8,8 +8,9 @@ import {
   highlightSelection, 
   unhighlightSelection 
 } from '../utils/canvas/highlightUtils';
-import { mettreAJourCouchesSol, selectionnerTerrainParDessous } from '../utils/canvas/terrainUtils';
+import { mettreAJourCouchesSol } from '../utils/canvas/terrainUtils';
 import { chargerPlanJSONAvecExplorateur } from '../utils/fileLoader';
+import { canvasOperations } from '../utils/canvas/canvasOperations';
 
 /**
  * Panneau latéral avec onglets pour outils et configuration
@@ -18,13 +19,10 @@ function PanneauLateral({
   canvas,
   couchesSol,
   onCouchesSolChange,
-  dimensions,
   echelle = 30, // Échelle par défaut (30 pixels = 1 mètre)
   onDimensionsChange,
   imageFondChargee,
   opaciteImage,
-  solTransparent,
-  onSolTransparentChange,
   onAjouterMaison,
   onAjouterTerrasse,
   onAjouterPaves,
@@ -40,21 +38,17 @@ function PanneauLateral({
   onChargerImageFond,
   onAjusterOpaciteImage,
   onSupprimerImageFond,
-  onResetZoom,
   onExporterPlan,
   onExporterComplet,
   onAjouterArbrePlante,
-  onRetirerArbrePlante,
   onSyncKeyChange,
   ongletActifExterne = null
 }) {
   const [ongletActif, setOngletActif] = useState('outils');
   const [objetSelectionne, setObjetSelectionne] = useState(null);
-  const [arbreSelectionne, setArbreSelectionne] = useState(plantesData[0].id);
   const [arbresOuvert, setArbresOuvert] = useState(false);
   const [arbustesOuvert, setArbustesOuvert] = useState(false);
   const [batimentsOuvert, setBatimentsOuvert] = useState(false);
-  const [forceUpdate, setForceUpdate] = useState(0);
   const [reseauxOuvert, setReseauxOuvert] = useState(false);
   const [actionsOuvert, setActionsOuvert] = useState(false);
   const [surPlanOuvert, setSurPlanOuvert] = useState(true); // Ouvert par défaut
@@ -62,11 +56,7 @@ function PanneauLateral({
   // États pour sections repliables dans Config
   const [dimensionsOuvert, setDimensionsOuvert] = useState(true);
   const [positionOuvert, setPositionOuvert] = useState(true);
-  const [profondeursOuvert, setProfondeursOuvert] = useState(true);
   const [toitOuvert, setToitOuvert] = useState(true);
-  
-  // État pour forcer le re-render des dimensions
-  const [dimensionUpdate, setDimensionUpdate] = useState(0);
   
   // Ref pour stocker l'objet précédemment sélectionné (évite boucle infinie)
   const objetSelectionnePrecedentRef = useRef(null);
@@ -151,43 +141,6 @@ function PanneauLateral({
     }
   };
   
-  const creerBoutonAction = (onClick, texte, couleur = '#333', estDanger = false) => (
-    <button 
-      onClick={onClick}
-      style={{
-        ...styles.boutonListeDernier,
-        color: estDanger ? '#f44336' : couleur,
-        borderBottom: '1px solid #f0f0f0'
-      }}
-      onMouseEnter={(e) => e.currentTarget.style.background = estDanger ? '#ffebee' : '#f1f8e9'}
-      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-    >
-      {texte}
-    </button>
-  );
-  
-  const creerBoutonOutil = (onClick, icone, texte, titre, estDernier = false) => (
-    <button 
-      onClick={onClick}
-      title={titre}
-      style={estDernier ? styles.boutonListeDernier : styles.boutonListe}
-      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-    >
-      {icone} {texte}
-    </button>
-  );
-  
-  const creerEnTeteSection = (ouvert, setOuvert, titre, couleur) => (
-    <button
-      onClick={() => setOuvert(!ouvert)}
-      style={styles.boutonSection(ouvert, couleur)}
-    >
-      <span>{titre}</span>
-      <span style={{ fontSize: '1rem' }}>{ouvert ? '▼' : '▶'}</span>
-    </button>
-  );
-  
   // Gérer la sélection d'objets
   useEffect(() => {
     if (!canvas) return;
@@ -249,6 +202,56 @@ function PanneauLateral({
         const numValue = parseFloat(value);
         if (isNaN(numValue)) return;
         objetSelectionne.set({ [prop]: numValue });
+        
+        // ✅ Mettre à jour les dimensions visuelles pour les objets rectangulaires
+        if ((prop === 'largeur' || prop === 'profondeur') && 
+            (objetSelectionne.customType === 'maison' || 
+             objetSelectionne.customType === 'terrasse' || 
+             objetSelectionne.customType === 'paves' || 
+             objetSelectionne.customType === 'caisson-eau')) {
+          
+          // Objets rectangulaires = Groups avec un rect interne
+          // Essayer plusieurs méthodes pour trouver le rect
+          let rect = null;
+          if (objetSelectionne._objects) {
+            rect = objetSelectionne._objects.find(o => o.type === 'rect');
+          }
+          if (!rect && objetSelectionne.getObjects) {
+            rect = objetSelectionne.getObjects().find(o => o.type === 'rect');
+          }
+          
+          if (rect) {
+            // Récupérer les dimensions depuis l'objet (déjà mises à jour par set() plus haut)
+            const largeur = objetSelectionne.largeur || 5;
+            const profondeur = objetSelectionne.profondeur || 3;
+            
+            // Mettre à jour les dimensions du rectangle interne en pixels
+            rect.set({
+              width: largeur * echelle,
+              height: profondeur * echelle,
+              originX: 'center',
+              originY: 'center'
+            });
+            
+            // Mettre à jour aussi l'icône si nécessaire (pour qu'elle reste proportionnelle)
+            const texte = objetSelectionne._objects?.find(o => o.type === 'text') || 
+                          (objetSelectionne.getObjects ? objetSelectionne.getObjects().find(o => o.type === 'text') : null);
+            if (texte) {
+              const tailleIcone = Math.min(largeur * echelle, profondeur * echelle) * 0.4;
+              texte.set({
+                fontSize: Math.max(tailleIcone, 24),
+                originX: 'center',
+                originY: 'center'
+              });
+            }
+            
+            // Forcer le recalcul des bounds du Group
+            if (objetSelectionne._calcBounds) {
+              objetSelectionne._calcBounds();
+            }
+            objetSelectionne.setCoords();
+          }
+        }
       }
       
       objetSelectionne.setCoords();
@@ -442,7 +445,7 @@ function PanneauLateral({
         }
       }
       
-      setDimensionUpdate(prev => prev + 1);
+      // Force la mise à jour visuelle des dimensions
     };
     
     return renderNumberInput(label, getValue(), handleChange, min, max, step, 'm');
@@ -753,20 +756,71 @@ function PanneauLateral({
                             {/* Orientation pour monopente */}
                             {objetSelectionne.typeToit === 'monopente' && (
                               <div style={{ marginTop: '0.5rem' }}>
-                                {renderNumberInput(
-                                  'Orientation de la pente',
-                                  (objetSelectionne.orientationToit || 0).toString(),
-                                  (e) => updateObjetProp('orientationToit', e.target.value),
-                                  0, 360, 90, '°',
-                                  (value) => {
-                                    const deg = parseInt(value);
-                                    if (deg === 0) return 'Nord (0°)';
-                                    if (deg === 90) return 'Est (90°)';
-                                    if (deg === 180) return 'Sud (180°)';
-                                    if (deg === 270) return 'Ouest (270°)';
-                                    return `${deg}°`;
-                                  }
-                                )}
+                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                  Orientation de la pente
+                                </label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                  <button
+                                    onClick={() => {
+                                      const currentOrientation = (objetSelectionne.orientationToit || 0);
+                                      const newOrientation = (currentOrientation - 90 + 360) % 360;
+                                      updateObjetProp('orientationToit', newOrientation.toString());
+                                    }}
+                                    style={{
+                                      padding: '0.5rem 0.8rem',
+                                      background: '#2196f3',
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '4px',
+                                      cursor: 'pointer',
+                                      fontSize: '1rem',
+                                      fontWeight: 'bold',
+                                      minWidth: '40px'
+                                    }}
+                                    title="Diminuer de 90°"
+                                  >
+                                    -
+                                  </button>
+                                  <div style={{
+                                    padding: '0.5rem 1rem',
+                                    background: '#f5f5f5',
+                                    border: '1px solid #ddd',
+                                    borderRadius: '4px',
+                                    minWidth: '120px',
+                                    textAlign: 'center',
+                                    fontWeight: 'bold'
+                                  }}>
+                                    {(() => {
+                                      const deg = parseInt(objetSelectionne.orientationToit || 0);
+                                      if (deg === 0) return 'Nord (0°)';
+                                      if (deg === 90) return 'Est (90°)';
+                                      if (deg === 180) return 'Sud (180°)';
+                                      if (deg === 270) return 'Ouest (270°)';
+                                      return `${deg}°`;
+                                    })()}
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      const currentOrientation = (objetSelectionne.orientationToit || 0);
+                                      const newOrientation = (currentOrientation + 90) % 360;
+                                      updateObjetProp('orientationToit', newOrientation.toString());
+                                    }}
+                                    style={{
+                                      padding: '0.5rem 0.8rem',
+                                      background: '#2196f3',
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '4px',
+                                      cursor: 'pointer',
+                                      fontSize: '1rem',
+                                      fontWeight: 'bold',
+                                      minWidth: '40px'
+                                    }}
+                                    title="Augmenter de 90°"
+                                  >
+                                    +
+                                  </button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1200,8 +1254,8 @@ function PanneauLateral({
                       onClick={() => {
                         // Supprimer l'arbre du canvas
                         if (canvas) {
-                          canvas.remove(objetSelectionne);
-                          canvas.renderAll();
+                          canvasOperations.supprimer(canvas, objetSelectionne);
+                          canvasOperations.rendre(canvas);
                           if (onExporterPlan) {
                             setTimeout(() => onExporterPlan(canvas), 100);
                           }
@@ -1715,8 +1769,8 @@ function PanneauLateral({
                           </span>
           <button 
                             onClick={() => {
-                              canvas.remove(obj);
-                              canvas.renderAll();
+                              canvasOperations.supprimer(canvas, obj);
+                              canvasOperations.rendre(canvas);
                               onExporterPlan && onExporterPlan(canvas);
                             }}
                             style={{

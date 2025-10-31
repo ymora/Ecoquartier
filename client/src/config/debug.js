@@ -4,6 +4,7 @@
  */
 
 // Flag de debug global
+// eslint-disable-next-line no-undef
 export const DEBUG = (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') || 
                     localStorage.getItem('debug') === 'true';
 

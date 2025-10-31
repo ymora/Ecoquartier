@@ -6,6 +6,7 @@
  */
 
 import * as fabric from 'fabric';
+import { canvasOperations } from './canvasOperations';
 import { 
   creerMaisonObjet,
   creerCaissonEauObjet, 
@@ -41,7 +42,7 @@ export const chargerPlanFromJSON = async (canvas, echelle, ajouterGrille, planFi
       !obj.isImageFond &&
       !obj.isCenterMark
     );
-    objets.forEach(obj => canvas.remove(obj));
+  objets.forEach(obj => canvasOperations.supprimer(canvas, obj));
     
     // Charger chaque objet en utilisant les fonctions existantes
     for (const objet of planData.objets) {
@@ -51,7 +52,7 @@ export const chargerPlanFromJSON = async (canvas, echelle, ajouterGrille, planFi
     // Re-ajouter la grille
     if (ajouterGrille) ajouterGrille(canvas);
     
-    canvas.renderAll();
+  canvasOperations.rendre(canvas);
     
     logger.info('PlanLoader', `✅ Plan JSON chargé (${planData.objets.length} objets)`);
     
@@ -130,7 +131,7 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       }
       // ✅ TERRAIN : Ne pas repositionner car il est déjà centré
       // Le terrain est créé centré à (0,0) dans creerObjetTerrain
-      canvas.add(objet);
+      canvasOperations.ajouter(canvas, objet);
       return; // Sortir sans repositionner
     }
       
@@ -151,7 +152,7 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       top: pos[1]
     });
     
-    canvas.add(objet);
+    canvasOperations.ajouter(canvas, objet);
   }
 };
 
@@ -180,7 +181,7 @@ export const chargerPlanDepuisFichier = async (canvas, echelle, ajouterGrille, f
       !obj.isImageFond &&
       !obj.isCenterMark
     );
-    objets.forEach(obj => canvas.remove(obj));
+  objets.forEach(obj => canvasOperations.supprimer(canvas, obj));
     
     // Charger chaque objet
     for (const objet of planData.objets) {
@@ -190,7 +191,7 @@ export const chargerPlanDepuisFichier = async (canvas, echelle, ajouterGrille, f
     // Re-ajouter la grille
     if (ajouterGrille) ajouterGrille(canvas);
     
-    canvas.renderAll();
+  canvasOperations.rendre(canvas);
     
     logger.info('PlanLoader', `✅ Plan chargé depuis fichier (${planData.objets.length} objets)`);
     

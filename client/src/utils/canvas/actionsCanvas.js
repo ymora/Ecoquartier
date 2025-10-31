@@ -6,6 +6,7 @@
 import * as fabric from 'fabric';
 import logger from '../logger';
 import { calculerDistanceRectangle, calculerDistanceLigne } from './canvasHelpers';
+import { canvasOperations } from './canvasOperations';
 
 /**
  * Supprimer la sélection active
@@ -21,11 +22,10 @@ export const supprimerSelection = (canvas, exporterPlanCallback) => {
     return;
   }
   
-  actifs.forEach(obj => {
-    if (!obj.isGridLine && !obj.isImageFond) canvas.remove(obj);
-  });
-  canvas.discardActiveObject();
-  canvas.renderAll();
+  // ✅ Utiliser canvasOperations pour supprimer les objets
+  const objetsASupprimer = actifs.filter(obj => !obj.isGridLine && !obj.isImageFond);
+  canvasOperations.supprimerMultiples(canvas, objetsASupprimer, false);
+  canvasOperations.deselectionner(canvas, true);
   exporterPlanCallback(canvas);
 };
 
@@ -64,8 +64,7 @@ export const verrouillerSelection = (canvas) => {
     }
   });
   
-  canvas.discardActiveObject();
-  canvas.renderAll();
+  canvasOperations.deselectionner(canvas, true);
   logger.info('VerrouSelection', `${actifs.length} objet(s) verrouillé(s)`);
 };
 
@@ -101,7 +100,7 @@ export const deverrouillerTout = (canvas) => {
     }
   });
   
-  canvas.renderAll();
+  canvasOperations.rendre(canvas);
   if (count > 0) {
     logger.info('DeverrouillerTout', `${count} objet(s) déverrouillé(s)`);
   } else {
@@ -120,8 +119,8 @@ export const effacerTout = (canvas, exporterPlanCallback) => {
   }
   
   const objets = canvas.getObjects().filter(obj => !obj.isGridLine && !obj.isBoussole && !obj.isImageFond);
-  objets.forEach(obj => canvas.remove(obj));
-  canvas.renderAll();
+  // ✅ Utiliser canvasOperations pour supprimer
+  canvasOperations.supprimerMultiples(canvas, objets, true);
   
   localStorage.removeItem('planTerrain');
   exporterPlanCallback(canvas);
@@ -171,9 +170,11 @@ export const ajouterPointIntermediaire = (canvas, ligne, pointer) => {
     customType: `${ligne.customType}-point`
   });
   
-  canvas.remove(ligne);
-  canvas.add(ligne1, ligne2, point);
-  canvas.renderAll();
+  // ✅ Utiliser canvasOperations pour ajouter/supprimer
+  canvasOperations.supprimer(canvas, ligne, false);
+  canvasOperations.ajouter(canvas, ligne1, false);
+  canvasOperations.ajouter(canvas, ligne2, false);
+  canvasOperations.ajouter(canvas, point, true);
   
   logger.info('PointIntermediaire', `Point ajouté sur ${ligne.customType}`);
 };
@@ -293,8 +294,8 @@ export const creerPlanParDefaut = (canvas, dimensions, echelle) => {
     evented: false
   });
 
-  canvas.add(cadre);
-  canvas.renderAll();
+  // ✅ Utiliser canvasOperations pour ajouter
+  canvasOperations.ajouter(canvas, cadre, true);
   
   logger.info('PlanDefaut', `Créé: ${dimensions.largeur}×${dimensions.hauteur}m`);
 };

@@ -59,6 +59,14 @@ function Sol3D({
         position={[0, 0.07, 0]} 
         receiveShadow
         onClick={handleTerrainClick}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'pointer';
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'auto';
+        }}
       >
         <planeGeometry args={[largeur, hauteur]} />
         <meshStandardMaterial 

@@ -4,8 +4,6 @@ function Citerne3D({
   position = [0, 0, 0], 
   diametre = 1.5,
   longueur = 2.5,
-  hauteur = 1.5,
-  volume = 3000,
   elevationSol = -2.5,
   onClick = null
 }) {

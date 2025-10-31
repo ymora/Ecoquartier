@@ -6,6 +6,7 @@
 
 import * as fabric from 'fabric';
 import logger from '../logger';
+import { canvasOperations } from './canvasOperations';
 
 /**
  * Créer un objet terrain sélectionnable pour afficher les couches de sol
@@ -47,16 +48,17 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   });
   
   // Ajouter un label pour identifier le terrain
+  // ✅ Positionner le label à l'intérieur du rectangle pour éviter d'agrandir la zone de sélection
   const label = new fabric.Text('TERRAIN', {
     left: 0,
-    top: 0,
-    fontSize: 16,
+    top: -hauteur / 4, // Positionner vers le haut du rectangle (mais à l'intérieur)
+    fontSize: Math.min(16, hauteur / 8), // Taille adaptative selon la hauteur
     fill: '#1976d2',
     fontWeight: 'bold',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false
+    evented: false // Le label ne doit pas être cliquable pour ne pas agrandir la zone
   });
   
   // Grouper le terrain et le label
@@ -74,6 +76,9 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     lockRotation: true,
     // ✅ TERRAIN EN ARRIÈRE-PLAN - zIndex très bas pour rester sous tous les objets
     zIndex: -1000,
+    // ✅ Limiter la zone de sélection au rectangle du terrain uniquement (sans le label)
+    // Utiliser un padding négatif pour réduire la zone de sélection aux dimensions du terrain
+    padding: 0, // Pas de padding supplémentaire
     // Propriétés pour les couches de sol
     couchesSol: [
       { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
@@ -83,6 +88,10 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     validationStatus: 'ok',
     validationMessages: []
   });
+  
+  // ✅ Limiter la zone de sélection en utilisant _setCornerCoords qui force les dimensions
+  // Forcer les coordonnées après la création du groupe
+  terrainGroup.setCoords();
   
   logger.info('Terrain', 'Objet terrain créé et sélectionnable');
   
@@ -107,7 +116,7 @@ export const ajouterTerrainAuCanvas = (canvas, echelle, dimensions) => {
   
   // Créer et ajouter le terrain
   const terrain = creerObjetTerrain(echelle, dimensions);
-  canvas.add(terrain);
+  canvasOperations.ajouter(canvas, terrain);
   
   // Envoyer le terrain au fond mais le rendre sélectionnable par-dessous
   canvas.sendObjectToBack(terrain);
@@ -124,7 +133,24 @@ export const ajouterTerrainAuCanvas = (canvas, echelle, dimensions) => {
     // Permettre la sélection même quand d'autres objets sont au-dessus
     excludeFromExport: false,
     // Z-index négatif pour être en arrière-plan mais sélectionnable
-    zIndex: -1000
+    zIndex: -1000,
+    // ✅ Réduire le padding pour que la zone de sélection corresponde exactement au rectangle
+    padding: 0
+  });
+  
+  // ✅ Gestionnaires pour maintenir le terrain en arrière-plan même quand sélectionné
+  terrain.on('selected', () => {
+    // Forcer le terrain à rester au fond immédiatement après sélection
+    setTimeout(() => {
+      canvas.sendObjectToBack(terrain);
+      canvasOperations.rendre(canvas);
+    }, 0);
+  });
+  
+  // ✅ Gestionnaire pour maintenir le terrain en arrière-plan quand les contrôles sont affichés
+  terrain.on('moving', () => {
+    // Même en mouvement, le terrain doit rester en arrière-plan
+    canvas.sendObjectToBack(terrain);
   });
   
   // Ajouter un événement de clic pour faciliter la sélection
@@ -132,7 +158,9 @@ export const ajouterTerrainAuCanvas = (canvas, echelle, dimensions) => {
     // Ne sélectionner que si on clique directement sur le terrain (pas sur un objet au-dessus)
     if (e.target === terrain) {
       canvas.setActiveObject(terrain);
-      canvas.renderAll();
+      // ✅ Forcer immédiatement le terrain au fond après sélection
+      canvas.sendObjectToBack(terrain);
+      canvasOperations.rendre(canvas);
       logger.info('Terrain', '✅ Terrain sélectionné par clic direct');
     }
   });
@@ -141,12 +169,14 @@ export const ajouterTerrainAuCanvas = (canvas, echelle, dimensions) => {
   terrain.on('mouseup', (e) => {
     if (e.e && e.e.button === 2) { // Clic droit
       canvas.setActiveObject(terrain);
-      canvas.renderAll();
+      // ✅ Forcer immédiatement le terrain au fond après sélection
+      canvas.sendObjectToBack(terrain);
+      canvasOperations.rendre(canvas);
       logger.info('Terrain', '✅ Terrain sélectionné par clic droit');
     }
   });
   
-  canvas.renderAll();
+  canvasOperations.rendre(canvas);
   
   logger.info('Terrain', '✅ Terrain ajouté au canvas et sélectionnable');
   logger.info('Terrain', `📏 Dimensions: ${dimensions.largeur}m x ${dimensions.hauteur}m`);
@@ -177,7 +207,7 @@ export const selectionnerTerrain = (canvas) => {
   const terrain = canvas.getObjects().find(obj => obj.customType === 'sol');
   if (terrain) {
     canvas.setActiveObject(terrain);
-    canvas.renderAll();
+    canvasOperations.rendre(canvas);
     logger.info('Terrain', '✅ Terrain sélectionné');
     return terrain;
   } else {
@@ -220,7 +250,7 @@ export const selectionnerTerrainParDessous = (canvas, x, y) => {
     // Si pas d'objet au-dessus, sélectionner le terrain
     if (objetsAuDessus.length === 0) {
       canvas.setActiveObject(terrain);
-      canvas.renderAll();
+      canvasOperations.rendre(canvas);
       logger.info('Terrain', '✅ Terrain sélectionné par-dessous');
       return terrain;
     }
@@ -234,92 +264,158 @@ export const selectionnerTerrainParDessous = (canvas, x, y) => {
  * @param {number} echelle - Échelle du plan
  * @param {Function} onDimensionsChange - Callback pour mettre à jour les dimensions
  */
+// ✅ Cache pour éviter les recalculs inutiles
+let terrainResizeCache = {
+  lastCheck: 0,
+  lastBounds: null,
+  resizeTimer: null
+};
+
+/**
+ * Ajuster automatiquement la taille du terrain (agrandir ou rétrécir) - VERSION OPTIMISÉE
+ * pour que tous les objets restent à l'intérieur avec 2m de marge
+ * Utilise un debounce pour éviter les recalculs trop fréquents
+ */
 export const agrandirTerrainSiNecessaire = (canvas, objet, echelle, onDimensionsChange) => {
-  if (!canvas || !objet || !onDimensionsChange) return;
+  if (!canvas || !onDimensionsChange) return;
   
+  // ✅ Debounce : ne recalculer que toutes les 300ms maximum
+  if (terrainResizeCache.resizeTimer) {
+    clearTimeout(terrainResizeCache.resizeTimer);
+  }
+  
+  terrainResizeCache.resizeTimer = setTimeout(() => {
+    _calculerEtRedimensionnerTerrain(canvas, echelle, onDimensionsChange);
+  }, 300); // Debounce de 300ms
+};
+
+/**
+ * Fonction interne optimisée pour le calcul et redimensionnement
+ */
+const _calculerEtRedimensionnerTerrain = (canvas, echelle, onDimensionsChange) => {
   const terrain = canvas.getObjects().find(obj => obj.customType === 'sol');
   if (!terrain) return;
   
-  // Calculer les limites actuelles du terrain
+  // ✅ Cache : éviter les recalculs si rien n'a changé (vérification rapide)
   const terrainBounds = terrain.getBoundingRect();
-  const terrainLeft = terrainBounds.left;
-  const terrainRight = terrainBounds.left + terrainBounds.width;
-  const terrainTop = terrainBounds.top;
-  const terrainBottom = terrainBounds.top + terrainBounds.height;
+  const terrainHash = `${terrainBounds.width.toFixed(1)}_${terrainBounds.height.toFixed(1)}_${terrainBounds.left.toFixed(1)}_${terrainBounds.top.toFixed(1)}`;
   
-  // Calculer les limites de l'objet
-  const objetBounds = objet.getBoundingRect();
-  const objetLeft = objetBounds.left;
-  const objetRight = objetBounds.left + objetBounds.width;
-  const objetTop = objetBounds.top;
-  const objetBottom = objetBounds.top + objetBounds.height;
-  
-  // Vérifier si l'objet sort du terrain
-  let nouveauLeft = terrainLeft;
-  let nouveauTop = terrainTop;
-  let nouvelleLargeur = terrainBounds.width;
-  let nouvelleHauteur = terrainBounds.height;
-  
-  let terrainModifie = false;
-  
-  // Vérifier les limites avec marge de 2m (60 pixels à l'échelle 30)
-  const marge = 2 * echelle; // 2 mètres en pixels
-  
-  if (objetLeft < terrainLeft + marge) {
-    const extension = (terrainLeft + marge) - objetLeft;
-    nouveauLeft = terrainLeft - extension;
-    nouvelleLargeur = terrainBounds.width + extension;
-    terrainModifie = true;
+  if (terrainResizeCache.lastBounds === terrainHash && Date.now() - terrainResizeCache.lastCheck < 500) {
+    return; // Pas besoin de recalculer
   }
   
-  if (objetRight > terrainRight - marge) {
-    const extension = objetRight - (terrainRight - marge);
-    nouvelleLargeur = terrainBounds.width + extension;
-    terrainModifie = true;
-  }
+  terrainResizeCache.lastCheck = Date.now();
   
-  if (objetTop < terrainTop + marge) {
-    const extension = (terrainTop + marge) - objetTop;
-    nouveauTop = terrainTop - extension;
-    nouvelleHauteur = terrainBounds.height + extension;
-    terrainModifie = true;
-  }
-  
-  if (objetBottom > terrainBottom - marge) {
-    const extension = objetBottom - (terrainBottom - marge);
-    nouvelleHauteur = terrainBounds.height + extension;
-    terrainModifie = true;
-  }
-  
-  if (terrainModifie) {
-    // Mettre à jour le terrain
-    terrain.set({
-      left: nouveauLeft,
-      top: nouveauTop,
-      width: nouvelleLargeur,
-      height: nouvelleHauteur
-    });
-    
-    // Mettre à jour le label du terrain
-    const label = terrain.getObjects ? terrain.getObjects().find(obj => obj.type === 'text') : null;
-    if (label) {
-      label.set({
-        left: nouveauLeft + nouvelleLargeur / 2,
-        top: nouveauTop + nouvelleHauteur / 2
-      });
+  // ✅ Calcul optimisé : obtenir tous les objets une seule fois
+  const tousObjets = canvas.getObjects();
+  const objets = [];
+  for (let i = 0; i < tousObjets.length; i++) {
+    const obj = tousObjets[i];
+    if (obj.customType !== 'sol' &&
+        !obj.isGridLine && 
+        !obj.measureLabel && 
+        !obj.isBoussole && 
+        !obj.isImageFond &&
+        !obj.alignmentGuide &&
+        !obj.isDimensionBox &&
+        !obj.isAideButton &&
+        !obj.isCenterMark) {
+      objets.push(obj);
     }
+  }
+  
+  if (objets.length === 0) {
+    return;
+  }
+  
+  // ✅ Calcul optimisé des bounds (une seule passe)
+  const marge = 2 * echelle; // 2 mètres en pixels
+  let minLeft = Infinity, maxRight = -Infinity, minTop = Infinity, maxBottom = -Infinity;
+  
+  for (let i = 0; i < objets.length; i++) {
+    const bounds = objets[i].getBoundingRect();
+    const right = bounds.left + bounds.width;
+    const bottom = bounds.top + bounds.height;
     
-    terrain.setCoords();
-    canvas.renderAll();
+    if (bounds.left < minLeft) minLeft = bounds.left;
+    if (right > maxRight) maxRight = right;
+    if (bounds.top < minTop) minTop = bounds.top;
+    if (bottom > maxBottom) maxBottom = bottom;
+  }
+  
+  // Ajouter la marge de 2m de chaque côté
+  const requiredLeft = minLeft - marge;
+  const requiredRight = maxRight + marge;
+  const requiredTop = minTop - marge;
+  const requiredBottom = maxBottom + marge;
+  
+  // Dimensions requises en pixels
+  const requiredWidth = requiredRight - requiredLeft;
+  const requiredHeight = requiredBottom - requiredTop;
+  
+  // Convertir en mètres
+  const requiredLargeurM = requiredWidth / echelle;
+  const requiredHauteurM = requiredHeight / echelle;
+  
+  // Calculer le centre requis
+  const requiredCentreX = (requiredLeft + requiredRight) / 2;
+  const requiredCentreY = (requiredTop + requiredBottom) / 2;
+  
+  // Dimensions actuelles du terrain
+  const currentWidth = terrainBounds.width;
+  const currentHeight = terrainBounds.height;
+  const currentCentreX = terrainBounds.left + currentWidth / 2;
+  const currentCentreY = terrainBounds.top + currentHeight / 2;
+  
+  // Convertir en mètres pour comparaison
+  const currentLargeurM = currentWidth / echelle;
+  const currentHauteurM = currentHeight / echelle;
+  
+  // ✅ Vérifier si un ajustement est nécessaire (avec tolérance de 0.2m pour éviter les micro-ajustements)
+  const tolérance = 0.2; // 20 cm (augmenté pour réduire les recalculs)
+  const largeurDoitChanger = Math.abs(requiredLargeurM - currentLargeurM) > tolérance;
+  const hauteurDoitChanger = Math.abs(requiredHauteurM - currentHauteurM) > tolérance;
+  const centreDoitChanger = Math.abs(requiredCentreX - currentCentreX) > 10 || Math.abs(requiredCentreY - currentCentreY) > 10;
+  
+  if (largeurDoitChanger || hauteurDoitChanger || centreDoitChanger) {
+    // Utiliser les dimensions requises (elles sont toujours suffisantes)
+    const newLargeurM = Math.max(requiredLargeurM, 10); // Minimum 10m
+    const newHauteurM = Math.max(requiredHauteurM, 10); // Minimum 10m
     
-    // Convertir en mètres et notifier le changement
-    const nouvellesDimensions = {
-      largeur: nouvelleLargeur / echelle,
-      hauteur: nouvelleHauteur / echelle
-    };
-    
+    // Supprimer l'ancien terrain et recréer avec la nouvelle taille
+    const oldActive = canvas.getActiveObject() === terrain;
+    canvasOperations.supprimer(canvas, terrain, false);
+
+    const nouveauTerrain = creerObjetTerrain(echelle, { largeur: newLargeurM, hauteur: newHauteurM });
+    nouveauTerrain.set({ 
+      left: requiredCentreX, 
+      top: requiredCentreY, 
+      originX: 'center', 
+      originY: 'center' 
+    });
+
+    canvasOperations.ajouter(canvas, nouveauTerrain, false);
+    canvas.sendObjectToBack(nouveauTerrain);
+    canvasOperations.rendre(canvas);
+
+    if (oldActive) {
+      canvas.setActiveObject(nouveauTerrain);
+    }
+
+    const nouvellesDimensions = { largeur: newLargeurM, hauteur: newHauteurM };
     onDimensionsChange(nouvellesDimensions);
     
-    logger.info('Terrain', `✅ Terrain agrandi automatiquement: ${nouvellesDimensions.largeur.toFixed(1)}m x ${nouvellesDimensions.hauteur.toFixed(1)}m`);
+    // ✅ Mettre à jour le cache
+    const newBounds = nouveauTerrain.getBoundingRect();
+    terrainResizeCache.lastBounds = `${newBounds.width.toFixed(1)}_${newBounds.height.toFixed(1)}_${newBounds.left.toFixed(1)}_${newBounds.top.toFixed(1)}`;
+    
+    // ✅ Log uniquement si changement significatif (évite spam console)
+    if (Math.abs(newLargeurM - currentLargeurM) > 0.5 || Math.abs(newHauteurM - currentHauteurM) > 0.5) {
+      const action = newLargeurM < currentLargeurM || newHauteurM < currentHauteurM ? 'rétréci' : 'agrandi';
+      logger.info('Terrain', `✅ Terrain ${action} : ${newLargeurM.toFixed(1)}m x ${newHauteurM.toFixed(1)}m`);
+    }
+  } else {
+    // ✅ Mettre à jour le cache même si pas de changement (pour éviter recalcul)
+    terrainResizeCache.lastBounds = terrainHash;
   }
 };

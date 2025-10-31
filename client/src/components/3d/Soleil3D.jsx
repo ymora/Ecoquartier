@@ -14,10 +14,7 @@ import { calculerSoleilSimple, soleil3D } from '../../utils/soleilSimple';
 function Soleil3D({ 
   saison = 'ete',
   angleJournee = 90, // Angle de 0° (matin) à 180° (soir)
-  heureJournee = null, // DEPRECATED: gardé pour compatibilité
-  distance = 1000, // Distance astronomique pour rayon parallèle
-  terrainCentreX = 0,
-  terrainCentreZ = 0
+  distance = 1000 // Distance astronomique pour rayon parallèle
 }) {
   // Calcul simplifié pour les ombres réalistes
   const heure = (angleJournee / 180) * 12 + 6; // Convertir 0-180° en 6h-18h

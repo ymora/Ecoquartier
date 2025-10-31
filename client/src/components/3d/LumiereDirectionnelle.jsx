@@ -1,5 +1,4 @@
 import { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
 
 /**
  * Lumière directionnelle dynamique selon la saison et l'angle fluide
@@ -11,7 +10,6 @@ import { useFrame } from '@react-three/fiber';
 function LumiereDirectionnelle({ 
   saison = 'ete',
   angleJournee = 90, // Angle de 0° (matin) à 180° (soir)
-  heureJournee = null, // DEPRECATED: gardé pour compatibilité
   orientation = 'nord-haut', // 'nord-haut', 'sud-haut', 'est-haut', 'ouest-haut'
   distance = 50,
   intensity = 1.2,

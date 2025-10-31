@@ -197,7 +197,7 @@ export const SAISONS = [
 // ========== TYPES DE TOIT ==========
 export const TYPES_TOIT = [
   { value: '2pans', label: '2 pans' },
-  { value: 'plat', label: 'Plat' },
+  { value: 'plan', label: 'Plan' },
   { value: 'monopente', label: 'Monopente' }
 ];
 

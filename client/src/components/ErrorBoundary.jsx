@@ -34,6 +34,7 @@ class ErrorBoundary extends React.Component {
             <h2>{ICONS.error} Erreur de l'application</h2>
             <p>Une erreur inattendue s'est produite. Veuillez recharger la page.</p>
             
+            {/* eslint-disable-next-line no-undef */}
             {typeof process !== 'undefined' && process.env.NODE_ENV === 'development' && (
               <details className="error-details">
                 <summary>Détails techniques</summary>

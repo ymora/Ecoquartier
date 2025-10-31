@@ -7,6 +7,7 @@ import Arbre3DModel from './3d/Arbre3DModel';
 import { getModelPourArbre } from '../config/modeles3D';
 import Maison3D from './3d/Maison3D';
 import Sol3D from './3d/Sol3D';
+import ImageFond3D from './3d/ImageFond3D';
 import Canalisation3D from './3d/Canalisation3D';
 import Citerne3D from './3d/Citerne3D';
 import Caisson3D from './3d/Caisson3D';
@@ -19,6 +20,7 @@ import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
 // GrilleReference, SelecteurHeure et CubeNavigation3D ne sont plus nécessaires
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 import { validerArbres3D } from '../utils/validation3D';
+import logger from '../utils/logger';
 import './CanvasTerrain3D.css';
 
 // Fonction utilitaire pour parser la taille à maturité depuis arbustesData
@@ -58,17 +60,66 @@ function CanvasTerrain3D({
   onObjetPositionChange = null,
   onObjetSelectionChange = null, // ✅ Callback pour sélectionner un objet 3D
   canvas2D = null, // ✅ Référence au canvas 2D pour les actions
-  exporterPlan = null, // ✅ Fonction d'export du plan
-  revaliderTous = null, // ✅ Fonction de revalidation
-  contextMenuRef2D = null // ✅ Référence au modal 2D existant
+  contextMenuRef2D = null, // ✅ Référence au modal 2D existant
+  imageFondUrl = null, // ✅ URL de l'image de fond 2D
+  opaciteImageFond = 0.8 // ✅ Opacité de l'image de fond
 }) {
   // Passer l'angle directement au soleil pour un mouvement fluide
   // heureJournee est maintenant un angle de 0° (matin) à 180° (soir)
   const [vueMode, setVueMode] = useState('perspective'); // perspective, dessus, cote (coupe supprimée)
-  const [solTransparent, setSolTransparent] = useState(true); // ✅ Sol transparent TOUJOURS ACTIF = voir racines, fondations, citernes, canalisations
   const [objetSelectionne3D, setObjetSelectionne3D] = useState(null); // ✅ Objet sélectionné en 3D pour highlight
-  const [forceUpdate, setForceUpdate] = useState(0); // ✅ Force la mise à jour de la conversion 2D→3D
+  const solTransparent = true; // ✅ Sol transparent TOUJOURS ACTIF
   const orbitControlsRef = useRef();
+  
+  // ✅ Gérer l'activation/désactivation d'OrbitControls selon la sélection d'objets
+  useEffect(() => {
+    if (orbitControlsRef.current) {
+      const controls = orbitControlsRef.current;
+      
+      // Si un OBJET (hors sol) est sélectionné, désactiver la rotation
+      const isObjetBloquant = !!(objetSelectionne3D && objetSelectionne3D.type !== 'sol');
+      if (isObjetBloquant) {
+        controls.enableRotate = false;  // ❌ Pas de rotation avec clic gauche
+        controls.enablePan = true;      // ✅ Pan avec clic droit
+        controls.enableZoom = true;     // ✅ Zoom avec molette
+        controls.enabled = true;        // ✅ OrbitControls reste actif
+        logger.info('OrbitControls', '🔄 Mode objet sélectionné - rotation désactivée, pan/zoom activés');
+      } else {
+        controls.enableRotate = true;   // ✅ Rotation avec clic gauche
+        controls.enablePan = true;      // ✅ Pan avec clic droit
+        controls.enableZoom = true;     // ✅ Zoom avec molette
+        controls.enabled = true;        // ✅ OrbitControls actif
+        logger.info('OrbitControls', '✅ Mode normal - rotation/pan/zoom activés');
+      }
+    }
+  }, [objetSelectionne3D]);
+  
+  // ✅ Configuration des boutons de la souris pour OrbitControls
+  useEffect(() => {
+    // Délai pour s'assurer que OrbitControls est bien monté
+    const timer = setTimeout(() => {
+      if (orbitControlsRef.current) {
+        const controls = orbitControlsRef.current;
+        
+        // Configuration des boutons de la souris
+        if (controls.mouseButtons) {
+          controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;    // Bouton gauche = rotation
+          controls.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;   // Molette = zoom
+          controls.mouseButtons.RIGHT = THREE.MOUSE.PAN;      // Bouton droit = déplacement linéaire (panning)
+        }
+        
+        // S'assurer que le zoom avec la molette fonctionne
+        controls.enableZoom = true;
+        controls.enablePan = true;
+        controls.enableRotate = true;
+        
+        
+        logger.info('OrbitControls', '✅ Configuration des boutons de souris: gauche=rotation, droit=pan, molette=zoom');
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   // Convertir les données 2D en 3D
   // Recalculer quand planData OU anneeProjection change
@@ -105,7 +156,7 @@ function CanvasTerrain3D({
     
     // Maisons (tableau)
     if (planData.maisons && planData.maisons.length > 0) {
-      data3D.maisons = planData.maisons.map((maison, idx) => {
+      data3D.maisons = planData.maisons.map((maison) => {
         const maisonWidth = maison.getScaledWidth ? maison.getScaledWidth() : maison.width;
         const maisonHeight = maison.getScaledHeight ? maison.getScaledHeight() : maison.height;
         
@@ -323,6 +374,7 @@ function CanvasTerrain3D({
           envergure: envergureMax,
           profondeurRacines: profondeurRacines,
           validationStatus: a.validationStatus || 'ok',
+          elevationSol: a.elevationSol || 0, // ✅ Élévation du sol (peut être > 0 pour arbres sur collines)
           customType: 'arbre-a-planter' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
@@ -443,19 +495,32 @@ function CanvasTerrain3D({
     // ✅ Trouver l'objet 2D correspondant
     if (canvas2D && contextMenuRef2D) {
       const objets2D = canvas2D.getObjects();
-      const objet2D = objets2D.find(obj => 
-        obj.customType === objet.customType && 
-        Math.abs(obj.left - objet.position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
-        Math.abs(obj.top - objet.position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
-      );
       
-      if (objet2D) {
-        // ✅ Sélectionner l'objet 2D
-        canvas2D.setActiveObject(objet2D);
-        canvas2D.renderAll();
+      // ✅ GESTION SPÉCIALE POUR LE TERRAIN
+      if (objet.customType === 'sol') {
+        const terrain2D = objets2D.find(obj => obj.customType === 'sol');
+        if (terrain2D) {
+          // ✅ Sélectionner le terrain 2D
+          canvas2D.setActiveObject(terrain2D);
+          canvas2D.renderAll();
+          logger.info('3D', '✅ Terrain sélectionné en 2D depuis la vue 3D');
+        }
+      } else {
+        // Pour les autres objets, rechercher par position
+        const objet2D = objets2D.find(obj => 
+          obj.customType === objet.customType && 
+          Math.abs(obj.left - objet.position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
+          Math.abs(obj.top - objet.position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
+        );
         
-        // ✅ Afficher le modal 2D (système original)
-        // afficherMenuContextuel(objet2D, canvas2D, contextMenuRef2D, contextMenuRef2D);
+        if (objet2D) {
+          // ✅ Sélectionner l'objet 2D
+          canvas2D.setActiveObject(objet2D);
+          canvas2D.renderAll();
+          
+          // ✅ Afficher le modal 2D (système original)
+          // afficherMenuContextuel(objet2D, canvas2D, contextMenuRef2D, contextMenuRef2D);
+        }
       }
     }
     
@@ -463,6 +528,37 @@ function CanvasTerrain3D({
       onObjetSelectionChange(objet);
     }
   }, [onObjetSelectionChange, canvas2D, contextMenuRef2D]);
+
+  // ✅ Synchroniser la sélection 3D -> 2D (utilisé pour drag/select)
+  const syncSelection2D = useCallback((data) => {
+    if (!canvas2D || !data) return;
+    const { isSelected, type, position } = data;
+
+    if (isSelected) {
+      if (type === 'sol') {
+        const terrain2D = canvas2D.getObjects().find(obj => obj.customType === 'sol');
+        if (terrain2D) {
+          canvas2D.setActiveObject(terrain2D);
+          canvas2D.renderAll();
+        }
+        return;
+      }
+      // Sélection par proximité (tolérance 50px)
+      const match = canvas2D.getObjects().find(obj => 
+        obj.customType === type &&
+        Math.abs(obj.left - position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
+        Math.abs(obj.top - position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
+      );
+      if (match) {
+        canvas2D.setActiveObject(match);
+        canvas2D.renderAll();
+      }
+    } else {
+      // Désélection
+      canvas2D.discardActiveObject();
+      canvas2D.renderAll();
+    }
+  }, [canvas2D]);
   
   // handleProprieteChange supprimé - modal d'édition non nécessaire
   
@@ -530,6 +626,14 @@ function CanvasTerrain3D({
             window.location.reload();
           });
         }}
+        onPointerMissed={() => {
+          // ✅ Désélection globale quand on clique dans le vide → réactive la rotation
+          setObjetSelectionne3D(null);
+          if (canvas2D) {
+            canvas2D.discardActiveObject();
+            canvas2D.renderAll();
+          }
+        }}
       >
         {/* Ciel */}
         <Sky sunPosition={[100, 20, 100]} />
@@ -570,6 +674,18 @@ function CanvasTerrain3D({
           shadowMapSize={2048}
         />
         
+        {/* Image de fond 3D - En arrière-plan du sol */}
+        {imageFondUrl && (
+          <ImageFond3D
+            imageUrl={imageFondUrl}
+            largeur={terrainLargeur}
+            hauteur={terrainHauteur}
+            offsetX={data3D.bounds.minX}
+            offsetZ={data3D.bounds.minZ}
+            opacite={opaciteImageFond}
+          />
+        )}
+        
         {/* Sol avec couches - Taille adaptative */}
         <Sol3D 
           largeur={terrainLargeur} 
@@ -593,7 +709,9 @@ function CanvasTerrain3D({
               position={[maison.position[0], positionY, maison.position[2]]}
               type="maison"
               enabled={true}
+              selectionHeight={(maison.hauteur || 7) + 0.5}
               onDragEnd={handleObjetDragEnd}
+              onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
             <Maison3D 
@@ -617,7 +735,9 @@ function CanvasTerrain3D({
               position={[citerne.position[0], positionY, citerne.position[2]]}
               type="citerne"
               enabled={true}
+              selectionHeight={(citerne.hauteur || citerne.diametre || 1.5) + 0.3}
               onDragEnd={handleObjetDragEnd}
+              onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
             <Citerne3D 
@@ -645,7 +765,9 @@ function CanvasTerrain3D({
               position={[caisson.position[0], positionY, caisson.position[2]]}
               type="caisson-eau"
               enabled={true}
+              selectionHeight={(caisson.hauteur || 1) + 0.3}
               onDragEnd={handleObjetDragEnd}
+              onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
             <Caisson3D 
@@ -706,7 +828,9 @@ function CanvasTerrain3D({
               position={[terrasse.position[0], 0, terrasse.position[2]]}
               type="paves"
               enabled={true}
+              selectionHeight={0.3}
               onDragEnd={handleObjetDragEnd}
+              onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
               <PaveEnherbe3D
@@ -729,7 +853,9 @@ function CanvasTerrain3D({
               position={[terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]}
               type="terrasse"
               enabled={true}
+              selectionHeight={(terrasse.hauteur || 0.15) + 0.3}
               onDragEnd={handleObjetDragEnd}
+              onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
               <mesh 
@@ -766,8 +892,11 @@ function CanvasTerrain3D({
           const validationStatus = validation3D.status;
           
           // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
+          // Si elevationSol > 0 : arbre sur une colline/butte
+          // Si elevationSol < 0 : arbre dans une fosse/dépression
+          // Si elevationSol = 0 : arbre au niveau du terrain
           const elevationY = arbre.elevationSol || 0;
-          const positionY = elevationY > 0 ? elevationY : 0.1; // Au-dessus du terrain
+          const positionY = elevationY !== 0 ? elevationY : 0.1; // Au-dessus du terrain si niveau 0
           
           return (
             <ObjetDraggable3D
@@ -776,6 +905,7 @@ function CanvasTerrain3D({
               type="arbre-a-planter"
               enabled={true}
               onDragEnd={handleObjetDragEnd}
+              onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
               {model3D ? (
@@ -825,17 +955,11 @@ function CanvasTerrain3D({
         {/* Caméra contrôlable */}
         <OrbitControls 
           ref={orbitControlsRef}
-          enablePan={true} // ✅ Réactiver le panning
-          enableZoom={true}
-          enableRotate={true} // ✅ Rotation avec bouton gauche
-          // ✅ Configuration des boutons
-          mouseButtons={{
-            LEFT: THREE.MOUSE.ROTATE,    // Bouton gauche = rotation
-            MIDDLE: THREE.MOUSE.DOLLY,   // Molette = zoom
-            RIGHT: THREE.MOUSE.PAN       // Bouton droit = déplacement linéaire
-          }}
-          // ✅ Désactiver la rotation automatique pendant le drag d'objets
-          enabled={!objetSelectionne3D} // Rotation seulement si aucun objet sélectionné
+          enablePan={true} // ✅ Panning activé (bouton droit)
+          enableZoom={true} // ✅ Zoom activé (molette)
+          enableRotate={true} // ✅ Rotation activée (bouton gauche)
+          enabled={true} // ✅ Activé (désactivé temporairement pendant drag via ObjetDraggable3D)
+          screenSpacePanning={true}
           minPolarAngle={0}
           maxPolarAngle={Math.PI} // ✅ Permet de voir par dessous (fondations, racines)
           target={[terrainCentreX, 0, terrainCentreZ]}

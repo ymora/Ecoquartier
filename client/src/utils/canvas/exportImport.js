@@ -6,6 +6,7 @@
 import * as fabric from 'fabric';
 import logger from '../logger';
 import { debugLog } from '../../config/debug';
+import { canvasOperations } from './canvasOperations';
 
 
 // Timer pour throttle du logger
@@ -122,7 +123,8 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
       planData.arbresAPlanter.push({
         left: obj.left / echelle,
         top: obj.top / echelle,
-        arbreData: obj.arbreData
+        arbreData: obj.arbreData,
+        elevationSol: obj.elevationSol || 0 // ✅ Exporter l'élévation du sol
       });
     } else if (obj.customType === 'caisson-eau') {
       planData.caissonsEau.push({
@@ -217,7 +219,7 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           }
         
         if (imageFondRef.current) {
-          canvas.remove(imageFondRef.current);
+          canvasOperations.supprimer(canvas, imageFondRef.current);
         }
         
         const scale = Math.min(
@@ -250,7 +252,7 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           originY: 'center'
         });
         
-        canvas.add(img);
+        canvasOperations.ajouter(canvas, img);
         
         // Ordre de profondeur: grille (tout derrière) -> image fond -> objets
         const allObjects = canvas.getObjects();
@@ -265,7 +267,7 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         imageFondRef.current = img;
         setImageFondChargee(true);
         
-        canvas.renderAll();
+        canvasOperations.rendre(canvas);
         
         // Debug pour vérifier la visibilité
         console.log('Image de fond chargée:', {
@@ -305,7 +307,7 @@ export const ajusterOpaciteImage = (nouvelleOpacite, fabricCanvasRef, imageFondR
   setOpaciteImage(nouvelleOpacite);
   if (imageFondRef.current) {
     imageFondRef.current.set({ opacity: nouvelleOpacite });
-    fabricCanvasRef.current.renderAll();
+    canvasOperations.rendre(fabricCanvasRef.current);
   }
 };
 
@@ -320,10 +322,10 @@ export const supprimerImageFond = (fabricCanvasRef, imageFondRef, setImageFondCh
   }
   
   // Suppression directe sans confirmation
-    canvas.remove(imageFondRef.current);
+    canvasOperations.supprimer(canvas, imageFondRef.current);
     imageFondRef.current = null;
     setImageFondChargee(false);
-    canvas.renderAll();
+    canvasOperations.rendre(canvas);
   logger.info('ImageFond', 'Image de fond supprimée');
 };
 
@@ -333,7 +335,7 @@ export const supprimerImageFond = (fabricCanvasRef, imageFondRef, setImageFondCh
 export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
   // Supprimer les anciens labels de mesures
   canvas.getObjects().forEach(obj => {
-    if (obj.measureLabel) canvas.remove(obj);
+    if (obj.measureLabel) canvasOperations.supprimer(canvas, obj);
   });
 
   canvas.getObjects().forEach(obj => {
@@ -368,7 +370,7 @@ export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
         targetObject: obj
       });
 
-      canvas.add(labelW);
+      canvasOperations.ajouter(canvas, labelW);
 
       // Label HAUTEUR (à droite, centré le long de la ligne droite)
       const labelH = new fabric.Text(`${hText}m`, {
@@ -390,7 +392,7 @@ export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
         targetObject: obj
       });
 
-      canvas.add(labelH);
+      canvasOperations.ajouter(canvas, labelH);
     } else if (obj.customType === 'citerne') {
       // Pour les citernes circulaires
       const d = (obj.diametre || 1.5).toFixed(1);
@@ -416,10 +418,10 @@ export const ajouterMesuresLive = (canvas, echelle, exporterPlanCallback) => {
         targetObject: obj
       });
 
-      canvas.add(labelCiterne);
+      canvasOperations.ajouter(canvas, labelCiterne);
     }
   });
   
-  canvas.renderAll();
+  canvasOperations.rendre(canvas);
 };
 

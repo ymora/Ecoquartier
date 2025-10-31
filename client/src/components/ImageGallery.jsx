@@ -49,7 +49,7 @@ function ImageGallery({ arbusteId, arbusteName }) {
         
         setImages(validImages);
         setCurrentIndex(0);
-      } catch (error) {
+      } catch {
         // Erreur chargement images - images par défaut utilisées
         setImages([]);
       }

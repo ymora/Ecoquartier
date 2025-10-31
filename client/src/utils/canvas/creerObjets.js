@@ -63,13 +63,13 @@ export const recentrerVueSurContenu = (canvas) => {
     const offsetY = (canvasHeight / 2) - (centerY * scale);
     
     canvas.setViewportTransform([scale, 0, 0, scale, offsetX, offsetY]);
-    canvas.renderAll();
+    canvasOperations.rendre(canvas);
     
     logger.info('Canvas', `✅ Vue recentrée sur le contenu (zoom: ${(scale * 100).toFixed(1)}%)`);
   } else {
     // Si pas d'objets, reset simple
     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-    canvas.renderAll();
+    canvasOperations.rendre(canvas);
     logger.info('Canvas', '✅ Vue réinitialisée (aucun objet)');
   }
 };
@@ -96,18 +96,30 @@ export const creerMaisonObjet = (echelle) => {
 };
 
 /**
+ * Fonction unifiée pour ajouter un objet au canvas
+ * @param {fabric.Canvas} canvas - Canvas Fabric.js
+ * @param {Function} creerObjetFn - Fonction qui crée l'objet
+ * @param {string} type - Type d'objet pour le logging
+ * @param {Object} position - Position {left, top}
+ */
+const ajouterObjetAuCanvas = (canvas, creerObjetFn, type, position = { left: 300, top: 200 }) => {
+  if (!canvas) return;
+  const objet = creerObjetFn();
+  objet.set(position);
+  canvasOperations.ajouter(canvas, objet);
+  canvasOperations.selectionner(canvas, objet);
+  
+  // Compter les objets existants pour ajouter un numéro
+  const objetsExistants = canvas.getObjects().filter(o => o.customType === type);
+  const numero = objetsExistants.length > 1 ? ` #${objetsExistants.length}` : '';
+  logger.info('Objets', `${type.charAt(0).toUpperCase() + type.slice(1)}${numero} ajouté`);
+};
+
+/**
  * Créer une maison (ancienne méthode - pour compatibilité)
  */
 export const creerMaison = (canvas, echelle) => {
-  if (!canvas) return;
-  const group = creerMaisonObjet(echelle);
-  group.set({ left: 300, top: 200 });
-  canvasOperations.ajouter(canvas, group);
-  canvasOperations.selectionner(canvas, group);
-  // Compter les maisons existantes pour ajouter un numéro
-  const maisonsExistantes = canvas.getObjects().filter(o => o.customType === 'maison');
-  const numeroMaison = maisonsExistantes.length > 1 ? ` #${maisonsExistantes.length}` : '';
-  logger.info('Objets', `Maison${numeroMaison} ajoutée`);
+  ajouterObjetAuCanvas(canvas, () => creerMaisonObjet(echelle), 'maison');
 };
 
 /**
@@ -133,9 +145,9 @@ export const creerCanalisation = (canvas) => {
     elevationSol: -0.6
   });
 
-  canvas.add(canalisation);
-  canvas.setActiveObject(canalisation);
-  canvas.renderAll();
+  // ✅ Utiliser canvasOperations pour ajouter et sélectionner
+  canvasOperations.ajouter(canvas, canalisation, false);
+  canvasOperations.selectionner(canvas, canalisation, true);
   
   // Debug désactivé pour performance
   // logger.debug('Objets', 'Canalisation ajoutée', { profondeur: 0.6 });
@@ -164,15 +176,7 @@ export const creerCiterneObjet = (echelle) => {
  * Créer une citerne/fosse septique (ancienne méthode - pour compatibilité)
  */
 export const creerCiterne = (canvas, echelle) => {
-  if (!canvas) return;
-  const group = creerCiterneObjet(echelle);
-  group.set({ left: 400, top: 400 });
-  canvasOperations.ajouter(canvas, group);
-  canvasOperations.selectionner(canvas, group);
-  // Compter les citernes existantes pour ajouter un numéro
-  const citernesExistantes = canvas.getObjects().filter(o => o.customType === 'citerne');
-  const numeroCiterne = citernesExistantes.length > 1 ? ` #${citernesExistantes.length}` : '';
-  logger.info('Objets', `Citerne${numeroCiterne} ajoutée`);
+  ajouterObjetAuCanvas(canvas, () => creerCiterneObjet(echelle), 'citerne', { left: 400, top: 400 });
 };
 
 /**
@@ -211,10 +215,11 @@ export const creerCloture = (canvas, pointsClotureRef) => {
       cornerSize: 12
     });
     
-    canvas.add(ligne);
+    // ✅ Utiliser canvasOperations pour ajouter
+    canvasOperations.ajouter(canvas, ligne, false);
     // Amener la clôture au premier plan pour encadrer les éléments
     canvas.bringObjectToFront(ligne);
-    canvas.renderAll();
+    canvasOperations.rendre(canvas);
     
     // Debug désactivé pour performance
     // logger.debug('Cloture', `Segment ${dernierIndex} ajouté`);
@@ -243,15 +248,7 @@ export const creerTerrasseObjet = (echelle) => {
  * Créer une terrasse (ancienne méthode - pour compatibilité)
  */
 export const creerTerrasse = (canvas, echelle) => {
-  if (!canvas) return;
-  const group = creerTerrasseObjet(echelle);
-  group.set({ left: 150, top: 150 });
-  canvasOperations.ajouter(canvas, group);
-  canvasOperations.selectionner(canvas, group);
-  // Compter les terrasses existantes pour ajouter un numéro
-  const terrassesExistantes = canvas.getObjects().filter(o => o.customType === 'terrasse');
-  const numeroTerrasse = terrassesExistantes.length > 1 ? ` #${terrassesExistantes.length}` : '';
-  logger.info('Objets', `Terrasse${numeroTerrasse} ajoutée`);
+  ajouterObjetAuCanvas(canvas, () => creerTerrasseObjet(echelle), 'terrasse', { left: 150, top: 150 });
 };
 
 /**
@@ -276,15 +273,7 @@ export const creerPavesObjet = (echelle) => {
  * Créer des pavés enherbés (ancienne méthode - pour compatibilité)
  */
 export const creerPaves = (canvas, echelle) => {
-  if (!canvas) return;
-  const group = creerPavesObjet(echelle);
-  group.set({ left: 500, top: 500 });
-  canvasOperations.ajouter(canvas, group);
-  canvasOperations.selectionner(canvas, group);
-  // Compter les pavés existants pour ajouter un numéro
-  const pavesExistants = canvas.getObjects().filter(o => o.customType === 'paves');
-  const numeroPaves = pavesExistants.length > 1 ? ` #${pavesExistants.length}` : '';
-  logger.info('Objets', `Pavés enherbés${numeroPaves} ajoutés`);
+  ajouterObjetAuCanvas(canvas, () => creerPavesObjet(echelle), 'paves', { left: 500, top: 500 });
 };
 
 /**
@@ -309,15 +298,7 @@ export const creerCaissonEauObjet = (echelle) => {
  * Créer un caisson rectangulaire de rétention d'eau (ancienne méthode - pour compatibilité)
  */
 export const creerCaissonEau = (canvas, echelle) => {
-  if (!canvas) return;
-  const group = creerCaissonEauObjet(echelle);
-  group.set({ left: 300, top: 300 });
-  canvasOperations.ajouter(canvas, group);
-  canvasOperations.selectionner(canvas, group);
-  // Compter les caissons existants pour ajouter un numéro
-  const caissonsExistants = canvas.getObjects().filter(o => o.customType === 'caisson-eau');
-  const numeroCaisson = caissonsExistants.length > 1 ? ` #${caissonsExistants.length}` : '';
-  logger.info('Objets', `Caisson rétention${numeroCaisson} ajouté`);
+  ajouterObjetAuCanvas(canvas, () => creerCaissonEauObjet(echelle), 'caisson-eau', { left: 300, top: 300 });
 };
 
 
@@ -326,8 +307,9 @@ export const creerCaissonEau = (canvas, echelle) => {
  */
 export const creerGrille = (canvas, echelle) => {
   // Supprimer les anciennes lignes de grille
+  // ✅ Utiliser canvasOperations pour supprimer
   const oldGridLines = canvas.getObjects().filter(obj => obj.isGridLine);
-  oldGridLines.forEach(line => canvas.remove(line));
+  canvasOperations.supprimerMultiples(canvas, oldGridLines, false);
   
   // Grille fixe qui couvre largement (3x la taille du canvas)
   const width = canvas.width * 3;
@@ -361,8 +343,8 @@ export const creerGrille = (canvas, echelle) => {
     gridLines.push(line);
   }
 
-  // Ajouter toutes les lignes de grille
-  gridLines.forEach(line => canvas.add(line));
+  // ✅ Utiliser canvasOperations pour ajouter toutes les lignes de grille
+  gridLines.forEach(line => canvasOperations.ajouter(canvas, line, false));
   
   // Envoyer toutes les lignes de grille en arrière-plan
   // (juste au-dessus de l'image de fond si elle existe)
@@ -376,8 +358,9 @@ export const creerGrille = (canvas, echelle) => {
   const tailleMarque = 20; // pixels
   
   // Supprimer l'ancienne marque du centre si elle existe
+  // ✅ Utiliser canvasOperations pour supprimer
   const oldCenterMark = canvas.getObjects().find(obj => obj.isCenterMark);
-  if (oldCenterMark) canvas.remove(oldCenterMark);
+  if (oldCenterMark) canvasOperations.supprimer(canvas, oldCenterMark, false);
   
   // Créer une croix au centre
   const markGroup = new fabric.Group([
@@ -416,7 +399,8 @@ export const creerGrille = (canvas, echelle) => {
     isCenterMark: true
   });
   
-  canvas.add(markGroup);
+  // ✅ Utiliser canvasOperations pour ajouter
+  canvasOperations.ajouter(canvas, markGroup, false);
   // Placer le repère de centre au premier plan pour qu'il soit toujours visible
   canvas.bringObjectToFront(markGroup);
   
@@ -426,7 +410,7 @@ export const creerGrille = (canvas, echelle) => {
     canvas.sendObjectToBack(imageFond);
   }
   
-  canvas.renderAll();
+  canvasOperations.rendre(canvas);
   // Debug désactivé pour performance
   // logger.debug('Grille', `${gridLines.length} lignes ajoutées`);
 };
@@ -452,8 +436,9 @@ export const maintenirCentreAuPremierPlan = (canvas) => {
  */
 export const creerBoussole = (canvas, orientation, onOrientationChange, echelle) => {
   // Supprimer l'ancienne boussole si elle existe
+  // ✅ Utiliser canvasOperations pour supprimer
   const ancienneBoussole = canvas.getObjects().find(obj => obj.isBoussole);
-  if (ancienneBoussole) canvas.remove(ancienneBoussole);
+  if (ancienneBoussole) canvasOperations.supprimer(canvas, ancienneBoussole, false);
   
   // Position de la boussole au centre du canvas (temporaire pour debug)
   const boussoleX = canvas.width / 2; // Centre horizontal
@@ -580,7 +565,8 @@ export const creerBoussole = (canvas, orientation, onOrientationChange, echelle)
     }
   });
   
-  canvas.add(boussoleGroup);
+  // ✅ Utiliser canvasOperations pour ajouter
+  canvasOperations.ajouter(canvas, boussoleGroup, false);
   canvas.bringObjectToFront(boussoleGroup);
   
   // Marquer la boussole pour qu'elle soit toujours au premier plan
@@ -605,8 +591,9 @@ export const creerBoussole = (canvas, orientation, onOrientationChange, echelle)
  */
 export const creerIndicateurSud = (canvas, orientation, onOrientationChange, echelle, saison = 'ete', heureJournee = 90) => {
   // Supprimer les anciens indicateurs SUD s'ils existent
+  // ✅ Utiliser canvasOperations pour supprimer
   const anciensIndicateurs = canvas.getObjects().filter(obj => obj.isBoussole);
-  anciensIndicateurs.forEach(obj => canvas.remove(obj));
+  canvasOperations.supprimerMultiples(canvas, anciensIndicateurs, false);
   
   // Calcul simplifié pour les ombres réalistes
   const heure = (heureJournee / 180) * 12 + 6; // Convertir 0-180° en 6h-18h
@@ -674,6 +661,7 @@ export const creerIndicateurSud = (canvas, orientation, onOrientationChange, ech
   // Le soleil ne dépend que de l'heure et de la saison
   // Plus de logique d'orientation automatique
   
-  canvas.add(soleil);
+  // ✅ Utiliser canvasOperations pour ajouter
+  canvasOperations.ajouter(canvas, soleil, true);
 };
 

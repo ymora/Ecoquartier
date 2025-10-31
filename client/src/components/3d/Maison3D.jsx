@@ -57,7 +57,7 @@ function Maison3D({
       metalness: 0.9
     }),
     toit: new THREE.MeshStandardMaterial({
-      color: typeToit === 'plat' ? "#666666" : 
+      color: typeToit === 'plan' ? "#666666" : 
              typeToit === 'monopente' ? "#8B0000" : "#b71c1c",
       roughness: 0.8,
       metalness: 0.1
@@ -75,7 +75,7 @@ function Maison3D({
   // Géométrie du toit optimisée
   const toitGeometry = useMemo(() => {
     switch (typeToit) {
-      case 'plat':
+      case 'plan':
         return new THREE.BoxGeometry(largeur, 0.2, profondeur);
         
       case 'monopente': {
@@ -179,8 +179,8 @@ function Maison3D({
       <group 
         position={[
           0, 
-          hauteur + (typeToit === 'plat' ? 0.1 : 0), 
-          typeToit === 'plat' ? 0 : 0
+          hauteur + (typeToit === 'plan' ? 0.1 : 0), 
+          typeToit === 'plan' ? 0 : 0
         ]}
         rotation={[
           0, 
@@ -189,7 +189,7 @@ function Maison3D({
         ]}
       >
         <mesh 
-          position={[0, 0, typeToit === 'plat' ? 0 : -profondeur / 2]}
+          position={[0, 0, typeToit === 'plan' ? 0 : -profondeur / 2]}
           castShadow
         >
           <primitive object={toitGeometry} />

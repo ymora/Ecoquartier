@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import TimelineSection from './TimelineSection';
 import './GaugeHeure.css';
 
@@ -113,13 +113,6 @@ function GaugeHeure({
     return newAngle;
   };
 
-  // Gérer le clic sur la jauge (FLUIDE - pas de crans)
-  const handleGaugeClick = (e) => {
-    const newAngle = calculateAngleFromMouse(e.clientX, e.clientY);
-    setAngle(newAngle);
-    onHeureChange(newAngle);
-  };
-
   // Gérer le mousedown sur toute la jauge (pas seulement l'aiguille)
   const handleMouseDown = (e) => {
     setIsDragging(true);
@@ -130,13 +123,13 @@ function GaugeHeure({
     e.preventDefault();
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     if (!isDragging) return;
     
     const newAngle = calculateAngleFromMouse(e.clientX, e.clientY);
     setAngle(newAngle);
     onHeureChange(newAngle);
-  };
+  }, [isDragging, onHeureChange]);
 
   const handleMouseUp = () => {
     setIsDragging(false);
@@ -153,9 +146,8 @@ function GaugeHeure({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, angle]);
+  }, [isDragging, handleMouseMove]);
 
-  const heuresReelles = heuresSoleil[saison] || heuresSoleil.ete;
   const heureInfo = angleToDescription(angle);
 
   return (

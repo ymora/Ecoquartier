@@ -3,6 +3,7 @@ import { useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import Arbre3D from './Arbre3D';
 import HaloPulsant from './HaloPulsant';
+import SelectionRing3D from './SelectionRing3D';
 
 /**
  * Composant pour charger et afficher des modèles 3D réels (GLB)
@@ -56,7 +57,7 @@ function Arbre3DModel({
 
 // Composant interne pour charger le GLB - SANS modification de couleur
 // Les modèles GLB gardent leur apparence originale
-function GLBModel({ modelPath, position, scale, hauteurMaturite = 7, envergure = 5, validationStatus = 'ok', rotation, onClick, anneeProjection, arbreData }) {
+function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, validationStatus = 'ok', rotation, onClick, anneeProjection, arbreData }) {
   const { scene } = useGLTF(modelPath);
   const groupRef = useRef();
   
@@ -144,10 +145,14 @@ function GLBModel({ modelPath, position, scale, hauteurMaturite = 7, envergure =
 function LoadingIndicator({ position }) {
   return (
     <group position={position}>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]}>
-        <ringGeometry args={[0.8, 1, 32]} />
-        <meshBasicMaterial color="#4caf50" transparent opacity={0.5} />
-      </mesh>
+      <SelectionRing3D 
+        visible={true}
+        color="#4caf50"
+        size={0.8}
+        height={0.1}
+        opacity={0.5}
+        animated={true}
+      />
     </group>
   );
 }
@@ -164,7 +169,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     // Fallback silencieux - l'arbre procédural sera utilisé
     return { hasError: true };
   }
@@ -176,15 +181,6 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
-
-// Fonction utilitaire pour précharger les modèles
-export const preloadModel = (path) => {
-  try {
-    useGLTF.preload(path);
-  } catch (error) {
-    // Préchargement échoué - chargement à la demande
-  }
-};
 
 export default memo(Arbre3DModel);
 

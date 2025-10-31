@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import SelectionRing3D from './SelectionRing3D';
 
 /**
  * Wrapper pour rendre un objet 3D draggable (VERSION AMÉLIORÉE)
@@ -12,11 +13,12 @@ function ObjetDraggable3D({
   position, 
   type,
   enabled = true,
+  selectionHeight = 2,
   onDragStart,
   onDrag,
   onDragEnd,
-  maisonBounds = null, // Pour validation collision (peut être tableau pour multi-maisons)
-  isSelected = false // Nouveau : indique si cet objet est sélectionné
+  onSelectionChange, // ✅ Callback pour notifier la sélection
+  maisonBounds = null // Pour validation collision (peut être tableau pour multi-maisons)
 }) {
   const groupRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
@@ -36,8 +38,8 @@ function ObjetDraggable3D({
     
     // ✅ DIFFÉRENCIATION DES BOUTONS
     // Bouton gauche (0) : Déplacement normal de l'objet
-    // Bouton droit (2) : Déplacement linéaire (panning) sans rotation
-    if (e.button !== 0 && e.button !== 2) return;
+    // Bouton droit (2) : Laisser OrbitControls gérer le pan
+    if (e.button !== 0) return;
     
     // Enregistrer position de départ
     startPosition.current = [...position];
@@ -57,8 +59,10 @@ function ObjetDraggable3D({
     setIsDragging(true);
     if (onDragStart) onDragStart();
     
-    // ✅ Désactiver OrbitControls pour le déplacement d'objet
-    if (controls) controls.enabled = false;
+    // ✅ Notifier la sélection de l'objet
+    if (onSelectionChange) {
+      onSelectionChange({ type, position, isSelected: true });
+    }
     gl.domElement.style.cursor = 'grabbing';
   };
   
@@ -68,6 +72,9 @@ function ObjetDraggable3D({
     
     const handleGlobalPointerMove = (e) => {
       if (!enabled || !groupRef.current) return;
+      
+      // ✅ Empêcher la propagation vers OrbitControls
+      e.stopPropagation();
       
       // Calculer nouvelle position
       const rect = gl.domElement.getBoundingClientRect();
@@ -110,12 +117,19 @@ function ObjetDraggable3D({
       }
     };
     
-    const handleGlobalPointerUp = () => {
+    const handleGlobalPointerUp = (e) => {
+      // ✅ Empêcher la propagation vers OrbitControls
+      if (e) {
+        e.stopPropagation();
+      }
+      
       setIsDragging(false);
       gl.domElement.style.cursor = hovered ? 'grab' : 'auto';
       
-      // ✅ Réactiver OrbitControls
-      if (controls) controls.enabled = true;
+      // ✅ Notifier la désélection de l'objet
+      if (onSelectionChange) {
+        onSelectionChange({ type, position, isSelected: false });
+      }
       
       if (onDragEnd && groupRef.current) {
         const finalPos = currentPosition.current;
@@ -157,21 +171,24 @@ function ObjetDraggable3D({
     >
       {children}
       
-      {/* ✅ Indicateur visuel amélioré quand survolé */}
-      {enabled && hovered && !isDragging && (
-        <mesh position={[0, 0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[1, 1.2, 32]} />
-          <meshBasicMaterial color="#2196f3" transparent opacity={0.6} depthWrite={false} />
-        </mesh>
-      )}
+      {/* ✅ Anneaux de sélection unifiés */}
+      <SelectionRing3D 
+        visible={enabled && hovered && !isDragging}
+        color="#2196f3"
+        size={1}
+        height={selectionHeight}
+        opacity={0.6}
+        animated={false}
+      />
       
-      {/* ✅ Indicateur visuel amélioré pendant le drag */}
-      {enabled && isDragging && (
-        <mesh position={[0, 0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[1, 1.3, 32]} />
-          <meshBasicMaterial color="#4caf50" transparent opacity={0.8} depthWrite={false} />
-        </mesh>
-      )}
+      <SelectionRing3D 
+        visible={enabled && isDragging}
+        color="#4caf50"
+        size={1}
+        height={selectionHeight}
+        opacity={0.8}
+        animated={true}
+      />
     </group>
   );
 }

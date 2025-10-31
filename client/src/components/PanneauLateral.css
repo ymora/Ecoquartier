@@ -1,17 +1,14 @@
-/* Import des styles d'onglets unifiés */
+/* Import des styles unifiés */
+@import '../styles/theme-unified.css';
 @import '../styles/tabs-unified.css';
 
-/* Panneau latéral avec onglets - OPTIMISÉ COMPACT + CONTOUR */
+/* Surcharges spécifiques au panneau latéral */
 .panneau-lateral {
   width: 320px; /* Élargi encore plus */
-  flex-shrink: 0;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border: 2px solid #1976d2;
   border-radius: 12px;
   margin: 0 15px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
   box-shadow: 0 8px 24px rgba(25, 118, 210, 0.15);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);

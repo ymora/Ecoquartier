@@ -4,7 +4,7 @@
  * Évite la duplication de code entre Ctrl+D et bouton modal
  */
 
-// Import supprimé - on revient au système simple
+import { canvasOperations } from './canvasOperations';
 
 /**
  * Dupliquer un objet avec toutes ses propriétés
@@ -31,9 +31,7 @@ export const dupliquerObjet = async (obj, canvas, echelle, exporterPlan, revalid
       creerCiterneObjet,
       creerCaissonEauObjet,
       creerTerrasseObjet,
-      creerPavesObjet,
-      creerCanalisationObjet,
-      creerClotureObjet
+      creerPavesObjet
     } = await import('./creerObjets');
     
     // Créer un nouvel objet selon le type
@@ -54,10 +52,17 @@ export const dupliquerObjet = async (obj, canvas, echelle, exporterPlan, revalid
         nouvelObjet = creerPavesObjet(echelle);
         break;
       case 'canalisation':
-        nouvelObjet = creerCanalisationObjet(echelle);
-        break;
       case 'cloture':
-        nouvelObjet = creerClotureObjet(echelle);
+        // ✅ Canalisations et clôtures = lignes complexes, utiliser clone()
+        console.log('🔧 DEBUG: Duplication canalisation/clôture via clone()');
+        nouvelObjet = await obj.clone();
+        break;
+      case 'arbre-a-planter':
+      case 'arbre-existant':
+      case 'arbre':
+        // ✅ Pour les arbres, utiliser clone() car structure complexe (ellipse + label + propriétés)
+        console.log('🔧 DEBUG: Duplication arbre via clone()');
+        nouvelObjet = await obj.clone();
         break;
       default:
         console.log('🔧 DEBUG: Type non supporté pour duplication, fallback sur clone');
@@ -87,35 +92,66 @@ export const dupliquerObjet = async (obj, canvas, echelle, exporterPlan, revalid
     };
     
     // ✅ PROPRIÉTÉS SPÉCIFIQUES AUX ARBRES
-    if (obj.customType === 'arbre-a-planter' || obj.customType === 'arbre') {
+    if (obj.customType === 'arbre-a-planter' || obj.customType === 'arbre-existant' || obj.customType === 'arbre') {
       if (obj.arbreData) proprietes.arbreData = { ...obj.arbreData };
       if (obj.planteId) proprietes.planteId = obj.planteId;
       if (obj.nomPlante) proprietes.nomPlante = obj.nomPlante;
       if (obj.validationStatus) proprietes.validationStatus = { ...obj.validationStatus };
       if (obj.couleur) proprietes.couleur = obj.couleur;
       if (obj.remarques) proprietes.remarques = obj.remarques;
+      if (obj.tailles) proprietes.tailles = { ...obj.tailles };
+      if (obj.iconeType) proprietes.iconeType = obj.iconeType;
+      if (obj.elevationSol !== undefined) proprietes.elevationSol = obj.elevationSol; // ✅ Conserver l'élévation
+    }
+    
+    // ✅ PROPRIÉTÉS SPÉCIFIQUES AUX CANALISATIONS ET CLÔTURES (lignes)
+    if (obj.customType === 'canalisation' || obj.customType === 'cloture') {
+      if (obj.x1 !== undefined) proprietes.x1 = obj.x1 + echelle;
+      if (obj.y1 !== undefined) proprietes.y1 = obj.y1 + echelle;
+      if (obj.x2 !== undefined) proprietes.x2 = obj.x2 + echelle;
+      if (obj.y2 !== undefined) proprietes.y2 = obj.y2 + echelle;
+      if (obj.diametre !== undefined) proprietes.diametre = obj.diametre;
+      if (obj.hauteur !== undefined) proprietes.hauteur = obj.hauteur;
+      if (obj.epaisseur !== undefined) proprietes.epaisseur = obj.epaisseur;
     }
     
     console.log('🔧 DEBUG: Propriétés à appliquer:', proprietes);
     nouvelObjet.set(proprietes);
     
-    // Ajouter au canvas
+    // ✅ Pour les objets rectangulaires, mettre à jour aussi le rectangle interne
+    if ((nouvelObjet.customType === 'maison' || 
+         nouvelObjet.customType === 'terrasse' || 
+         nouvelObjet.customType === 'paves' || 
+         nouvelObjet.customType === 'caisson-eau') &&
+        (nouvelObjet._objects || (nouvelObjet.getObjects && nouvelObjet.getObjects()))) {
+      const rect = nouvelObjet._objects?.find(o => o.type === 'rect') || 
+                   (nouvelObjet.getObjects ? nouvelObjet.getObjects().find(o => o.type === 'rect') : null);
+      if (rect && nouvelObjet.largeur && nouvelObjet.profondeur) {
+        rect.set({
+          width: nouvelObjet.largeur * echelle,
+          height: nouvelObjet.profondeur * echelle,
+          originX: 'center',
+          originY: 'center'
+        });
+        if (nouvelObjet._calcBounds) nouvelObjet._calcBounds();
+        nouvelObjet.setCoords();
+      }
+    }
+    
+    // Ajouter au canvas avec canvasOperations
     console.log('🔧 DEBUG: Ajout au canvas...');
-    canvas.add(nouvelObjet);
+    canvasOperations.ajouter(canvas, nouvelObjet, false);
     
     // ✅ SÉQUENCE LOGIQUE : Désélectionner → Dupliquer → Sélectionner le nouveau
     console.log('🔧 DEBUG: 1. Désélection de l\'original...');
-    canvas.discardActiveObject();
-    canvas.renderAll();
+    canvasOperations.deselectionner(canvas, false);
     
     console.log('🔧 DEBUG: 2. Nouvel objet ajouté');
     
     // ✅ 3. Sélectionner le nouvel objet après un délai
     setTimeout(() => {
       console.log('🔧 DEBUG: 3. Sélection du nouvel objet...');
-      canvas.setActiveObject(nouvelObjet);
-      nouvelObjet.setCoords();
-      canvas.requestRenderAll();
+      canvasOperations.selectionner(canvas, nouvelObjet, true);
       
       // ✅ Déclencher l'événement de sélection pour mettre à jour l'UI
       canvas.fire('selection:created', { selected: [nouvelObjet] });

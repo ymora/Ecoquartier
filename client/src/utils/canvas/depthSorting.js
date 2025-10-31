@@ -113,6 +113,13 @@ export function forcerTerrainEnArrierePlan(canvas) {
       selectable: true, // Reste sélectionnable
       evented: true
     });
+    
+    // ✅ S'assurer que même si le terrain est sélectionné, il reste au fond
+    // Cela évite qu'il passe au premier plan quand on clique dessus
+    if (canvas.getActiveObject() === terrain) {
+      // Le terrain est sélectionné mais on le force quand même au fond
+      canvas.sendObjectToBack(terrain);
+    }
   }
 }
 
