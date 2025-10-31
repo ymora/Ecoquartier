@@ -342,9 +342,10 @@ function CanvasTerrain3D({
     }
     
     // Arbres à planter
+    // ✅ Les arbres viennent directement comme objets Fabric.js depuis syncCanvasTo3D
     if (planData.arbres && planData.arbres.length > 0) {
       data3D.arbres = planData.arbres.map(a => {
-        // Extraire taille à maturité depuis arbreData
+        // ✅ Objet Fabric.js : utiliser directement les propriétés
         const arbreData = a.arbreData || {};
         const hauteurStr = arbreData.tailleMaturite || '6m';
         const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
@@ -358,8 +359,9 @@ function CanvasTerrain3D({
           profondeurRacines = parseFloat(profStr.split('-')[0]);
         }
         
-        const posX = a.left / echelle;
-        const posZ = a.top / echelle;
+        // ✅ Position depuis l'objet Fabric.js (déjà en pixels)
+        const posX = (a.left || 0) / echelle;
+        const posZ = (a.top || 0) / echelle;
         
         // Mettre à jour les bounds avec l'envergure de l'arbre
         updateBounds(posX - envergureMax/2, posZ - envergureMax/2, envergureMax, envergureMax);
@@ -374,7 +376,7 @@ function CanvasTerrain3D({
           envergure: envergureMax,
           profondeurRacines: profondeurRacines,
           validationStatus: a.validationStatus || 'ok',
-          elevationSol: a.elevationSol || 0, // ✅ Élévation du sol (peut être > 0 pour arbres sur collines)
+          elevationSol: a.elevationSol !== undefined ? a.elevationSol : 0, // ✅ Élévation du sol (0 = niveau terrain, > 0 = colline, < 0 = fosse)
           customType: 'arbre-a-planter' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
