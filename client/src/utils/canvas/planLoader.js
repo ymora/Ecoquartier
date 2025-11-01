@@ -164,6 +164,37 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       objet = creerClotureFromJSON(objetData);
       break;
       
+    case 'arbre': {
+      // ✅ Charger un arbre depuis JSON
+      const arbreData = props.arbreData;
+      if (!arbreData) {
+        logger.warn('PlanLoader', 'Arbre sans données arbreData');
+        return;
+      }
+      
+      // Créer une icône d'arbre sur le canvas
+      objet = new fabric.Text('🌳', {
+        fontSize: 30 * echelle,
+        originX: 'center',
+        originY: 'center',
+        selectable: true,
+        hasControls: true,
+        hasBorders: true,
+        lockRotation: false
+      });
+      
+      objet.set({
+        customType: 'arbre-a-planter',
+        planteId: props.planteId || arbreData.id,
+        nomPlante: props.nomPlante || arbreData.nom,
+        arbreData: arbreData,
+        couleur: props.couleur || '#4caf50',
+        validationStatus: props.validationStatus || 'ok',
+        elevationSol: props.elevationSol || 0
+      });
+      break;
+    }
+      
     default:
       logger.warn('PlanLoader', `Type d'objet non reconnu: ${type}`);
       return;
