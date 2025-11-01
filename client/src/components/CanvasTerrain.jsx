@@ -858,18 +858,20 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   return (
     <div className="canvas-terrain-container">
-      {/* Bouton toggle timeline (désactivé s'il n'y a pas d'arbres) */}
+      {/* Bouton toggle timeline */}
       <button 
-        className={`timeline-toggle-btn ${!hasArbres ? 'disabled' : ''}`}
-        onClick={() => hasArbres && setTimelineVisible(!timelineVisible)}
-        title={hasArbres ? (timelineVisible ? 'Masquer la projection temporelle' : 'Afficher la projection temporelle') : 'Ajoutez un arbre pour activer la projection'}
-        disabled={!hasArbres}
+        className="timeline-toggle-btn"
+        onClick={() => {
+          setTimelineVisible(!timelineVisible);
+          logger.info('Timeline', `Timeline ${!timelineVisible ? 'affichée' : 'masquée'}`);
+        }}
+        title={timelineVisible ? 'Masquer la projection temporelle' : 'Afficher la projection temporelle'}
       >
-        {timelineVisible && hasArbres ? '📅 Masquer' : '📅 Projection'}
+        {timelineVisible ? '📅 Masquer' : '📅 Projection'}
       </button>
 
       {/* Timeline de croissance (slider temporel) - EN BAS, DÉPLAÇABLE */}
-      {timelineVisible && hasArbres && (
+      {timelineVisible && (
       <div className="timeline-croissance">
         {/* Handle de déplacement */}
         <div 
