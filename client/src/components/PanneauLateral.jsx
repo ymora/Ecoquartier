@@ -159,7 +159,7 @@ function PanneauLateral({
         objetSelectionnePrecedentRef.current = obj;
         // Mettre en évidence visuellement l'objet sélectionné (vert)
         highlightSelection(obj, canvas);
-        setOngletActif('config');
+        // ✅ Ne PAS basculer automatiquement sur Config
       } else {
         // Retirer la mise en évidence de l'objet précédent
         if (objetSelectionnePrecedentRef.current) {

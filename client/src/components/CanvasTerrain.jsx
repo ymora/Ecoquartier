@@ -759,8 +759,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       canvas.setActiveObject(objet);
       canvas.renderAll();
       
-      // ✅ Ouvrir automatiquement l'onglet Config
-      setOngletActif('config');
+      // ✅ Ne PAS basculer automatiquement sur Config - l'utilisateur y va en cliquant sur l'objet
       
       // Logger pour debug avec détails spécifiques selon le type
       let detailObjet = '';
