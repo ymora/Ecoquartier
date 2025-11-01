@@ -66,22 +66,158 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     validationMessages: []
   });
   
+  // ✅ Créer les éléments du maillage (lignes vertes + cellules cliquables)
+  const elementsMaillage = [];
+  
+  // Calculer dimensions du maillage centré
+  const largeurMaillage = nbCellulesX * tailleMailleM;
+  const hauteurMaillage = nbCellulesZ * tailleMailleM;
+  const largeurMaillagePx = nbCellulesX * tailleMailleM * echelle;
+  const hauteurMaillagePx = nbCellulesZ * tailleMailleM * echelle;
+  
+  // Offset pour centrer le maillage
+  const offsetXPx = (largeur - largeurMaillagePx) / 2;
+  const offsetZPx = (hauteur - hauteurMaillagePx) / 2;
+  
+  // Lignes horizontales (vertes)
+  for (let i = 0; i <= nbCellulesZ; i++) {
+    const y = -hauteur / 2 + offsetZPx + i * tailleMailleM * echelle;
+    const line = new fabric.Line(
+      [-largeur / 2 + offsetXPx, y, -largeur / 2 + offsetXPx + largeurMaillagePx, y],
+      {
+        stroke: '#2e7d32',
+        strokeWidth: 1,
+        selectable: false,
+        evented: false
+      }
+    );
+    elementsMaillage.push(line);
+  }
+  
+  // Lignes verticales (vertes)
+  for (let j = 0; j <= nbCellulesX; j++) {
+    const x = -largeur / 2 + offsetXPx + j * tailleMailleM * echelle;
+    const line = new fabric.Line(
+      [x, -hauteur / 2 + offsetZPx, x, -hauteur / 2 + offsetZPx + hauteurMaillagePx],
+      {
+        stroke: '#2e7d32',
+        strokeWidth: 1,
+        selectable: false,
+        evented: false
+      }
+    );
+    elementsMaillage.push(line);
+  }
+  
+  // Créer les cellules cliquables semi-transparentes
+  for (let i = 0; i < nbCellulesZ; i++) {
+    for (let j = 0; j < nbCellulesX; j++) {
+      const x = -largeur / 2 + offsetXPx + j * tailleMailleM * echelle;
+      const y = -hauteur / 2 + offsetZPx + i * tailleMailleM * echelle;
+      const elevation = maillageElevation[i][j];
+      
+      // Cellule semi-transparente colorée selon élévation
+      const cellule = new fabric.Rect({
+        left: x,
+        top: y,
+        width: tailleMailleM * echelle,
+        height: tailleMailleM * echelle,
+        fill: elevation === 0 ? 'rgba(33, 150, 243, 0.15)' : 
+              (elevation > 0 ? 'rgba(76, 175, 80, 0.25)' : 'rgba(244, 67, 54, 0.25)'),
+        stroke: 'transparent',
+        originX: 'left',
+        originY: 'top',
+        selectable: false,
+        evented: true,
+        hoverCursor: 'pointer',
+        celluleI: i,
+        celluleJ: j
+      });
+      
+      // Gestionnaire de clic pour modifier l'élévation
+      cellule.on('mousedown', function(e) {
+        if (e.e) e.e.stopPropagation();
+        const increment = e.e?.shiftKey ? -0.1 : 0.1;
+        const nouvelleElev = Math.max(-5, Math.min(5, elevation + increment));
+        maillageElevation[i][j] = nouvelleElev;
+        
+        // Mettre à jour la couleur de la cellule
+        this.set({
+          fill: nouvelleElev === 0 ? 'rgba(33, 150, 243, 0.15)' : 
+                (nouvelleElev > 0 ? 'rgba(76, 175, 80, 0.25)' : 'rgba(244, 67, 54, 0.25)')
+        });
+        
+        // Trouver et mettre à jour le label correspondant
+        const terrainGroup = this.group;
+        if (terrainGroup && terrainGroup._objects) {
+          const labelObj = terrainGroup._objects.find(el => 
+            el.type === 'text' && el.celluleI === i && el.celluleJ === j
+          );
+          if (labelObj) {
+            labelObj.set({
+              text: nouvelleElev.toFixed(2) + 'm',
+              fill: nouvelleElev === 0 ? '#1976d2' : (nouvelleElev > 0 ? '#2e7d32' : '#c62828')
+            });
+          }
+        }
+        
+        // Mettre à jour le maillage du terrain
+        if (terrainGroup) {
+          terrainGroup.maillageElevation = maillageElevation;
+        }
+        
+        terrainGroup?.canvas?.renderAll();
+        logger.info('Terrain', `✅ Cellule [${i}][${j}] = ${nouvelleElev.toFixed(2)}m`);
+      });
+      
+      // Survol
+      cellule.on('mouseover', function() {
+        this.set({ stroke: '#ff9800', strokeWidth: 2 });
+        this.canvas?.renderAll();
+      });
+      
+      cellule.on('mouseout', function() {
+        this.set({ stroke: 'transparent', strokeWidth: 0 });
+        this.canvas?.renderAll();
+      });
+      
+      elementsMaillage.push(cellule);
+      
+      // Label d'élévation
+      const labelElev = new fabric.Text(elevation.toFixed(2) + 'm', {
+        left: x + (tailleMailleM * echelle) / 2,
+        top: y + (tailleMailleM * echelle) / 2,
+        fontSize: 11,
+        fontWeight: 'bold',
+        fill: elevation === 0 ? '#1976d2' : (elevation > 0 ? '#2e7d32' : '#c62828'),
+        originX: 'center',
+        originY: 'center',
+        selectable: false,
+        evented: false,
+        celluleI: i,
+        celluleJ: j
+      });
+      elementsMaillage.push(labelElev);
+    }
+  }
+  
   // Ajouter un label pour identifier le terrain
-  // ✅ Positionner le label à l'intérieur du rectangle pour éviter d'agrandir la zone de sélection
   const label = new fabric.Text('TERRAIN', {
     left: 0,
-    top: -hauteur / 4, // Positionner vers le haut du rectangle (mais à l'intérieur)
-    fontSize: Math.min(16, hauteur / 8), // Taille adaptative selon la hauteur
+    top: -hauteur / 4,
+    fontSize: Math.min(16, hauteur / 8),
     fill: '#1976d2',
     fontWeight: 'bold',
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false // Le label ne doit pas être cliquable pour ne pas agrandir la zone
+    evented: false
   });
   
-  // ✅ Grouper le terrain, le maillage et le label
-  const terrainGroup = new fabric.Group([terrain, ...elementsMaillage, label], {
+  elementsMaillage.push(label);
+  
+  // ✅ Grouper le terrain et tous les éléments du maillage
+  const terrainGroup = new fabric.Group([terrain, ...elementsMaillage], {
     customType: 'sol',
     name: 'Terrain',
     originX: 'center',
