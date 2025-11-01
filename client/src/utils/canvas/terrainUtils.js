@@ -179,9 +179,11 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         }
         
         if (terrainGroup.canvas) {
-          // ✅ IMPORTANT : Déclencher un événement de sélection pour que React se mette à jour
-          terrainGroup.canvas.fire('selection:updated', { selected: [terrainGroup] });
+          // ✅ IMPORTANT : Forcer la sélection du terrain parent pour mettre à jour le panneau Config
+          terrainGroup.canvas.setActiveObject(terrainGroup);
           terrainGroup.canvas.renderAll();
+          // Déclencher l'événement pour forcer React à se mettre à jour
+          terrainGroup.canvas.fire('selection:updated', { selected: [terrainGroup] });
         }
         
         logger.debug('Terrain', `Nœud [${i},${j}] ${this.isSelected ? 'sélectionné' : 'désélectionné'}. Total: ${terrainGroup.noeudsSelectionnes.length}`);
@@ -327,10 +329,11 @@ export const modifierElevationNoeudsSelectionnes = (terrainGroup, increment) => 
   // Mettre à jour le maillage du terrain
   terrainGroup.maillageElevation = maillageElevation;
   
-  // Synchroniser la 3D
+  // Synchroniser la 3D et forcer mise à jour du panneau Config
   if (terrainGroup.canvas) {
     terrainGroup.canvas.renderAll();
     terrainGroup.canvas.fire('object:modified', { target: terrainGroup });
+    terrainGroup.canvas.fire('selection:updated', { selected: [terrainGroup] }); // ✅ Force React à se mettre à jour
   }
   
   logger.info('Terrain', `✅ ${terrainGroup.noeudsSelectionnes.length} nœud(s) modifié(s) de ${increment > 0 ? '+' : ''}${increment.toFixed(2)}m`);
@@ -356,6 +359,7 @@ export const deselectionnerTousLesNoeuds = (terrainGroup) => {
   
   if (terrainGroup.canvas) {
     terrainGroup.canvas.renderAll();
+    terrainGroup.canvas.fire('selection:updated', { selected: [terrainGroup] }); // ✅ Force React à se mettre à jour
   }
   
   logger.debug('Terrain', 'Tous les nœuds désélectionnés');

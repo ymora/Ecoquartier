@@ -46,6 +46,7 @@ function PanneauLateral({
 }) {
   const [ongletActif, setOngletActif] = useState('outils');
   const [objetSelectionne, setObjetSelectionne] = useState(null);
+  const [revisionMaillage, setRevisionMaillage] = useState(0); // ✅ Force mise à jour quand nœuds changent
   const [arbresOuvert, setArbresOuvert] = useState(false);
   const [arbustesOuvert, setArbustesOuvert] = useState(false);
   const [batimentsOuvert, setBatimentsOuvert] = useState(false);
