@@ -452,11 +452,103 @@ function PanneauLateral({
 
   return (
     <div className="panneau-lateral">
-      {/* Boutons de chargement - TOUJOURS VISIBLES */}
+      {/* Boutons de chargement - TOUJOURS VISIBLES - ORDRE: Fond / Charger / Exporter */}
       <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        {/* Bouton Exporter plan JSON */}
+        
+        {/* 1. Charger image de fond */}
         <button
-          className="btn btn-success btn-full"
+          onClick={onChargerImageFond}
+          title="Charger plan cadastral, photo aérienne..."
+          style={{ 
+            background: imageFondChargee ? 
+              'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)' : 
+              'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.7rem 1rem',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 3px 6px rgba(156, 39, 176, 0.3)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}
+          onMouseEnter={(e) => {
+            if (imageFondChargee) {
+              e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
+            } else {
+              e.target.style.background = 'linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%)';
+            }
+            e.target.style.transform = 'translateY(-2px)';
+            e.target.style.boxShadow = '0 6px 12px rgba(156, 39, 176, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            if (imageFondChargee) {
+              e.target.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
+            } else {
+              e.target.style.background = 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)';
+            }
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 3px 6px rgba(156, 39, 176, 0.3)';
+          }}
+        >
+          🖼️ {imageFondChargee ? 'Image chargée' : 'Charger fond'}
+        </button>
+        
+        {/* 2. Charger plan JSON */}
+        <button
+          onClick={() => {
+            chargerPlanJSONAvecExplorateur((planData, fileName) => {
+              console.log(`Plan chargé depuis: ${fileName}`);
+              if (onChargerPlanDepuisFichier) {
+                const tempFile = { name: fileName, content: planData };
+                onChargerPlanDepuisFichier(tempFile);
+              }
+            });
+          }}
+          title="Charger un plan depuis un fichier JSON"
+          style={{
+            background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.7rem 1rem',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 3px 6px rgba(33, 150, 243, 0.3)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}
+          onMouseEnter={(e) => {
+              e.target.style.background = 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)';
+            e.target.style.transform = 'translateY(-2px)';
+            e.target.style.boxShadow = '0 6px 12px rgba(33, 150, 243, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+              e.target.style.background = 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)';
+            e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 3px 6px rgba(33, 150, 243, 0.3)';
+          }}
+        >
+          📂 Charger plan JSON
+        </button>
+        
+        {/* 3. Exporter plan JSON */}
+        <button
           onClick={onExporterPlan}
           title="Exporter le plan actuel en JSON"
           style={{ 
@@ -476,8 +568,7 @@ function PanneauLateral({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '0.5rem',
-            marginBottom: '0.5rem'
+            gap: '0.5rem'
           }}
           onMouseEnter={(e) => {
             e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
@@ -491,89 +582,6 @@ function PanneauLateral({
           }}
         >
           💾 Exporter plan JSON
-        </button>
-        
-        {/* Bouton Charger plan depuis JSON */}
-        <button
-          className="btn btn-info btn-full"
-          onClick={() => {
-            chargerPlanJSONAvecExplorateur((planData, fileName) => {
-              console.log(`Plan chargé depuis: ${fileName}`);
-              // Appeler la fonction de chargement avec les données du plan
-              if (onChargerPlanDepuisFichier) {
-                // Créer un objet temporaire pour simuler le fichier
-                const tempFile = { name: fileName, content: planData };
-                onChargerPlanDepuisFichier(tempFile);
-              }
-            });
-          }}
-          title="Charger un plan depuis un fichier JSON (Explorateur Windows)"
-          style={{ 
-            background: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '0.7rem 1rem',
-            fontSize: '0.9rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            marginTop: '0.5rem',
-            width: '100%',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-          }}
-        >
-          📄 Charger plan JSON
-        </button>
-        <button
-          className={`btn btn-full ${imageFondChargee ? 'btn-success' : 'btn-primary'}`}
-          onClick={onChargerImageFond}
-          title="Charger plan cadastral, photo aérienne..."
-          style={{
-            background: imageFondChargee ? 
-              'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)' : 
-              'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '0.7rem 1rem',
-            fontSize: '0.9rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: imageFondChargee ? 
-              '0 3px 6px rgba(76, 175, 80, 0.3)' : 
-              '0 3px 6px rgba(33, 150, 243, 0.3)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem'
-          }}
-          onMouseEnter={(e) => {
-            if (imageFondChargee) {
-              e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
-              e.target.style.boxShadow = '0 6px 12px rgba(76, 175, 80, 0.4)';
-            } else {
-              e.target.style.background = 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)';
-              e.target.style.boxShadow = '0 6px 12px rgba(33, 150, 243, 0.4)';
-            }
-            e.target.style.transform = 'translateY(-2px)';
-          }}
-          onMouseLeave={(e) => {
-            if (imageFondChargee) {
-              e.target.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
-              e.target.style.boxShadow = '0 3px 6px rgba(76, 175, 80, 0.3)';
-            } else {
-              e.target.style.background = 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)';
-              e.target.style.boxShadow = '0 3px 6px rgba(33, 150, 243, 0.3)';
-            }
-            e.target.style.transform = 'translateY(0)';
-          }}
-        >
-          📷 {imageFondChargee ? 'Image chargée' : 'Charger plan de fond'}
         </button>
         
         {/* Contrôles d'opacité si image chargée */}
