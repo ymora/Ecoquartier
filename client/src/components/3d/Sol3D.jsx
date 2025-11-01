@@ -1,5 +1,4 @@
 import { memo, useCallback, useMemo } from 'react';
-import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 function Sol3D({ 
@@ -204,25 +203,7 @@ function Sol3D({
         </group>
       ))}
       
-      {/* ✅ Labels sur 2 lignes - Terre végétale + Marne */}
-      <Html position={[-largeur / 2 - 1.5, -0.2, 0]}>
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.95)', 
-          padding: '5px 10px', 
-          borderRadius: '8px',
-          fontSize: '10px',
-          color: '#333',
-          fontWeight: '600',
-          border: '1.5px solid #8d6e63',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-          lineHeight: '1.4',
-          minWidth: '140px',
-          textAlign: 'left'
-        }}>
-          <div style={{ whiteSpace: 'nowrap' }}>{icones[0]} {couches[0]?.nom} {couches[0]?.profondeur}cm</div>
-          {couches[1] && <div style={{ whiteSpace: 'nowrap' }}>{icones[1]} {couches[1]?.nom} {couches[1]?.profondeur}cm</div>}
-        </div>
-      </Html>
+      {/* Label supprimé - vestige qui créait un rectangle blanc */}
       
       {/* Ligne de référence niveau 0 (sous l'herbe) - Masquée si transparent */}
       {!transparent && (
