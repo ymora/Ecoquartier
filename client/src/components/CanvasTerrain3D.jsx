@@ -712,7 +712,29 @@ function CanvasTerrain3D({
               position={[maison.position[0], positionY, maison.position[2]]}
               type="maison"
               enabled={true}
-              selectionHeight={(maison.hauteur || 7) + 0.5}
+              selectionHeight={(() => {
+                // ✅ Calculer le point le plus haut : hauteur murs + hauteur toit + 0.05m
+                const hauteurMurs = maison.hauteur || 7;
+                const typeToit = maison.typeToit || 'deux-pentes';
+                const penteToit = maison.penteToit || 3; // Pente par défaut 3°
+                const largeur = maison.largeur || 10;
+                const profondeur = maison.profondeur || 8;
+                const orientationToit = maison.orientationToit || 0;
+                
+                let hauteurToit = 0;
+                if (typeToit === 'plan' || typeToit === 'plat') {
+                  hauteurToit = 0; // Toit plat
+                } else if (typeToit === 'monopente') {
+                  const dimensionPente = (orientationToit === 90 || orientationToit === 270) ? profondeur : largeur;
+                  hauteurToit = Math.tan((penteToit * Math.PI) / 180) * dimensionPente;
+                } else {
+                  // deux-pentes (par défaut)
+                  const dimensionPente = (orientationToit === 90 || orientationToit === 270) ? profondeur : largeur;
+                  hauteurToit = Math.tan((penteToit * Math.PI) / 180) * (dimensionPente / 2);
+                }
+                
+                return hauteurMurs + hauteurToit + 0.05; // Point le plus haut + 5 cm
+              })()}
               onDragEnd={handleObjetDragEnd}
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
@@ -738,7 +760,13 @@ function CanvasTerrain3D({
               position={[citerne.position[0], positionY, citerne.position[2]]}
               type="citerne"
               enabled={true}
-              selectionHeight={(citerne.hauteur || citerne.diametre || 1.5) + 0.3}
+              selectionHeight={(() => {
+                // ✅ Calculer le point le plus haut : elevationSol + hauteur + 0.05m
+                const elevationSol = citerne.elevationSol || -2.5;
+                const hauteur = citerne.hauteur || citerne.diametre || 1.5;
+                const pointHaut = elevationSol + hauteur;
+                return pointHaut > 0 ? pointHaut + 0.05 : 0.05; // Au moins 5 cm au-dessus du sol
+              })()}
               onDragEnd={handleObjetDragEnd}
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
@@ -768,7 +796,13 @@ function CanvasTerrain3D({
               position={[caisson.position[0], positionY, caisson.position[2]]}
               type="caisson-eau"
               enabled={true}
-              selectionHeight={(caisson.hauteur || 1) + 0.3}
+              selectionHeight={(() => {
+                // ✅ Calculer le point le plus haut : elevationSol + hauteur + 0.05m
+                const elevationSol = caisson.elevationSol || -1.0;
+                const hauteur = caisson.hauteur || 1;
+                const pointHaut = elevationSol + hauteur;
+                return pointHaut > 0 ? pointHaut + 0.05 : 0.05; // Au moins 5 cm au-dessus du sol
+              })()}
               onDragEnd={handleObjetDragEnd}
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
@@ -831,7 +865,7 @@ function CanvasTerrain3D({
               position={[terrasse.position[0], 0, terrasse.position[2]]}
               type="paves"
               enabled={true}
-              selectionHeight={0.3}
+              selectionHeight={(terrasse.hauteur || 0.08) + 0.05} // Hauteur des pavés + 5 cm
               onDragEnd={handleObjetDragEnd}
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
@@ -856,7 +890,7 @@ function CanvasTerrain3D({
               position={[terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]}
               type="terrasse"
               enabled={true}
-              selectionHeight={(terrasse.hauteur || 0.15) + 0.3}
+              selectionHeight={(terrasse.hauteur || 0.15) + 0.05} // Hauteur de la terrasse + 5 cm
               onDragEnd={handleObjetDragEnd}
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
@@ -907,6 +941,13 @@ function CanvasTerrain3D({
               position={[arbre.position[0], positionY, arbre.position[2]]}
               type="arbre-a-planter"
               enabled={true}
+              selectionHeight={(() => {
+                // ✅ Calculer le point le plus haut : hauteur actuelle de l'arbre + 0.05m
+                const hauteurPlantation = 2;
+                const progression = Math.min(anneeProjection / 20, 1);
+                const hauteurActuelle = hauteurPlantation + (arbre.hauteur - hauteurPlantation) * progression;
+                return hauteurActuelle + 0.05; // Cime de l'arbre + 5 cm
+              })()}
               onDragEnd={handleObjetDragEnd}
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
