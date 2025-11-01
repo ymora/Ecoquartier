@@ -1,341 +1,730 @@
-/* ========================================
-   PANNEAU LATÉRAL - INTERFACE PROFESSIONNELLE
-   ======================================== */
+/* Import des styles unifiés */
+@import '../styles/theme-unified.css';
+@import '../styles/tabs-unified.css';
 
+/* Surcharges spécifiques au panneau latéral */
 .panneau-lateral {
-  width: 100%;
-  height: 100%;
-  background: #f8f9fa;
-  display: flex;
-  flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  overflow: hidden;
+  width: 320px; /* Élargi encore plus */
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 2px solid #1976d2;
+  border-radius: 12px;
+  margin: 0 15px;
+  box-shadow: 0 8px 24px rgba(25, 118, 210, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-/* ========================================
-   ONGLETS - EN-TÊTE
-   ======================================== */
-
+/* En-tête avec onglets - utilise le système unifié */
 .panneau-tabs {
+  /* Hérite des styles .tabs-unified */
+}
+
+.tab-btn {
+  /* Hérite des styles .tab-unified */
+}
+
+/* Contenu du panneau outils - COMPACT */
+.panneau-outils-content {
+  padding: 0.75rem;
+  overflow-y: auto;
+  flex: 1;
+  font-size: 1rem; /* Augmenté de 0.8rem */
+}
+
+.section-title {
+  font-size: 1.1rem; /* Augmenté de 0.9rem */
+  font-weight: 700;
+  color: #1976d2;
+  margin: 0.75rem 0 0.4rem 0;
+  padding: 0.5rem;
+  border-bottom: 3px solid #1976d2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.section-title:first-child {
+  margin-top: 0;
+}
+
+.outils-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Stack vertical pour boutons pleine largeur */
+.outils-stack {
   display: flex;
-  background: #ffffff;
-  border-bottom: 2px solid #e0e0e0;
-  padding: 0;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Stack pour configs */
+.config-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Ligne de configuration uniforme */
+.config-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Conteneur des boutons +/- aligné à droite */
+.config-row > div {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  justify-content: flex-end; /* Alignement à droite */
+}
+
+.config-row label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
   margin: 0;
 }
 
-.panneau-tab {
-  flex: 1;
-  padding: 1rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #666;
-  transition: all 0.2s ease;
-  border-bottom: 3px solid transparent;
-}
-
-.panneau-tab:hover {
-  background: #f5f5f5;
-  color: #333;
-}
-
-.panneau-tab.active {
-  color: #1976d2;
-  border-bottom-color: #1976d2;
-  background: #fff;
-}
-
-/* ========================================
-   CONTENU DES ONGLETS
-   ======================================== */
-
-.panneau-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-}
-
-/* Scrollbar sobre */
-.panneau-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.panneau-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.panneau-content::-webkit-scrollbar-thumb {
-  background: #ccc;
+.config-row input[type="number"],
+.config-row select {
+  width: 80px;
+  padding: 0.4rem;
+  border: 1px solid #bdbdbd;
   border-radius: 4px;
-}
-
-.panneau-content::-webkit-scrollbar-thumb:hover {
-  background: #999;
-}
-
-/* ========================================
-   SECTIONS (Structures, Réseaux, Arbres)
-   ======================================== */
-
-.section {
-  margin-bottom: 1rem;
-}
-
-.section-toggle {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #333;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.2s ease;
-}
-
-.section-toggle:hover {
-  background: #f5f5f5;
-  border-color: #1976d2;
-}
-
-.section-toggle.active {
-  background: #1976d2;
-  color: #fff;
-  border-color: #1976d2;
-}
-
-.section-icon {
-  font-size: 1rem;
-  transition: transform 0.2s ease;
-}
-
-.section-toggle.active .section-icon {
-  transform: rotate(180deg);
-}
-
-/* ========================================
-   BOUTONS OUTILS
-   ======================================== */
-
-.section-buttons {
-  margin-top: 0.5rem;
-  background: #fff;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
-  overflow: hidden;
-}
-
-.tool-button {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: #fff;
-  border: none;
-  border-bottom: 1px solid #f5f5f5;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #333;
-  text-align: left;
-  transition: all 0.15s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.tool-button:last-child {
-  border-bottom: none;
-}
-
-.tool-button:hover {
-  background: #f5f5f5;
-  color: #1976d2;
-}
-
-.tool-button:active {
-  background: #e3f2fd;
-}
-
-/* ========================================
-   CONFIGURATION - INPUTS
-   ======================================== */
-
-.config-section {
-  background: #fff;
-  border-radius: 6px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid #e0e0e0;
-}
-
-.config-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #f0f0f0;
-}
-
-.config-group {
-  margin-bottom: 1rem;
-}
-
-.config-group:last-child {
-  margin-bottom: 0;
-}
-
-.config-label {
-  display: block;
   font-size: 0.85rem;
-  font-weight: 600;
-  color: #555;
-  margin-bottom: 0.4rem;
+  text-align: right;
 }
 
-.config-input {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ddd;
+.config-row .unit {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 600;
+  min-width: 20px; /* Largeur minimale pour les unités longues */
+  text-align: left;
+}
+
+/* ✅ Style pour le conteneur des boutons +/- - Défini plus haut avec justify-content: flex-end */
+
+.config-row input[type="text"] {
+  width: 60px;
+  min-width: 50px;
+  padding: 0.4rem;
+  border: 1px solid #bdbdbd;
   border-radius: 4px;
-  font-size: 0.9rem;
-  color: #333;
-  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  text-align: right;
+  flex-shrink: 1;
 }
 
-.config-input:focus {
-  outline: none;
-  border-color: #1976d2;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
-}
-
-/* ========================================
-   BOUTONS ACTION
-   ======================================== */
-
-.action-button {
-  width: 100%;
+/* Boîte info uniforme */
+.info-box {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border: 2px solid #1976d2;
+  border-radius: 8px;
   padding: 0.75rem;
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
+  text-align: center;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
   font-weight: 600;
+  color: #1976d2;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.1);
+}
+
+.info-box .info-title {
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+
+.info-box .info-subtitle {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.btn-outil {
+  padding: 0.75rem;
+  font-size: 1.5rem;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.action-button:hover {
-  background: #1565c0;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+.btn-outil:hover {
+  background: #f5f5f5;
+  border-color: #4caf50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.action-button:active {
+.btn-outil:active {
   transform: translateY(0);
 }
 
-.action-button.secondary {
-  background: #fff;
-  color: #1976d2;
-  border: 1px solid #1976d2;
+.btn-outil.btn-active {
+  background: #e8f5e9;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
-.action-button.secondary:hover {
-  background: #e3f2fd;
+.btn-outil.btn-lock {
+  border-color: #ff9800;
 }
 
-.action-button.danger {
-  background: #f44336;
-}
-
-.action-button.danger:hover {
-  background: #d32f2f;
-}
-
-/* ========================================
-   INFO BOX
-   ======================================== */
-
-.info-box {
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid;
-}
-
-.info-box-info {
-  background: #e3f2fd;
-  border-color: #90caf9;
-  color: #1565c0;
-}
-
-.info-box-warning {
+.btn-outil.btn-lock:hover {
   background: #fff3e0;
-  border-color: #ffb74d;
+  border-color: #f57c00;
+}
+
+.btn-outil.btn-danger {
+  border-color: #f44336;
+  color: #f44336;
+}
+
+.btn-outil.btn-danger:hover {
+  background: #ffebee;
+  border-color: #d32f2f;
+}
+
+.btn-outil-label {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.btn-outil-label:hover {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-color: #2196f3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+/* Bouton pleine largeur pour stack vertical */
+.btn-outil-full {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 3px 6px rgba(25, 118, 210, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Icônes professionnelles pour les boutons */
+.btn-outil-full::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(0) invert(1);
+}
+
+/* Icônes spécifiques selon le contenu */
+.btn-outil-full[title*="Charger plan"]::before {
+  content: '🏠';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Charger plan de fond"]::before {
+  content: '📷';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter maison"]::before {
+  content: '🏢';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter citerne"]::before {
+  content: '💧';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter caisson"]::before {
+  content: '📦';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter canalisation"]::before {
+  content: '🚰';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter clôture"]::before {
+  content: '🚧';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter terrasse"]::before {
+  content: '🪵';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter pavés"]::before {
+  content: '🟩';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter arbre"]::before {
+  content: '🌳';
+  font-size: 14px;
+}
+
+.btn-outil-full[title*="Ajouter arbuste"]::before {
+  content: '🌿';
+  font-size: 14px;
+}
+
+/* Boutons de suppression professionnels */
+.btn-supprimer {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.btn-supprimer:hover {
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.4);
+}
+
+.btn-supprimer::before {
+  content: '🗑️';
+  font-size: 12px;
+  filter: brightness(0) invert(1);
+}
+
+/* Icônes de suppression alternatives */
+.btn-supprimer-alt::before {
+  content: '✕';
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.btn-supprimer-alt2::before {
+  content: '🗑';
+  font-size: 12px;
+}
+
+/* Boutons d'action sur le plan */
+.btn-plan {
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+  font-size: 14px;
+}
+
+.btn-plan:hover {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+}
+
+.btn-plan-supprimer {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+}
+
+.btn-plan-supprimer:hover {
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.4);
+}
+
+.btn-plan::before {
+  content: '✕';
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.btn-outil-full:hover {
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(25, 118, 210, 0.4);
+}
+
+.btn-outil-full:active {
+  transform: translateX(1px);
+}
+
+.btn-outil-full.btn-active {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+}
+
+/* Variantes de couleur pour boutons spéciaux */
+.btn-danger-full {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border-color: #ef5350;
+}
+
+.btn-danger-full:hover {
+  background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+  border-color: #d32f2f;
+}
+
+.btn-warning-full {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-color: #ff9800;
   color: #e65100;
 }
 
-.info-box-error {
-  background: #ffebee;
-  border-color: #ef5350;
-  color: #c62828;
+.btn-warning-full:hover {
+  background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
+  border-color: #f57c00;
 }
 
-.info-box-success {
-  background: #e8f5e9;
-  border-color: #81c784;
-  color: #2e7d32;
+.btn-purple-full {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  border-color: #9c27b0;
+  color: #4a148c;
 }
 
-/* ========================================
-   LISTE OBJETS
-   ======================================== */
+.btn-purple-full:hover {
+  background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
+  border-color: #7b1fa2;
+}
 
-.objet-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.navigation-aide {
+  background: #fff3e0;
   padding: 0.75rem;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  border: 2px solid #ffb74d;
 }
 
-.objet-item:hover {
-  background: #f5f5f5;
-}
-
-.objet-item:last-child {
-  border-bottom: none;
-}
-
-/* ========================================
-   BOUTONS GROUPÉS
-   ======================================== */
-
-.button-group {
+.aide-ligne {
+  font-size: 0.75rem;
+  color: #e65100;
+  margin-bottom: 0.25rem;
   display: flex;
+  align-items: center;
   gap: 0.5rem;
-  margin-top: 0.75rem;
 }
 
-.button-group button {
-  flex: 1;
-  padding: 0.6rem;
-  border: none;
+.aide-ligne:last-child {
+  margin-bottom: 0;
+}
+
+.image-aide {
+  background: #e1f5fe;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #01579b;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+
+/* Objet sélectionné dans Config */
+.objet-selectionne-header {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: white;
+  padding: 0.5rem;
+  font-weight: 700;
+  font-size: 0.75rem;
   border-radius: 4px;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.objet-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.objet-info {
+  background: #fff3e0;
+  padding: 0.4rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  color: #e65100;
+  text-align: center;
+  border: 1px solid #ffb74d;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .panneau-lateral {
+    width: 280px; /* Élargi de 260px à 280px (+20px) */
+  }
+  
+  .outils-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .panneau-lateral {
+    width: 240px; /* Élargi de 220px à 240px (+20px) */
+  }
+  
+  .btn-outil {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+  }
+}
+
+/* === ONGLET CONFIGURATION === */
+
+.dimensions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.terrain-info {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  padding: 0.5rem;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1565c0;
+  margin-bottom: 0.75rem;
+  border: 1px solid #90caf9;
+}
+
+.maison-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.dimension-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.dimension-control label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.dimension-control input,
+.dimension-control select {
+  padding: 0.4rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.orientation-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.btn-orientation {
+  padding: 0.75rem;
+  background: white;
+  border: 2px solid #c8e6c9;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-orientation:hover {
+  background: #f1f8e9;
+  border-color: #7cb342;
+  transform: scale(1.05);
+}
+
+.btn-orientation.active {
+  background: #7cb342;
+  color: white;
+  border-color: #558b2f;
+}
+
+.sol-visualisation {
+  height: 150px;
+  background: #fff;
+  border: 2px solid #c8e6c9;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sol-couche-rect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.sol-couche-label {
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  font-size: 0.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sol-couche-prof {
+  font-size: 0.7rem;
+  opacity: 0.9;
+}
+
+.sol-controles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sol-controle-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: #f5f5f5;
+  border-radius: 6px;
+}
+
+.sol-controle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.sol-couleur-mini {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+
+.sol-controle-boutons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-sol-adjust {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #7cb342;
+  background: white;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-sol-adjust:hover {
+  background: #7cb342;
+  color: white;
+}
+
+.sol-valeur {
+  min-width: 50px;
+  text-align: center;
   font-size: 0.85rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  color: #333;
 }
+
+.sol-info {
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+  padding: 0.5rem;
+  background: #e8f5e9;
+  border-radius: 6px;
+}
+
+.affichage-info {
+  font-size: 0.7rem;
+  color: #666;
+  text-align: center;
+  padding: 0.5rem;
+  background: #e3f2fd;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Les styles des boutons d'heure ont été supprimés - on utilise maintenant GaugeHeure.css */
+
