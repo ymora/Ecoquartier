@@ -568,6 +568,19 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       echelle: echelle3D
     };
     
+    // 🔍 DEBUG : Vérifier si le maillage est transmis
+    if (terrain2D?.maillageElevation) {
+      const elevMax = Math.max(...terrain2D.maillageElevation.flat());
+      const elevMin = Math.min(...terrain2D.maillageElevation.flat());
+      if (elevMax !== 0 || elevMin !== 0) {
+        console.log('📊 Sync 2D→3D: Maillage terrain avec déformations', {
+          elevMax: elevMax.toFixed(2) + 'm',
+          elevMin: elevMin.toFixed(2) + 'm',
+          noeuds: `${terrain2D.maillageElevation.length}×${terrain2D.maillageElevation[0]?.length || 0}`
+        });
+      }
+    }
+    
     // Synchronisation 2D→3D
     logger.debug('Sync', 'Sync 2D→3D', {
       terrasses: extractedData.terrasses.length,

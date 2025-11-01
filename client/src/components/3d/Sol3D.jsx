@@ -57,6 +57,7 @@ function Sol3D({
   const geometrieSurface = useMemo(() => {
     if (!maillageElevation || maillageElevation.length === 0) {
       // Terrain plat classique
+      console.warn('⚠️ Sol3D: Pas de maillage d\'élévation, terrain plat par défaut');
       return new THREE.PlaneGeometry(largeur, hauteur);
     }
     
@@ -64,6 +65,14 @@ function Sol3D({
     // Le maillage contient les élévations des nœuds (intersections)
     const nbNoeudsZ = maillageElevation.length;
     const nbNoeudsX = maillageElevation[0]?.length || 0;
+    
+    console.log('🌍 Sol3D: Création terrain déformé', {
+      nbNoeudsX,
+      nbNoeudsZ,
+      tailleMailleM,
+      elevationsMax: Math.max(...maillageElevation.flat()),
+      elevationsMin: Math.min(...maillageElevation.flat())
+    });
     
     // Créer une grille de vertices (segments = cellules)
     const nbCellulesX = nbNoeudsX - 1;
