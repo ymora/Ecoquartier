@@ -113,27 +113,18 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
         envergure={envergureActuelle}
       />
       
-      {/* Label avec nom au-dessus, mesures en dessous alignées à gauche */}
-      <Html position={[position[0] + 0.5, hauteurFinale + 0.3, position[2]]} center>
+      {/* Label avec nom au-dessus - UNIFIÉ avec Arbre3D.jsx */}
+      <Html distanceFactor={10} position={[0, hauteurFinale + 1, 0]}>
         <div style={{
-          background: 'rgba(255, 255, 255, 0.95)',
-          padding: '5px 10px',
+          background: 'rgba(0,0,0,0.8)',
+          color: 'white',
+          padding: '8px 12px',
           borderRadius: '8px',
-          fontSize: '10px',
-          fontWeight: '600',
-          color: '#333',
-          border: '1.5px solid #4caf50',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-          textAlign: 'left',
-          lineHeight: '1.4',
-          minWidth: '140px'
+          fontSize: '12px',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none'
         }}>
-          <div style={{ fontWeight: '700', color: '#2e7d32', whiteSpace: 'nowrap' }}>
-            {arbreData?.name || 'Arbre'}
-          </div>
-          <div style={{ fontSize: '9px', color: '#666', whiteSpace: 'nowrap' }}>
-            ↕️ {hauteurFinale.toFixed(1)}m · ↔️ {envergureActuelle.toFixed(1)}m
-          </div>
+          {arbreData?.name || 'Arbre'} - {Math.round(progression * 100)}% croissance
         </div>
       </Html>
     </group>
