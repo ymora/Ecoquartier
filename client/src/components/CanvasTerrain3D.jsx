@@ -19,7 +19,7 @@ import Soleil3D from './3d/Soleil3D';
 import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
 // GrilleReference, SelecteurHeure et CubeNavigation3D ne sont plus nécessaires
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
-import { validerArbres3D } from '../utils/validation3D';
+// import { validerArbres3D } from '../utils/validation3D'; // ✅ Plus utilisé - validation faite en 2D
 import logger from '../utils/logger';
 import './CanvasTerrain3D.css';
 
@@ -410,29 +410,8 @@ function CanvasTerrain3D({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, syncKey]);
   
-  // Valider tous les arbres en 3D pour avoir les statuts à jour
-  const validationMap3D = useMemo(() => {
-    const tousLesArbres = data3D.arbres || [];
-    
-    if (tousLesArbres.length === 0) return { arbres: new Map() };
-    
-    const validationComplete = validerArbres3D(
-      tousLesArbres,
-      data3D.maisons,
-      data3D.canalisations,
-      data3D.citernes,
-      data3D.clotures,
-      data3D.terrasses
-    );
-    
-    // Mapper les validations aux arbres
-    const arbresMap = new Map();
-    validationComplete.forEach((val, idx) => {
-      arbresMap.set(idx, val);
-    });
-    
-    return { arbres: arbresMap };
-  }, [data3D]);
+  // ✅ Plus besoin de validerArbres3D - la validation est faite en 2D
+  // Le validationStatus vient directement des objets 2D synchronisés
   
   // Calculer les dimensions du terrain adaptatif (mémorisé)
   const terrainDimensions = useMemo(() => {
@@ -926,9 +905,9 @@ function CanvasTerrain3D({
           // Vérifier si un modèle 3D réel existe
           const model3D = arbre.arbreData?.id ? getModelPourArbre(arbre.arbreData.id) : null;
           
-          // Récupérer le statut de validation 3D
-          const validation3D = validationMap3D.arbres.get(idx) || { status: 'ok', messages: [] };
-          const validationStatus = validation3D.status;
+          // ✅ Utiliser le validationStatus de la 2D (pas de recalcul 3D)
+          // Le validationStatus vient de la 2D qui fait la validation officielle
+          const validationStatus = arbre.validationStatus || 'ok';
           
           // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
           // Si elevationSol > 0 : arbre sur une colline/butte
