@@ -93,34 +93,26 @@ function Sol3D({
     const offsetXMaillage = (largeur - largeurMaillage) / 2;
     const offsetZMaillage = (hauteur - hauteurMaillage) / 2;
     
-    // ⭐ MEILLEURE PRATIQUE : Utiliser directement les élévations des NŒUDS
-    // Chaque vertex correspond à un nœud du maillage
+    // ⭐ CORRECTION : Mapper directement les vertices sur les nœuds du maillage
+    // PlaneGeometry crée (segmentsX+1) × (segmentsZ+1) vertices
+    // Cela correspond exactement à nbNoeudsX × nbNoeudsZ
     for (let i = 0; i <= segmentsZ; i++) {
       for (let j = 0; j <= segmentsX; j++) {
         const index = (i * (segmentsX + 1) + j) * 3;
         
-        // Position du vertex dans le plan local
-        const vx = vertices[index];     // x
-        const vz = vertices[index + 1]; // y (devient z après rotation)
+        // ✅ Correspondance directe : vertex[i,j] = nœud[i,j]
+        const elevation = maillageElevation[i][j] || 0;
         
-        // Convertir en coordonnées du maillage (origine coin supérieur gauche du maillage)
-        const localX = vx + largeur / 2 - offsetXMaillage;
-        const localZ = vz + hauteur / 2 - offsetZMaillage;
-        
-        // Trouver le nœud correspondant
-        const noeudI = Math.round(localZ / tailleMailleM);
-        const noeudJ = Math.round(localX / tailleMailleM);
-        
-        // Obtenir l'élévation du nœud (avec limites de sécurité)
-        let elevation = 0;
-        if (noeudI >= 0 && noeudI < nbNoeudsZ && noeudJ >= 0 && noeudJ < nbNoeudsX) {
-          elevation = maillageElevation[noeudI][noeudJ];
-        }
-        
-        // Modifier la coordonnée Z (hauteur)
+        // Modifier la coordonnée Z (hauteur) - index+2 car [x, y, z]
         vertices[index + 2] = elevation;
       }
     }
+    
+    console.log('✅ Sol3D: Vertices déformés', {
+      nbVertices: (segmentsX + 1) * (segmentsZ + 1),
+      nbNoeuds: nbNoeudsX * nbNoeudsZ,
+      elevations: maillageElevation.flat().filter(e => e !== 0).length + ' non-nulles'
+    });
     
     geometry.attributes.position.needsUpdate = true;
     geometry.computeVertexNormals(); // Recalculer les normales pour l'éclairage
@@ -129,6 +121,39 @@ function Sol3D({
     
     return geometry;
   }, [maillageElevation, tailleMailleM, largeur, hauteur, JSON.stringify(maillageElevation)]);
+  
+  // ✅ Afficher les nœuds en 3D si maillage disponible
+  const noeuds3D = useMemo(() => {
+    if (!maillageElevation || maillageElevation.length === 0) return [];
+    
+    const nbNoeudsZ = maillageElevation.length;
+    const nbNoeudsX = maillageElevation[0]?.length || 0;
+    const nodes = [];
+    
+    const largeurMaillage = (nbNoeudsX - 1) * tailleMailleM;
+    const hauteurMaillage = (nbNoeudsZ - 1) * tailleMailleM;
+    const offsetXMaillage = (largeur - largeurMaillage) / 2;
+    const offsetZMaillage = (hauteur - hauteurMaillage) / 2;
+    
+    for (let i = 0; i < nbNoeudsZ; i++) {
+      for (let j = 0; j < nbNoeudsX; j++) {
+        const elevation = maillageElevation[i][j];
+        
+        // Position du nœud (centré sur le terrain)
+        const x = -largeur / 2 + offsetXMaillage + j * tailleMailleM;
+        const z = -hauteur / 2 + offsetZMaillage + i * tailleMailleM;
+        
+        nodes.push({
+          position: [x, elevation, z],
+          elevation,
+          i,
+          j
+        });
+      }
+    }
+    
+    return nodes;
+  }, [maillageElevation, tailleMailleM, largeur, hauteur]);
   
   return (
     <group position={[centreX, 0, centreZ]}>
@@ -155,6 +180,21 @@ function Sol3D({
           opacity={transparent ? 0.3 : 1.0}
         />
       </mesh>
+      
+      {/* ✅ Nœuds d'élévation visibles en 3D */}
+      {noeuds3D.map((noeud, idx) => (
+        <mesh 
+          key={idx}
+          position={noeud.position}
+        >
+          <sphereGeometry args={[0.15, 8, 8]} />
+          <meshStandardMaterial 
+            color={noeud.elevation === 0 ? '#2196f3' : (noeud.elevation > 0 ? '#4caf50' : '#f44336')}
+            emissive={noeud.elevation === 0 ? '#1565c0' : (noeud.elevation > 0 ? '#2e7d32' : '#c62828')}
+            emissiveIntensity={0.3}
+          />
+        </mesh>
+      ))}
       
       {/* COUCHES DE SOL (dynamique) */}
       {couches.map((couche, index) => (
