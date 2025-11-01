@@ -164,6 +164,76 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
           }
         };
         break;
+        
+      case 'arbre-a-planter':
+      case 'arbre-existant':
+      case 'arbre':
+        objetExporte = {
+          type: 'arbre',
+          id: obj.customId || obj.planteId || 'arbre-' + Date.now(),
+          pos: [obj.left, obj.top],
+          dim: null, // Les arbres n'ont pas de dimensions fixes
+          props: {
+            arbreData: obj.arbreData,
+            nomPlante: obj.nomPlante || obj.arbreData?.nom,
+            planteId: obj.planteId,
+            couleur: obj.couleur,
+            elevationSol: obj.elevationSol || 0,
+            validationStatus: obj.validationStatus || 'ok'
+          }
+        };
+        break;
+        
+      case 'canalisation':
+        objetExporte = {
+          type: 'canalisation',
+          id: obj.customId || 'canalisation-' + Date.now(),
+          pos: [obj.x1, obj.y1],
+          dim: [obj.x2 - obj.x1, obj.y2 - obj.y1],
+          props: {
+            x1: obj.x1,
+            y1: obj.y1,
+            x2: obj.x2,
+            y2: obj.y2,
+            diametre: obj.diametre || 0.1,
+            elevationSol: obj.elevationSol || -0.6
+          }
+        };
+        break;
+        
+      case 'cloture':
+        objetExporte = {
+          type: 'cloture',
+          id: obj.customId || 'cloture-' + Date.now(),
+          pos: [obj.x1, obj.y1],
+          dim: [obj.x2 - obj.x1, obj.y2 - obj.y1],
+          props: {
+            x1: obj.x1,
+            y1: obj.y1,
+            x2: obj.x2,
+            y2: obj.y2,
+            hauteur: obj.hauteur || 2,
+            epaisseur: obj.epaisseur || 0.1,
+            elevationSol: obj.elevationSol || 0.05
+          }
+        };
+        break;
+        
+      case 'citerne':
+        objetExporte = {
+          type: 'citerne',
+          id: obj.customId || 'citerne-' + Date.now(),
+          pos: [obj.left, obj.top],
+          dim: [obj.width || 2, obj.height || 2],
+          props: {
+            capacite: obj.capacite || 5000,
+            diametre: obj.diametre || 2,
+            hauteur: obj.hauteur || 2,
+            angle: obj.angle || 0,
+            elevationSol: obj.elevationSol || -2.0
+          }
+        };
+        break;
     }
     
     if (objetExporte) {
@@ -315,7 +385,7 @@ const extraireDonneesPlan = (canvas, dimensions, orientation, echelle, onPlanCom
   localStorage.setItem('planTerrain', JSON.stringify(planData));
   
   if (onPlanComplete) {
-    onPlanComplete(planData);
+  onPlanComplete(planData);
   }
   
   // ❌ LOG COPIABLE retiré - sera généré uniquement sur demande via bouton "Actions"
@@ -360,7 +430,7 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         // Utiliser fabric.Image.fromURL avec l'URL temporaire
         fabric.Image.fromURL(url, (img) => {
           console.log('🖼️ Image Fabric chargée:', img);
-          const canvas = fabricCanvasRef.current;
+        const canvas = fabricCanvasRef.current;
           if (!canvas) {
             console.error('❌ Canvas non disponible');
             return;
