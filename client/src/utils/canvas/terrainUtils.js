@@ -170,6 +170,10 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         }
         
         terrainGroup?.canvas?.renderAll();
+        
+        // ✅ Déclencher un événement pour synchroniser vers la 3D
+        terrainGroup?.canvas?.fire('object:modified', { target: terrainGroup });
+        
         logger.info('Terrain', `✅ Nœud [${i}][${j}] = ${nouvelleElev.toFixed(2)}m`);
       });
       

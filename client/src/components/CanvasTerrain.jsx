@@ -692,8 +692,11 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       agrandirTerrainSiNecessaire(canvas, objet, echelle, onDimensionsChange);
     }
     
-    // Resynchroniser vers la 3D après un court délai
-    setTimeout(() => throttledSync(), 150);
+    // ✅ Resynchroniser vers la 3D après un court délai
+    setTimeout(() => {
+      throttledSync();
+      logger.debug('Sync', '✅ Sync 3D→2D→3D complétée');
+    }, 150);
   }, [throttledSync, onDimensionsChange, echelle]);
   
   // ✅ Callback pour sélectionner un objet depuis la 3D
