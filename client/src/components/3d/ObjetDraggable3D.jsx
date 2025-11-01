@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import SelectionRing3D from './SelectionRing3D';
 
 /**
  * Wrapper pour rendre un objet 3D draggable (VERSION AMÉLIORÉE)
@@ -170,25 +169,6 @@ function ObjetDraggable3D({
       }}
     >
       {children}
-      
-      {/* ✅ Anneaux de sélection unifiés */}
-      <SelectionRing3D 
-        visible={enabled && hovered && !isDragging}
-        color="#2196f3"
-        size={1}
-        height={selectionHeight}
-        opacity={0.6}
-        animated={false}
-      />
-      
-      <SelectionRing3D 
-        visible={enabled && isDragging}
-        color="#4caf50"
-        size={1}
-        height={selectionHeight}
-        opacity={0.8}
-        animated={true}
-      />
     </group>
   );
 }

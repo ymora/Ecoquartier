@@ -3,7 +3,6 @@ import { useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import Arbre3D from './Arbre3D';
 import HaloPulsant from './HaloPulsant';
-import SelectionRing3D from './SelectionRing3D';
 
 /**
  * Composant pour charger et afficher des modèles 3D réels (GLB)
