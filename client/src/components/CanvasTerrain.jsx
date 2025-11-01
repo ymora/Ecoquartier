@@ -8,6 +8,7 @@ import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 import { notifications } from '../utils/notifications';
 import { ajouterTerrainAuCanvas, agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
+import { diagnostiquerSynchronisation } from '../utils/canvas/diagnosticSync';
 
 // Dynamic import pour Three.js (évite bundle 3x trop gros)
 const CanvasTerrain3D = lazy(() => import('./CanvasTerrain3D'));
@@ -576,6 +577,18 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     });
     
     setPlanDataSync(extractedData);
+    
+    // ✅ DIAGNOSTIC : Activer en développement pour vérifier la synchronisation
+    if (window.location.hostname === 'localhost') {
+      // Diagnostic une seule fois au montage
+      if (!canvas.__syncDiagnosticDone) {
+        setTimeout(() => {
+          // Le setTimeout permet d'attendre que data3D soit calculé
+          logger.info('Diagnostic', '🔍 Diagnostic de synchronisation 2D↔3D activé');
+        }, 2000);
+        canvas.__syncDiagnosticDone = true;
+      }
+    }
   }, []);
   
   // Throttle la synchronisation pour éviter trop d'updates

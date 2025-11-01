@@ -233,6 +233,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     originY: 'center',
     selectable: true,
     evented: true,
+    subTargetCheck: true, // ✅ IMPORTANT : Permet les événements sur les sous-objets (nœuds)
+    interactive: true, // ✅ Rend les sous-objets cliquables
     hasBorders: true,
     hasControls: true,
     lockScalingX: true,

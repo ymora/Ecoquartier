@@ -21,6 +21,7 @@ import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 // import { validerArbres3D } from '../utils/validation3D'; // ✅ Plus utilisé - validation faite en 2D
 import logger from '../utils/logger';
+import { diagnostiquerSynchronisation } from '../utils/canvas/diagnosticSync';
 import './CanvasTerrain3D.css';
 
 // Fonction utilitaire pour parser la taille à maturité depuis arbustesData
@@ -408,7 +409,27 @@ function CanvasTerrain3D({
   
   // Optimisation : Mémoriser la conversion 2D→3D (calcul coûteux)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const data3D = useMemo(() => convertir2DTo3D(), [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, syncKey]);
+  const data3D = useMemo(() => {
+    const result = convertir2DTo3D();
+    
+    // ✅ DIAGNOSTIC : Activer en développement pour vérifier la synchronisation
+    if (window.location.hostname === 'localhost' && planData && !window.__syncDiagnosticDone3D) {
+      setTimeout(() => {
+        logger.info('Diagnostic', '🔍 Lancement diagnostic synchronisation depuis 3D');
+        // Note: Le diagnostic nécessite d'accéder au canvas 2D depuis un autre composant
+        // On va logger les données 3D pour comparaison manuelle
+        logger.info('Diagnostic', 'Données 3D:', {
+          maisons: result.maisons?.length || 0,
+          arbres: result.arbres?.length || 0,
+          terrasses: result.terrasses?.length || 0,
+          terrain: result.terrain?.length || 0
+        });
+      }, 3000);
+      window.__syncDiagnosticDone3D = true;
+    }
+    
+    return result;
+  }, [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, syncKey]);
   
   // ✅ Plus besoin de validerArbres3D - la validation est faite en 2D
   // Le validationStatus vient directement des objets 2D synchronisés
@@ -583,12 +604,7 @@ function CanvasTerrain3D({
   
   return (
     <div className="canvas-terrain-3d">
-      {/* Barre d'outils 3D */}
-      <div className="toolbar-3d">
-        
-        {/* ✅ Vue sous terre TOUJOURS ACTIVE - racines, fondations, citernes et canalisations toujours visibles */}
-        
-      </div>
+      {/* ✅ Vue sous terre TOUJOURS ACTIVE - racines, fondations, citernes et canalisations toujours visibles */}
       
       {/* Canvas 3D */}
       <Canvas 
