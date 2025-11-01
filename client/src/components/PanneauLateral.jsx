@@ -1280,7 +1280,7 @@ function PanneauLateral({
                     <h3 className="section-title">🌍 Configuration du terrain</h3>
                   </div>
                   
-                  {/* SECTION : Maillage d'élévation */}
+                  {/* SECTION : Maillage d'élévation - ✅ SIMPLIFIÉ */}
                   <div style={{
                     background: '#e3f2fd',
                     border: '1px solid #2196f3',
@@ -1288,13 +1288,11 @@ function PanneauLateral({
                     padding: '0.8rem',
                     marginBottom: '1rem'
                   }}>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1976d2' }}>
-                      📐 Planéité du terrain (maillage 5m×5m)
+                    <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.3rem', color: '#1976d2' }}>
+                      🌍 Relief du terrain
                     </div>
-                    
-                    {/* Info maillage */}
-                    <div style={{ fontSize: '0.75rem', color: '#555', marginBottom: '0.8rem' }}>
-                      Maillage : <strong>{objetSelectionne.nbNoeudsX || 7}×{objetSelectionne.nbNoeudsZ || 7} nœuds</strong>
+                    <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '0.8rem', fontStyle: 'italic' }}>
+                      Cliquez sur les nœuds pour modifier la hauteur
                     </div>
                     
                     {/* Liste des nœuds modifiés (élévation ≠ 0) */}
@@ -1372,121 +1370,57 @@ function PanneauLateral({
                       return null;
                     })()}
                     
-                    {/* ✅ Sélection multiple de nœuds */}
-                    <div style={{ 
-                      background: '#fff3e0',
-                      border: '1px solid #ff9800',
-                      borderRadius: '4px',
-                      padding: '0.6rem',
-                      marginBottom: '0.8rem'
-                    }}>
-                      <div style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#e65100' }}>
-                        ⚡ Sélection de nœuds
-                      </div>
-                      <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '0.5rem' }}>
-                        {(() => {
-                          // ✅ Force la mise à jour en lisant directement la propriété
-                          const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
-                          if (nbNoeuds > 0) {
-                            return (
-                              <span style={{ fontWeight: 'bold', color: '#ff9800' }}>
-                                {nbNoeuds} nœud(s) sélectionné(s)
-                              </span>
-                            );
-                          }
-                          return <span>Cliquez sur des nœuds pour les sélectionner</span>;
-                        })()}
-                      </div>
-                      
-                      {/* Boutons +/- pour nœuds sélectionnés */}
-                      {(() => {
-                        const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
-                        if (nbNoeuds === 0) return null;
-                        return (
-                        <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.4rem' }}>
-                          <button
-                            onClick={() => {
-                              modifierElevationNoeudsSelectionnes(objetSelectionne, 0.1);
-                            }}
-                            style={{
-                              flex: 1,
-                              padding: '0.5rem',
-                              background: '#4caf50',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              fontSize: '0.85rem',
-                              fontWeight: 'bold'
-                            }}
-                            title="Élever les nœuds sélectionnés de +10cm"
-                          >
-                            ⬆️ +10cm
-                          </button>
-                          <button
-                            onClick={() => {
-                              modifierElevationNoeudsSelectionnes(objetSelectionne, -0.1);
-                            }}
-                            style={{
-                              flex: 1,
-                              padding: '0.5rem',
-                              background: '#f44336',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              fontSize: '0.85rem',
-                              fontWeight: 'bold'
-                            }}
-                            title="Abaisser les nœuds sélectionnés de -10cm"
-                          >
-                            ⬇️ -10cm
-                          </button>
+                    {/* ✅ Modifier nœuds sélectionnés */}
+                    {(() => {
+                      const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
+                      if (nbNoeuds === 0) return null;
+                      return (
+                        <div style={{ marginBottom: '0.8rem' }}>
+                          <div style={{ fontSize: '0.75rem', color: '#ff9800', marginBottom: '0.4rem', fontWeight: 'bold' }}>
+                            {nbNoeuds} nœud(s) sélectionné(s)
+                          </div>
+                          <div style={{ display: 'flex', gap: '0.4rem' }}>
+                            <button
+                              onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, 0.1)}
+                              style={{
+                                flex: 1,
+                                padding: '0.5rem',
+                                background: '#4caf50',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '0.8rem',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              ⬆️ +10cm
+                            </button>
+                            <button
+                              onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, -0.1)}
+                              style={{
+                                flex: 1,
+                                padding: '0.5rem',
+                                background: '#f44336',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '0.8rem',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              ⬇️ -10cm
+                            </button>
+                          </div>
                         </div>
-                        );
-                      })()}
-                      
-                      {(() => {
-                        const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
-                        if (nbNoeuds === 0) return null;
-                        return (
-                        <button
-                          onClick={() => {
-                            deselectionnerTousLesNoeuds(objetSelectionne);
-                          }}
-                          style={{
-                            width: '100%',
-                            padding: '0.4rem',
-                            background: '#9e9e9e',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '0.7rem',
-                            fontWeight: 'bold'
-                          }}
-                        >
-                          ✕ Tout désélectionner
-                        </button>
-                        );
-                      })()}
-                    </div>
+                      );
+                    })()}
                     
-                    {/* Édition rapide */}
-                    <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '0.5rem', fontStyle: 'italic' }}>
-                      💡 Cliquez sur les nœuds du maillage en 2D
-                    </div>
-                    
-                    {/* Actions rapides - ✅ FACTORISÉ */}
-                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    {/* Actions globales - ✅ SIMPLIFIÉ */}
+                    <div style={{ display: 'flex', gap: '0.4rem' }}>
                       <button
-                        onClick={() => {
-                          modifierToutLeMaillage(
-                            objetSelectionne,
-                            () => 0,
-                            '✅ Terrain aplati (tous les nœuds à 0m)'
-                          );
-                        }}
+                        onClick={() => modifierToutLeMaillage(objetSelectionne, () => 0, '✅ Terrain aplati')}
                         style={{
                           flex: 1,
                           padding: '0.4rem',
@@ -1495,21 +1429,15 @@ function PanneauLateral({
                           border: 'none',
                           borderRadius: '4px',
                           cursor: 'pointer',
-                          fontSize: '0.7rem',
+                          fontSize: '0.75rem',
                           fontWeight: 'bold'
                         }}
+                        title="Aplatir tout le terrain"
                       >
-                        ↕️ Aplatir
+                        ↕️ Plat
                       </button>
-                      
                       <button
-                        onClick={() => {
-                          modifierToutLeMaillage(
-                            objetSelectionne,
-                            (v) => Math.min(5, v + 0.5),
-                            '✅ Terrain élevé (+0.5m sur tous les nœuds)'
-                          );
-                        }}
+                        onClick={() => modifierToutLeMaillage(objetSelectionne, (v) => Math.min(5, v + 0.5), '✅ +50cm')}
                         style={{
                           flex: 1,
                           padding: '0.4rem',
@@ -1518,21 +1446,15 @@ function PanneauLateral({
                           border: 'none',
                           borderRadius: '4px',
                           cursor: 'pointer',
-                          fontSize: '0.7rem',
+                          fontSize: '0.75rem',
                           fontWeight: 'bold'
                         }}
+                        title="Élever tout de +50cm"
                       >
                         ⬆️ +50cm
                       </button>
-                      
                       <button
-                        onClick={() => {
-                          modifierToutLeMaillage(
-                            objetSelectionne,
-                            (v) => Math.max(-5, v - 0.5),
-                            '✅ Terrain abaissé (-0.5m sur tous les nœuds)'
-                          );
-                        }}
+                        onClick={() => modifierToutLeMaillage(objetSelectionne, (v) => Math.max(-5, v - 0.5), '✅ -50cm')}
                         style={{
                           flex: 1,
                           padding: '0.4rem',
@@ -1541,19 +1463,13 @@ function PanneauLateral({
                           border: 'none',
                           borderRadius: '4px',
                           cursor: 'pointer',
-                          fontSize: '0.7rem',
+                          fontSize: '0.75rem',
                           fontWeight: 'bold'
                         }}
+                        title="Abaisser tout de -50cm"
                       >
                         ⬇️ -50cm
                       </button>
-                    </div>
-                    
-                    <div style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic', marginTop: '0.5rem' }}>
-                      💡 Bleu = niveau, Vert = +, Rouge = -
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: '#1976d2', fontStyle: 'italic', marginTop: '0.3rem' }}>
-                      ✨ La 3D se déforme automatiquement
                     </div>
                   </div>
                   
