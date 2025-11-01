@@ -39,16 +39,15 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     }
   }
   
-  // Créer un rectangle pour représenter le terrain
-  const terrain = new fabric.Rect({
+  // ✅ Rectangle TRANSPARENT pour la sélection uniquement (zone cliquable invisible)
+  const zoneSelection = new fabric.Rect({
     left: -largeur / 2,
     top: -hauteur / 2,
     width: largeur,
     height: hauteur,
-    fill: 'rgba(139, 195, 74, 0.7)', // Vert plus visible
-    stroke: '#2e7d32',
-    strokeWidth: 6,
-    strokeDashArray: [20, 10],
+    fill: 'rgba(139, 195, 74, 0.05)', // Presque invisible, juste pour voir la zone
+    stroke: 'transparent',
+    strokeWidth: 0,
     selectable: true,
     evented: true,
     hasBorders: true,
@@ -222,8 +221,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   
   elementsMaillage.push(label);
   
-  // ✅ Grouper le terrain et tous les éléments du maillage
-  const terrainGroup = new fabric.Group([terrain, ...elementsMaillage], {
+  // ✅ Grouper la zone de sélection invisible + les éléments du maillage visibles
+  const terrainGroup = new fabric.Group([zoneSelection, ...elementsMaillage], {
     customType: 'sol',
     name: 'Terrain',
     originX: 'center',
