@@ -792,11 +792,11 @@ function PanneauLateral({
                                   }}>
                                     {(() => {
                                       const deg = parseInt(objetSelectionne.orientationToit || 0);
-                                      if (deg === 0) return 'Nord (0°)';
-                                      if (deg === 90) return 'Est (90°)';
-                                      if (deg === 180) return 'Sud (180°)';
-                                      if (deg === 270) return 'Ouest (270°)';
-                                      return `${deg}°`;
+                                    if (deg === 0) return 'Nord (0°)';
+                                    if (deg === 90) return 'Est (90°)';
+                                    if (deg === 180) return 'Sud (180°)';
+                                    if (deg === 270) return 'Ouest (270°)';
+                                    return `${deg}°`;
                                     })()}
                                   </div>
                                   <button
@@ -1520,7 +1520,7 @@ function PanneauLateral({
                 transition: 'all 0.2s'
               }}
             >
-              <span>🏗️ Structures (3)</span>
+              <span>🏗️ Structures (4)</span>
               <span style={{ fontSize: '1rem' }}>{batimentsOuvert ? '▼' : '▶'}</span>
             </button>
             {batimentsOuvert && (
@@ -1616,7 +1616,7 @@ function PanneauLateral({
                 transition: 'all 0.2s'
               }}
             >
-              <span>🔧 Réseaux enterrés (4)</span>
+              <span>🔧 Réseaux enterrés (3)</span>
               <span style={{ fontSize: '1rem' }}>{reseauxOuvert ? '▼' : '▶'}</span>
             </button>
             {reseauxOuvert && (
@@ -1688,26 +1688,6 @@ function PanneauLateral({
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
                   🟦 Caisson eau
-                </button>
-                <button 
-                  onClick={onAjouterCloture} 
-                  title="Clôture limite propriété"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-              🚧 Clôture
             </button>
           </div>
             )}
