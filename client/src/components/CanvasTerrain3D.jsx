@@ -21,7 +21,7 @@ import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 // import { validerArbres3D } from '../utils/validation3D'; // ✅ Plus utilisé - validation faite en 2D
 import logger from '../utils/logger';
-import { diagnostiquerSynchronisation } from '../utils/canvas/diagnosticSync';
+// import { diagnostiquerSynchronisation } from '../utils/canvas/diagnosticSync'; // Désactivé temporairement
 import './CanvasTerrain3D.css';
 
 // Fonction utilitaire pour parser la taille à maturité depuis arbustesData
@@ -462,8 +462,8 @@ function CanvasTerrain3D({
     return {
       largeur: Math.max(largeur, 20), // Minimum 20m
       hauteur: Math.max(hauteur, 20), // Minimum 20m
-      centreX: 0,
-      centreZ: 0
+    centreX: 0,
+    centreZ: 0
     };
   }, [data3D]);
   
@@ -510,18 +510,18 @@ function CanvasTerrain3D({
         }
       } else {
         // Pour les autres objets, rechercher par position
-        const objet2D = objets2D.find(obj => 
-          obj.customType === objet.customType && 
-          Math.abs(obj.left - objet.position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
-          Math.abs(obj.top - objet.position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
-        );
+      const objet2D = objets2D.find(obj => 
+        obj.customType === objet.customType && 
+        Math.abs(obj.left - objet.position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
+        Math.abs(obj.top - objet.position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
+      );
+      
+      if (objet2D) {
+        // ✅ Sélectionner l'objet 2D
+        canvas2D.setActiveObject(objet2D);
+        canvas2D.renderAll();
         
-        if (objet2D) {
-          // ✅ Sélectionner l'objet 2D
-          canvas2D.setActiveObject(objet2D);
-          canvas2D.renderAll();
-          
-          // ✅ Afficher le modal 2D (système original)
+        // ✅ Afficher le modal 2D (système original)
           // afficherMenuContextuel(objet2D, canvas2D, contextMenuRef2D, contextMenuRef2D);
         }
       }
@@ -604,7 +604,7 @@ function CanvasTerrain3D({
   
   return (
     <div className="canvas-terrain-3d">
-      {/* ✅ Vue sous terre TOUJOURS ACTIVE - racines, fondations, citernes et canalisations toujours visibles */}
+        {/* ✅ Vue sous terre TOUJOURS ACTIVE - racines, fondations, citernes et canalisations toujours visibles */}
       
       {/* Canvas 3D */}
       <Canvas 
@@ -705,7 +705,7 @@ function CanvasTerrain3D({
           
           return (
             <ObjetDraggable3D
-              key={`maison-${idx}`}
+            key={`maison-${idx}`}
               position={[maison.position[0], positionY, maison.position[2]]}
               type="maison"
               enabled={true}
@@ -737,10 +737,10 @@ function CanvasTerrain3D({
               maisonBounds={maisonsBounds}
             >
             <Maison3D 
-              {...maison}
-              typeToit={maison.typeToit || 'deux-pentes'}
-              onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
-            />
+            {...maison}
+            typeToit={maison.typeToit || 'deux-pentes'}
+            onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
+          />
           </ObjetDraggable3D>
           );
         })}
@@ -753,7 +753,7 @@ function CanvasTerrain3D({
           
           return (
             <ObjetDraggable3D
-              key={`citerne-${idx}`}
+            key={`citerne-${idx}`}
               position={[citerne.position[0], positionY, citerne.position[2]]}
               type="citerne"
               enabled={true}
@@ -769,14 +769,14 @@ function CanvasTerrain3D({
               maisonBounds={maisonsBounds}
             >
             <Citerne3D 
-              {...citerne}
-              onClick={() => handleObjetClick({ 
-                type: 'citerne', 
-                ...citerne, 
-                index: idx,
+            {...citerne}
+            onClick={() => handleObjetClick({ 
+              type: 'citerne', 
+              ...citerne, 
+              index: idx,
                 position: [citerne.position[0], elevationY, citerne.position[2]]
-              })}
-            />
+            })}
+          />
           </ObjetDraggable3D>
           );
         })}
@@ -789,7 +789,7 @@ function CanvasTerrain3D({
           
           return (
             <ObjetDraggable3D
-              key={`caisson-${idx}`}
+            key={`caisson-${idx}`}
               position={[caisson.position[0], positionY, caisson.position[2]]}
               type="caisson-eau"
               enabled={true}
@@ -805,14 +805,14 @@ function CanvasTerrain3D({
               maisonBounds={maisonsBounds}
             >
             <Caisson3D 
-              {...caisson}
-              onClick={() => handleObjetClick({ 
-                type: 'caisson-eau', 
-                ...caisson, 
-                index: idx,
+            {...caisson}
+            onClick={() => handleObjetClick({ 
+              type: 'caisson-eau', 
+              ...caisson, 
+              index: idx,
                 position: [caisson.position[0], elevationY, caisson.position[2]]
-              })}
-            />
+            })}
+          />
           </ObjetDraggable3D>
           );
         })}
@@ -869,16 +869,16 @@ function CanvasTerrain3D({
             >
               <PaveEnherbe3D
                 position={[0, 0, 0]} // Position relative dans le groupe
-                largeur={terrasse.largeur}
-                profondeur={terrasse.profondeur}
-                onClick={() => handleObjetClick({ 
-                  ...terrasse, 
-                  type: 'paves',
-                  customType: 'paves',
-                  index: idx,
-                  position: [terrasse.position[0], 0, terrasse.position[2]]
-                })}
-              />
+              largeur={terrasse.largeur}
+              profondeur={terrasse.profondeur}
+              onClick={() => handleObjetClick({ 
+                ...terrasse, 
+                type: 'paves',
+                customType: 'paves',
+                index: idx,
+                position: [terrasse.position[0], 0, terrasse.position[2]]
+              })}
+            />
             </ObjetDraggable3D>
           ) : (
             // Terrasse classique (béton gris)
@@ -894,24 +894,24 @@ function CanvasTerrain3D({
             >
               <mesh 
                 position={[0, 0, 0]} // Position relative dans le groupe
-                rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
-                receiveShadow
-                castShadow
-                onClick={() => handleObjetClick({ 
-                  ...terrasse, 
-                  type: 'terrasse',
-                  customType: 'terrasse',
-                  index: idx,
-                  position: [terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]
-                })}
-              >
-                <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
-                <meshStandardMaterial 
-                  color="#8d6e63"
-                  roughness={0.9}
-                  metalness={0.1}
-                />
-              </mesh>
+              rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
+              receiveShadow
+              castShadow
+              onClick={() => handleObjetClick({ 
+                ...terrasse, 
+                type: 'terrasse',
+                customType: 'terrasse',
+                index: idx,
+                position: [terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]
+              })}
+            >
+              <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
+              <meshStandardMaterial 
+                color="#8d6e63"
+                roughness={0.9}
+                metalness={0.1}
+              />
+            </mesh>
             </ObjetDraggable3D>
           )
         ))}

@@ -8,7 +8,7 @@ import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 import { notifications } from '../utils/notifications';
 import { ajouterTerrainAuCanvas, agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
-import { diagnostiquerSynchronisation } from '../utils/canvas/diagnosticSync';
+// import { diagnostiquerSynchronisation } from '../utils/canvas/diagnosticSync'; // Désactivé temporairement
 
 // Dynamic import pour Three.js (évite bundle 3x trop gros)
 const CanvasTerrain3D = lazy(() => import('./CanvasTerrain3D'));

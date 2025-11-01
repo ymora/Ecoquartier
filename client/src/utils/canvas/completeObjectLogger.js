@@ -27,21 +27,21 @@ export const logAllCanvasObjects = (canvas, echelle) => {
     objects: objects.map(obj => {
       // Extraire les propriétés principales
       const basicProps = {
-        id: obj.id,
-        type: obj.type,
+    id: obj.id,
+    type: obj.type,
         customType: obj.customType,
-        left: obj.left,
-        top: obj.top,
-        width: obj.width,
-        height: obj.height,
-        scaleX: obj.scaleX,
-        scaleY: obj.scaleY,
-        angle: obj.angle,
-        opacity: obj.opacity,
-        visible: obj.visible,
-        selectable: obj.selectable,
-        fill: obj.fill,
-        stroke: obj.stroke,
+    left: obj.left,
+    top: obj.top,
+    width: obj.width,
+    height: obj.height,
+    scaleX: obj.scaleX,
+    scaleY: obj.scaleY,
+    angle: obj.angle,
+    opacity: obj.opacity,
+    visible: obj.visible,
+    selectable: obj.selectable,
+    fill: obj.fill,
+    stroke: obj.stroke,
         strokeWidth: obj.strokeWidth
       };
 
@@ -70,7 +70,7 @@ export const logAllCanvasObjects = (canvas, echelle) => {
         basicProps.envergure = obj.envergure;
       }
 
-      // Supprimer les propriétés undefined/null
+  // Supprimer les propriétés undefined/null
       Object.keys(basicProps).forEach(key => {
         if (basicProps[key] === undefined || basicProps[key] === null) {
           delete basicProps[key];
