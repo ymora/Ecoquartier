@@ -144,14 +144,15 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
 function LoadingIndicator({ position }) {
   return (
     <group position={position}>
-      <SelectionRing3D 
-        visible={true}
-        color="#4caf50"
-        size={0.8}
-        height={0.1}
-        opacity={0.5}
-        animated={true}
-      />
+      {/* Indicateur simple : sphère pulsante */}
+      <mesh>
+        <sphereGeometry args={[0.3, 16, 16]} />
+        <meshStandardMaterial 
+          color="#4caf50"
+          emissive="#4caf50"
+          emissiveIntensity={0.5}
+        />
+      </mesh>
     </group>
   );
 }
