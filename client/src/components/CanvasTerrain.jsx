@@ -124,12 +124,13 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   // ❌ Ombres désactivées en mode 2D (uniquement en 3D)
 
   // ✅ Afficher la timeline uniquement s'il y a des arbres sur le plan
+  // ⚠️ Dépend de planDataSync pour se mettre à jour quand on ajoute/retire des arbres
   const hasArbres = useMemo(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return false;
     const objs = canvas.getObjects();
     return objs.some(o => o.customType === 'arbre-a-planter' || o.customType === 'arbre-existant');
-  }, []);
+  }, [planDataSync]); // ✅ Se mettre à jour quand le plan change
   
   const cacherCercleTronc = useCallback((canvas) => {
     cacherCercleTroncUtils(canvas);
