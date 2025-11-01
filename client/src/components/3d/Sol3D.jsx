@@ -93,30 +93,28 @@ function Sol3D({
     const offsetXMaillage = (largeur - largeurMaillage) / 2;
     const offsetZMaillage = (hauteur - hauteurMaillage) / 2;
     
-    // ⭐ CORRECTION : Mapper directement les vertices sur les nœuds du maillage
-    // PlaneGeometry crée (segmentsX+1) × (segmentsZ+1) vertices
-    // Cela correspond exactement à nbNoeudsX × nbNoeudsZ
+    // ✅ COHÉRENCE 2D↔3D : Mapping unifié
+    // 2D Fabric.js : left=X, top=Z (profondeur en 3D)
+    // 3D Three.js : X=gauche-droite, Y=hauteur, Z=profondeur
     
-    console.log('🔍 Avant modification vertices:', {
-      premierVertex: [vertices[0], vertices[1], vertices[2]],
-      dernierVertex: [vertices[vertices.length-3], vertices[vertices.length-2], vertices[vertices.length-1]]
-    });
+    // PlaneGeometry génère des vertices en coordonnées locales
+    // On va les réorganiser pour qu'ils soient en [X, élévation, Z]
     
     for (let i = 0; i <= segmentsZ; i++) {
       for (let j = 0; j <= segmentsX; j++) {
         const index = (i * (segmentsX + 1) + j) * 3;
         
-        // ✅ Correspondance directe : vertex[i,j] = nœud[i,j]
+        // ✅ Récupérer l'élévation du nœud [i,j]
         const elevation = maillageElevation[i][j] || 0;
         
-        // ⚠️ IMPORTANT : PlaneGeometry avec rotation [-PI/2, 0, 0]
-        // Les coordonnées sont : [x, y, z] dans le buffer
-        // Après rotation : x reste x, y devient z (profondeur), z devient y (hauteur)
-        // Donc on doit modifier l'index + 2 (qui est Z avant rotation, devient Y après)
+        // ✅ CRITIQUE : PlaneGeometry est en plan XY, rotation de -90° sur X le met en plan XZ
+        // buffer vertices AVANT rotation = [x, y, z]
+        // APRÈS rotation [-PI/2, 0, 0] : x→x, y→-z, z→y
+        // Donc pour modifier la HAUTEUR (Y final), on modifie Z du buffer (index+2)
         vertices[index + 2] = elevation;
         
         if (elevation !== 0) {
-          console.log(`Vertex [${i},${j}] index=${index} elevation=${elevation}m`);
+          console.log(`🔧 Nœud [${i},${j}] → elevation ${elevation}m appliquée au vertex index ${index}`);
         }
       }
     }
