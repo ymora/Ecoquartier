@@ -64,7 +64,7 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
 };
 
 /**
- * Télécharger le plan actuel en fichier JSON
+ * Télécharger le plan actuel en fichier JSON (format compatible avec planLoader)
  */
 export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) => {
   if (!canvas) {
@@ -72,11 +72,107 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
     return;
   }
   
-  // Réutiliser la logique d'exporterPlan pour extraire les données (sans callback)
-  const planData = extraireDonneesPlan(canvas, dimensions, orientation, echelle, () => {});
+  const objets = canvas.getObjects();
+  
+  // ✅ Convertir au format compatible avec planLoader.js
+  const planJSON = {
+    metadata: {
+      version: '1.0',
+      description: 'Plan exporté',
+      date: new Date().toISOString(),
+      dimensions: `${dimensions.largeur}m × ${dimensions.hauteur}m`,
+      orientation: orientation
+    },
+    objets: []
+  };
+  
+  objets.forEach(obj => {
+    if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isImageFond) return;
+    
+    let objetExporte = null;
+    
+    switch (obj.customType) {
+      case 'maison':
+        objetExporte = {
+          type: 'maison',
+          id: obj.customId || 'maison-' + Date.now(),
+          pos: [obj.left, obj.top],
+          dim: [obj.largeur || 10, obj.profondeur || 10],
+          props: {
+            hauteur: obj.hauteur || 7,
+            angle: obj.angle || 0,
+            elevationSol: obj.elevationSol || 0,
+            typeToit: obj.typeToit || 'deux-pentes',
+            penteToit: obj.penteToit || 30,
+            orientationToit: obj.orientationToit || 0
+          }
+        };
+        break;
+        
+      case 'terrasse':
+        objetExporte = {
+          type: 'terrasse',
+          id: obj.customId || 'terrasse-' + Date.now(),
+          pos: [obj.left, obj.top],
+          dim: [obj.largeur || 5, obj.profondeur || 4],
+          props: {
+            hauteur: obj.hauteur || 0.15,
+            angle: obj.angle || 0,
+            elevationSol: obj.elevationSol || 0
+          }
+        };
+        break;
+        
+      case 'paves':
+        objetExporte = {
+          type: 'paves',
+          id: obj.customId || 'paves-' + Date.now(),
+          pos: [obj.left, obj.top],
+          dim: [obj.largeur || 5, obj.profondeur || 5],
+          props: {
+            hauteur: obj.hauteur || 0.08,
+            angle: obj.angle || 0,
+            elevationSol: obj.elevationSol || 0
+          }
+        };
+        break;
+        
+      case 'caisson-eau':
+        objetExporte = {
+          type: 'caisson-eau',
+          id: obj.customId || 'caisson-' + Date.now(),
+          pos: [obj.left, obj.top],
+          dim: [obj.largeur || 5, obj.profondeur || 3],
+          props: {
+            hauteur: obj.hauteur || 1,
+            angle: obj.angle || 0,
+            elevationSol: obj.elevationSol || -1.0
+          }
+        };
+        break;
+        
+      case 'sol':
+        objetExporte = {
+          type: 'sol',
+          id: 'terrain-principal',
+          pos: [0, 0],
+          dim: [dimensions.largeur, dimensions.hauteur],
+          props: {
+            couchesSol: obj.couchesSol || [],
+            maillageElevation: obj.maillageElevation || null,
+            tailleMailleM: obj.tailleMailleM || 5
+          }
+        };
+        break;
+    }
+    
+    if (objetExporte) {
+      planJSON.objets.push(objetExporte);
+    }
+  });
   
   // Créer un blob JSON
-  const jsonString = JSON.stringify(planData, null, 2);
+  const jsonString = JSON.stringify(planJSON, null, 2);
   const blob = new Blob([jsonString], { type: 'application/json' });
   
   // Créer un lien de téléchargement
@@ -89,7 +185,7 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   
-  logger.success('Export', `Plan exporté : ${a.download}`);
+  logger.success('Export', `Plan exporté : ${a.download} (${planJSON.objets.length} objets)`);
 };
 
 /**
