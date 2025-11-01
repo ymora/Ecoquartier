@@ -1293,28 +1293,29 @@ function PanneauLateral({
                       🌍 Relief du terrain
                     </div>
                     
-                    {/* ✅ Modifier nœuds sélectionnés */}
+                    {/* ✅ Modifier nœuds sélectionnés - POSITION FIXE */}
                     {(() => {
                       const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
-                      if (nbNoeuds === 0) return null;
                       return (
                         <div className="config-row" style={{ marginBottom: '0.8rem' }}>
-                          <label>{nbNoeuds} nœud{nbNoeuds > 1 ? 's' : ''} sélectionné{nbNoeuds > 1 ? 's' : ''}</label>
+                          <label>{nbNoeuds > 0 ? `${nbNoeuds} nœud${nbNoeuds > 1 ? 's' : ''} sélectionné${nbNoeuds > 1 ? 's' : ''}` : 'Hauteur nœuds'}</label>
                           <div>
                             <button
                               onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, -0.1)}
+                              disabled={nbNoeuds === 0}
                               style={{
                                 padding: '0.3rem 0.6rem',
-                                background: '#f44336',
+                                background: nbNoeuds === 0 ? '#ccc' : '#f44336',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
-                                cursor: 'pointer',
+                                cursor: nbNoeuds === 0 ? 'not-allowed' : 'pointer',
                                 fontSize: '1.2rem',
                                 fontWeight: 'bold',
-                                transition: 'transform 0.2s'
+                                transition: 'transform 0.2s',
+                                opacity: nbNoeuds === 0 ? 0.5 : 1
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                              onMouseEnter={(e) => nbNoeuds > 0 && (e.currentTarget.style.transform = 'scale(1.1)')}
                               onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                               title="Abaisser de 10cm"
                             >
@@ -1323,24 +1324,82 @@ function PanneauLateral({
                             <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', margin: '0 0.3rem' }}>10cm</span>
                             <button
                               onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, 0.1)}
+                              disabled={nbNoeuds === 0}
                               style={{
                                 padding: '0.3rem 0.6rem',
-                                background: '#4caf50',
+                                background: nbNoeuds === 0 ? '#ccc' : '#4caf50',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
-                                cursor: 'pointer',
+                                cursor: nbNoeuds === 0 ? 'not-allowed' : 'pointer',
                                 fontSize: '1.2rem',
                                 fontWeight: 'bold',
-                                transition: 'transform 0.2s'
+                                transition: 'transform 0.2s',
+                                opacity: nbNoeuds === 0 ? 0.5 : 1
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                              onMouseEnter={(e) => nbNoeuds > 0 && (e.currentTarget.style.transform = 'scale(1.1)')}
                               onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                               title="Élever de 10cm"
                             >
                               +
                             </button>
                           </div>
+                        </div>
+                      );
+                    })()}
+                    
+                    {/* ✅ Liste des nœuds modifiés EN DESSOUS - Ne fait pas bouger les boutons */}
+                    {objetSelectionne.maillageElevation && (() => {
+                      const noeudsModifies = [];
+                      for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
+                        for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
+                          const elev = objetSelectionne.maillageElevation[i][j];
+                          if (elev !== 0) {
+                            noeudsModifies.push({ i, j, elev });
+                          }
+                        }
+                      }
+                      
+                      if (noeudsModifies.length === 0) return null;
+                      
+                      return (
+                        <div style={{ 
+                          fontSize: '0.7rem', 
+                          color: '#555', 
+                          marginBottom: '0.8rem',
+                          background: '#fff',
+                          padding: '0.5rem',
+                          borderRadius: '4px',
+                          border: '1px solid #e0e0e0',
+                          maxHeight: '100px',
+                          overflowY: 'auto'
+                        }}>
+                          <div style={{ fontWeight: 'bold', marginBottom: '0.3rem', color: '#1976d2', fontSize: '0.75rem' }}>
+                            📊 Relief actuel :
+                          </div>
+                          {noeudsModifies.slice(0, 10).map((n, idx) => (
+                            <div key={idx} style={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '0.2rem 0',
+                              borderBottom: idx < Math.min(noeudsModifies.length, 10) - 1 ? '1px solid #f0f0f0' : 'none'
+                            }}>
+                              <span style={{ fontSize: '0.7rem' }}>Nœud [{n.i}][{n.j}]</span>
+                              <span style={{ 
+                                fontWeight: 'bold',
+                                fontSize: '0.75rem',
+                                color: n.elev > 0 ? '#2e7d32' : '#c62828'
+                              }}>
+                                {n.elev > 0 ? '+' : ''}{n.elev.toFixed(2)}m
+                              </span>
+                            </div>
+                          ))}
+                          {noeudsModifies.length > 10 && (
+                            <div style={{ fontSize: '0.65rem', color: '#888', marginTop: '0.3rem', fontStyle: 'italic' }}>
+                              ... et {noeudsModifies.length - 10} autres
+                            </div>
+                          )}
                         </div>
                       );
                     })()}
