@@ -1348,6 +1348,58 @@ function PanneauLateral({
                       );
                     })()}
                     
+                    {/* ✅ Résumé du relief EN DESSOUS - Position dynamique, ne fait pas bouger les boutons */}
+                    {objetSelectionne.maillageElevation && (() => {
+                      const noeudsModifies = [];
+                      for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
+                        for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
+                          const elev = objetSelectionne.maillageElevation[i][j];
+                          if (elev !== 0) {
+                            noeudsModifies.push({ i, j, elev });
+                          }
+                        }
+                      }
+                      
+                      if (noeudsModifies.length === 0) return null;
+                      
+                      return (
+                        <div style={{ 
+                          fontSize: '0.7rem', 
+                          color: '#555', 
+                          marginBottom: '0.8rem',
+                          background: '#f5f5f5',
+                          padding: '0.5rem',
+                          borderRadius: '4px',
+                          border: '1px solid #ddd'
+                        }}>
+                          <div style={{ fontWeight: 'bold', marginBottom: '0.4rem', color: '#666', fontSize: '0.75rem' }}>
+                            📊 {noeudsModifies.length} point{noeudsModifies.length > 1 ? 's' : ''} modifié{noeudsModifies.length > 1 ? 's' : ''}
+                          </div>
+                          {noeudsModifies.slice(0, 5).map((n, idx) => (
+                            <div key={idx} style={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between',
+                              padding: '0.15rem 0'
+                            }}>
+                              <span style={{ fontSize: '0.7rem', color: '#777' }}>[{n.i},{n.j}]</span>
+                              <span style={{ 
+                                fontWeight: 'bold',
+                                fontSize: '0.75rem',
+                                color: n.elev > 0 ? '#2e7d32' : '#c62828'
+                              }}>
+                                {n.elev > 0 ? '+' : ''}{n.elev.toFixed(2)}m
+                              </span>
+                            </div>
+                          ))}
+                          {noeudsModifies.length > 5 && (
+                            <div style={{ fontSize: '0.65rem', color: '#999', marginTop: '0.2rem', fontStyle: 'italic' }}>
+                              ... et {noeudsModifies.length - 5} autres
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                    
                     {/* ✅ Liste des nœuds modifiés EN DESSOUS - Ne fait pas bouger les boutons */}
                     {objetSelectionne.maillageElevation && (() => {
                       const noeudsModifies = [];
