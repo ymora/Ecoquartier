@@ -1376,42 +1376,47 @@ function PanneauLateral({
                       const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
                       if (nbNoeuds === 0) return null;
                       return (
-                        <div style={{ marginBottom: '0.8rem' }}>
-                          <div style={{ fontSize: '0.75rem', color: '#ff9800', marginBottom: '0.4rem', fontWeight: 'bold' }}>
-                            {nbNoeuds} nœud(s) sélectionné(s)
-                          </div>
-                          <div style={{ display: 'flex', gap: '0.4rem' }}>
-                            <button
-                              onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, 0.1)}
-                              style={{
-                                flex: 1,
-                                padding: '0.5rem',
-                                background: '#4caf50',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '0.8rem',
-                                fontWeight: 'bold'
-                              }}
-                            >
-                              ⬆️ +10cm
-                            </button>
+                        <div className="config-row" style={{ marginBottom: '0.8rem' }}>
+                          <label>{nbNoeuds} nœud{nbNoeuds > 1 ? 's' : ''} sélectionné{nbNoeuds > 1 ? 's' : ''}</label>
+                          <div>
                             <button
                               onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, -0.1)}
                               style={{
-                                flex: 1,
-                                padding: '0.5rem',
+                                padding: '0.3rem 0.6rem',
                                 background: '#f44336',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
-                                fontSize: '0.8rem',
-                                fontWeight: 'bold'
+                                fontSize: '1.2rem',
+                                fontWeight: 'bold',
+                                transition: 'transform 0.2s'
                               }}
+                              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                              title="Abaisser de 10cm"
                             >
-                              ⬇️ -10cm
+                              −
+                            </button>
+                            <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', margin: '0 0.3rem' }}>10cm</span>
+                            <button
+                              onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, 0.1)}
+                              style={{
+                                padding: '0.3rem 0.6rem',
+                                background: '#4caf50',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                fontWeight: 'bold',
+                                transition: 'transform 0.2s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                              title="Élever de 10cm"
+                            >
+                              +
                             </button>
                           </div>
                         </div>
