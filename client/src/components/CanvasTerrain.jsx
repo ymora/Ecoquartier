@@ -165,8 +165,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   
   const telechargerPlanJSON = useCallback(() => {
     if (!fabricCanvasRef.current) return;
-    const { telechargerPlanJSON: telechargerJSON } = require('../utils/canvas/exportImport');
-    telechargerJSON(fabricCanvasRef.current, dimensions, orientation, echelle);
+    telechargerPlanJSONUtils(fabricCanvasRef.current, dimensions, orientation, echelle);
   }, [dimensions, orientation, echelle]);
   
   const ajouterMesuresLive = useCallback((canvas) => {
