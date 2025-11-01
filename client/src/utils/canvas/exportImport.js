@@ -217,10 +217,22 @@ const extraireDonneesPlan = (canvas, dimensions, orientation, echelle, onPlanCom
   });
 
   localStorage.setItem('planTerrain', JSON.stringify(planData));
-  onPlanComplete(planData);
+  
+  if (onPlanComplete) {
+    onPlanComplete(planData);
+  }
   
   // ❌ LOG COPIABLE retiré - sera généré uniquement sur demande via bouton "Actions"
   // loggerPositionsPlanCopiable(planData, echelle);
+  
+  return planData;
+};
+
+/**
+ * Exporter le plan (wrapper pour compatibilité avec code existant)
+ */
+export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
+  return extraireDonneesPlan(canvas, dimensions, orientation, echelle, onPlanComplete);
 };
 
 /**
