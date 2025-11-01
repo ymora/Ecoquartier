@@ -1581,6 +1581,7 @@ function PanneauLateral({
                     background: 'white',
                     color: '#333',
                     border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
                     fontSize: '0.85rem',
                     fontWeight: '500',
@@ -1591,6 +1592,26 @@ function PanneauLateral({
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
               🟩 Pavés
+            </button>
+                <button 
+                  onClick={onAjouterCloture} 
+                  title="Clôture limite propriété (structure aérienne à 5cm du sol)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🚧 Clôture
             </button>
               </div>
             )}
