@@ -135,57 +135,69 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         evented: true,
         hoverCursor: 'pointer',
         noeudI: i,
-        noeudJ: j
+        noeudJ: j,
+        isSelected: false // ✅ État de sélection du nœud
       });
       
-      // Gestionnaire de clic pour modifier l'élévation du nœud
+      // ✅ Gestionnaire de clic pour SÉLECTIONNER/DÉSÉLECTIONNER le nœud
       noeud.on('mousedown', function(e) {
         if (e.e) e.e.stopPropagation();
-        const increment = e.e?.shiftKey ? -0.1 : 0.1;
-        const nouvelleElev = Math.max(-5, Math.min(5, elevation + increment));
-        maillageElevation[i][j] = nouvelleElev;
         
-        // Mettre à jour la couleur du nœud
-        this.set({
-          fill: nouvelleElev === 0 ? '#2196f3' : (nouvelleElev > 0 ? '#4caf50' : '#f44336')
-        });
-        
-        // Trouver et mettre à jour le label correspondant
         const terrainGroup = this.group;
-        if (terrainGroup && terrainGroup._objects) {
-          const labelObj = terrainGroup._objects.find(el => 
-            el.type === 'text' && el.noeudI === i && el.noeudJ === j
-          );
-          if (labelObj) {
-            labelObj.set({
-              text: nouvelleElev.toFixed(2) + 'm',
-              fill: nouvelleElev === 0 ? '#1976d2' : (nouvelleElev > 0 ? '#2e7d32' : '#c62828')
-            });
-          }
+        if (!terrainGroup) return;
+        
+        // Toggle sélection
+        this.isSelected = !this.isSelected;
+        
+        // Mettre à jour l'apparence
+        if (this.isSelected) {
+          this.set({
+            stroke: '#ffeb3b', // Jaune pour indiquer la sélection
+            strokeWidth: 4,
+            radius: 8
+          });
+        } else {
+          this.set({
+            stroke: '#ffffff',
+            strokeWidth: 2,
+            radius: 6
+          });
         }
         
-        // Mettre à jour le maillage du terrain
-        if (terrainGroup) {
-          terrainGroup.maillageElevation = maillageElevation;
+        // Mettre à jour la liste des nœuds sélectionnés dans le terrain
+        if (!terrainGroup.noeudsSelectionnes) {
+          terrainGroup.noeudsSelectionnes = [];
         }
         
-        terrainGroup?.canvas?.renderAll();
+        const noeudKey = `${i},${j}`;
+        const index = terrainGroup.noeudsSelectionnes.findIndex(n => n.key === noeudKey);
         
-        // ✅ Déclencher un événement pour synchroniser vers la 3D
-        terrainGroup?.canvas?.fire('object:modified', { target: terrainGroup });
+        if (this.isSelected && index === -1) {
+          terrainGroup.noeudsSelectionnes.push({ i, j, key: noeudKey, noeud: this });
+        } else if (!this.isSelected && index !== -1) {
+          terrainGroup.noeudsSelectionnes.splice(index, 1);
+        }
         
-        logger.info('Terrain', `✅ Nœud [${i}][${j}] = ${nouvelleElev.toFixed(2)}m`);
+        if (terrainGroup.canvas) {
+          terrainGroup.canvas.renderAll();
+        }
+        
+        logger.debug('Terrain', `Nœud [${i},${j}] ${this.isSelected ? 'sélectionné' : 'désélectionné'}. Total: ${terrainGroup.noeudsSelectionnes.length}`);
       });
       
       // Survol
       noeud.on('mouseover', function() {
-        this.set({ radius: 8, strokeWidth: 3 });
-        this.canvas?.renderAll();
+        if (!this.isSelected) {
+          this.set({ radius: 8, strokeWidth: 3 });
+          this.canvas?.renderAll();
+        }
       });
       
       noeud.on('mouseout', function() {
-        this.set({ radius: 6, strokeWidth: 2 });
-        this.canvas?.renderAll();
+        if (!this.isSelected) {
+          this.set({ radius: 6, strokeWidth: 2 });
+          this.canvas?.renderAll();
+        }
       });
       
       elementsMaillage.push(noeud);
@@ -266,10 +278,85 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   terrainGroup.nbNoeudsZ = nbNoeudsZ;
   terrainGroup.nbCellulesX = nbCellulesX;
   terrainGroup.nbCellulesZ = nbCellulesZ;
+  terrainGroup.noeudsSelectionnes = []; // ✅ Liste des nœuds sélectionnés
   
   logger.info('Terrain', `✅ Terrain créé avec maillage ${nbNoeudsX}×${nbNoeudsZ} nœuds, ${nbCellulesX}×${nbCellulesZ} cellules`);
   
   return terrainGroup;
+};
+
+/**
+ * Modifier l'élévation des nœuds sélectionnés
+ * @param {fabric.Group} terrainGroup - Le groupe terrain
+ * @param {number} increment - Incrément d'élévation (ex: +0.1m ou -0.1m)
+ */
+export const modifierElevationNoeudsSelectionnes = (terrainGroup, increment) => {
+  if (!terrainGroup || !terrainGroup.noeudsSelectionnes || terrainGroup.noeudsSelectionnes.length === 0) {
+    logger.warn('Terrain', 'Aucun nœud sélectionné');
+    return;
+  }
+  
+  const maillageElevation = terrainGroup.maillageElevation;
+  
+  terrainGroup.noeudsSelectionnes.forEach(({ i, j, noeud }) => {
+    const elevation = maillageElevation[i][j];
+    const nouvelleElev = Math.max(-5, Math.min(5, elevation + increment));
+    maillageElevation[i][j] = nouvelleElev;
+    
+    // Mettre à jour la couleur du nœud
+    noeud.set({
+      fill: nouvelleElev === 0 ? '#2196f3' : (nouvelleElev > 0 ? '#4caf50' : '#f44336')
+    });
+    
+    // Trouver et mettre à jour le label correspondant
+    if (terrainGroup._objects) {
+      const labelObj = terrainGroup._objects.find(el => 
+        el.type === 'text' && el.noeudI === i && el.noeudJ === j
+      );
+      if (labelObj) {
+        labelObj.set({
+          text: nouvelleElev.toFixed(2) + 'm',
+          fill: nouvelleElev === 0 ? '#1976d2' : (nouvelleElev > 0 ? '#2e7d32' : '#c62828')
+        });
+      }
+    }
+  });
+  
+  // Mettre à jour le maillage du terrain
+  terrainGroup.maillageElevation = maillageElevation;
+  
+  // Synchroniser la 3D
+  if (terrainGroup.canvas) {
+    terrainGroup.canvas.renderAll();
+    terrainGroup.canvas.fire('object:modified', { target: terrainGroup });
+  }
+  
+  logger.info('Terrain', `✅ ${terrainGroup.noeudsSelectionnes.length} nœud(s) modifié(s) de ${increment > 0 ? '+' : ''}${increment.toFixed(2)}m`);
+};
+
+/**
+ * Désélectionner tous les nœuds
+ * @param {fabric.Group} terrainGroup - Le groupe terrain
+ */
+export const deselectionnerTousLesNoeuds = (terrainGroup) => {
+  if (!terrainGroup || !terrainGroup.noeudsSelectionnes) return;
+  
+  terrainGroup.noeudsSelectionnes.forEach(({ noeud }) => {
+    noeud.isSelected = false;
+    noeud.set({
+      stroke: '#ffffff',
+      strokeWidth: 2,
+      radius: 6
+    });
+  });
+  
+  terrainGroup.noeudsSelectionnes = [];
+  
+  if (terrainGroup.canvas) {
+    terrainGroup.canvas.renderAll();
+  }
+  
+  logger.debug('Terrain', 'Tous les nœuds désélectionnés');
 };
 
 /**

@@ -8,7 +8,7 @@ import {
   highlightSelection, 
   unhighlightSelection 
 } from '../utils/canvas/highlightUtils';
-import { mettreAJourCouchesSol } from '../utils/canvas/terrainUtils';
+import { mettreAJourCouchesSol, modifierElevationNoeudsSelectionnes, deselectionnerTousLesNoeuds } from '../utils/canvas/terrainUtils';
 import { chargerPlanJSONAvecExplorateur } from '../utils/fileLoader';
 import { canvasOperations } from '../utils/canvas/canvasOperations';
 
@@ -1372,14 +1372,97 @@ function PanneauLateral({
                       return null;
                     })()}
                     
+                    {/* ✅ Sélection multiple de nœuds */}
+                    <div style={{ 
+                      background: '#fff3e0',
+                      border: '1px solid #ff9800',
+                      borderRadius: '4px',
+                      padding: '0.6rem',
+                      marginBottom: '0.8rem'
+                    }}>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#e65100' }}>
+                        ⚡ Sélection multiple
+                      </div>
+                      <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '0.5rem' }}>
+                        {objetSelectionne.noeudsSelectionnes && objetSelectionne.noeudsSelectionnes.length > 0 ? (
+                          <span style={{ fontWeight: 'bold', color: '#ff9800' }}>
+                            {objetSelectionne.noeudsSelectionnes.length} nœud(s) sélectionné(s)
+                          </span>
+                        ) : (
+                          <span>Cliquez sur des nœuds pour les sélectionner</span>
+                        )}
+                      </div>
+                      
+                      {/* Boutons +/- pour nœuds sélectionnés */}
+                      {objetSelectionne.noeudsSelectionnes && objetSelectionne.noeudsSelectionnes.length > 0 && (
+                        <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.4rem' }}>
+                          <button
+                            onClick={() => {
+                              modifierElevationNoeudsSelectionnes(objetSelectionne, 0.1);
+                            }}
+                            style={{
+                              flex: 1,
+                              padding: '0.5rem',
+                              background: '#4caf50',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '0.85rem',
+                              fontWeight: 'bold'
+                            }}
+                            title="Élever les nœuds sélectionnés de +10cm"
+                          >
+                            ⬆️ +10cm
+                          </button>
+                          <button
+                            onClick={() => {
+                              modifierElevationNoeudsSelectionnes(objetSelectionne, -0.1);
+                            }}
+                            style={{
+                              flex: 1,
+                              padding: '0.5rem',
+                              background: '#f44336',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '0.85rem',
+                              fontWeight: 'bold'
+                            }}
+                            title="Abaisser les nœuds sélectionnés de -10cm"
+                          >
+                            ⬇️ -10cm
+                          </button>
+                        </div>
+                      )}
+                      
+                      {objetSelectionne.noeudsSelectionnes && objetSelectionne.noeudsSelectionnes.length > 0 && (
+                        <button
+                          onClick={() => {
+                            deselectionnerTousLesNoeuds(objetSelectionne);
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: '0.4rem',
+                            background: '#9e9e9e',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.7rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          ✕ Tout désélectionner
+                        </button>
+                      )}
+                    </div>
+                    
                     {/* Édition rapide */}
                     <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '0.5rem', fontStyle: 'italic' }}>
-                      💡 Cliquez sur les points verts du maillage en 2D :
+                      💡 Cliquez sur les nœuds du maillage en 2D
                     </div>
-                    <ul style={{ fontSize: '0.7rem', color: '#555', margin: '0.2rem 0 0.5rem 1.2rem', paddingLeft: 0 }}>
-                      <li>Clic : +10 cm</li>
-                      <li>Shift+Clic : -10 cm</li>
-                    </ul>
                     
                     {/* Actions rapides */}
                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
