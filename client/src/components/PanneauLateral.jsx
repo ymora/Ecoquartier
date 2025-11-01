@@ -1280,7 +1280,7 @@ function PanneauLateral({
                     <h3 className="section-title">🌍 Configuration du terrain</h3>
                   </div>
                   
-                  {/* INFO : Grille de maillage */}
+                  {/* INFO : Maillage d'élévation */}
                   <div style={{
                     background: '#e3f2fd',
                     border: '1px solid #2196f3',
@@ -1289,7 +1289,7 @@ function PanneauLateral({
                     marginBottom: '1rem'
                   }}>
                     <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1976d2' }}>
-                      📐 Maillage d'élévation (visible en 2D)
+                      📐 Planéité du terrain (maillage 5m×5m)
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#555', marginBottom: '0.5rem' }}>
                       <strong>Cliquez sur un carré</strong> pour ajuster son élévation :
@@ -1298,8 +1298,11 @@ function PanneauLateral({
                       <li><strong>Clic gauche</strong> : +10 cm</li>
                       <li><strong>Shift + Clic</strong> : -10 cm</li>
                     </ul>
-                    <div style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic' }}>
+                    <div style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic', marginTop: '0.5rem' }}>
                       💡 Bleu = niveau 0, Vert = colline (+), Rouge = dépression (-)
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: '#1976d2', fontStyle: 'italic', marginTop: '0.5rem' }}>
+                      ✨ Le terrain 3D se déforme automatiquement selon le maillage
                     </div>
                   </div>
                   

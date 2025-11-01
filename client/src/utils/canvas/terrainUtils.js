@@ -7,7 +7,6 @@
 import * as fabric from 'fabric';
 import logger from '../logger';
 import { canvasOperations } from './canvasOperations';
-import { afficherGrilleMaillage, masquerGrilleMaillage } from './terrainMaillage';
 
 /**
  * Créer un objet terrain sélectionnable pour afficher les couches de sol
@@ -81,8 +80,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     evented: false // Le label ne doit pas être cliquable pour ne pas agrandir la zone
   });
   
-  // Grouper le terrain et le label
-  const terrainGroup = new fabric.Group([terrain, label], {
+  // ✅ Grouper le terrain, le maillage et le label
+  const terrainGroup = new fabric.Group([terrain, ...elementsMaillage, label], {
     customType: 'sol',
     name: 'Terrain',
     originX: 'center',
@@ -116,8 +115,10 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   // ✅ Transférer les propriétés du maillage au groupe
   terrainGroup.maillageElevation = maillageElevation;
   terrainGroup.tailleMailleM = tailleMailleM;
+  terrainGroup.nbCellulesX = nbCellulesX;
+  terrainGroup.nbCellulesZ = nbCellulesZ;
   
-  logger.info('Terrain', `Objet terrain créé avec maillage ${nbCellulesX}×${nbCellulesZ} cellules`);
+  logger.info('Terrain', `✅ Terrain créé avec maillage intégré ${nbCellulesX}×${nbCellulesZ} cellules (toujours visible)`);
   
   return terrainGroup;
 };
@@ -406,11 +407,30 @@ const _calculerEtRedimensionnerTerrain = (canvas, echelle, onDimensionsChange) =
     const newLargeurM = Math.max(requiredLargeurM, 10); // Minimum 10m
     const newHauteurM = Math.max(requiredHauteurM, 10); // Minimum 10m
     
+    // ✅ Conserver le maillage d'élévation existant si possible
+    const ancienMaillage = terrain.maillageElevation || null;
+    const ancienNbCellulesX = terrain.nbCellulesX || 0;
+    const ancienNbCellulesZ = terrain.nbCellulesZ || 0;
+    
     // Supprimer l'ancien terrain et recréer avec la nouvelle taille
     const oldActive = canvas.getActiveObject() === terrain;
     canvasOperations.supprimer(canvas, terrain, false);
 
     const nouveauTerrain = creerObjetTerrain(echelle, { largeur: newLargeurM, hauteur: newHauteurM });
+    
+    // ✅ Tenter de préserver le maillage d'élévation si dimensions compatibles
+    if (ancienMaillage && nouveauTerrain.maillageElevation) {
+      const newNbCellulesX = nouveauTerrain.nbCellulesX;
+      const newNbCellulesZ = nouveauTerrain.nbCellulesZ;
+      
+      // Copier les valeurs d'élévation de l'ancien maillage vers le nouveau
+      for (let i = 0; i < Math.min(ancienNbCellulesZ, newNbCellulesZ); i++) {
+        for (let j = 0; j < Math.min(ancienNbCellulesX, newNbCellulesX); j++) {
+          nouveauTerrain.maillageElevation[i][j] = ancienMaillage[i][j];
+        }
+      }
+    }
+    
     nouveauTerrain.set({ 
       left: requiredCentreX, 
       top: requiredCentreY, 

@@ -129,6 +129,12 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       if (props.couchesSol) {
         objet.set('couchesSol', props.couchesSol);
       }
+      // ✅ Restaurer le maillage d'élévation si disponible
+      if (props.maillageElevation) {
+        objet.maillageElevation = props.maillageElevation;
+        // Note : Le maillage visuel est déjà intégré au terrain lors de sa création
+        // Il faudra le recréer avec les bonnes élévations
+      }
       // ✅ TERRAIN : Ne pas repositionner car il est déjà centré
       // Le terrain est créé centré à (0,0) dans creerObjetTerrain
       canvasOperations.ajouter(canvas, objet);
