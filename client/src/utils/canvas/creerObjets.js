@@ -209,6 +209,7 @@ export const creerCloture = (canvas, pointsClotureRef) => {
       customType: 'cloture',
       hauteur: 1.5, // Hauteur par défaut 1.5m
       epaisseur: 0.05, // 5cm
+      elevationSol: 0.05, // ✅ 5 cm au-dessus du sol (structure aérienne, pas réseau enterré)
       strokeUniform: true,
       hasBorders: true,
       hasControls: true,

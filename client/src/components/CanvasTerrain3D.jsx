@@ -279,6 +279,7 @@ function CanvasTerrain3D({
           y2: y2 / echelle,
           hauteur: c.hauteur || 1.5,
           epaisseur: c.epaisseur || 0.05,
+          elevationSol: c.elevationSol !== undefined ? c.elevationSol : 0.05, // ✅ 5 cm au-dessus du sol (structure aérienne)
           customType: 'cloture' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });

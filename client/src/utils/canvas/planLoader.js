@@ -140,6 +140,11 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       objet = creerCanalisation(objetData, echelle);
       break;
       
+    case 'cloture':
+      // Créer une clôture
+      objet = creerClotureFromJSON(objetData);
+      break;
+      
     default:
       logger.warn('PlanLoader', `Type d'objet non reconnu: ${type}`);
       return;
@@ -215,8 +220,33 @@ const creerCanalisation = (objetData, echelle) => {
     strokeDashArray: [10, 5],
     strokeLineCap: 'round',
     customType: 'canalisation',
-    diametre: proprietes.diametre,
-    elevationSol: proprietes.elevationSol,
+    diametre: proprietes.diametre || 0.1,
+    elevationSol: proprietes.elevationSol !== undefined ? proprietes.elevationSol : -0.6, // ✅ Réseau enterré par défaut
+    selectable: true,
+    hasBorders: true,
+    hasControls: true,
+    strokeUniform: true
+  });
+};
+
+/**
+ * Créer une clôture (fonction simple, pas de duplication)
+ */
+const creerClotureFromJSON = (objetData) => {
+  const { points, proprietes } = objetData;
+  
+  return new fabric.Line([
+    points[0].x, points[0].y,
+    points[1].x, points[1].y
+  ], {
+    stroke: '#ffd54f',
+    strokeWidth: 2,
+    strokeDashArray: [10, 5],
+    strokeLineCap: 'round',
+    customType: 'cloture',
+    hauteur: proprietes.hauteur || 1.5,
+    epaisseur: proprietes.epaisseur || 0.05,
+    elevationSol: proprietes.elevationSol !== undefined ? proprietes.elevationSol : 0.05, // ✅ 5 cm au-dessus du sol
     selectable: true,
     hasBorders: true,
     hasControls: true,

@@ -117,7 +117,8 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         x2: obj.x2,
         y2: obj.y2,
         hauteur: obj.hauteur || 1.5,
-        epaisseur: obj.epaisseur || 0.05
+        epaisseur: obj.epaisseur || 0.05,
+        elevationSol: obj.elevationSol !== undefined ? obj.elevationSol : 0.05 // ✅ 5 cm au-dessus du sol
       });
     } else if (obj.customType === 'arbre-a-planter') {
       planData.arbresAPlanter.push({
