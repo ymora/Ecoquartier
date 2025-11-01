@@ -61,11 +61,14 @@ function Sol3D({
       return new THREE.PlaneGeometry(largeur, hauteur);
     }
     
-    // ✅ Terrain déformé selon le maillage
-    const nbCellulesZ = maillageElevation.length;
-    const nbCellulesX = maillageElevation[0]?.length || 0;
+    // ✅ Terrain déformé selon le maillage de NŒUDS
+    // Le maillage contient les élévations des nœuds (intersections)
+    const nbNoeudsZ = maillageElevation.length;
+    const nbNoeudsX = maillageElevation[0]?.length || 0;
     
-    // Créer une grille de vertices (segments = cellules pour avoir des carrés)
+    // Créer une grille de vertices (segments = cellules)
+    const nbCellulesX = nbNoeudsX - 1;
+    const nbCellulesZ = nbNoeudsZ - 1;
     const segmentsX = nbCellulesX;
     const segmentsZ = nbCellulesZ;
     
@@ -82,6 +85,8 @@ function Sol3D({
     const offsetXMaillage = (largeur - largeurMaillage) / 2;
     const offsetZMaillage = (hauteur - hauteurMaillage) / 2;
     
+    // ⭐ MEILLEURE PRATIQUE : Utiliser directement les élévations des NŒUDS
+    // Chaque vertex correspond à un nœud du maillage
     for (let i = 0; i <= segmentsZ; i++) {
       for (let j = 0; j <= segmentsX; j++) {
         const index = (i * (segmentsX + 1) + j) * 3;
@@ -94,27 +99,14 @@ function Sol3D({
         const localX = vx + largeur / 2 - offsetXMaillage;
         const localZ = vz + hauteur / 2 - offsetZMaillage;
         
-        // Trouver la cellule correspondante
-        const celluleI = Math.floor(localZ / tailleMailleM);
-        const celluleJ = Math.floor(localX / tailleMailleM);
+        // Trouver le nœud correspondant
+        const noeudI = Math.round(localZ / tailleMailleM);
+        const noeudJ = Math.round(localX / tailleMailleM);
         
-        // Interpoler l'élévation entre les cellules adjacentes
+        // Obtenir l'élévation du nœud (avec limites de sécurité)
         let elevation = 0;
-        
-        if (celluleI >= 0 && celluleI < nbCellulesZ && celluleJ >= 0 && celluleJ < nbCellulesX) {
-          // À l'intérieur du maillage : interpolation bilinéaire
-          const fx = (localX / tailleMailleM) - celluleJ;
-          const fz = (localZ / tailleMailleM) - celluleI;
-          
-          const e00 = maillageElevation[celluleI][celluleJ];
-          const e10 = (celluleJ + 1 < nbCellulesX) ? maillageElevation[celluleI][celluleJ + 1] : e00;
-          const e01 = (celluleI + 1 < nbCellulesZ) ? maillageElevation[celluleI + 1][celluleJ] : e00;
-          const e11 = (celluleI + 1 < nbCellulesZ && celluleJ + 1 < nbCellulesX) ? 
-                      maillageElevation[celluleI + 1][celluleJ + 1] : e00;
-          
-          const e0 = e00 * (1 - fx) + e10 * fx;
-          const e1 = e01 * (1 - fx) + e11 * fx;
-          elevation = e0 * (1 - fz) + e1 * fz;
+        if (noeudI >= 0 && noeudI < nbNoeudsZ && noeudJ >= 0 && noeudJ < nbNoeudsX) {
+          elevation = maillageElevation[noeudI][noeudJ];
         }
         
         // Modifier la coordonnée Z (hauteur)

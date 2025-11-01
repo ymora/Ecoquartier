@@ -19,17 +19,22 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   const hauteur = dimensions.hauteur * echelle;
   
   // ✅ Créer le maillage d'élévation (tous les 5m)
-  // Chaque cellule/carré a une élévation uniforme
+  // ⭐ MEILLEURE PRATIQUE : Régler la hauteur des NŒUDS (intersections) plutôt que des cellules
+  // Cela permet une interpolation naturelle et une surface continue
   const tailleMailleM = 5; // Maillage tous les 5 mètres
   const nbCellulesX = Math.floor(dimensions.largeur / tailleMailleM);
   const nbCellulesZ = Math.floor(dimensions.hauteur / tailleMailleM);
   
+  // Nombre de nœuds = nombre de cellules + 1 (les intersections)
+  const nbNoeudsX = nbCellulesX + 1;
+  const nbNoeudsZ = nbCellulesZ + 1;
+  
   // Initialiser le maillage avec élévation 0 partout (terrain plat par défaut)
-  // maillageElevation[i][j] = élévation de la cellule en mètres
+  // maillageElevation[i][j] = élévation du NŒUD en mètres
   const maillageElevation = [];
-  for (let i = 0; i < nbCellulesZ; i++) {
+  for (let i = 0; i < nbNoeudsZ; i++) {
     maillageElevation[i] = [];
-    for (let j = 0; j < nbCellulesX; j++) {
+    for (let j = 0; j < nbNoeudsX; j++) {
       maillageElevation[i][j] = 0; // Élévation en mètres
     }
   }
@@ -66,7 +71,7 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     validationMessages: []
   });
   
-  // ✅ Créer les éléments du maillage (lignes vertes + cellules cliquables)
+  // ✅ Créer les éléments du maillage (lignes vertes + nœuds cliquables)
   const elementsMaillage = [];
   
   // Calculer dimensions du maillage centré
@@ -80,7 +85,7 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   const offsetZPx = (hauteur - hauteurMaillagePx) / 2;
   
   // Lignes horizontales (vertes)
-  for (let i = 0; i <= nbCellulesZ; i++) {
+  for (let i = 0; i < nbNoeudsZ; i++) {
     const y = -hauteur / 2 + offsetZPx + i * tailleMailleM * echelle;
     const line = new fabric.Line(
       [-largeur / 2 + offsetXPx, y, -largeur / 2 + offsetXPx + largeurMaillagePx, y],
@@ -95,7 +100,7 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   }
   
   // Lignes verticales (vertes)
-  for (let j = 0; j <= nbCellulesX; j++) {
+  for (let j = 0; j < nbNoeudsX; j++) {
     const x = -largeur / 2 + offsetXPx + j * tailleMailleM * echelle;
     const line = new fabric.Line(
       [x, -hauteur / 2 + offsetZPx, x, -hauteur / 2 + offsetZPx + hauteurMaillagePx],
@@ -109,49 +114,48 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     elementsMaillage.push(line);
   }
   
-  // Créer les cellules cliquables semi-transparentes
-  for (let i = 0; i < nbCellulesZ; i++) {
-    for (let j = 0; j < nbCellulesX; j++) {
+  // ⭐ Créer les NŒUDS cliquables (intersections des lignes)
+  // C'est la meilleure pratique : interpolation naturelle entre les nœuds
+  for (let i = 0; i < nbNoeudsZ; i++) {
+    for (let j = 0; j < nbNoeudsX; j++) {
       const x = -largeur / 2 + offsetXPx + j * tailleMailleM * echelle;
       const y = -hauteur / 2 + offsetZPx + i * tailleMailleM * echelle;
       const elevation = maillageElevation[i][j];
       
-      // Cellule semi-transparente colorée selon élévation
-      const cellule = new fabric.Rect({
+      // Point de contrôle (nœud)
+      const noeud = new fabric.Circle({
         left: x,
         top: y,
-        width: tailleMailleM * echelle,
-        height: tailleMailleM * echelle,
-        fill: elevation === 0 ? 'rgba(33, 150, 243, 0.15)' : 
-              (elevation > 0 ? 'rgba(76, 175, 80, 0.25)' : 'rgba(244, 67, 54, 0.25)'),
-        stroke: 'transparent',
-        originX: 'left',
-        originY: 'top',
+        radius: 6,
+        fill: elevation === 0 ? '#2196f3' : (elevation > 0 ? '#4caf50' : '#f44336'),
+        stroke: '#ffffff',
+        strokeWidth: 2,
+        originX: 'center',
+        originY: 'center',
         selectable: false,
         evented: true,
         hoverCursor: 'pointer',
-        celluleI: i,
-        celluleJ: j
+        noeudI: i,
+        noeudJ: j
       });
       
-      // Gestionnaire de clic pour modifier l'élévation
-      cellule.on('mousedown', function(e) {
+      // Gestionnaire de clic pour modifier l'élévation du nœud
+      noeud.on('mousedown', function(e) {
         if (e.e) e.e.stopPropagation();
         const increment = e.e?.shiftKey ? -0.1 : 0.1;
         const nouvelleElev = Math.max(-5, Math.min(5, elevation + increment));
         maillageElevation[i][j] = nouvelleElev;
         
-        // Mettre à jour la couleur de la cellule
+        // Mettre à jour la couleur du nœud
         this.set({
-          fill: nouvelleElev === 0 ? 'rgba(33, 150, 243, 0.15)' : 
-                (nouvelleElev > 0 ? 'rgba(76, 175, 80, 0.25)' : 'rgba(244, 67, 54, 0.25)')
+          fill: nouvelleElev === 0 ? '#2196f3' : (nouvelleElev > 0 ? '#4caf50' : '#f44336')
         });
         
         // Trouver et mettre à jour le label correspondant
         const terrainGroup = this.group;
         if (terrainGroup && terrainGroup._objects) {
           const labelObj = terrainGroup._objects.find(el => 
-            el.type === 'text' && el.celluleI === i && el.celluleJ === j
+            el.type === 'text' && el.noeudI === i && el.noeudJ === j
           );
           if (labelObj) {
             labelObj.set({
@@ -167,35 +171,37 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         }
         
         terrainGroup?.canvas?.renderAll();
-        logger.info('Terrain', `✅ Cellule [${i}][${j}] = ${nouvelleElev.toFixed(2)}m`);
+        logger.info('Terrain', `✅ Nœud [${i}][${j}] = ${nouvelleElev.toFixed(2)}m`);
       });
       
       // Survol
-      cellule.on('mouseover', function() {
-        this.set({ stroke: '#ff9800', strokeWidth: 2 });
+      noeud.on('mouseover', function() {
+        this.set({ radius: 8, strokeWidth: 3 });
         this.canvas?.renderAll();
       });
       
-      cellule.on('mouseout', function() {
-        this.set({ stroke: 'transparent', strokeWidth: 0 });
+      noeud.on('mouseout', function() {
+        this.set({ radius: 6, strokeWidth: 2 });
         this.canvas?.renderAll();
       });
       
-      elementsMaillage.push(cellule);
+      elementsMaillage.push(noeud);
       
-      // Label d'élévation
+      // Label d'élévation à côté du nœud
       const labelElev = new fabric.Text(elevation.toFixed(2) + 'm', {
-        left: x + (tailleMailleM * echelle) / 2,
-        top: y + (tailleMailleM * echelle) / 2,
-        fontSize: 11,
+        left: x + 10,
+        top: y - 10,
+        fontSize: 10,
         fontWeight: 'bold',
         fill: elevation === 0 ? '#1976d2' : (elevation > 0 ? '#2e7d32' : '#c62828'),
-        originX: 'center',
-        originY: 'center',
+        originX: 'left',
+        originY: 'bottom',
         selectable: false,
         evented: false,
-        celluleI: i,
-        celluleJ: j
+        noeudI: i,
+        noeudJ: j,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        padding: 2
       });
       elementsMaillage.push(labelElev);
     }
@@ -251,10 +257,12 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   // ✅ Transférer les propriétés du maillage au groupe
   terrainGroup.maillageElevation = maillageElevation;
   terrainGroup.tailleMailleM = tailleMailleM;
+  terrainGroup.nbNoeudsX = nbNoeudsX;
+  terrainGroup.nbNoeudsZ = nbNoeudsZ;
   terrainGroup.nbCellulesX = nbCellulesX;
   terrainGroup.nbCellulesZ = nbCellulesZ;
   
-  logger.info('Terrain', `✅ Terrain créé avec maillage intégré ${nbCellulesX}×${nbCellulesZ} cellules (toujours visible)`);
+  logger.info('Terrain', `✅ Terrain créé avec maillage ${nbNoeudsX}×${nbNoeudsZ} nœuds, ${nbCellulesX}×${nbCellulesZ} cellules`);
   
   return terrainGroup;
 };
@@ -545,8 +553,8 @@ const _calculerEtRedimensionnerTerrain = (canvas, echelle, onDimensionsChange) =
     
     // ✅ Conserver le maillage d'élévation existant si possible
     const ancienMaillage = terrain.maillageElevation || null;
-    const ancienNbCellulesX = terrain.nbCellulesX || 0;
-    const ancienNbCellulesZ = terrain.nbCellulesZ || 0;
+    const ancienNbNoeudsX = terrain.nbNoeudsX || 0;
+    const ancienNbNoeudsZ = terrain.nbNoeudsZ || 0;
     
     // Supprimer l'ancien terrain et recréer avec la nouvelle taille
     const oldActive = canvas.getActiveObject() === terrain;
@@ -556,12 +564,12 @@ const _calculerEtRedimensionnerTerrain = (canvas, echelle, onDimensionsChange) =
     
     // ✅ Tenter de préserver le maillage d'élévation si dimensions compatibles
     if (ancienMaillage && nouveauTerrain.maillageElevation) {
-      const newNbCellulesX = nouveauTerrain.nbCellulesX;
-      const newNbCellulesZ = nouveauTerrain.nbCellulesZ;
+      const newNbNoeudsX = nouveauTerrain.nbNoeudsX;
+      const newNbNoeudsZ = nouveauTerrain.nbNoeudsZ;
       
       // Copier les valeurs d'élévation de l'ancien maillage vers le nouveau
-      for (let i = 0; i < Math.min(ancienNbCellulesZ, newNbCellulesZ); i++) {
-        for (let j = 0; j < Math.min(ancienNbCellulesX, newNbCellulesX); j++) {
+      for (let i = 0; i < Math.min(ancienNbNoeudsZ, newNbNoeudsZ); i++) {
+        for (let j = 0; j < Math.min(ancienNbNoeudsX, newNbNoeudsX); j++) {
           nouveauTerrain.maillageElevation[i][j] = ancienMaillage[i][j];
         }
       }

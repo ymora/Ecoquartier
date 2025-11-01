@@ -1292,17 +1292,17 @@ function PanneauLateral({
                       📐 Planéité du terrain (maillage 5m×5m)
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#555', marginBottom: '0.5rem' }}>
-                      <strong>Cliquez sur un carré</strong> pour ajuster son élévation :
+                      <strong>Cliquez sur un point</strong> (intersection) pour ajuster son élévation :
                     </div>
                     <ul style={{ fontSize: '0.75rem', color: '#555', margin: '0.3rem 0 0.5rem 1.2rem', paddingLeft: 0 }}>
                       <li><strong>Clic gauche</strong> : +10 cm</li>
                       <li><strong>Shift + Clic</strong> : -10 cm</li>
                     </ul>
                     <div style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic', marginTop: '0.5rem' }}>
-                      💡 Bleu = niveau 0, Vert = colline (+), Rouge = dépression (-)
+                      💡 Points colorés : Bleu = niveau 0, Vert = colline (+), Rouge = dépression (-)
                     </div>
                     <div style={{ fontSize: '0.7rem', color: '#1976d2', fontStyle: 'italic', marginTop: '0.5rem' }}>
-                      ✨ Le terrain 3D se déforme automatiquement selon le maillage
+                      ✨ La 3D interpole entre les points pour un terrain naturel
                     </div>
                   </div>
                   
