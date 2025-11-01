@@ -1277,7 +1277,35 @@ function PanneauLateral({
               {objetSelectionne.customType === 'sol' && (
                 <div className="objet-controls">
                   <div className="section-header">
-                    <h3 className="section-title">🌍 Composition du sol</h3>
+                    <h3 className="section-title">🌍 Configuration du terrain</h3>
+                  </div>
+                  
+                  {/* INFO : Grille de maillage */}
+                  <div style={{
+                    background: '#e3f2fd',
+                    border: '1px solid #2196f3',
+                    borderRadius: '6px',
+                    padding: '0.8rem',
+                    marginBottom: '1rem'
+                  }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1976d2' }}>
+                      📐 Maillage d'élévation (visible en 2D)
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#555', marginBottom: '0.5rem' }}>
+                      <strong>Cliquez sur un carré</strong> pour ajuster son élévation :
+                    </div>
+                    <ul style={{ fontSize: '0.75rem', color: '#555', margin: '0.3rem 0 0.5rem 1.2rem', paddingLeft: 0 }}>
+                      <li><strong>Clic gauche</strong> : +10 cm</li>
+                      <li><strong>Shift + Clic</strong> : -10 cm</li>
+                    </ul>
+                    <div style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic' }}>
+                      💡 Bleu = niveau 0, Vert = colline (+), Rouge = dépression (-)
+                    </div>
+                  </div>
+                  
+                  {/* Composition du sol */}
+                  <div className="section-header" style={{ marginTop: '1rem' }}>
+                    <h3 className="section-title">🪨 Composition du sol</h3>
                   </div>
                   <SolInteractif 
                     couchesSol={couchesSol} 

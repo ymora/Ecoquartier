@@ -1,5 +1,6 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Html } from '@react-three/drei';
+import * as THREE from 'three';
 
 function Sol3D({ 
   largeur = 30, 
@@ -12,6 +13,8 @@ function Sol3D({
     { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd' },
     { nom: 'Sous-sol', profondeur: 200, couleur: '#a1887f' }
   ],
+  maillageElevation = null, // ✅ Maillage pour terrain non uniforme
+  tailleMailleM = 5, // ✅ Taille des cellules du maillage
   onTerrainClick
 }) {
   // Icônes par couche
@@ -51,13 +54,88 @@ function Sol3D({
   const centreX = offsetX + largeur / 2;
   const centreZ = offsetZ + hauteur / 2;
   
+  // ✅ Créer une géométrie déformée si maillage d'élévation disponible
+  const geometrieSurface = useMemo(() => {
+    if (!maillageElevation || maillageElevation.length === 0) {
+      // Terrain plat classique
+      return new THREE.PlaneGeometry(largeur, hauteur);
+    }
+    
+    // ✅ Terrain déformé selon le maillage
+    const nbCellulesZ = maillageElevation.length;
+    const nbCellulesX = maillageElevation[0]?.length || 0;
+    
+    // Créer une grille de vertices (segments = cellules pour avoir des carrés)
+    const segmentsX = nbCellulesX;
+    const segmentsZ = nbCellulesZ;
+    
+    const geometry = new THREE.PlaneGeometry(largeur, hauteur, segmentsX, segmentsZ);
+    
+    // Modifier les vertices selon le maillage d'élévation
+    const vertices = geometry.attributes.position.array;
+    
+    // Calculer la largeur/hauteur réelles du maillage
+    const largeurMaillage = nbCellulesX * tailleMailleM;
+    const hauteurMaillage = nbCellulesZ * tailleMailleM;
+    
+    // Offset pour centrer le maillage
+    const offsetXMaillage = (largeur - largeurMaillage) / 2;
+    const offsetZMaillage = (hauteur - hauteurMaillage) / 2;
+    
+    for (let i = 0; i <= segmentsZ; i++) {
+      for (let j = 0; j <= segmentsX; j++) {
+        const index = (i * (segmentsX + 1) + j) * 3;
+        
+        // Position du vertex dans le plan local
+        const vx = vertices[index];     // x
+        const vz = vertices[index + 1]; // y (devient z après rotation)
+        
+        // Convertir en coordonnées du maillage (origine coin supérieur gauche du maillage)
+        const localX = vx + largeur / 2 - offsetXMaillage;
+        const localZ = vz + hauteur / 2 - offsetZMaillage;
+        
+        // Trouver la cellule correspondante
+        const celluleI = Math.floor(localZ / tailleMailleM);
+        const celluleJ = Math.floor(localX / tailleMailleM);
+        
+        // Interpoler l'élévation entre les cellules adjacentes
+        let elevation = 0;
+        
+        if (celluleI >= 0 && celluleI < nbCellulesZ && celluleJ >= 0 && celluleJ < nbCellulesX) {
+          // À l'intérieur du maillage : interpolation bilinéaire
+          const fx = (localX / tailleMailleM) - celluleJ;
+          const fz = (localZ / tailleMailleM) - celluleI;
+          
+          const e00 = maillageElevation[celluleI][celluleJ];
+          const e10 = (celluleJ + 1 < nbCellulesX) ? maillageElevation[celluleI][celluleJ + 1] : e00;
+          const e01 = (celluleI + 1 < nbCellulesZ) ? maillageElevation[celluleI + 1][celluleJ] : e00;
+          const e11 = (celluleI + 1 < nbCellulesZ && celluleJ + 1 < nbCellulesX) ? 
+                      maillageElevation[celluleI + 1][celluleJ + 1] : e00;
+          
+          const e0 = e00 * (1 - fx) + e10 * fx;
+          const e1 = e01 * (1 - fx) + e11 * fx;
+          elevation = e0 * (1 - fz) + e1 * fz;
+        }
+        
+        // Modifier la coordonnée Z (hauteur)
+        vertices[index + 2] = elevation;
+      }
+    }
+    
+    geometry.attributes.position.needsUpdate = true;
+    geometry.computeVertexNormals(); // Recalculer les normales pour l'éclairage
+    
+    return geometry;
+  }, [maillageElevation, tailleMailleM, largeur, hauteur]);
+  
   return (
     <group position={[centreX, 0, centreZ]}>
-      {/* SOL SURFACE (herbe verte) - Semi-transparente si mode transparent activé */}
+      {/* SOL SURFACE (herbe verte) - Déformé selon maillage */}
       <mesh 
         rotation={[-Math.PI / 2, 0, 0]} 
         position={[0, 0.07, 0]} 
         receiveShadow
+        geometry={geometrieSurface}
         onClick={handleTerrainClick}
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -68,12 +146,11 @@ function Sol3D({
           document.body.style.cursor = 'auto';
         }}
       >
-        <planeGeometry args={[largeur, hauteur]} />
         <meshStandardMaterial 
           color="#8bc34a"
           roughness={0.9}
           transparent={transparent}
-          opacity={transparent ? 0.3 : 1.0} // Semi-transparente en mode transparent pour voir le plan de fond
+          opacity={transparent ? 0.3 : 1.0}
         />
       </mesh>
       

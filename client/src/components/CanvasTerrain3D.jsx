@@ -697,6 +697,8 @@ function CanvasTerrain3D({
           offsetZ={data3D.bounds.minZ}
           couchesSol={couchesSol}
           transparent={solTransparent}
+          maillageElevation={planData.terrainMaillage}
+          tailleMailleM={planData.terrainTailleMaille || 5}
           onTerrainClick={handleObjetClick}
         />
         

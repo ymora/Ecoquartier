@@ -547,6 +547,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
              !isNaN(obj.top);
     };
     
+    // ✅ Extraire le terrain avec son maillage d'élévation
+    const terrain2D = canvas.getObjects().find(o => o.customType === 'sol');
+    
     const extractedData = {
       maisons: canvas.getObjects().filter(o => o.customType === 'maison' && objetValide(o)),
       citernes: canvas.getObjects().filter(o => o.customType === 'citerne' && objetValide(o)),
@@ -557,6 +560,9 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
       caissonsEau: canvas.getObjects().filter(o => o.customType === 'caisson-eau' && objetValide(o)),
       arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter' && objetValide(o)),
       terrain: canvas.getObjects().filter(o => o.customType === 'sol' && objetValide(o)),
+      // ✅ Ajouter le maillage d'élévation pour le terrain 3D
+      terrainMaillage: terrain2D?.maillageElevation || null,
+      terrainTailleMaille: terrain2D?.tailleMailleM || 5,
       echelle: echelle3D
     };
     
