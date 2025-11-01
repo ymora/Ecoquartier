@@ -72,8 +72,8 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
     return;
   }
   
-  // Réutiliser la logique d'exporterPlan pour extraire les données
-  const planData = extraireDonneesPlan(canvas, dimensions, orientation, echelle);
+  // Réutiliser la logique d'exporterPlan pour extraire les données (sans callback)
+  const planData = extraireDonneesPlan(canvas, dimensions, orientation, echelle, () => {});
   
   // Créer un blob JSON
   const jsonString = JSON.stringify(planData, null, 2);
@@ -95,7 +95,7 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
 /**
  * Extraire les données du plan (fonction réutilisable)
  */
-const extraireDonneesPlan = (canvas, dimensions, orientation, echelle) => {
+const extraireDonneesPlan = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
   const objets = canvas.getObjects();
   
   const planData = {
