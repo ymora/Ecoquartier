@@ -1053,7 +1053,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onVerrouillerSelection={verrouillerSelection}
         onSupprimerSelection={supprimerSelection}
         onEffacerTout={effacerTout}
-        onChargerPlanParDefaut={chargerPlanParDefaut}
         onChargerImageFond={chargerImageFond}
         onAjusterOpaciteImage={ajusterOpaciteImage}
         onSupprimerImageFond={supprimerImageFond}

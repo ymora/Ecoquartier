@@ -33,8 +33,6 @@ function PanneauLateral({
   onVerrouillerSelection,
   onSupprimerSelection,
   onEffacerTout,
-  onChargerPlanParDefaut,
-  onChargerPlanDepuisFichier,
   onChargerImageFond,
   onAjusterOpaciteImage,
   onSupprimerImageFond,
@@ -456,13 +454,13 @@ function PanneauLateral({
     <div className="panneau-lateral">
       {/* Boutons de chargement - TOUJOURS VISIBLES */}
       <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)' }}>
-        {/* Bouton Charger mon plan */}
+        {/* Bouton Exporter plan JSON */}
         <button
-          className="btn btn-warning btn-full"
-          onClick={onChargerPlanParDefaut}
-          title="Charger un plan sauvegardé depuis votre ordinateur"
+          className="btn btn-success btn-full"
+          onClick={onExporterPlan}
+          title="Exporter le plan actuel en JSON"
           style={{ 
-            background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+            background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
             color: 'white',
             border: 'none',
             borderRadius: '8px',
@@ -471,7 +469,7 @@ function PanneauLateral({
             fontWeight: '600',
             cursor: 'pointer',
             transition: 'all 0.3s ease',
-            boxShadow: '0 3px 6px rgba(255, 152, 0, 0.3)',
+            boxShadow: '0 3px 6px rgba(76, 175, 80, 0.3)',
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
             width: '100%',
@@ -482,17 +480,17 @@ function PanneauLateral({
             marginBottom: '0.5rem'
           }}
           onMouseEnter={(e) => {
-            e.target.style.background = 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)';
+            e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
             e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 6px 12px rgba(255, 152, 0, 0.4)';
+            e.target.style.boxShadow = '0 6px 12px rgba(76, 175, 80, 0.4)';
           }}
           onMouseLeave={(e) => {
-            e.target.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
+            e.target.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
             e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 3px 6px rgba(255, 152, 0, 0.3)';
+            e.target.style.boxShadow = '0 3px 6px rgba(76, 175, 80, 0.3)';
           }}
         >
-          📁 Charger plan par défaut
+          💾 Exporter plan JSON
         </button>
         
         {/* Bouton Charger plan depuis JSON */}
