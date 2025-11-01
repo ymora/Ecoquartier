@@ -453,7 +453,7 @@ function PanneauLateral({
   return (
     <div className="panneau-lateral">
       {/* Boutons de chargement - TOUJOURS VISIBLES */}
-      <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)' }}>
+      <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {/* Bouton Exporter plan JSON */}
         <button
           className="btn btn-success btn-full"
