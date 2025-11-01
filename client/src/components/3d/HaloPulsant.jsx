@@ -7,7 +7,7 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import SelectionRing3D from './SelectionRing3D';
+// import SelectionRing3D from './SelectionRing3D'; // ✅ SelectionRing3D supprimé
 
 /**
  * Composant HaloPulsant
@@ -75,15 +75,7 @@ export default function HaloPulsant({ couleur = '#f44336', taille = 2 }) {
         />
       </mesh>
       
-      {/* ✅ Anneau de sélection unifié au-dessus */}
-      <SelectionRing3D 
-        visible={true}
-        color={couleur}
-        size={taille}
-        height={2}
-        opacity={0.6}
-        animated={true}
-      />
+      {/* ✅ Anneau de sélection unifié au-dessus - Supprimé (pas nécessaire) */}
     </group>
   );
 }
