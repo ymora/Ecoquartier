@@ -12,6 +12,7 @@ import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
 import { agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
 import { forcerTerrainEnArrierePlan } from '../utils/canvas/depthSorting';
 import { canvasOperations } from '../utils/canvas/canvasOperations';
+import { afficherGrilleMaillage, masquerGrilleMaillage, modifierElevationNoeud } from '../utils/canvas/terrainMaillage';
 
 /**
  * Hook pour gérer tous les event listeners du canvas
@@ -259,13 +260,18 @@ export const useCanvasEvents = ({
         // ✅ FORCER LE TERRAIN EN ARRIÈRE-PLAN lors de la sélection
         forcerTerrainEnArrierePlan(canvas);
         
-        // ✅ Si c'est le terrain qui est sélectionné, s'assurer qu'il reste au fond
+        // ✅ Si c'est le terrain qui est sélectionné, afficher la grille de maillage
         if (obj.customType === 'sol') {
           // Forcer le terrain au fond même quand sélectionné
           setTimeout(() => {
             canvas.sendObjectToBack(obj);
+            // ✅ Afficher la grille de maillage pour éditer la planéité
+            afficherGrilleMaillage(canvas, obj, echelle);
             canvasOperations.rendre(canvas);
-          }, 0);
+          }, 10);
+        } else {
+          // ✅ Masquer la grille si on sélectionne un autre objet
+          masquerGrilleMaillage(canvas);
         }
         
         afficherMenuContextuel(obj, canvas);
@@ -302,6 +308,8 @@ export const useCanvasEvents = ({
     const handleSelectionCleared = () => {
       // cacherTooltipValidation supprimé - infos maintenant dans Config
       cacherMenuContextuel();
+      // ✅ Masquer la grille de maillage quand aucun objet n'est sélectionné
+      masquerGrilleMaillage(canvas);
     };
 
     const handleDblClick = (e) => {

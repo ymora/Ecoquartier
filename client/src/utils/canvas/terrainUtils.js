@@ -7,6 +7,7 @@
 import * as fabric from 'fabric';
 import logger from '../logger';
 import { canvasOperations } from './canvasOperations';
+import { afficherGrilleMaillage, masquerGrilleMaillage } from './terrainMaillage';
 
 /**
  * Créer un objet terrain sélectionnable pour afficher les couches de sol
@@ -17,6 +18,20 @@ import { canvasOperations } from './canvasOperations';
 export const creerObjetTerrain = (echelle, dimensions) => {
   const largeur = dimensions.largeur * echelle;
   const hauteur = dimensions.hauteur * echelle;
+  
+  // ✅ Créer le maillage d'élévation (tous les 5m)
+  const tailleMailleM = 5; // Maillage tous les 5 mètres
+  const nbNoeudsX = Math.floor(dimensions.largeur / tailleMailleM) + 1;
+  const nbNoeudsZ = Math.floor(dimensions.hauteur / tailleMailleM) + 1;
+  
+  // Initialiser le maillage avec élévation 0 partout (terrain plat par défaut)
+  const maillageElevation = [];
+  for (let i = 0; i < nbNoeudsZ; i++) {
+    maillageElevation[i] = [];
+    for (let j = 0; j < nbNoeudsX; j++) {
+      maillageElevation[i][j] = 0; // Élévation en mètres
+    }
+  }
   
   // Créer un rectangle pour représenter le terrain
   const terrain = new fabric.Rect({
@@ -42,6 +57,9 @@ export const creerObjetTerrain = (echelle, dimensions) => {
       { nom: 'Terre végétale', profondeur: 30, couleur: '#795548', type: 'terre' },
       { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' }
     ],
+    // ✅ Ajouter le maillage d'élévation
+    maillageElevation: maillageElevation,
+    tailleMailleM: tailleMailleM,
     // Propriétés de validation
     validationStatus: 'ok',
     validationMessages: []
@@ -93,7 +111,11 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   // Forcer les coordonnées après la création du groupe
   terrainGroup.setCoords();
   
-  logger.info('Terrain', 'Objet terrain créé et sélectionnable');
+  // ✅ Transférer les propriétés du maillage au groupe
+  terrainGroup.maillageElevation = maillageElevation;
+  terrainGroup.tailleMailleM = tailleMailleM;
+  
+  logger.info('Terrain', `Objet terrain créé avec maillage ${nbNoeudsX}×${nbNoeudsZ} nœuds`);
   
   return terrainGroup;
 };
