@@ -1381,20 +1381,28 @@ function PanneauLateral({
                       marginBottom: '0.8rem'
                     }}>
                       <div style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#e65100' }}>
-                        ⚡ Sélection multiple
+                        ⚡ Sélection de nœuds
                       </div>
                       <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '0.5rem' }}>
-                        {objetSelectionne.noeudsSelectionnes && objetSelectionne.noeudsSelectionnes.length > 0 ? (
-                          <span style={{ fontWeight: 'bold', color: '#ff9800' }}>
-                            {objetSelectionne.noeudsSelectionnes.length} nœud(s) sélectionné(s)
-                          </span>
-                        ) : (
-                          <span>Cliquez sur des nœuds pour les sélectionner</span>
-                        )}
+                        {(() => {
+                          // ✅ Force la mise à jour en lisant directement la propriété
+                          const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
+                          if (nbNoeuds > 0) {
+                            return (
+                              <span style={{ fontWeight: 'bold', color: '#ff9800' }}>
+                                {nbNoeuds} nœud(s) sélectionné(s)
+                              </span>
+                            );
+                          }
+                          return <span>Cliquez sur des nœuds pour les sélectionner</span>;
+                        })()}
                       </div>
                       
                       {/* Boutons +/- pour nœuds sélectionnés */}
-                      {objetSelectionne.noeudsSelectionnes && objetSelectionne.noeudsSelectionnes.length > 0 && (
+                      {(() => {
+                        const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
+                        if (nbNoeuds === 0) return null;
+                        return (
                         <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.4rem' }}>
                           <button
                             onClick={() => {
@@ -1435,9 +1443,13 @@ function PanneauLateral({
                             ⬇️ -10cm
                           </button>
                         </div>
-                      )}
+                        );
+                      })()}
                       
-                      {objetSelectionne.noeudsSelectionnes && objetSelectionne.noeudsSelectionnes.length > 0 && (
+                      {(() => {
+                        const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
+                        if (nbNoeuds === 0) return null;
+                        return (
                         <button
                           onClick={() => {
                             deselectionnerTousLesNoeuds(objetSelectionne);
@@ -1456,7 +1468,8 @@ function PanneauLateral({
                         >
                           ✕ Tout désélectionner
                         </button>
-                      )}
+                        );
+                      })()}
                     </div>
                     
                     {/* Édition rapide */}

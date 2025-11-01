@@ -179,6 +179,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         }
         
         if (terrainGroup.canvas) {
+          // ✅ IMPORTANT : Déclencher un événement de sélection pour que React se mette à jour
+          terrainGroup.canvas.fire('selection:updated', { selected: [terrainGroup] });
           terrainGroup.canvas.renderAll();
         }
         
