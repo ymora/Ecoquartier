@@ -1280,7 +1280,7 @@ function PanneauLateral({
                     <h3 className="section-title">🌍 Configuration du terrain</h3>
                   </div>
                   
-                  {/* INFO : Maillage d'élévation */}
+                  {/* SECTION : Maillage d'élévation */}
                   <div style={{
                     background: '#e3f2fd',
                     border: '1px solid #2196f3',
@@ -1291,18 +1291,113 @@ function PanneauLateral({
                     <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1976d2' }}>
                       📐 Planéité du terrain (maillage 5m×5m)
                     </div>
+                    
+                    {/* Info maillage */}
                     <div style={{ fontSize: '0.75rem', color: '#555', marginBottom: '0.5rem' }}>
-                      <strong>Cliquez sur un point</strong> (intersection) pour ajuster son élévation :
+                      Maillage : <strong>{objetSelectionne.nbNoeudsX || 7}×{objetSelectionne.nbNoeudsZ || 7} nœuds</strong>
                     </div>
-                    <ul style={{ fontSize: '0.75rem', color: '#555', margin: '0.3rem 0 0.5rem 1.2rem', paddingLeft: 0 }}>
-                      <li><strong>Clic gauche</strong> : +10 cm</li>
-                      <li><strong>Shift + Clic</strong> : -10 cm</li>
+                    
+                    {/* Édition rapide */}
+                    <div style={{ fontSize: '0.75rem', color: '#555', marginBottom: '0.5rem' }}>
+                      <strong>Cliquez sur un point en 2D</strong> pour ajuster :
+                    </div>
+                    <ul style={{ fontSize: '0.7rem', color: '#555', margin: '0.2rem 0 0.5rem 1.2rem', paddingLeft: 0 }}>
+                      <li>Clic : +10 cm</li>
+                      <li>Shift+Clic : -10 cm</li>
                     </ul>
-                    <div style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic', marginTop: '0.5rem' }}>
-                      💡 Points colorés : Bleu = niveau 0, Vert = colline (+), Rouge = dépression (-)
+                    
+                    {/* Actions rapides */}
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <button
+                        onClick={() => {
+                          if (objetSelectionne.maillageElevation) {
+                            // Aplatir tout le terrain (tous les nœuds à 0)
+                            for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
+                              for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
+                                objetSelectionne.maillageElevation[i][j] = 0;
+                              }
+                            }
+                            canvas.renderAll();
+                            logger.info('Terrain', '✅ Terrain aplati (tous les nœuds à 0m)');
+                          }
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '0.4rem',
+                          background: '#2196f3',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.7rem',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        ↕️ Aplatir
+                      </button>
+                      
+                      <button
+                        onClick={() => {
+                          if (objetSelectionne.maillageElevation) {
+                            // Élever tout le terrain de +0.5m
+                            for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
+                              for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
+                                objetSelectionne.maillageElevation[i][j] = Math.min(5, objetSelectionne.maillageElevation[i][j] + 0.5);
+                              }
+                            }
+                            canvas.renderAll();
+                            logger.info('Terrain', '✅ Terrain élevé (+0.5m sur tous les nœuds)');
+                          }
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '0.4rem',
+                          background: '#4caf50',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.7rem',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        ⬆️ +50cm
+                      </button>
+                      
+                      <button
+                        onClick={() => {
+                          if (objetSelectionne.maillageElevation) {
+                            // Abaisser tout le terrain de -0.5m
+                            for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
+                              for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
+                                objetSelectionne.maillageElevation[i][j] = Math.max(-5, objetSelectionne.maillageElevation[i][j] - 0.5);
+                              }
+                            }
+                            canvas.renderAll();
+                            logger.info('Terrain', '✅ Terrain abaissé (-0.5m sur tous les nœuds)');
+                          }
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '0.4rem',
+                          background: '#f44336',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.7rem',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        ⬇️ -50cm
+                      </button>
                     </div>
-                    <div style={{ fontSize: '0.7rem', color: '#1976d2', fontStyle: 'italic', marginTop: '0.5rem' }}>
-                      ✨ La 3D interpole entre les points pour un terrain naturel
+                    
+                    <div style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic', marginTop: '0.5rem' }}>
+                      💡 Bleu = niveau, Vert = +, Rouge = -
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: '#1976d2', fontStyle: 'italic', marginTop: '0.3rem' }}>
+                      ✨ La 3D se déforme automatiquement
                     </div>
                   </div>
                   
