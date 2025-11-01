@@ -96,6 +96,12 @@ function Sol3D({
     // ⭐ CORRECTION : Mapper directement les vertices sur les nœuds du maillage
     // PlaneGeometry crée (segmentsX+1) × (segmentsZ+1) vertices
     // Cela correspond exactement à nbNoeudsX × nbNoeudsZ
+    
+    console.log('🔍 Avant modification vertices:', {
+      premierVertex: [vertices[0], vertices[1], vertices[2]],
+      dernierVertex: [vertices[vertices.length-3], vertices[vertices.length-2], vertices[vertices.length-1]]
+    });
+    
     for (let i = 0; i <= segmentsZ; i++) {
       for (let j = 0; j <= segmentsX; j++) {
         const index = (i * (segmentsX + 1) + j) * 3;
@@ -103,21 +109,27 @@ function Sol3D({
         // ✅ Correspondance directe : vertex[i,j] = nœud[i,j]
         const elevation = maillageElevation[i][j] || 0;
         
-        // Modifier la coordonnée Z (hauteur) - index+2 car [x, y, z]
+        // ⚠️ IMPORTANT : PlaneGeometry avec rotation [-PI/2, 0, 0]
+        // Les coordonnées sont : [x, y, z] dans le buffer
+        // Après rotation : x reste x, y devient z (profondeur), z devient y (hauteur)
+        // Donc on doit modifier l'index + 2 (qui est Z avant rotation, devient Y après)
         vertices[index + 2] = elevation;
+        
+        if (elevation !== 0) {
+          console.log(`Vertex [${i},${j}] index=${index} elevation=${elevation}m`);
+        }
       }
     }
     
     console.log('✅ Sol3D: Vertices déformés', {
       nbVertices: (segmentsX + 1) * (segmentsZ + 1),
       nbNoeuds: nbNoeudsX * nbNoeudsZ,
-      elevations: maillageElevation.flat().filter(e => e !== 0).length + ' non-nulles'
+      elevations: maillageElevation.flat().filter(e => e !== 0).length + ' non-nulles',
+      premierVertexModifie: [vertices[0], vertices[1], vertices[2]]
     });
     
     geometry.attributes.position.needsUpdate = true;
     geometry.computeVertexNormals(); // Recalculer les normales pour l'éclairage
-    
-    console.log('✅ Sol3D: Géométrie déformée créée avec', vertices.length / 3, 'vertices');
     
     return geometry;
   }, [maillageElevation, tailleMailleM, largeur, hauteur, JSON.stringify(maillageElevation)]);
