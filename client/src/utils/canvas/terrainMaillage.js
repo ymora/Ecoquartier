@@ -28,8 +28,16 @@ export const afficherGrilleMaillage = (canvas, terrain, echelle) => {
   const nbCellulesX = Math.floor(largeurM / tailleMailleM);
   const nbCellulesZ = Math.floor(hauteurM / tailleMailleM);
   
-  const startX = terrain.left;
-  const startY = terrain.top;
+  // ✅ Calculer la largeur/hauteur totale du maillage
+  const largeurMaillagePx = nbCellulesX * tailleMaillePixels;
+  const hauteurMaillagePx = nbCellulesZ * tailleMaillePixels;
+  
+  // ✅ Centrer le maillage sur le terrain
+  const centreTerrainX = terrain.left + terrain.width / 2;
+  const centreTerrainY = terrain.top + terrain.height / 2;
+  
+  const startX = centreTerrainX - largeurMaillagePx / 2;
+  const startY = centreTerrainY - hauteurMaillagePx / 2;
   
   // ✅ Créer les cellules/carrés cliquables
   for (let i = 0; i < nbCellulesZ; i++) {
