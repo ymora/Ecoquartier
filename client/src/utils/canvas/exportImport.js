@@ -64,9 +64,38 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
 };
 
 /**
- * Exporter le plan actuel vers localStorage
+ * Télécharger le plan actuel en fichier JSON
  */
-export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
+export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) => {
+  if (!canvas) {
+    logger.error('Export', 'Canvas non disponible');
+    return;
+  }
+  
+  // Réutiliser la logique d'exporterPlan pour extraire les données
+  const planData = extraireDonneesPlan(canvas, dimensions, orientation, echelle);
+  
+  // Créer un blob JSON
+  const jsonString = JSON.stringify(planData, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  
+  // Créer un lien de téléchargement
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `plan-haies-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  logger.success('Export', `Plan exporté : ${a.download}`);
+};
+
+/**
+ * Extraire les données du plan (fonction réutilisable)
+ */
+const extraireDonneesPlan = (canvas, dimensions, orientation, echelle) => {
   const objets = canvas.getObjects();
   
   const planData = {

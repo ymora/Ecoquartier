@@ -163,6 +163,12 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     exporterPlanUtils(canvas, dimensions, orientation, echelle, onPlanComplete);
   }, [dimensions, orientation, echelle, onPlanComplete]);
   
+  const telechargerPlanJSON = useCallback(() => {
+    if (!fabricCanvasRef.current) return;
+    const { telechargerPlanJSON: telechargerJSON } = require('../utils/canvas/exportImport');
+    telechargerJSON(fabricCanvasRef.current, dimensions, orientation, echelle);
+  }, [dimensions, orientation, echelle]);
+  
   const ajouterMesuresLive = useCallback((canvas) => {
     ajouterMesuresUtils(canvas, echelle, exporterPlan);
   }, [echelle, exporterPlan]);
@@ -1056,7 +1062,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         onAjusterOpaciteImage={ajusterOpaciteImage}
         onSupprimerImageFond={supprimerImageFond}
         onResetZoom={resetZoom}
-        onExporterPlan={exporterPlan}
+        onExporterPlan={telechargerPlanJSON}
         onLoggerComplet={loggerComplet}
         onExporterComplet={exporterComplet}
         onAjouterArbrePlante={ajouterArbrePlante}
