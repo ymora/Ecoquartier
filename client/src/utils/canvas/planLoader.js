@@ -129,12 +129,25 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       if (props.couchesSol) {
         objet.set('couchesSol', props.couchesSol);
       }
-      // ✅ Restaurer le maillage d'élévation si disponible
-      if (props.maillageElevation) {
-        objet.maillageElevation = props.maillageElevation;
-        // Note : Le maillage visuel est déjà intégré au terrain lors de sa création
-        // Il faudra le recréer avec les bonnes élévations
+      // ✅ Restaurer le maillage d'élévation si disponible (rétrocompatibilité)
+      if (props.maillageElevation && Array.isArray(props.maillageElevation)) {
+        // Vérifier que le maillage a les bonnes dimensions
+        const nbNoeudsZ = props.maillageElevation.length;
+        const nbNoeudsX = props.maillageElevation[0]?.length || 0;
+        
+        // Si les dimensions correspondent, copier le maillage
+        if (objet.maillageElevation && 
+            nbNoeudsZ === objet.nbNoeudsZ && 
+            nbNoeudsX === objet.nbNoeudsX) {
+          for (let i = 0; i < nbNoeudsZ; i++) {
+            for (let j = 0; j < nbNoeudsX; j++) {
+              objet.maillageElevation[i][j] = props.maillageElevation[i][j];
+            }
+          }
+          logger.info('PlanLoader', `✅ Maillage d'élévation restauré (${nbNoeudsX}×${nbNoeudsZ} nœuds)`);
+        }
       }
+      // ✅ Si pas de maillage dans le JSON → terrain plat par défaut (rétrocompatibilité)
       // ✅ TERRAIN : Ne pas repositionner car il est déjà centré
       // Le terrain est créé centré à (0,0) dans creerObjetTerrain
       canvasOperations.ajouter(canvas, objet);

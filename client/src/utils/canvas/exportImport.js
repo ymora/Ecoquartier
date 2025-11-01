@@ -81,7 +81,8 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
     paves: [],
     citernes: [],
     caissonsEau: [],
-    clotures: []
+    clotures: [],
+    terrain: null // ✅ Données du terrain avec maillage
   };
 
   objets.forEach(obj => {
@@ -174,6 +175,15 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
         volume: obj.volume || 3000,
         elevationSol: obj.elevationSol || -2.5
       });
+    } else if (obj.customType === 'sol') {
+      // ✅ Exporter le terrain avec son maillage d'élévation
+      planData.terrain = {
+        largeur: obj.width / echelle,
+        hauteur: obj.height / echelle,
+        couchesSol: obj.couchesSol || [],
+        maillageElevation: obj.maillageElevation || null,
+        tailleMailleM: obj.tailleMailleM || 5
+      };
     }
   });
 
