@@ -1289,87 +1289,9 @@ function PanneauLateral({
                     padding: '0.8rem',
                     marginBottom: '1rem'
                   }}>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.3rem', color: '#1976d2' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1976d2' }}>
                       🌍 Relief du terrain
                     </div>
-                    <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '0.8rem', fontStyle: 'italic' }}>
-                      Cliquez sur les nœuds pour modifier la hauteur
-                    </div>
-                    
-                    {/* Liste des nœuds modifiés (élévation ≠ 0) */}
-                    {objetSelectionne.maillageElevation && (() => {
-                      const noeudsModifies = [];
-                      for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
-                        for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
-                          const elev = objetSelectionne.maillageElevation[i][j];
-                          if (elev !== 0) {
-                            noeudsModifies.push({ i, j, elev });
-                          }
-                        }
-                      }
-                      
-                      if (noeudsModifies.length > 0) {
-                        return (
-                          <div style={{ 
-                            fontSize: '0.7rem', 
-                            color: '#555', 
-                            marginBottom: '0.8rem',
-                            background: '#fff',
-                            padding: '0.5rem',
-                            borderRadius: '4px',
-                            border: '1px solid #e0e0e0',
-                            maxHeight: '100px',
-                            overflowY: 'auto'
-                          }}>
-                            <div style={{ fontWeight: 'bold', marginBottom: '0.3rem', color: '#1976d2' }}>
-                              Nœuds modifiés :
-                            </div>
-                            {noeudsModifies.slice(0, 10).map((n, idx) => (
-                              <div key={idx} style={{ 
-                                display: 'flex', 
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '0.2rem 0',
-                                borderBottom: idx < noeudsModifies.length - 1 ? '1px solid #f0f0f0' : 'none'
-                              }}>
-                                <span>Nœud [{n.i}][{n.j}]</span>
-                                <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
-                                  <span style={{ 
-                                    fontWeight: 'bold',
-                                    color: n.elev > 0 ? '#2e7d32' : '#c62828'
-                                  }}>
-                                    {n.elev > 0 ? '+' : ''}{n.elev.toFixed(2)}m
-                                  </span>
-                                  <button
-                                    onClick={() => {
-                                      objetSelectionne.maillageElevation[n.i][n.j] = 0;
-                                      canvas.renderAll();
-                                    }}
-                                    style={{
-                                      padding: '0.1rem 0.3rem',
-                                      fontSize: '0.6rem',
-                                      background: '#f44336',
-                                      color: 'white',
-                                      border: 'none',
-                                      borderRadius: '3px',
-                                      cursor: 'pointer'
-                                    }}
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                            {noeudsModifies.length > 10 && (
-                              <div style={{ fontSize: '0.65rem', color: '#888', marginTop: '0.3rem', fontStyle: 'italic' }}>
-                                ... et {noeudsModifies.length - 10} autres
-                              </div>
-                            )}
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()}
                     
                     {/* ✅ Modifier nœuds sélectionnés */}
                     {(() => {
