@@ -8,7 +8,7 @@ import {
   highlightSelection, 
   unhighlightSelection 
 } from '../utils/canvas/highlightUtils';
-import { mettreAJourCouchesSol, modifierElevationNoeudsSelectionnes, deselectionnerTousLesNoeuds } from '../utils/canvas/terrainUtils';
+import { mettreAJourCouchesSol, modifierElevationNoeudsSelectionnes, deselectionnerTousLesNoeuds, modifierToutLeMaillage } from '../utils/canvas/terrainUtils';
 import { chargerPlanJSONAvecExplorateur } from '../utils/fileLoader';
 import { canvasOperations } from '../utils/canvas/canvasOperations';
 
@@ -1464,20 +1464,15 @@ function PanneauLateral({
                       💡 Cliquez sur les nœuds du maillage en 2D
                     </div>
                     
-                    {/* Actions rapides */}
+                    {/* Actions rapides - ✅ FACTORISÉ */}
                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                       <button
                         onClick={() => {
-                          if (objetSelectionne.maillageElevation) {
-                            // Aplatir tout le terrain (tous les nœuds à 0)
-                            for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
-                              for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
-                                objetSelectionne.maillageElevation[i][j] = 0;
-                              }
-                            }
-                            canvas.renderAll();
-                            logger.info('Terrain', '✅ Terrain aplati (tous les nœuds à 0m)');
-                          }
+                          modifierToutLeMaillage(
+                            objetSelectionne,
+                            () => 0,
+                            '✅ Terrain aplati (tous les nœuds à 0m)'
+                          );
                         }}
                         style={{
                           flex: 1,
@@ -1496,16 +1491,11 @@ function PanneauLateral({
                       
                       <button
                         onClick={() => {
-                          if (objetSelectionne.maillageElevation) {
-                            // Élever tout le terrain de +0.5m
-                            for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
-                              for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
-                                objetSelectionne.maillageElevation[i][j] = Math.min(5, objetSelectionne.maillageElevation[i][j] + 0.5);
-                              }
-                            }
-                            canvas.renderAll();
-                            logger.info('Terrain', '✅ Terrain élevé (+0.5m sur tous les nœuds)');
-                          }
+                          modifierToutLeMaillage(
+                            objetSelectionne,
+                            (v) => Math.min(5, v + 0.5),
+                            '✅ Terrain élevé (+0.5m sur tous les nœuds)'
+                          );
                         }}
                         style={{
                           flex: 1,
@@ -1524,16 +1514,11 @@ function PanneauLateral({
                       
                       <button
                         onClick={() => {
-                          if (objetSelectionne.maillageElevation) {
-                            // Abaisser tout le terrain de -0.5m
-                            for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
-                              for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
-                                objetSelectionne.maillageElevation[i][j] = Math.max(-5, objetSelectionne.maillageElevation[i][j] - 0.5);
-                              }
-                            }
-                            canvas.renderAll();
-                            logger.info('Terrain', '✅ Terrain abaissé (-0.5m sur tous les nœuds)');
-                          }
+                          modifierToutLeMaillage(
+                            objetSelectionne,
+                            (v) => Math.max(-5, v - 0.5),
+                            '✅ Terrain abaissé (-0.5m sur tous les nœuds)'
+                          );
                         }}
                         style={{
                           flex: 1,

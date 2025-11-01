@@ -360,6 +360,69 @@ export const deselectionnerTousLesNoeuds = (terrainGroup) => {
 };
 
 /**
+ * Modifier tous les nœuds du maillage avec une fonction d'opération
+ * @param {fabric.Group} terrainGroup - Le groupe terrain
+ * @param {Function} operation - Fonction qui prend l'élévation actuelle et retourne la nouvelle
+ * @param {string} messageLog - Message pour le log
+ */
+export const modifierToutLeMaillage = (terrainGroup, operation, messageLog) => {
+  if (!terrainGroup?.maillageElevation) {
+    logger.warn('Terrain', 'Aucun maillage d\'élévation');
+    return;
+  }
+  
+  const maillageElevation = terrainGroup.maillageElevation;
+  
+  for (let i = 0; i < maillageElevation.length; i++) {
+    for (let j = 0; j < maillageElevation[i].length; j++) {
+      maillageElevation[i][j] = operation(maillageElevation[i][j]);
+    }
+  }
+  
+  // Mettre à jour les nœuds visuels
+  if (terrainGroup._objects) {
+    for (let i = 0; i < maillageElevation.length; i++) {
+      for (let j = 0; j < maillageElevation[i].length; j++) {
+        const elevation = maillageElevation[i][j];
+        
+        // Trouver le nœud correspondant
+        const noeud = terrainGroup._objects.find(el => 
+          el.type === 'circle' && el.noeudI === i && el.noeudJ === j
+        );
+        
+        if (noeud) {
+          noeud.set({
+            fill: elevation === 0 ? '#2196f3' : (elevation > 0 ? '#4caf50' : '#f44336')
+          });
+        }
+        
+        // Trouver et mettre à jour le label correspondant
+        const labelObj = terrainGroup._objects.find(el => 
+          el.type === 'text' && el.noeudI === i && el.noeudJ === j
+        );
+        
+        if (labelObj) {
+          labelObj.set({
+            text: elevation.toFixed(2) + 'm',
+            fill: elevation === 0 ? '#1976d2' : (elevation > 0 ? '#2e7d32' : '#c62828')
+          });
+        }
+      }
+    }
+  }
+  
+  // Synchroniser la 3D
+  if (terrainGroup.canvas) {
+    terrainGroup.canvas.renderAll();
+    terrainGroup.canvas.fire('object:modified', { target: terrainGroup });
+  }
+  
+  if (messageLog) {
+    logger.info('Terrain', messageLog);
+  }
+};
+
+/**
  * Ajouter un objet terrain au canvas
  * @param {fabric.Canvas} canvas - Canvas Fabric.js
  * @param {number} echelle - Échelle du plan
