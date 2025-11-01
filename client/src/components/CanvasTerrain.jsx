@@ -54,6 +54,7 @@ import {
 
 import {
   exporterPlan as exporterPlanUtils,
+  telechargerPlanJSON as telechargerPlanJSONUtils,
   chargerImageFond as chargerImageUtils,
   ajusterOpaciteImage as ajusterOpaciteUtils,
   supprimerImageFond as supprimerImageUtils,
