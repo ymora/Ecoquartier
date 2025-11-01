@@ -244,7 +244,8 @@ function CanvasTerrain3D({
           customType: 'caisson-eau'
         });
         
-        updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
+        // ✅ CORRECTION : posX/posZ sont déjà le CENTRE (originX/Y: 'center')
+        updateBounds(posX, posZ, largeur, profondeur);
       });
     }
     
@@ -344,7 +345,8 @@ function CanvasTerrain3D({
           customType: 'paves'
         });
         
-        updateBounds(posX - largeur/2, posZ - profondeur/2, largeur, profondeur);
+        // ✅ CORRECTION : posX/posZ sont déjà le CENTRE (originX/Y: 'center')
+        updateBounds(posX, posZ, largeur, profondeur);
       });
     }
     
