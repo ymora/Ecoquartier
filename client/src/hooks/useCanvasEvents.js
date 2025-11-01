@@ -94,7 +94,8 @@ export const useCanvasEvents = ({
         resetClotureLastPos(e.target, canvas);
       }
       
-      // AGRANDIR LE TERRAIN si un objet sort de ses limites
+      // ✅ AGRANDIR LE TERRAIN uniquement à la FIN du déplacement (object:modified)
+      // Redimensionner en temps réel ralentit trop le PC
       if (e.target && e.target.customType !== 'sol' && onDimensionsChange) {
         agrandirTerrainSiNecessaire(canvas, e.target, echelle, onDimensionsChange);
       }
@@ -222,10 +223,8 @@ export const useCanvasEvents = ({
         ajouterMesuresLive(canvas);
         if (!e.target.isBoussole) afficherMenuContextuel(e.target, canvas);
 
-        // ✅ Agrandir le terrain EN DIRECT pendant le redimensionnement
-        if (e.target.customType !== 'sol' && onDimensionsChange) {
-          agrandirTerrainSiNecessaire(canvas, e.target, echelle, onDimensionsChange);
-        }
+        // ❌ Ne PAS redimensionner le terrain pendant le scaling (trop lourd)
+        // Le redimensionnement se fera à la fin (object:modified)
       }
     };
 
@@ -247,10 +246,8 @@ export const useCanvasEvents = ({
           deplacerClotureAvecConnexions(e.target, canvas, e);
         }
 
-        // ✅ Agrandir le terrain EN DIRECT pendant le déplacement
-        if (e.target.customType !== 'sol' && onDimensionsChange) {
-          agrandirTerrainSiNecessaire(canvas, e.target, echelle, onDimensionsChange);
-        }
+        // ❌ Ne PAS redimensionner le terrain pendant le déplacement (trop lourd)
+        // Le redimensionnement se fera à la fin (object:modified)
       }
     };
 
