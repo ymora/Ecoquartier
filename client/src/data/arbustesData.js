@@ -1242,6 +1242,181 @@ export const arbresData = [
         'Momijigari - c\'est quoi ? Tradition japonaise contemplation érables automne'
       ]
     }
+  },
+  {
+    id: 'lagerstroemia-indica-haute-tige',
+    name: 'Lilas des Indes haute tige',
+    nomScientifique: 'Lagerstroemia indica',
+    famille: 'Lythraceae',
+    type: 'arbre',
+    tailleMaturite: '5-7 m',
+    envergure: '3-5 m',
+    floraison: {
+      periode: 'Juillet à Octobre',
+      description: 'Floraison spectaculaire et prolongée en panicules denses',
+      couleur: 'Rose, rouge, blanc ou mauve selon variété',
+      parfum: 'Léger et agréable'
+    },
+    fructification: {
+      periode: 'Automne',
+      description: 'Capsules décoratives persistantes en hiver',
+      couleur: 'Brun'
+    },
+    feuillage: {
+      type: 'Caduc',
+      couleurAutomne: 'Orange vif à rouge pourpre',
+      description: 'Feuilles ovales, vert bronze au printemps puis vert foncé. Très belles couleurs automnales.'
+    },
+    ecorce: {
+      description: 'Écorce lisse et décorative qui s\'exfolie, révélant des teintes roses, grises et crème',
+      interet: 'Décoratif toute l\'année, même en hiver'
+    },
+    plantation: {
+      periode: 'Mars à Mai (après gelées)',
+      conseil: 'Préférer le printemps. Demande chaleur. Planter en situation ensoleillée et abritée. Praliner les racines.'
+    },
+    sol: {
+      type: 'Profond, riche, bien drainé, légèrement acide',
+      ph: '6.0-7.0',
+      humidite: 'Frais en été, bien drainé en hiver'
+    },
+    exposition: 'Plein soleil (6h minimum) - ESSENTIEL pour floraison',
+    arrosage: 'Régulier les 2 premières années. Arrosage hebdomadaire en été une fois installé. Supporte sécheresse courte.',
+    rusticite: '-15°C (rustique en Île-de-France)',
+    croissance: 'Moyenne (30-40 cm/an)',
+    taille: {
+      periode: 'Février-Mars (hors gel, avant débourrement)',
+      frequence: 'Annuelle recommandée',
+      methode: 'Taille courte en février stimule floraison abondante. Supprimer bois mort et branches croisées. Raccourcir branches de l\'année précédente de 1/3.',
+      conseil: 'Fleurit sur bois de l\'année : la taille de fin d\'hiver favorise une floraison spectaculaire. Plus la taille est courte, plus la floraison est généreuse.'
+    },
+    calendrierAnnuel: [
+      { mois: 'Janvier-Février', action: 'Repos - Taille possible en fin février hors gel', icone: '❄️' },
+      { mois: 'Mars', action: 'Débourrement tardif - Fertilisation', icone: '🌱' },
+      { mois: 'Avril-Mai', action: 'Feuillage bronze puis vert', icone: '🍃' },
+      { mois: 'Juin', action: 'Croissance active - Arrosage', icone: '💧' },
+      { mois: 'Juillet-Août', action: 'FLORAISON spectaculaire continue', icone: '🌸' },
+      { mois: 'Septembre-Octobre', action: 'Fin de floraison - Couleurs automnales', icone: '🍂' },
+      { mois: 'Novembre-Décembre', action: 'Chute feuilles - Écorce décorative visible', icone: '🌿' }
+    ],
+    maladies: [
+      'Oïdium (blanc sur feuilles)',
+      'Pucerons (printemps)',
+      'Chlorose si sol trop calcaire'
+    ],
+    biodiversite: {
+      faune: 'Très mellifère, attire papillons et abeilles pendant tout l\'été',
+      insectes: 'Floraison longue = ressource prolongée pour pollinisateurs',
+      oiseaux: 'Abri apprécié, branches multiples'
+    },
+    toxicite: {
+      niveau: 'Non toxique',
+      danger: 'Aucun',
+      prevention: 'Sans danger pour enfants et animaux'
+    },
+    utilisations: [
+      'Arbre d\'ornement isolé',
+      'Alignement petites rues',
+      'Près terrasses (floraison estivale)',
+      'Jardins de ville',
+      'Pot sur terrasse (variétés naines)'
+    ],
+    anecdote: 'Originaire de Chine, le Lilas des Indes est aussi appelé "arbre aux cent jours" car sa floraison dure exceptionnellement longtemps (juillet à octobre). Son écorce lisse et colorée le rend décoratif même en hiver !',
+    
+    // ========== RÉGLEMENTATION ==========
+    reglementation: {
+      systemeRacinaire: {
+        type: 'Pivotant et traçant',
+        profondeur: '1-1.5 m',
+        etalement: '4-6 m',
+        agressivite: 'Faible à modérée',
+        description: 'Racines peu agressives, respecte fondations et canalisations si bien distant'
+      },
+      risques: [
+        'Racines peuvent soulever pavages si < 2m',
+        'Débourrement tardif (fin avril) - normal',
+        'Sensible oïdium (blanc) si air stagnant'
+      ],
+      distancesLegales: {
+        voisinage: {
+          regle: 'Code Civil Article 671',
+          distance: '2 m minimum de la limite de propriété',
+          justification: 'Hauteur > 2 m à maturité (5-7 m)',
+          sanction: 'Le voisin peut exiger l\'arrachage ou la taille à 2m de haut'
+        },
+        espacesPublics: {
+          distance: '2-3 m',
+          regle: 'PLU local'
+        },
+        entreArbres: {
+          distance: '4-5 m',
+          justification: 'Développement harmonieux des couronnes'
+        },
+        infrastructures: {
+          fondations: '3-4 m minimum',
+          canalisations: '3 m minimum',
+          fossesSeptiques: '5 m minimum',
+          terrasse: '2.5 m minimum',
+          piscine: '3 m minimum'
+        }
+      },
+      conseils: 'Excellent pour petits jardins. Floraison estivale exceptionnelle. Prévoir soleil maximum. Tailler court en hiver pour floraison abondante.'
+    },
+    
+    // ========== INFORMATIONS COMPLÉMENTAIRES ==========
+    informationsComplementaires: {
+      pollinisation: {
+        type: 'Hermaphrodite autofertile',
+        besoin: 'Aucun',
+        production: 'Capsules décoratives',
+        conseil: 'Planté pour floraison exceptionnelle et écorce'
+      },
+      dangersEtPrecautions: {
+        taille: {
+          danger: 'FAIBLE',
+          risques: ['Perte floraison si taille tardive'],
+          periodeDanger: '⛔ 16 mars - 15 août (loi nidification)',
+          periodeSecuritaire: '✅ Février-début mars (hors gel)',
+          protection: 'Pas nécessaire',
+          conseil: '⚠️ IMPORTANT : Tailler en fin d\'hiver (février-mars) pour floraison maximale. Plus vous taillez court, plus il fleurit !'
+        },
+        reglementationTaille: {
+          loi: '⚠️ AGRICULTEURS : Interdiction 16 mars - 15 août. PARTICULIERS : Recommandation LPO',
+          raison: 'Protection nidification oiseaux',
+          solution: 'Tailler impérativement en février-mars',
+          sanction: 'Agriculteurs : Réduction aides PAC + amende'
+        }
+      },
+      allergies: {
+        pollen: 'Faible',
+        contact: 'Aucun'
+      },
+      animauxDomestiques: {
+        chiens: '✅ Non toxique',
+        chats: '✅ Non toxique',
+        chevaux: '✅ Non toxique'
+      },
+      protectionHivernale: {
+        adulte: 'Rustique -15°C (Île-de-France)',
+        jeunesPlants: ['Paillage 2 premières années', 'Voile si < -12°C'],
+        gelPrintanier: 'Débourrement tardif (fin avril) - peu concerné'
+      },
+      fertilisation: {
+        besoins: 'Moyens',
+        periode: 'Mars-Avril',
+        type: 'Compost + engrais arbres fleurs',
+        quantite: '3-5 kg compost',
+        frequence: 'Annuelle',
+        conseil: 'Apport potasse (K) favorise floraison'
+      },
+      sujetsForums: [
+        'Floraison faible pourquoi ? → Manque de soleil OU taille tardive',
+        'Débourrement très tardif normal ? → OUI (fin avril-mai)',
+        'Oïdium blanc sur feuilles → Traiter au soufre, aérer',
+        'Feuilles brûlées été → Arrosage insuffisant',
+        'Quelle variété choisir ? Rouge : \'Dynamite\', Rose : \'Tuscarora\', Blanc : \'Natchez\''
+      ]
+    }
   }
 ];
 
