@@ -158,6 +158,8 @@ function CanvasTerrain3D({
     // Maisons (tableau)
     if (planData.maisons && planData.maisons.length > 0) {
       data3D.maisons = planData.maisons.map((maison) => {
+        // ✅ TOUJOURS utiliser les dimensions VISUELLES (width/height en pixels)
+        // Cela garantit que 2D et 3D affichent la même chose
         const maisonWidth = maison.getScaledWidth ? maison.getScaledWidth() : maison.width;
         const maisonHeight = maison.getScaledHeight ? maison.getScaledHeight() : maison.height;
         
@@ -177,8 +179,8 @@ function CanvasTerrain3D({
         
         return {
           position: [posX, 0, posZ],
-          largeur: maison.largeur || largeur,
-          profondeur: maison.profondeur || profondeur,
+          largeur: largeur, // ✅ TOUJOURS utiliser les dimensions visuelles calculées
+          profondeur: profondeur, // ✅ Pas de fallback sur maison.largeur/profondeur
           hauteur: maison.hauteur || 7,
           elevationSol: maison.elevationSol || 0,
           angle: maison.angle || 0,
@@ -218,8 +220,11 @@ function CanvasTerrain3D({
     // Caissons d'eau rectangulaires
     if (planData.caissonsEau && planData.caissonsEau.length > 0) {
       planData.caissonsEau.forEach(c => {
-        const largeur = c.largeur || 5;
-        const profondeur = c.profondeur || 3;
+        // ✅ TOUJOURS utiliser les dimensions VISUELLES (width/height en pixels)
+        const caissonWidth = c.getScaledWidth ? c.getScaledWidth() : c.width;
+        const caissonHeight = c.getScaledHeight ? c.getScaledHeight() : c.height;
+        const largeur = caissonWidth / echelle;
+        const profondeur = caissonHeight / echelle;
         const hauteur = c.hauteur || 1;
         
         // Position centrée
@@ -229,7 +234,7 @@ function CanvasTerrain3D({
         if (!data3D.citernes) data3D.citernes = [];
         data3D.citernes.push({
           position: [posX, 0, posZ],
-          largeur,
+          largeur, // ✅ Dimensions visuelles calculées
           profondeur,
           hauteur,
           volume: largeur * profondeur * hauteur,
@@ -303,8 +308,8 @@ function CanvasTerrain3D({
         
         data3D.terrasses.push({
           position: [posX, 0, posZ],
-          largeur: t.largeur || largeur,
-          profondeur: t.profondeur || profondeur,
+          largeur: largeur, // ✅ Dimensions visuelles calculées
+          profondeur: profondeur,
           hauteur: t.hauteur || 0.15,
           angle: t.angle || 0,
           elevationSol: t.elevationSol || 0,
@@ -331,8 +336,8 @@ function CanvasTerrain3D({
         
         data3D.terrasses.push({
           position: [posX, 0, posZ],
-          largeur: p.largeur || largeur,
-          profondeur: p.profondeur || profondeur,
+          largeur: largeur, // ✅ Dimensions visuelles calculées
+          profondeur: profondeur,
           hauteur: p.hauteur || 0.08,
           angle: p.angle || 0,
           type: 'pave-enherbe',
