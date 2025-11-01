@@ -178,6 +178,9 @@ export const creerObjetTerrain = (echelle, dimensions) => {
           terrainGroup.noeudsSelectionnes.splice(index, 1);
         }
         
+        // ✅ IMPORTANT : Créer une NOUVELLE copie du tableau pour forcer la mise à jour React
+        terrainGroup.noeudsSelectionnes = [...terrainGroup.noeudsSelectionnes];
+        
         if (terrainGroup.canvas) {
           // ✅ IMPORTANT : Forcer la sélection du terrain parent pour mettre à jour le panneau Config
           terrainGroup.canvas.setActiveObject(terrainGroup);
@@ -326,8 +329,8 @@ export const modifierElevationNoeudsSelectionnes = (terrainGroup, increment) => 
     }
   });
   
-  // Mettre à jour le maillage du terrain
-  terrainGroup.maillageElevation = maillageElevation;
+  // ✅ CRITIQUE : Créer une NOUVELLE copie du tableau pour forcer React à détecter le changement
+  terrainGroup.maillageElevation = maillageElevation.map(row => [...row]);
   
   // Synchroniser la 3D et forcer mise à jour du panneau Config
   if (terrainGroup.canvas) {
@@ -384,6 +387,9 @@ export const modifierToutLeMaillage = (terrainGroup, operation, messageLog) => {
       maillageElevation[i][j] = operation(maillageElevation[i][j]);
     }
   }
+  
+  // ✅ CRITIQUE : Créer une NOUVELLE copie du tableau pour forcer React à détecter le changement
+  terrainGroup.maillageElevation = maillageElevation.map(row => [...row]);
   
   // Mettre à jour les nœuds visuels
   if (terrainGroup._objects) {

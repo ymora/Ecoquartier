@@ -132,7 +132,7 @@ function Sol3D({
     geometry.computeVertexNormals(); // Recalculer les normales pour l'éclairage
     
     return geometry;
-  }, [maillageElevation, tailleMailleM, largeur, hauteur, JSON.stringify(maillageElevation)]);
+  }, [maillageElevation, tailleMailleM, largeur, hauteur]);
   
   // ✅ Afficher les nœuds en 3D si maillage disponible
   const noeuds3D = useMemo(() => {
