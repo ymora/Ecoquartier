@@ -125,8 +125,10 @@ function Sol3D({
     geometry.attributes.position.needsUpdate = true;
     geometry.computeVertexNormals(); // Recalculer les normales pour l'éclairage
     
+    console.log('✅ Sol3D: Géométrie déformée créée avec', vertices.length / 3, 'vertices');
+    
     return geometry;
-  }, [maillageElevation, tailleMailleM, largeur, hauteur]);
+  }, [maillageElevation, tailleMailleM, largeur, hauteur, JSON.stringify(maillageElevation)]);
   
   return (
     <group position={[centreX, 0, centreZ]}>
