@@ -9,6 +9,7 @@ import logger from '../logger';
 
 /**
  * Afficher la grille de contrôle du maillage sur le terrain
+ * ✅ Chaque carré/cellule est cliquable pour régler son élévation
  * @param {fabric.Canvas} canvas - Canvas Fabric.js
  * @param {fabric.Object} terrain - Objet terrain
  * @param {number} echelle - Échelle du plan
@@ -24,95 +25,78 @@ export const afficherGrilleMaillage = (canvas, terrain, echelle) => {
   const tailleMailleM = terrain.tailleMailleM || 5;
   const tailleMaillePixels = tailleMailleM * echelle;
   
-  const nbNoeudsX = Math.floor(largeurM / tailleMailleM) + 1;
-  const nbNoeudsZ = Math.floor(hauteurM / tailleMailleM) + 1;
+  const nbCellulesX = Math.floor(largeurM / tailleMailleM);
+  const nbCellulesZ = Math.floor(hauteurM / tailleMailleM);
   
   const startX = terrain.left;
   const startY = terrain.top;
   
-  // Créer les lignes de grille horizontales
-  for (let i = 0; i < nbNoeudsZ; i++) {
-    const y = startY + i * tailleMaillePixels;
-    const line = new fabric.Line([startX, y, startX + terrain.width, y], {
-      stroke: '#1976d2',
-      strokeWidth: 1,
-      strokeDashArray: [5, 5],
-      selectable: false,
-      evented: false,
-      isGrilleMaillage: true,
-      excludeFromExport: true
-    });
-    canvas.add(line);
-  }
-  
-  // Créer les lignes de grille verticales
-  for (let j = 0; j < nbNoeudsX; j++) {
-    const x = startX + j * tailleMaillePixels;
-    const line = new fabric.Line([x, startY, x, startY + terrain.height], {
-      stroke: '#1976d2',
-      strokeWidth: 1,
-      strokeDashArray: [5, 5],
-      selectable: false,
-      evented: false,
-      isGrilleMaillage: true,
-      excludeFromExport: true
-    });
-    canvas.add(line);
-  }
-  
-  // Créer les points de contrôle (nœuds)
-  for (let i = 0; i < nbNoeudsZ; i++) {
-    for (let j = 0; j < nbNoeudsX; j++) {
+  // ✅ Créer les cellules/carrés cliquables
+  for (let i = 0; i < nbCellulesZ; i++) {
+    for (let j = 0; j < nbCellulesX; j++) {
       const x = startX + j * tailleMaillePixels;
       const y = startY + i * tailleMaillePixels;
       const elevation = terrain.maillageElevation[i][j];
       
-      // Point de contrôle
-      const point = new fabric.Circle({
+      // Carré semi-transparent avec couleur selon élévation
+      const cellule = new fabric.Rect({
         left: x,
         top: y,
-        radius: 8,
-        fill: elevation === 0 ? '#2196f3' : (elevation > 0 ? '#4caf50' : '#f44336'),
-        stroke: '#ffffff',
-        strokeWidth: 2,
-        originX: 'center',
-        originY: 'center',
-        selectable: false, // ✅ Ne pas pouvoir sélectionner le nœud (évite confusion)
+        width: tailleMaillePixels,
+        height: tailleMaillePixels,
+        fill: elevation === 0 ? 'rgba(33, 150, 243, 0.2)' : 
+              (elevation > 0 ? 'rgba(76, 175, 80, 0.3)' : 'rgba(244, 67, 54, 0.3)'),
+        stroke: '#1976d2',
+        strokeWidth: 1,
+        strokeDashArray: [5, 5],
+        originX: 'left',
+        originY: 'top',
+        selectable: false,
         evented: true,
         hasBorders: false,
         hasControls: false,
-        lockMovementX: true,
-        lockMovementY: true,
         hoverCursor: 'pointer',
-        isNoeudMaillage: true,
-        noeudI: i,
-        noeudJ: j,
+        isCelluleMaillage: true,
+        celluleI: i,
+        celluleJ: j,
         excludeFromExport: true
       });
       
       // ✅ Ajouter un gestionnaire de clic pour éditer l'élévation
-      point.on('mousedown', (e) => {
+      cellule.on('mousedown', (e) => {
         e.stopPropagation();
         // Clic gauche = augmenter, Shift+Clic = diminuer
         const increment = e.e.shiftKey ? -0.1 : 0.1; // 10 cm à la fois
-        modifierElevationNoeud(canvas, terrain, i, j, elevation + increment, echelle);
+        modifierElevationCellule(canvas, terrain, i, j, elevation + increment, echelle);
       });
       
-      // Label d'élévation
+      // Survol : mettre en surbrillance
+      cellule.on('mouseover', () => {
+        cellule.set({ strokeWidth: 2, stroke: '#ff9800' });
+        canvas.renderAll();
+      });
+      
+      cellule.on('mouseout', () => {
+        cellule.set({ strokeWidth: 1, stroke: '#1976d2' });
+        canvas.renderAll();
+      });
+      
+      // Label d'élévation au centre de la cellule
       const label = new fabric.Text(elevation.toFixed(2) + 'm', {
-        left: x,
-        top: y + 12,
-        fontSize: 10,
-        fill: '#1976d2',
+        left: x + tailleMaillePixels / 2,
+        top: y + tailleMaillePixels / 2,
+        fontSize: 12,
+        fontWeight: 'bold',
+        fill: elevation === 0 ? '#1976d2' : (elevation > 0 ? '#2e7d32' : '#c62828'),
         originX: 'center',
-        originY: 'top',
+        originY: 'center',
         selectable: false,
         evented: false,
         isGrilleMaillage: true,
         excludeFromExport: true
       });
       
-      canvas.add(point);
+      canvas.add(cellule);
       canvas.add(label);
     }
   }
@@ -121,7 +105,7 @@ export const afficherGrilleMaillage = (canvas, terrain, echelle) => {
   canvas.sendObjectToBack(terrain);
   canvas.renderAll();
   
-  logger.info('Terrain', `✅ Grille de maillage affichée (${nbNoeudsX}×${nbNoeudsZ} nœuds)`);
+  logger.info('Terrain', `✅ Grille de maillage affichée (${nbCellulesX}×${nbCellulesZ} cellules)`);
 };
 
 /**
@@ -132,7 +116,7 @@ export const masquerGrilleMaillage = (canvas) => {
   if (!canvas) return;
   
   const objetsGrille = canvas.getObjects().filter(obj => 
-    obj.isGrilleMaillage || obj.isNoeudMaillage
+    obj.isGrilleMaillage || obj.isCelluleMaillage
   );
   
   objetsGrille.forEach(obj => canvas.remove(obj));
@@ -144,24 +128,27 @@ export const masquerGrilleMaillage = (canvas) => {
 };
 
 /**
- * Modifier l'élévation d'un nœud du maillage
+ * Modifier l'élévation d'une cellule du maillage
  * @param {fabric.Canvas} canvas - Canvas Fabric.js
  * @param {fabric.Object} terrain - Objet terrain
- * @param {number} noeudI - Index du nœud en Z
- * @param {number} noeudJ - Index du nœud en X
+ * @param {number} celluleI - Index de la cellule en Z
+ * @param {number} celluleJ - Index de la cellule en X
  * @param {number} nouvelleElevation - Nouvelle élévation en mètres
  * @param {number} echelle - Échelle du plan
  */
-export const modifierElevationNoeud = (canvas, terrain, noeudI, noeudJ, nouvelleElevation, echelle) => {
+export const modifierElevationCellule = (canvas, terrain, celluleI, celluleJ, nouvelleElevation, echelle) => {
   if (!terrain || !terrain.maillageElevation) return;
   
+  // Limiter l'élévation entre -5m et +5m
+  nouvelleElevation = Math.max(-5, Math.min(5, nouvelleElevation));
+  
   // Mettre à jour le maillage
-  terrain.maillageElevation[noeudI][noeudJ] = nouvelleElevation;
+  terrain.maillageElevation[celluleI][celluleJ] = nouvelleElevation;
   
   // Mettre à jour l'affichage
   afficherGrilleMaillage(canvas, terrain, echelle);
   
-  logger.info('Terrain', `✅ Élévation nœud [${noeudI}][${noeudJ}] = ${nouvelleElevation.toFixed(2)}m`);
+  logger.info('Terrain', `✅ Élévation cellule [${celluleI}][${celluleJ}] = ${nouvelleElevation.toFixed(2)}m`);
 };
 
 /**

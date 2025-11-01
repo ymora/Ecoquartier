@@ -20,15 +20,17 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   const hauteur = dimensions.hauteur * echelle;
   
   // ✅ Créer le maillage d'élévation (tous les 5m)
+  // Chaque cellule/carré a une élévation uniforme
   const tailleMailleM = 5; // Maillage tous les 5 mètres
-  const nbNoeudsX = Math.floor(dimensions.largeur / tailleMailleM) + 1;
-  const nbNoeudsZ = Math.floor(dimensions.hauteur / tailleMailleM) + 1;
+  const nbCellulesX = Math.floor(dimensions.largeur / tailleMailleM);
+  const nbCellulesZ = Math.floor(dimensions.hauteur / tailleMailleM);
   
   // Initialiser le maillage avec élévation 0 partout (terrain plat par défaut)
+  // maillageElevation[i][j] = élévation de la cellule en mètres
   const maillageElevation = [];
-  for (let i = 0; i < nbNoeudsZ; i++) {
+  for (let i = 0; i < nbCellulesZ; i++) {
     maillageElevation[i] = [];
-    for (let j = 0; j < nbNoeudsX; j++) {
+    for (let j = 0; j < nbCellulesX; j++) {
       maillageElevation[i][j] = 0; // Élévation en mètres
     }
   }
@@ -115,7 +117,7 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   terrainGroup.maillageElevation = maillageElevation;
   terrainGroup.tailleMailleM = tailleMailleM;
   
-  logger.info('Terrain', `Objet terrain créé avec maillage ${nbNoeudsX}×${nbNoeudsZ} nœuds`);
+  logger.info('Terrain', `Objet terrain créé avec maillage ${nbCellulesX}×${nbCellulesZ} cellules`);
   
   return terrainGroup;
 };

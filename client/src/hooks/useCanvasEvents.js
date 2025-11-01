@@ -12,7 +12,7 @@ import { dupliquerObjet } from '../utils/canvas/duplicationUtils';
 import { agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
 import { forcerTerrainEnArrierePlan } from '../utils/canvas/depthSorting';
 import { canvasOperations } from '../utils/canvas/canvasOperations';
-import { afficherGrilleMaillage, masquerGrilleMaillage, modifierElevationNoeud } from '../utils/canvas/terrainMaillage';
+import { afficherGrilleMaillage, masquerGrilleMaillage, modifierElevationCellule } from '../utils/canvas/terrainMaillage';
 
 /**
  * Hook pour gérer tous les event listeners du canvas
