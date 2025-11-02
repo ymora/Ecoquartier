@@ -64,6 +64,22 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
 };
 
 /**
+ * Vérifier si le maillage contient des élévations (pour optimisation export)
+ */
+const estMaillageNonPlat = (maillage) => {
+  if (!maillage || !Array.isArray(maillage)) return false;
+  
+  // Si au moins un nœud a une élévation != 0, le maillage est non-plat
+  for (let i = 0; i < maillage.length; i++) {
+    for (let j = 0; j < maillage[i].length; j++) {
+      if (maillage[i][j] !== 0) return true;
+    }
+  }
+  
+  return false;
+};
+
+/**
  * Télécharger le plan actuel en fichier JSON (format compatible avec planLoader)
  */
 export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) => {
@@ -171,19 +187,20 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
       case 'sol':
         // ✅ Exporter le terrain UNE SEULE FOIS
         if (terrainExporte) {
-          logger.warn('Export', 'Terrain déjà exporté, objet ignoré (doublon)');
-          return; // Sortir du forEach
+          logger.warn('Export', '⚠️ Terrain dupliqué détecté, ignoré');
+          return; // Sortir du forEach pour éviter duplication
         }
         
         terrainExporte = true;
         objetExporte = {
           type: 'sol',
           id: 'terrain-principal',
-          pos: [0, 0],
-          dim: [dimensions.largeur, dimensions.hauteur],
+          pos: [0, 0], // Toujours centré
+          dim: [dimensions.largeur, dimensions.hauteur], // Redondant avec metadata mais nécessaire pour import
           props: {
             couchesSol: obj.couchesSol || [],
-            maillageElevation: obj.maillageElevation || null,
+            // ✅ Maillage : Ne stocker que si non-plat (optimisation)
+            maillageElevation: estMaillageNonPlat(obj.maillageElevation) ? obj.maillageElevation : null,
             tailleMailleM: obj.tailleMailleM || 5
           }
         };
