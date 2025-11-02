@@ -85,17 +85,31 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
     },
     objets: []
   };
-
+  
+  // ✅ Compteurs pour IDs uniques
+  const compteurs = {};
+  
+  // ✅ Variable pour éviter terrain dupliqué
+  let terrainExporte = false;
+  
   objets.forEach(obj => {
-    if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isImageFond) return;
+    // ✅ Filtrer TOUS les éléments UI (pas seulement grille, boussole)
+    if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isImageFond || 
+        obj.isSolIndicator || obj.isCenterMark || obj.alignmentGuide || 
+        obj.isDimensionBox || obj.isAideButton) return;
+    
+    // ✅ Éviter les sous-éléments du maillage du terrain (nœuds, lignes)
+    if (obj.isNoeudMaillage || obj.isLigneMaillage) return;
     
     let objetExporte = null;
     
     switch (obj.customType) {
       case 'maison':
+        // ✅ Générer ID unique avec compteur
+        compteurs.maison = (compteurs.maison || 0) + 1;
         objetExporte = {
           type: 'maison',
-          id: obj.customId || 'maison-' + Date.now(),
+          id: obj.customId || `maison-${Date.now()}-${compteurs.maison}`,
           pos: [obj.left, obj.top],
           dim: [obj.largeur || 10, obj.profondeur || 10],
           props: {
@@ -152,6 +166,13 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
         break;
         
       case 'sol':
+        // ✅ Exporter le terrain UNE SEULE FOIS
+        if (terrainExporte) {
+          logger.warn('Export', 'Terrain déjà exporté, objet ignoré (doublon)');
+          return; // Sortir du forEach
+        }
+        
+        terrainExporte = true;
         objetExporte = {
           type: 'sol',
           id: 'terrain-principal',
