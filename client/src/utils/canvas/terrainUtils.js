@@ -224,7 +224,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         noeudI: i,
         noeudJ: j,
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        padding: 2
+        padding: 2,
+        isLabelMaillage: true // ✅ Pour filtrer lors de l'export JSON
       });
       elementsMaillage.push(labelElev);
     }

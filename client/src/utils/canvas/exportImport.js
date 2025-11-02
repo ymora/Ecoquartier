@@ -114,8 +114,8 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
         obj.isSolIndicator || obj.isCenterMark || obj.alignmentGuide || 
         obj.isDimensionBox || obj.isAideButton) return;
     
-    // ✅ Éviter les sous-éléments du maillage du terrain (nœuds, lignes)
-    if (obj.isNoeudMaillage || obj.isLigneMaillage) return;
+    // ✅ Éviter les sous-éléments du maillage du terrain (nœuds, lignes, labels)
+    if (obj.isNoeudMaillage || obj.isLigneMaillage || obj.isLabelMaillage) return;
     
     let objetExporte = null;
     
