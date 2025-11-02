@@ -104,15 +104,14 @@ export const creerMaisonObjet = (echelle, canvas = null) => {
  */
 const ajouterObjetAuCanvas = (canvas, creerObjetFn, type, position = { left: 300, top: 200 }) => {
   if (!canvas) return;
-  const objet = creerObjetFn();
+  const objet = creerObjetFn(canvas); // ✅ Passer canvas pour calcul numéro
   objet.set(position);
   canvasOperations.ajouter(canvas, objet);
   canvasOperations.selectionner(canvas, objet);
   
-  // Compter les objets existants pour ajouter un numéro
-  const objetsExistants = canvas.getObjects().filter(o => o.customType === type);
-  const numero = objetsExistants.length > 1 ? ` #${objetsExistants.length}` : '';
-  logger.info('Objets', `${type.charAt(0).toUpperCase() + type.slice(1)}${numero} ajouté`);
+  // ✅ Le numéro est maintenant dans objet.numero
+  const numeroAffichage = objet.numero ? ` #${objet.numero}` : '';
+  logger.info('Objets', `${type.charAt(0).toUpperCase() + type.slice(1)}${numeroAffichage} ajouté`);
 };
 
 /**
@@ -156,7 +155,7 @@ export const creerCanalisation = (canvas) => {
 /**
  * Créer un objet citerne (retourne l'objet sans l'ajouter au canvas)
  */
-export const creerCiterneObjet = (echelle) => {
+export const creerCiterneObjet = (echelle, canvas = null) => {
   return creerObjetCirculaire({
     type: 'citerne',
     diametre: 1.5,
@@ -169,7 +168,7 @@ export const creerCiterneObjet = (echelle) => {
       volume: 3000,
       elevationSol: -2.5
     }
-  }, echelle);
+  }, echelle, canvas);
 };
 
 /**
@@ -230,7 +229,7 @@ export const creerCloture = (canvas, pointsClotureRef) => {
 /**
  * Créer un objet terrasse (retourne l'objet sans l'ajouter au canvas)
  */
-export const creerTerrasseObjet = (echelle) => {
+export const creerTerrasseObjet = (echelle, canvas = null) => {
   return creerObjetRectangulaire({
     type: 'terrasse',
     largeur: 5,
@@ -242,7 +241,7 @@ export const creerTerrasseObjet = (echelle) => {
       hauteur: 0.15,
       elevationSol: 0
     }
-  }, echelle);
+  }, echelle, canvas);
 };
 
 /**
@@ -255,7 +254,7 @@ export const creerTerrasse = (canvas, echelle) => {
 /**
  * Créer un objet pavés (retourne l'objet sans l'ajouter au canvas)
  */
-export const creerPavesObjet = (echelle) => {
+export const creerPavesObjet = (echelle, canvas = null) => {
   return creerObjetRectangulaire({
     type: 'paves',
     largeur: 5,
@@ -267,7 +266,7 @@ export const creerPavesObjet = (echelle) => {
       hauteur: 0.08,
       elevationSol: 0
     }
-  }, echelle);
+  }, echelle, canvas);
 };
 
 /**
@@ -280,7 +279,7 @@ export const creerPaves = (canvas, echelle) => {
 /**
  * Créer un objet caisson d'eau (retourne l'objet sans l'ajouter au canvas)
  */
-export const creerCaissonEauObjet = (echelle) => {
+export const creerCaissonEauObjet = (echelle, canvas = null) => {
   return creerObjetRectangulaire({
     type: 'caisson-eau',
     largeur: 5,
@@ -292,7 +291,7 @@ export const creerCaissonEauObjet = (echelle) => {
       hauteur: 1,
       elevationSol: -1.0
     }
-  }, echelle);
+  }, echelle, canvas);
 };
 
 /**
