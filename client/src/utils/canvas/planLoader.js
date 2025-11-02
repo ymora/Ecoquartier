@@ -228,6 +228,25 @@ export const chargerPlanDepuisJSON = async (canvas, echelle, planData) => {
       throw new Error('Format JSON invalide : "objets" manquant ou invalide');
     }
     
+    // ✅ NETTOYER LE CANVAS AVANT D'IMPORTER
+    logger.info('PlanLoader', '🧹 Nettoyage du canvas...');
+    const objetsASupprimer = canvas.getObjects().filter(obj => 
+      !obj.isGridLine && 
+      !obj.measureLabel && 
+      !obj.isBoussole && 
+      !obj.isSolIndicator &&
+      !obj.alignmentGuide &&
+      !obj.isDimensionBox &&
+      !obj.isAideButton &&
+      !obj.isImageFond &&
+      !obj.isCenterMark
+    );
+    
+    // Supprimer tous les objets (sauf UI)
+    objetsASupprimer.forEach(obj => canvasOperations.supprimer(canvas, obj));
+    
+    logger.info('PlanLoader', `✅ ${objetsASupprimer.length} objet(s) supprimé(s)`);
+    
     // Charger chaque objet
     for (const objet of planData.objets) {
       await chargerObjet(canvas, objet, echelle);
