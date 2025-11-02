@@ -504,7 +504,7 @@ function PanneauLateral({
           🖼️ {imageFondChargee ? 'Image chargée' : 'Charger fond'}
         </button>
         
-        {/* 2. Charger plan JSON */}
+        {/* 2. Charger mon plan */}
         <button
           onClick={() => {
             chargerPlanJSONAvecExplorateur(async (planData, fileName) => {
@@ -533,7 +533,7 @@ function PanneauLateral({
               }
             });
           }}
-          title="Charger un plan depuis un fichier JSON"
+          title="Charger un plan sauvegardé"
           style={{
             background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
             color: 'white',
@@ -564,13 +564,13 @@ function PanneauLateral({
               e.target.style.boxShadow = '0 3px 6px rgba(33, 150, 243, 0.3)';
           }}
         >
-          📂 Charger plan JSON
+          📂 Charger mon plan
         </button>
         
-        {/* 3. Exporter plan JSON */}
+        {/* 3. Sauvegarder mon plan */}
         <button
           onClick={onExporterPlan}
-          title="Exporter le plan actuel en JSON"
+          title="Sauvegarder le plan actuel"
           style={{ 
             background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
             color: 'white',
@@ -601,7 +601,7 @@ function PanneauLateral({
             e.target.style.boxShadow = '0 3px 6px rgba(76, 175, 80, 0.3)';
           }}
         >
-          💾 Exporter plan JSON
+          💾 Sauvegarder mon plan
         </button>
         
         {/* Contrôles d'opacité si image chargée */}
