@@ -284,11 +284,12 @@ function PanneauLateral({
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.max(min, currentValue - step);
+              console.log(`🔽 Bouton "-" : ${label} : ${currentValue} - ${step} = ${newValue}`);
               onChange({ target: { value: newValue.toString() } });
             }}
             disabled={isDisabled}
             style={{
-              background: isDisabled ? '#e0e0e0' : '#4caf50',
+              background: isDisabled ? '#e0e0e0' : '#f44336',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
@@ -329,6 +330,7 @@ function PanneauLateral({
               const normalizedValue = typeof value === 'string' ? parseFloat(value) : value;
               const currentValue = isNaN(normalizedValue) ? min : normalizedValue;
               const newValue = Math.min(max, currentValue + step);
+              console.log(`🔼 Bouton "+" : ${label} : ${currentValue} + ${step} = ${newValue}`);
               onChange({ target: { value: newValue.toString() } });
             }}
             disabled={isDisabled}
