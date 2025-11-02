@@ -189,8 +189,16 @@ const chargerObjet = async (canvas, objetData, echelle) => {
         lockRotation: false
       });
       
+      // ✅ Calculer le numéro séquentiel pour les arbres
+      const arbresExistants = canvas.getObjects().filter(o => 
+        o.customType === 'arbre-a-planter' || o.customType === 'arbre-existant'
+      );
+      const numeroArbre = arbresExistants.length + 1;
+      
       objet.set({
         customType: 'arbre-a-planter',
+        customId: `arbre-${Date.now()}-${numeroArbre}`,
+        numero: numeroArbre, // ✅ Numéro séquentiel
         planteId: props.planteId || arbreData.id,
         nomPlante: props.nomPlante || arbreData.nom,
         arbreData: arbreData,

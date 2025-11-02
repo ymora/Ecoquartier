@@ -127,12 +127,18 @@ export const creerMaison = (canvas, echelle) => {
 export const creerCanalisation = (canvas) => {
   if (!canvas) return;
   
+  // ✅ Calculer le numéro séquentiel
+  const canalisationsExistantes = canvas.getObjects().filter(o => o.customType === 'canalisation');
+  const numero = canalisationsExistantes.length + 1;
+  
   const canalisation = new fabric.Line([50, 50, 200, 50], {
     stroke: '#757575',
     strokeWidth: 3,
     strokeDashArray: null,
     strokeLineCap: 'round',
     customType: 'canalisation',
+    customId: `canalisation-${Date.now()}-${numero}`,
+    numero: numero, // ✅ Numéro séquentiel
     selectable: true,
     hasBorders: true,
     hasControls: true,
