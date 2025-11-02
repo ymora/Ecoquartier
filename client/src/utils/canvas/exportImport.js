@@ -124,9 +124,10 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
         break;
         
       case 'terrasse':
+        compteurs.terrasse = (compteurs.terrasse || 0) + 1;
         objetExporte = {
           type: 'terrasse',
-          id: obj.customId || 'terrasse-' + Date.now(),
+          id: obj.customId || `terrasse-${Date.now()}-${compteurs.terrasse}`,
           pos: [obj.left, obj.top],
           dim: [obj.largeur || 5, obj.profondeur || 4],
           props: {
@@ -138,9 +139,10 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
         break;
         
       case 'paves':
+        compteurs.paves = (compteurs.paves || 0) + 1;
         objetExporte = {
           type: 'paves',
-          id: obj.customId || 'paves-' + Date.now(),
+          id: obj.customId || `paves-${Date.now()}-${compteurs.paves}`,
           pos: [obj.left, obj.top],
           dim: [obj.largeur || 5, obj.profondeur || 5],
           props: {
@@ -152,9 +154,10 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
         break;
         
       case 'caisson-eau':
+        compteurs.caisson = (compteurs.caisson || 0) + 1;
         objetExporte = {
           type: 'caisson-eau',
-          id: obj.customId || 'caisson-' + Date.now(),
+          id: obj.customId || `caisson-${Date.now()}-${compteurs.caisson}`,
           pos: [obj.left, obj.top],
           dim: [obj.largeur || 5, obj.profondeur || 3],
           props: {
@@ -189,9 +192,10 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
       case 'arbre-a-planter':
       case 'arbre-existant':
       case 'arbre':
+        compteurs.arbre = (compteurs.arbre || 0) + 1;
         objetExporte = {
           type: 'arbre',
-          id: obj.customId || obj.planteId || 'arbre-' + Date.now(),
+          id: obj.customId || obj.planteId || `arbre-${Date.now()}-${compteurs.arbre}`,
           pos: [obj.left, obj.top],
           dim: null, // Les arbres n'ont pas de dimensions fixes
           props: {
@@ -206,9 +210,10 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
         break;
         
       case 'canalisation':
+        compteurs.canalisation = (compteurs.canalisation || 0) + 1;
         objetExporte = {
           type: 'canalisation',
-          id: obj.customId || 'canalisation-' + Date.now(),
+          id: obj.customId || `canalisation-${Date.now()}-${compteurs.canalisation}`,
           pos: [obj.x1, obj.y1],
           dim: [obj.x2 - obj.x1, obj.y2 - obj.y1],
           props: {
@@ -223,9 +228,10 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
         break;
         
       case 'cloture':
+        compteurs.cloture = (compteurs.cloture || 0) + 1;
         objetExporte = {
           type: 'cloture',
-          id: obj.customId || 'cloture-' + Date.now(),
+          id: obj.customId || `cloture-${Date.now()}-${compteurs.cloture}`,
           pos: [obj.x1, obj.y1],
           dim: [obj.x2 - obj.x1, obj.y2 - obj.y1],
           props: {
@@ -241,9 +247,10 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
         break;
         
       case 'citerne':
+        compteurs.citerne = (compteurs.citerne || 0) + 1;
         objetExporte = {
           type: 'citerne',
-          id: obj.customId || 'citerne-' + Date.now(),
+          id: obj.customId || `citerne-${Date.now()}-${compteurs.citerne}`,
           pos: [obj.left, obj.top],
           dim: [obj.width || 2, obj.height || 2],
           props: {
