@@ -27,7 +27,10 @@ export const nettoyerCanvas = (canvas) => {
     !obj.isDimensionBox &&   // Boîtes de dimensions
     !obj.isAideButton &&     // Boutons d'aide
     !obj.isImageFond &&      // Image de fond
-    !obj.isCenterMark        // Marque centrale
+    !obj.isCenterMark &&     // Marque centrale
+    !obj.isNoeudMaillage &&  // Nœuds du maillage terrain
+    !obj.isLigneMaillage &&  // Lignes du maillage terrain
+    !obj.isLabelMaillage     // Labels du maillage terrain
     // ✅ TOUT LE RESTE est supprimé (maisons, arbres, terrain, etc.)
   );
   
