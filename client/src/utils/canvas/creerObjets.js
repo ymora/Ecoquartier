@@ -77,7 +77,7 @@ export const recentrerVueSurContenu = (canvas) => {
 /**
  * Créer un objet maison (retourne l'objet sans l'ajouter au canvas)
  */
-export const creerMaisonObjet = (echelle) => {
+export const creerMaisonObjet = (echelle, canvas = null) => {
   return creerObjetRectangulaire({
     type: 'maison',
     largeur: 10,
@@ -92,7 +92,7 @@ export const creerMaisonObjet = (echelle) => {
       penteToit: 15,
       orientationToit: 0
     }
-  }, echelle);
+  }, echelle, canvas);
 };
 
 /**
