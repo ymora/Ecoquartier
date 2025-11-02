@@ -62,7 +62,7 @@ const chargerObjet = async (canvas, objetData, echelle) => {
   switch (type) {
     case 'maison':
       // ✅ RÉUTILISE creerMaisonObjet existant
-      objet = creerMaisonObjet(echelle);
+      objet = creerMaisonObjet(echelle, canvas);
       // Appliquer les dimensions personnalisées
       objet.set({
         largeur: dim[0],
@@ -76,7 +76,7 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       
     case 'caisson-eau':
       // ✅ RÉUTILISE creerCaissonEauObjet existant
-      objet = creerCaissonEauObjet(echelle);
+      objet = creerCaissonEauObjet(echelle, canvas);
       objet.set({
         largeur: dim[0],
         profondeur: dim[1],
@@ -88,7 +88,7 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       
     case 'terrasse':
       // ✅ RÉUTILISE creerTerrasseObjet existant
-      objet = creerTerrasseObjet(echelle);
+      objet = creerTerrasseObjet(echelle, canvas);
       objet.set({
         largeur: dim[0],
         profondeur: dim[1],
@@ -100,7 +100,7 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       
     case 'paves':
       // ✅ RÉUTILISE creerPavesObjet existant
-      objet = creerPavesObjet(echelle);
+      objet = creerPavesObjet(echelle, canvas);
       objet.set({
         largeur: dim[0],
         profondeur: dim[1],
