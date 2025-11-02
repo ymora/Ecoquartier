@@ -136,7 +136,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         hoverCursor: 'pointer',
         noeudI: i,
         noeudJ: j,
-        isSelected: false // ✅ État de sélection du nœud
+        isSelected: false, // ✅ État de sélection du nœud
+        isNoeudMaillage: true // ✅ Pour filtrer lors de l'export JSON
       });
       
       // ✅ Gestionnaire de clic pour SÉLECTIONNER/DÉSÉLECTIONNER le nœud
