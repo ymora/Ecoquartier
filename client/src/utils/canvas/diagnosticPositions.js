@@ -192,7 +192,7 @@ export const diagnostiquerPositions2D3D = (canvas, data3D, echelle = 30) => {
       );
     });
   } else {
-    logger.success('Diagnostic', '\n✅ TOUTES LES POSITIONS SONT CORRECTES!');
+    logger.info('Diagnostic', '\n✅ TOUTES LES POSITIONS SONT CORRECTES!');
   }
   
   logger.info('Diagnostic', '🔍 FIN DIAGNOSTIC\n');

@@ -195,7 +195,7 @@ export const afficherOmbresArbres = (canvas, echelle, saison = 'ete', heureJourn
   
   canvas.renderAll();
   
-  logger.success('OmbreArbre', `✅ Ombres affichées (angle soleil: ${angleSoleil?.toFixed(0)}°)`);
+  logger.info('OmbreArbre', `✅ Ombres affichées (angle soleil: ${angleSoleil?.toFixed(0)}°)`);
 };
 
 /**
