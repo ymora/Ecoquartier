@@ -30,19 +30,8 @@ export const chargerPlanFromJSON = async (canvas, echelle, ajouterGrille, planFi
     
     logger.info('PlanLoader', 'Chargement du plan depuis JSON');
     
-    // Nettoyer le canvas
-    const objets = canvas.getObjects().filter(obj => 
-      !obj.isGridLine && 
-      !obj.measureLabel && 
-      !obj.isBoussole && 
-      !obj.isSolIndicator &&
-      !obj.alignmentGuide &&
-      !obj.isDimensionBox &&
-      !obj.isAideButton &&
-      !obj.isImageFond &&
-      !obj.isCenterMark
-    );
-  objets.forEach(obj => canvasOperations.supprimer(canvas, obj));
+    // ✅ Nettoyer le canvas (fonction unifiée)
+    nettoyerCanvas(canvas);
     
     // Charger chaque objet en utilisant les fonctions existantes
     for (const objet of planData.objets) {
