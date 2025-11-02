@@ -228,9 +228,10 @@ export const chargerPlanDepuisJSON = async (canvas, echelle, planData) => {
       throw new Error('Format JSON invalide : "objets" manquant ou invalide');
     }
     
-    // ✅ NETTOYER LE CANVAS AVANT D'IMPORTER
-    logger.info('PlanLoader', '🧹 Nettoyage du canvas...');
+    // ✅ NETTOYER LE CANVAS AVANT D'IMPORTER (TOUT sauf éléments UI)
+    logger.info('PlanLoader', '🧹 Nettoyage complet du canvas...');
     const objetsASupprimer = canvas.getObjects().filter(obj => 
+      // Garder uniquement les éléments d'interface (grille, boussole, etc.)
       !obj.isGridLine && 
       !obj.measureLabel && 
       !obj.isBoussole && 
@@ -240,12 +241,18 @@ export const chargerPlanDepuisJSON = async (canvas, echelle, planData) => {
       !obj.isAideButton &&
       !obj.isImageFond &&
       !obj.isCenterMark
+      // ✅ TOUT LE RESTE est supprimé (y compris le terrain 'sol')
     );
     
-    // Supprimer tous les objets (sauf UI)
-    objetsASupprimer.forEach(obj => canvasOperations.supprimer(canvas, obj));
+    // Supprimer tous les objets (y compris le terrain existant)
+    objetsASupprimer.forEach(obj => {
+      if (obj.customType === 'sol') {
+        logger.info('PlanLoader', '🗑️ Suppression ancien terrain');
+      }
+      canvasOperations.supprimer(canvas, obj);
+    });
     
-    logger.info('PlanLoader', `✅ ${objetsASupprimer.length} objet(s) supprimé(s)`);
+    logger.info('PlanLoader', `✅ ${objetsASupprimer.length} objet(s) supprimé(s) (dont terrain si existant)`);
     
     // Charger chaque objet
     for (const objet of planData.objets) {
