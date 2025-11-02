@@ -242,7 +242,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
     originX: 'center',
     originY: 'center',
     selectable: false,
-    evented: false
+    evented: false,
+    isLabelMaillage: true // ✅ Pour filtrer lors de l'export JSON
   });
   
   elementsMaillage.push(label);
