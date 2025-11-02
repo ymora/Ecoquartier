@@ -203,6 +203,10 @@ export const creerCloture = (canvas, pointsClotureRef) => {
     const p1 = pointsClotureRef.current[dernierIndex - 1];
     const p2 = pointsClotureRef.current[dernierIndex];
     
+    // ✅ Calculer le numéro séquentiel pour les clôtures
+    const cloturesExistantes = canvas.getObjects().filter(o => o.customType === 'cloture');
+    const numero = cloturesExistantes.length + 1;
+    
     const ligne = new fabric.Line([p1.x, p1.y, p2.x, p2.y], {
       stroke: '#ffd54f',
       strokeWidth: 2, // Épaisseur fixe 5cm
@@ -212,6 +216,8 @@ export const creerCloture = (canvas, pointsClotureRef) => {
       lockScalingX: true,
       lockScalingY: true,
       customType: 'cloture',
+      customId: `cloture-${Date.now()}-${numero}`,
+      numero: numero, // ✅ Numéro séquentiel
       hauteur: 1.5, // Hauteur par défaut 1.5m
       epaisseur: 0.05, // 5cm
       elevationSol: 0.05, // ✅ 5 cm au-dessus du sol (structure aérienne, pas réseau enterré)
