@@ -260,6 +260,9 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
 
 /**
  * Extraire les données du plan (fonction réutilisable)
+ * ⚠️ FORMAT LEGACY - Cette fonction est conservée pour compatibilité
+ * mais convertit en MÈTRES (pas cohérent avec telechargerPlanJSON qui utilise PIXELS)
+ * TODO: Unifier les formats ou clarifier l'usage
  */
 const extraireDonneesPlan = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
   const objets = canvas.getObjects();
@@ -286,8 +289,8 @@ const extraireDonneesPlan = (canvas, dimensions, orientation, echelle, onPlanCom
 
     if (obj.customType === 'maison') {
       planData.maisons.push({
-        left: obj.left / echelle,
-        top: obj.top / echelle,
+        left: obj.left / echelle,  // ⚠️ MÈTRES (divisé par échelle)
+        top: obj.top / echelle,    // ⚠️ MÈTRES
         width: obj.getScaledWidth() / echelle,
         height: obj.getScaledHeight() / echelle,
         angle: obj.angle || 0,
