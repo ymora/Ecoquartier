@@ -12,6 +12,7 @@ import { mettreAJourCouchesSol, modifierElevationNoeudsSelectionnes, deselection
 import { chargerPlanJSONAvecExplorateur } from '../utils/fileLoader';
 import { canvasOperations } from '../utils/canvas/canvasOperations';
 import { getInfoOmbreArbre } from '../utils/canvas/ombreArbre';
+import logger from '../utils/logger';
 
 /**
  * Panneau latéral avec onglets pour outils et configuration
