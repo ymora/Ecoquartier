@@ -85,7 +85,7 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
     },
     objets: []
   };
-  
+
   objets.forEach(obj => {
     if (obj.isGridLine || obj.measureLabel || obj.isBoussole || obj.isImageFond) return;
     
@@ -145,7 +145,7 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
           dim: [obj.largeur || 5, obj.profondeur || 3],
           props: {
             hauteur: obj.hauteur || 1,
-            angle: obj.angle || 0,
+        angle: obj.angle || 0,
             elevationSol: obj.elevationSol || -1.0
           }
         };
@@ -178,7 +178,7 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
             nomPlante: obj.nomPlante || obj.arbreData?.nom,
             planteId: obj.planteId,
             couleur: obj.couleur,
-            elevationSol: obj.elevationSol || 0,
+        elevationSol: obj.elevationSol || 0,
             validationStatus: obj.validationStatus || 'ok'
           }
         };
@@ -191,12 +191,12 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
           pos: [obj.x1, obj.y1],
           dim: [obj.x2 - obj.x1, obj.y2 - obj.y1],
           props: {
-            x1: obj.x1,
-            y1: obj.y1,
-            x2: obj.x2,
-            y2: obj.y2,
-            diametre: obj.diametre || 0.1,
-            elevationSol: obj.elevationSol || -0.6
+        x1: obj.x1,
+        y1: obj.y1,
+        x2: obj.x2,
+        y2: obj.y2,
+        diametre: obj.diametre || 0.1,
+        elevationSol: obj.elevationSol || -0.6
           }
         };
         break;
@@ -208,10 +208,10 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
           pos: [obj.x1, obj.y1],
           dim: [obj.x2 - obj.x1, obj.y2 - obj.y1],
           props: {
-            x1: obj.x1,
-            y1: obj.y1,
-            x2: obj.x2,
-            y2: obj.y2,
+        x1: obj.x1,
+        y1: obj.y1,
+        x2: obj.x2,
+        y2: obj.y2,
             hauteur: obj.hauteur || 2,
             epaisseur: obj.epaisseur || 0.1,
             elevationSol: obj.elevationSol || 0.05
@@ -229,7 +229,7 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
             capacite: obj.capacite || 5000,
             diametre: obj.diametre || 2,
             hauteur: obj.hauteur || 2,
-            angle: obj.angle || 0,
+        angle: obj.angle || 0,
             elevationSol: obj.elevationSol || -2.0
           }
         };
@@ -269,156 +269,15 @@ export const exporterPlan = (canvas, onPlanComplete) => {
 };
 
 /**
- * ✅ ANCIEN CODE SUPPRIMÉ (280 lignes)
+ * ✅ CODE NETTOYÉ - Un seul système d'export/import
  * 
- * Raison: Duplication de logique avec telechargerPlanJSON()
- * - extraireDonneesPlan() : Format en MÈTRES (left/echelle)
- * - telechargerPlanJSON()  : Format en PIXELS (left direct)
+ * Avant: 2 fonctions avec formats différents (PIXELS vs MÈTRES)
+ * Maintenant: 1 seul format (PIXELS) via telechargerPlanJSON()
  * 
- * Solution: Un seul format (PIXELS) utilisé par telechargerPlanJSON()
- * Le callback exporterPlan() ne fait plus qu'appeler onPlanComplete()
+ * Export: telechargerPlanJSON() → Fichier JSON en PIXELS
+ * Import: planLoader.js → Charge JSON en PIXELS
+ * Callback: exporterPlan() → Simple callback pour sync 3D
  */
-
-/*
-const extraireDonneesPlan_LEGACY = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
-  const objets = canvas.getObjects();
-  
-  const planData = {
-    largeur: dimensions.largeur,
-    hauteur: dimensions.hauteur,
-    orientation,
-    timestamp: Date.now(),
-    maisons: [],
-    canalisations: [],
-    arbresAPlanter: [],
-    terrasses: [],
-    paves: [],
-    citernes: [],
-    caissonsEau: [],
-    clotures: [],
-    terrain: null // ✅ Données du terrain avec maillage
-  };
-
-  objets.forEach(obj => {
-    if (obj.isGridLine || obj.measureLabel || obj.labelCentral || obj.isBoussole || obj.isSolIndicator || 
-        obj.alignmentGuide || obj.isDimensionBox || obj.isAideButton || obj.isImageFond) return;
-
-    if (obj.customType === 'maison') {
-      planData.maisons.push({
-        left: obj.left / echelle,  // ⚠️ MÈTRES (divisé par échelle)
-        top: obj.top / echelle,    // ⚠️ MÈTRES
-        width: obj.getScaledWidth() / echelle,
-        height: obj.getScaledHeight() / echelle,
-        angle: obj.angle || 0,
-        largeur: obj.largeur || 10,
-        profondeur: obj.profondeur || 10,
-        hauteur: obj.hauteur || 7,
-        elevationSol: obj.elevationSol || 0,
-        typeToit: obj.typeToit || 'deux-pentes'
-      });
-    } else if (obj.customType === 'canalisation') {
-      planData.canalisations.push({
-        x1: obj.x1,
-        y1: obj.y1,
-        x2: obj.x2,
-        y2: obj.y2,
-        diametre: obj.diametre || 0.1,
-        elevationSol: obj.elevationSol || -0.6
-      });
-    } else if (obj.customType === 'cloture') {
-      planData.clotures.push({
-        x1: obj.x1,
-        y1: obj.y1,
-        x2: obj.x2,
-        y2: obj.y2,
-        hauteur: obj.hauteur || 1.5,
-        epaisseur: obj.epaisseur || 0.05,
-        elevationSol: obj.elevationSol !== undefined ? obj.elevationSol : 0.05 // ✅ 5 cm au-dessus du sol
-      });
-    } else if (obj.customType === 'arbre-a-planter') {
-      planData.arbresAPlanter.push({
-        left: obj.left / echelle,
-        top: obj.top / echelle,
-        arbreData: obj.arbreData,
-        elevationSol: obj.elevationSol || 0 // ✅ Exporter l'élévation du sol
-      });
-    } else if (obj.customType === 'caisson-eau') {
-      planData.caissonsEau.push({
-        left: obj.left / echelle,
-        top: obj.top / echelle,
-        angle: obj.angle || 0,
-        largeur: obj.largeur || 5,
-        profondeur: obj.profondeur || 3,
-        hauteur: obj.hauteur || 1,
-        elevationSol: obj.elevationSol || -1.0
-      });
-    } else if (obj.customType === 'terrasse') {
-      planData.terrasses.push({
-        left: obj.left / echelle,
-        top: obj.top / echelle,
-        width: obj.getScaledWidth() / echelle,
-        height: obj.getScaledHeight() / echelle,
-        angle: obj.angle || 0,
-        largeur: obj.largeur || (obj.getScaledWidth() / echelle),
-        profondeur: obj.profondeur || (obj.getScaledHeight() / echelle),
-        hauteur: obj.hauteur || 0.15,
-        elevationSol: obj.elevationSol || 0
-      });
-    } else if (obj.customType === 'paves') {
-      planData.paves.push({
-        left: obj.left / echelle,
-        top: obj.top / echelle,
-        width: obj.getScaledWidth() / echelle,
-        height: obj.getScaledHeight() / echelle,
-        angle: obj.angle || 0,
-        largeur: obj.largeur || (obj.getScaledWidth() / echelle),
-        profondeur: obj.profondeur || (obj.getScaledHeight() / echelle),
-        hauteur: obj.hauteur || 0.08,
-        elevationSol: obj.elevationSol || 0
-      });
-    } else if (obj.customType === 'citerne') {
-      planData.citernes.push({
-        left: obj.left / echelle,
-        top: obj.top / echelle,
-        width: obj.getScaledWidth() / echelle,
-        height: obj.getScaledHeight() / echelle,
-        angle: obj.angle || 0,
-        diametre: obj.diametre || 1.5,
-        longueur: obj.longueur || 2.5,
-        hauteur: obj.hauteur || obj.diametre || 1.5,
-        volume: obj.volume || 3000,
-        elevationSol: obj.elevationSol || -2.5
-      });
-    } else if (obj.customType === 'sol') {
-      // ✅ Exporter le terrain avec son maillage d'élévation
-      planData.terrain = {
-        largeur: obj.width / echelle,
-        hauteur: obj.height / echelle,
-        couchesSol: obj.couchesSol || [],
-        maillageElevation: obj.maillageElevation || null,
-        tailleMailleM: obj.tailleMailleM || 5
-      };
-    }
-  });
-
-  localStorage.setItem('planTerrain', JSON.stringify(planData));
-  
-  if (onPlanComplete) {
-  onPlanComplete(planData);
-  }
-  
-  // ❌ LOG COPIABLE retiré - sera généré uniquement sur demande via bouton "Actions"
-  // loggerPositionsPlanCopiable(planData, echelle);
-  
-  return planData;
-};
-
-/**
- * Exporter le plan (wrapper pour compatibilité avec code existant)
- */
-export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
-  return extraireDonneesPlan(canvas, dimensions, orientation, echelle, onPlanComplete);
-};
 
 /**
  * Charger une image de fond
