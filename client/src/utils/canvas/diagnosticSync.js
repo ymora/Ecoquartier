@@ -127,7 +127,7 @@ export const diagnostiquerSynchronisation = (canvas, data3D) => {
   
   // Résumé
   if (resultats.problemes.length === 0) {
-    logger.success('Diagnostic', '✅ Synchronisation 2D↔3D parfaite !');
+    logger.info('Diagnostic', '✅ Synchronisation 2D↔3D parfaite !');
   } else {
     logger.warn('Diagnostic', `⚠️ ${resultats.problemes.length} problème(s) détecté(s):`);
     resultats.problemes.forEach(p => logger.warn('Diagnostic', p));
