@@ -40,16 +40,17 @@ function ArbusteDetail({ arbuste, menuOpen }) {
       {/* ✅ Encart informations d'ombre */}
       {infoOmbre && (
         <div style={{
-          background: 'linear-gradient(135deg, #37474f 0%, #263238 100%)',
+          background: '#ffffff',
           padding: '1rem',
           margin: '1rem 0',
           borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+          border: '1px solid #e0e0e0',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
           <div style={{
             fontSize: '1rem',
             fontWeight: '700',
-            color: '#ffa726',
+            color: '#ff9800',
             marginBottom: '0.75rem',
             display: 'flex',
             alignItems: 'center',
@@ -60,33 +61,33 @@ function ArbusteDetail({ arbuste, menuOpen }) {
           
           <div style={{
             fontSize: '0.9rem',
-            color: '#cfd8dc',
+            color: '#333',
             lineHeight: '1.8',
             display: 'grid',
             gridTemplateColumns: 'auto 1fr',
             gap: '0.5rem 1rem'
           }}>
-            <strong style={{ color: '#fff' }}>Densité feuillage:</strong>
+            <strong style={{ color: '#555' }}>Densité feuillage:</strong>
             <span>{infoOmbre.densiteFeuillage} ({infoOmbre.opacite})</span>
             
-            <strong style={{ color: '#fff' }}>Longueur ombre:</strong>
+            <strong style={{ color: '#555' }}>Longueur ombre:</strong>
             <span>{infoOmbre.longueurOmbre}</span>
             
-            <strong style={{ color: '#fff' }}>Surface couverte:</strong>
+            <strong style={{ color: '#555' }}>Surface couverte:</strong>
             <span>{infoOmbre.surfaceOmbre}</span>
             
-            <strong style={{ color: '#fff' }}>Type:</strong>
+            <strong style={{ color: '#555' }}>Type:</strong>
             <span>{infoOmbre.estCaduc ? 'Caduc (perd ses feuilles)' : 'Persistant'}</span>
           </div>
           
           <div style={{
             marginTop: '0.75rem',
             padding: '0.75rem',
-            background: 'rgba(255, 167, 38, 0.15)',
-            borderLeft: '4px solid #ffa726',
+            background: '#fff3e0',
+            borderLeft: '4px solid #ff9800',
             borderRadius: '4px',
             fontSize: '0.85rem',
-            color: '#ffcc80'
+            color: '#e65100'
           }}>
             💡 {infoOmbre.noteHiver}
           </div>

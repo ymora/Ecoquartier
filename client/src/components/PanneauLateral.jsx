@@ -1262,16 +1262,17 @@ function PanneauLateral({
                     
                     return (
                       <div style={{
-                        background: 'linear-gradient(135deg, #37474f 0%, #263238 100%)',
+                        background: '#ffffff',
                         padding: '1rem',
                         borderRadius: '8px',
                         marginTop: '0.75rem',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                        border: '1px solid #e0e0e0',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                       }}>
                         <div style={{
                           fontSize: '0.95rem',
                           fontWeight: '700',
-                          color: '#ffa726',
+                          color: '#ff9800',
                           marginBottom: '0.75rem',
                           display: 'flex',
                           alignItems: 'center',
@@ -1282,25 +1283,26 @@ function PanneauLateral({
                         
                         <div style={{
                           fontSize: '0.85rem',
-                          color: '#cfd8dc',
+                          color: '#333',
                           lineHeight: '1.6'
                         }}>
                           <div style={{ marginBottom: '0.5rem' }}>
-                            <strong style={{ color: '#fff' }}>Densité:</strong> {infoOmbre.densiteFeuillage} ({infoOmbre.opacite})
+                            <strong style={{ color: '#555' }}>Densité:</strong> {infoOmbre.densiteFeuillage} ({infoOmbre.opacite})
                           </div>
                           <div style={{ marginBottom: '0.5rem' }}>
-                            <strong style={{ color: '#fff' }}>Longueur (midi été):</strong> {infoOmbre.longueurOmbre}
+                            <strong style={{ color: '#555' }}>Longueur (midi été):</strong> {infoOmbre.longueurOmbre}
                           </div>
                           <div style={{ marginBottom: '0.5rem' }}>
-                            <strong style={{ color: '#fff' }}>Surface:</strong> {infoOmbre.surfaceOmbre}
+                            <strong style={{ color: '#555' }}>Surface:</strong> {infoOmbre.surfaceOmbre}
                           </div>
                           <div style={{
                             marginTop: '0.75rem',
                             padding: '0.5rem',
-                            background: 'rgba(255, 167, 38, 0.1)',
-                            borderLeft: '3px solid #ffa726',
+                            background: '#fff3e0',
+                            borderLeft: '3px solid #ff9800',
                             borderRadius: '4px',
-                            fontSize: '0.8rem'
+                            fontSize: '0.8rem',
+                            color: '#e65100'
                           }}>
                             {infoOmbre.noteHiver}
                           </div>

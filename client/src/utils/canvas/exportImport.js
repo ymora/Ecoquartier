@@ -259,12 +259,22 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
 };
 
 /**
- * Extraire les données du plan (fonction réutilisable)
- * ⚠️ FORMAT LEGACY - Cette fonction est conservée pour compatibilité
- * mais convertit en MÈTRES (pas cohérent avec telechargerPlanJSON qui utilise PIXELS)
- * TODO: Unifier les formats ou clarifier l'usage
+ * ✅ FONCTION SIMPLIFIÉE - Callback pour synchronisation 3D
+ * Ne crée plus de format JSON complet, appelle juste le callback
  */
-const extraireDonneesPlan = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
+export const exporterPlan = (canvas, onPlanComplete) => {
+  if (onPlanComplete) {
+    onPlanComplete(canvas);
+  }
+};
+
+/**
+ * ❌ LEGACY - Ancienne fonction d'extraction (format en MÈTRES)
+ * Conservée uniquement pour référence historique - NE PLUS UTILISER
+ * Utilisez telechargerPlanJSON() à la place
+ */
+/*
+const extraireDonneesPlan_LEGACY = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
   const objets = canvas.getObjects();
   
   const planData = {
