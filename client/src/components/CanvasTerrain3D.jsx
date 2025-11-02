@@ -813,7 +813,13 @@ function CanvasTerrain3D({
               maisonBounds={maisonsBounds}
             >
             <Caisson3D 
-            {...caisson}
+            position={[0, 0, 0]}
+            largeur={caisson.largeur}
+            profondeur={caisson.profondeur}
+            hauteur={caisson.hauteur}
+            volume={caisson.volume}
+            angle={caisson.angle}
+            elevationSol={caisson.elevationSol}
             onClick={() => handleObjetClick({ 
               type: 'caisson-eau', 
               ...caisson, 
