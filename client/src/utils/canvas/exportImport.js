@@ -241,8 +241,23 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
     }
   });
   
+  // 🔍 VALIDATION : Vérifier que le JSON est valide avant export
+  let jsonString;
+  try {
+    jsonString = JSON.stringify(planJSON, null, 2);
+    
+    // Test de parsing pour vérifier la validité
+    JSON.parse(jsonString);
+    
+    logger.info('Export', `✅ JSON valide généré (${planJSON.objets.length} objets)`);
+    console.log('📋 Aperçu du JSON exporté:', planJSON);
+  } catch (error) {
+    logger.error('Export', `❌ Erreur lors de la génération du JSON: ${error.message}`);
+    alert(`Erreur lors de l'export: ${error.message}`);
+    return;
+  }
+  
   // Créer un blob JSON
-  const jsonString = JSON.stringify(planJSON, null, 2);
   const blob = new Blob([jsonString], { type: 'application/json' });
   
   // Créer un lien de téléchargement
