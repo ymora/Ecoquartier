@@ -260,9 +260,11 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
 
 /**
  * ✅ FONCTION SIMPLIFIÉE - Callback pour synchronisation 3D
- * Ne crée plus de format JSON complet, appelle juste le callback
+ * Signature conservée pour compatibilité, mais seuls canvas et onPlanComplete sont utilisés
  */
-export const exporterPlan = (canvas, onPlanComplete) => {
+export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
+  // Ancienne signature : (canvas, dimensions, orientation, echelle, onPlanComplete)
+  // Nouvelle logique : Simple callback sans génération de format JSON
   if (onPlanComplete) {
     onPlanComplete(canvas);
   }
