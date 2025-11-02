@@ -24,9 +24,10 @@ export const genererIdUnique = (type) => {
  * @param {string} config.couleurBordure - Couleur de bordure
  * @param {Object} config.proprietes - Propriétés spécifiques à l'objet
  * @param {number} echelle - Échelle du plan
+ * @param {fabric.Canvas} canvas - Canvas (optionnel, pour calculer le numéro)
  * @returns {fabric.Group} - Objet Fabric.js créé
  */
-export const creerObjetRectangulaire = (config, echelle) => {
+export const creerObjetRectangulaire = (config, echelle, canvas = null) => {
   const {
     type,
     largeur,
@@ -36,6 +37,13 @@ export const creerObjetRectangulaire = (config, echelle) => {
     couleurBordure,
     proprietes = {}
   } = config;
+  
+  // ✅ Calculer le numéro séquentiel (pour affichage "Maison #2")
+  let numero = 1;
+  if (canvas) {
+    const objetsExistants = canvas.getObjects().filter(o => o.customType === type);
+    numero = objetsExistants.length + 1;
+  }
 
   // Créer le rectangle de base
   const rect = new fabric.Rect({
@@ -69,6 +77,7 @@ export const creerObjetRectangulaire = (config, echelle) => {
   const group = new fabric.Group([rect, labelIcone], {
     customType: type,
     customId: genererIdUnique(type),
+    numero: numero, // ✅ Numéro séquentiel pour affichage
     largeur: largeur,
     profondeur: profondeur,
     originX: 'center',
@@ -107,9 +116,10 @@ export const creerObjetRectangulaire = (config, echelle) => {
  * @param {string} config.couleurBordure - Couleur de bordure
  * @param {Object} config.proprietes - Propriétés spécifiques à l'objet
  * @param {number} echelle - Échelle du plan
+ * @param {fabric.Canvas} canvas - Canvas (optionnel, pour calculer le numéro)
  * @returns {fabric.Group} - Objet Fabric.js créé
  */
-export const creerObjetCirculaire = (config, echelle) => {
+export const creerObjetCirculaire = (config, echelle, canvas = null) => {
   const {
     type,
     diametre,
@@ -118,6 +128,13 @@ export const creerObjetCirculaire = (config, echelle) => {
     couleurBordure,
     proprietes = {}
   } = config;
+  
+  // ✅ Calculer le numéro séquentiel
+  let numero = 1;
+  if (canvas) {
+    const objetsExistants = canvas.getObjects().filter(o => o.customType === type);
+    numero = objetsExistants.length + 1;
+  }
 
   const rayon = (diametre * echelle) / 2;
 
@@ -152,6 +169,7 @@ export const creerObjetCirculaire = (config, echelle) => {
   const group = new fabric.Group([cercle, labelIcone], {
     customType: type,
     customId: genererIdUnique(type),
+    numero: numero, // ✅ Numéro séquentiel pour affichage
     diametre: diametre,
     originX: 'center',
     originY: 'center',

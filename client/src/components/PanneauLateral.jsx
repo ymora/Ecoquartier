@@ -673,15 +673,15 @@ function PanneauLateral({
               <div className="section-title">🎯 Objet sélectionné</div>
               <div className="info-box" style={{ background: '#fff3e0', borderColor: '#ff9800' }}>
                 <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                {objetSelectionne.customType === 'maison' && '🏠 Maison'}
-                {objetSelectionne.customType === 'citerne' && '💧 Citerne'}
-                  {objetSelectionne.customType === 'caisson-eau' && '🟦 Caisson eau'}
-                {objetSelectionne.customType === 'canalisation' && '🚰 Canalisation'}
-                {objetSelectionne.customType === 'cloture' && '🚧 Clôture'}
-                  {objetSelectionne.customType === 'terrasse' && '🏡 Terrasse'}
-                  {objetSelectionne.customType === 'paves' && '🟩 Pavés'}
-                  {objetSelectionne.customType === 'arbre-a-planter' && `🌳 ${objetSelectionne.arbreData?.name || 'Arbre'}`}
-                  {objetSelectionne.customType === 'arbre-existant' && '🌳 Arbre existant'}
+                {objetSelectionne.customType === 'maison' && `🏠 Maison${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                {objetSelectionne.customType === 'citerne' && `💧 Citerne${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                  {objetSelectionne.customType === 'caisson-eau' && `🟦 Caisson eau${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                {objetSelectionne.customType === 'canalisation' && `🚰 Canalisation${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                {objetSelectionne.customType === 'cloture' && `🚧 Clôture${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                  {objetSelectionne.customType === 'terrasse' && `🏡 Terrasse${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                  {objetSelectionne.customType === 'paves' && `🟩 Pavés${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                  {objetSelectionne.customType === 'arbre-a-planter' && `🌳 ${objetSelectionne.arbreData?.name || 'Arbre'}${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                  {objetSelectionne.customType === 'arbre-existant' && `🌳 Arbre existant${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'sol' && '🌍 Sol'}
                 </div>
               </div>
