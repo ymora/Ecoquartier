@@ -5,7 +5,7 @@
  */
 
 import * as fabric from 'fabric';
-import { logger } from '../logger';
+import logger from '../logger';
 
 /**
  * Calculer l'opacité de l'ombre selon le feuillage et la saison
