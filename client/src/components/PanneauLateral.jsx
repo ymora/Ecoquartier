@@ -1255,6 +1255,60 @@ function PanneauLateral({
                     </div>
                   )}
                   
+                  {                  {/* ✅ Informations d'ombre */}
+                  {objetSelectionne.arbreData && (() => {
+                    const infoOmbre = getInfoOmbreArbre(objetSelectionne.arbreData, 'ete', 0.5);
+                    if (!infoOmbre) return null;
+                    
+                    return (
+                      <div style={{
+                        background: 'linear-gradient(135deg, #37474f 0%, #263238 100%)',
+                        padding: '1rem',
+                        borderRadius: '8px',
+                        marginTop: '0.75rem',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                      }}>
+                        <div style={{
+                          fontSize: '0.95rem',
+                          fontWeight: '700',
+                          color: '#ffa726',
+                          marginBottom: '0.75rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem'
+                        }}>
+                          <span>☀️ Ombre projetée</span>
+                        </div>
+                        
+                        <div style={{
+                          fontSize: '0.85rem',
+                          color: '#cfd8dc',
+                          lineHeight: '1.6'
+                        }}>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <strong style={{ color: '#fff' }}>Densité:</strong> {infoOmbre.densiteFeuillage} ({infoOmbre.opacite})
+                          </div>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <strong style={{ color: '#fff' }}>Longueur (midi été):</strong> {infoOmbre.longueurOmbre}
+                          </div>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <strong style={{ color: '#fff' }}>Surface:</strong> {infoOmbre.surfaceOmbre}
+                          </div>
+                          <div style={{
+                            marginTop: '0.75rem',
+                            padding: '0.5rem',
+                            background: 'rgba(255, 167, 38, 0.1)',
+                            borderLeft: '3px solid #ffa726',
+                            borderRadius: '4px',
+                            fontSize: '0.8rem'
+                          }}>
+                            {infoOmbre.noteHiver}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  
                   {/* Actions */}
                   <div style={{ marginTop: '0.5rem' }}>
                     <button
