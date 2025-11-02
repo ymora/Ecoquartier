@@ -269,10 +269,16 @@ export const exporterPlan = (canvas, onPlanComplete) => {
 };
 
 /**
- * ❌ LEGACY - Ancienne fonction d'extraction (format en MÈTRES)
- * Conservée uniquement pour référence historique - NE PLUS UTILISER
- * Utilisez telechargerPlanJSON() à la place
+ * ✅ ANCIEN CODE SUPPRIMÉ (280 lignes)
+ * 
+ * Raison: Duplication de logique avec telechargerPlanJSON()
+ * - extraireDonneesPlan() : Format en MÈTRES (left/echelle)
+ * - telechargerPlanJSON()  : Format en PIXELS (left direct)
+ * 
+ * Solution: Un seul format (PIXELS) utilisé par telechargerPlanJSON()
+ * Le callback exporterPlan() ne fait plus qu'appeler onPlanComplete()
  */
+
 /*
 const extraireDonneesPlan_LEGACY = (canvas, dimensions, orientation, echelle, onPlanComplete) => {
   const objets = canvas.getObjects();
