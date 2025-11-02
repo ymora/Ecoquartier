@@ -255,7 +255,7 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   
-  logger.success('Export', `Plan exporté : ${a.download} (${planJSON.objets.length} objets)`);
+  logger.info('Export', `✅ Plan exporté : ${a.download} (${planJSON.objets.length} objets)`);
 };
 
 /**
