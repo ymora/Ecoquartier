@@ -15,10 +15,14 @@ import {
 import ImageGallery from './ImageGallery';
 import CalendrierAnnuel from './CalendrierAnnuel';
 import FiabiliteBadge from './FiabiliteBadge';
+import { getInfoOmbreArbre } from '../utils/canvas/ombreArbre';
 import './ArbusteDetail.css';
 
 function ArbusteDetail({ arbuste, menuOpen }) {
   const [activeTab, setActiveTab] = useState('general');
+  
+  // ✅ Calculer les informations d'ombre
+  const infoOmbre = getInfoOmbreArbre(arbuste, 'ete', 0.5);
 
   return (
     <div className="arbuste-detail">
@@ -32,6 +36,62 @@ function ArbusteDetail({ arbuste, menuOpen }) {
       </div>
 
       <ImageGallery arbusteId={arbuste.id} arbusteName={arbuste.name} />
+      
+      {/* ✅ Encart informations d'ombre */}
+      {infoOmbre && (
+        <div style={{
+          background: 'linear-gradient(135deg, #37474f 0%, #263238 100%)',
+          padding: '1rem',
+          margin: '1rem 0',
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+        }}>
+          <div style={{
+            fontSize: '1rem',
+            fontWeight: '700',
+            color: '#ffa726',
+            marginBottom: '0.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span>☀️ Ombre projetée (midi en été)</span>
+          </div>
+          
+          <div style={{
+            fontSize: '0.9rem',
+            color: '#cfd8dc',
+            lineHeight: '1.8',
+            display: 'grid',
+            gridTemplateColumns: 'auto 1fr',
+            gap: '0.5rem 1rem'
+          }}>
+            <strong style={{ color: '#fff' }}>Densité feuillage:</strong>
+            <span>{infoOmbre.densiteFeuillage} ({infoOmbre.opacite})</span>
+            
+            <strong style={{ color: '#fff' }}>Longueur ombre:</strong>
+            <span>{infoOmbre.longueurOmbre}</span>
+            
+            <strong style={{ color: '#fff' }}>Surface couverte:</strong>
+            <span>{infoOmbre.surfaceOmbre}</span>
+            
+            <strong style={{ color: '#fff' }}>Type:</strong>
+            <span>{infoOmbre.estCaduc ? 'Caduc (perd ses feuilles)' : 'Persistant'}</span>
+          </div>
+          
+          <div style={{
+            marginTop: '0.75rem',
+            padding: '0.75rem',
+            background: 'rgba(255, 167, 38, 0.15)',
+            borderLeft: '4px solid #ffa726',
+            borderRadius: '4px',
+            fontSize: '0.85rem',
+            color: '#ffcc80'
+          }}>
+            💡 {infoOmbre.noteHiver}
+          </div>
+        </div>
+      )}
 
       <div className="tabs">
         <button 

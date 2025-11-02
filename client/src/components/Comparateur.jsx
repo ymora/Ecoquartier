@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FaTimes, FaChevronLeft, FaChevronRight, FaEye, FaEyeSlash, FaSearchPlus } from 'react-icons/fa';
 import FiabiliteBadge from './FiabiliteBadge';
 import CanvasTerrain from './CanvasTerrain';
+import { getInfoOmbreArbre } from '../utils/canvas/ombreArbre';
 import './Comparateur.css';
 
 function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePlanification }) {
