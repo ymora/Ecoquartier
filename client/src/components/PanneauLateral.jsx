@@ -1255,7 +1255,7 @@ function PanneauLateral({
                     </div>
                   )}
                   
-                  {                  {/* ✅ Informations d'ombre */}
+                  {/* ✅ Informations d'ombre */}
                   {objetSelectionne.arbreData && (() => {
                     const infoOmbre = getInfoOmbreArbre(objetSelectionne.arbreData, 'ete', 0.5);
                     if (!infoOmbre) return null;
