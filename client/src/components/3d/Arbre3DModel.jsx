@@ -106,12 +106,13 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
         onClick={onClick}
       />
       
-      {/* HALO PULSANT ANIMÉ - Remplace le cercle statique */}
-      <HaloPulsant 
-        status={validationStatus}
-        position={position}
-        envergure={envergureActuelle}
-      />
+      {/* HALO PULSANT ANIMÉ - Uniquement si validation NON-OK */}
+      {validationStatus !== 'ok' && (
+        <HaloPulsant 
+          couleur={validationStatus === 'erreur' ? '#f44336' : '#ff9800'}
+          taille={envergureActuelle * 0.6}
+        />
+      )}
       
       {/* Label avec nom au-dessus - UNIFIÉ avec Arbre3D.jsx */}
       <Html distanceFactor={10} position={[0, hauteurFinale + 1, 0]}>
