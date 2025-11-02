@@ -107,7 +107,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         stroke: '#2e7d32',
         strokeWidth: 1,
         selectable: false,
-        evented: false
+        evented: false,
+        isLigneMaillage: true // ✅ Pour filtrer lors de l'export JSON
       }
     );
     elementsMaillage.push(line);
