@@ -197,14 +197,15 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
           type: 'arbre',
           id: obj.customId || obj.planteId || `arbre-${Date.now()}-${compteurs.arbre}`,
           pos: [obj.left, obj.top],
-          dim: null, // Les arbres n'ont pas de dimensions fixes
+          dim: null,
           props: {
-            arbreData: obj.arbreData,
+            // ✅ OPTIMISÉ : Stocker uniquement l'ID de l'arbre (pas tout arbreData)
+            // arbreData sera rechargé depuis arbustesData.js à l'import
+            arbreId: obj.arbreData?.id,
             nomPlante: obj.nomPlante || obj.arbreData?.nom,
             planteId: obj.planteId,
-            couleur: obj.couleur,
-        elevationSol: obj.elevationSol || 0,
-            validationStatus: obj.validationStatus || 'ok'
+            elevationSol: obj.elevationSol || 0
+            // ✅ validationStatus sera recalculé à l'import
           }
         };
         break;

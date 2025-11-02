@@ -154,10 +154,27 @@ const chargerObjet = async (canvas, objetData, echelle) => {
       break;
       
     case 'arbre': {
-      // ✅ Charger un arbre depuis JSON
-      const arbreData = props.arbreData;
+      // ✅ Charger un arbre depuis JSON (OPTIMISÉ)
+      // Recharger arbreData depuis arbustesData.js avec l'ID
+      let arbreData = null;
+      
+      if (props.arbreData) {
+        // Ancien format : arbreData complet stocké
+        arbreData = props.arbreData;
+      } else if (props.arbreId) {
+        // ✅ Nouveau format optimisé : juste l'ID, rechargement depuis arbustesData.js
+        const { default: plantesData } = await import('../../data/arbustesData');
+        arbreData = plantesData.arbresData?.find(a => a.id === props.arbreId) ||
+                    plantesData.arbustesData?.find(a => a.id === props.arbreId);
+        
+        if (!arbreData) {
+          logger.warn('PlanLoader', `Arbre ${props.arbreId} non trouvé dans arbustesData`);
+          return;
+        }
+      }
+      
       if (!arbreData) {
-        logger.warn('PlanLoader', 'Arbre sans données arbreData');
+        logger.warn('PlanLoader', 'Arbre sans données');
         return;
       }
       
@@ -177,9 +194,9 @@ const chargerObjet = async (canvas, objetData, echelle) => {
         planteId: props.planteId || arbreData.id,
         nomPlante: props.nomPlante || arbreData.nom,
         arbreData: arbreData,
-        couleur: props.couleur || '#4caf50',
-        validationStatus: props.validationStatus || 'ok',
+        couleur: '#4caf50',
         elevationSol: props.elevationSol || 0
+        // validationStatus sera recalculé automatiquement
       });
       break;
     }
