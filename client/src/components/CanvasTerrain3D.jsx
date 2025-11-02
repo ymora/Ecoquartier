@@ -745,8 +745,14 @@ function CanvasTerrain3D({
               maisonBounds={maisonsBounds}
             >
             <Maison3D 
-            {...maison}
+            position={[0, 0, 0]}
+            largeur={maison.largeur}
+            profondeur={maison.profondeur}
+            hauteur={maison.hauteur}
+            angle={maison.angle}
             typeToit={maison.typeToit || 'deux-pentes'}
+            penteToit={maison.penteToit}
+            orientationToit={maison.orientationToit}
             onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
           />
           </ObjetDraggable3D>
@@ -777,7 +783,11 @@ function CanvasTerrain3D({
               maisonBounds={maisonsBounds}
             >
             <Citerne3D 
-            {...citerne}
+            position={[0, 0, 0]}
+            diametre={citerne.diametre}
+            longueur={citerne.longueur}
+            volume={citerne.volume}
+            elevationSol={citerne.elevationSol}
             onClick={() => handleObjetClick({ 
               type: 'citerne', 
               ...citerne, 
