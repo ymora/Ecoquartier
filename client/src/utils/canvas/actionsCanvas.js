@@ -118,8 +118,20 @@ export const effacerTout = (canvas, exporterPlanCallback) => {
     return;
   }
   
-  const objets = canvas.getObjects().filter(obj => !obj.isGridLine && !obj.isBoussole && !obj.isImageFond);
-  // ✅ Utiliser canvasOperations pour supprimer
+  // ✅ Utiliser la fonction unifiée (mais garder l'image de fond)
+  // Note: nettoyerCanvas() supprime tout sauf UI (y compris image fond)
+  // Donc on utilise un filtre personnalisé ici pour garder l'image
+  const objets = canvas.getObjects().filter(obj => 
+    !obj.isGridLine && 
+    !obj.isBoussole && 
+    !obj.isSolIndicator &&
+    !obj.isImageFond && 
+    !obj.isCenterMark &&
+    !obj.measureLabel &&
+    !obj.alignmentGuide &&
+    !obj.isDimensionBox &&
+    !obj.isAideButton
+  );
   canvasOperations.supprimerMultiples(canvas, objets, true);
   
   localStorage.removeItem('planTerrain');
