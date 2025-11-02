@@ -525,9 +525,9 @@ function PanneauLateral({
                 
                 logger.info('Import', `✅ Plan chargé : ${fileName}`);
                 
-                // Synchroniser avec la 3D
-                if (onExporterPlan) {
-                  setTimeout(() => onExporterPlan(canvas), 500);
+                // ✅ Forcer la synchronisation 2D↔3D
+                if (onSyncKeyChange) {
+                  onSyncKeyChange(Date.now());
                 }
               } catch (error) {
                 logger.error('Import', `Erreur chargement: ${error.message}`);
