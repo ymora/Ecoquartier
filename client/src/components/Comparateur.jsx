@@ -467,6 +467,43 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
               })}
             </tr>
             )}
+            
+            {/* ✅ INFORMATIONS D'OMBRE */}
+            <tr className="comparison-row">
+              <td className="comparison-label-cell">
+                <span className="critere-icon">☀️</span>
+                <strong>Ombre projetée</strong>
+                <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem' }}>
+                  (midi en été)
+                </div>
+              </td>
+              {selectedPlantes.map(plante => {
+                const infoOmbre = getInfoOmbreArbre(plante, 'ete', 0.5);
+                return (
+                  <td key={plante.id} className="comparison-cell">
+                    {infoOmbre ? (
+                      <div style={{ fontSize: '0.85rem', lineHeight: '1.6' }}>
+                        <div><strong>Densité:</strong> {infoOmbre.densiteFeuillage}</div>
+                        <div><strong>Opacité:</strong> {infoOmbre.opacite}</div>
+                        <div><strong>Longueur:</strong> {infoOmbre.longueurOmbre}</div>
+                        <div><strong>Surface:</strong> {infoOmbre.surfaceOmbre}</div>
+                        <div style={{ 
+                          marginTop: '0.5rem', 
+                          padding: '0.5rem', 
+                          background: infoOmbre.estCaduc ? '#fff3cd' : '#d4edda',
+                          borderRadius: '4px',
+                          fontSize: '0.8rem'
+                        }}>
+                          {infoOmbre.estCaduc ? '🍂 Caduc (pas d\'ombre en hiver)' : '🌿 Persistant (ombre toute l\'année)'}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ color: '#999', fontStyle: 'italic' }}>Non disponible</div>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
 
             {/* Lignes de critères - Organisées par thèmes */}
             {Object.entries(criteresParTheme).map(([themeKey, theme]) => {
