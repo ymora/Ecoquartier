@@ -161,6 +161,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   
   // Export/Import - useCallback simple (le throttle est dans loggerPositionsPlanCopiable)
   const exporterPlan = useCallback((canvas) => {
+    if (!canvas) return;
     exporterPlanUtils(canvas, dimensions, orientation, echelle, onPlanComplete);
   }, [dimensions, orientation, echelle, onPlanComplete]);
   
