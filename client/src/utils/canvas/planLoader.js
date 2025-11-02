@@ -212,6 +212,38 @@ const chargerObjet = async (canvas, objetData, echelle) => {
 };
 
 /**
+ * Charger un plan depuis des données JSON (pour import utilisateur)
+ * @param {fabric.Canvas} canvas - Canvas Fabric.js
+ * @param {number} echelle - Échelle du plan
+ * @param {Object} planData - Données JSON déjà parsées
+ */
+export const chargerPlanDepuisJSON = async (canvas, echelle, planData) => {
+  if (!canvas || !planData) return;
+  
+  try {
+    logger.info('PlanLoader', 'Chargement du plan depuis JSON utilisateur');
+    
+    // Vérifier la structure du JSON
+    if (!planData.objets || !Array.isArray(planData.objets)) {
+      throw new Error('Format JSON invalide : "objets" manquant ou invalide');
+    }
+    
+    // Charger chaque objet
+    for (const objet of planData.objets) {
+      await chargerObjet(canvas, objet, echelle);
+    }
+    
+    canvasOperations.rendre(canvas);
+    
+    logger.info('PlanLoader', `✅ Plan JSON chargé (${planData.objets.length} objets)`);
+    
+  } catch (error) {
+    logger.error('PlanLoader', 'Erreur lors du chargement du plan JSON:', error);
+    throw error;
+  }
+};
+
+/**
  * Charger un plan depuis un fichier JSON externe
  * Permet de charger n'importe quel plan depuis un fichier JSON
  */

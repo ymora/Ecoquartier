@@ -506,11 +506,29 @@ function PanneauLateral({
         {/* 2. Charger plan JSON */}
         <button
           onClick={() => {
-            chargerPlanJSONAvecExplorateur((planData, fileName) => {
+            chargerPlanJSONAvecExplorateur(async (planData, fileName) => {
               console.log(`Plan chargé depuis: ${fileName}`);
-              if (onChargerPlanDepuisFichier) {
-                const tempFile = { name: fileName, content: planData };
-                onChargerPlanDepuisFichier(tempFile);
+              
+              // ✅ Charger le plan directement via planLoader
+              if (!canvas || !planData) {
+                logger.error('Import', 'Canvas ou planData manquant');
+                return;
+              }
+              
+              try {
+                // Importer dynamiquement planLoader
+                const { chargerPlanDepuisJSON } = await import('../utils/canvas/planLoader');
+                await chargerPlanDepuisJSON(canvas, echelle, planData);
+                
+                logger.info('Import', `✅ Plan chargé : ${fileName}`);
+                
+                // Synchroniser avec la 3D
+                if (onExporterPlan) {
+                  setTimeout(() => onExporterPlan(canvas), 500);
+                }
+              } catch (error) {
+                logger.error('Import', `Erreur chargement: ${error.message}`);
+                alert(`Erreur lors du chargement: ${error.message}`);
               }
             });
           }}
