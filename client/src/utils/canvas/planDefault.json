@@ -1,57 +1,102 @@
 {
   "metadata": {
     "version": "1.0",
-    "description": "Plan simplifié - positions et dimensions essentielles"
+    "description": "Plan par défaut - Maison avec terrain et exemples d'objets",
+    "date": "2025-11-02T19:42:06.791Z",
+    "dimensions": "21.42m × 27.60m",
+    "orientation": "nord-haut"
   },
   "objets": [
     {
-      "type": "maison",
-      "id": "maison-1",
-      "pos": [-200, -100],
-      "dim": [10, 10],
+      "type": "sol",
+      "id": "terrain-principal",
+      "pos": [0, 0],
+      "dim": [21.42, 27.60],
       "props": {
-        "hauteur": 7,
-        "angle": 0
+        "couchesSol": [
+          {
+            "nom": "Terre végétale",
+            "profondeur": 30,
+            "couleur": "#795548",
+            "type": "terre"
+          },
+          {
+            "nom": "Marne calcaire",
+            "profondeur": 70,
+            "couleur": "#bdbdbd",
+            "type": "marne"
+          }
+        ],
+        "maillageElevation": [
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0]
+        ],
+        "tailleMailleM": 5
       }
     },
     {
-      "type": "maison", 
-      "id": "maison-2",
-      "pos": [200, 100],
-      "dim": [10, 10],
+      "type": "maison",
+      "id": "maison_1762112139652_oz17trv3x",
+      "pos": [0, 0],
+      "dim": [12, 8],
       "props": {
         "hauteur": 7,
-        "angle": 0
+        "angle": 0,
+        "elevationSol": 0,
+        "typeToit": "deux-pentes",
+        "penteToit": 15,
+        "orientationToit": 0
       }
     },
     {
       "type": "terrasse",
-      "id": "terrasse-1", 
-      "pos": [-100, -200],
-      "dim": [5, 4],
+      "id": "terrasse_1762112139658_33g5yi8lq",
+      "pos": [-13.74, -210.58],
+      "dim": [6, 4],
       "props": {
         "hauteur": 0.15,
-        "angle": 0
+        "angle": 0,
+        "elevationSol": 0
       }
     },
     {
       "type": "paves",
-      "id": "paves-1",
-      "pos": [100, -200], 
-      "dim": [5, 5],
+      "id": "paves_1762112139664_reke66a9w",
+      "pos": [-57.71, 257.10],
+      "dim": [4, 4],
       "props": {
         "hauteur": 0.08,
-        "angle": 0
+        "angle": 0,
+        "elevationSol": 0
       }
     },
     {
       "type": "caisson-eau",
-      "id": "caisson-1",
-      "pos": [0, 0],
-      "dim": [5, 3],
+      "id": "caisson-eau_1762112139669_nqm4wttl3",
+      "pos": [259.13, 274.02],
+      "dim": [3, 2],
       "props": {
-        "hauteur": 1,
-        "angle": 0
+        "hauteur": 1.2,
+        "angle": 0,
+        "elevationSol": -1
+      }
+    },
+    {
+      "type": "canalisation",
+      "id": "canalisation-1762112526791",
+      "pos": [50, 50],
+      "dim": [150, 0],
+      "props": {
+        "x1": 50,
+        "y1": 50,
+        "x2": 200,
+        "y2": 50,
+        "diametre": 0.1,
+        "elevationSol": -0.6
       }
     }
   ]
