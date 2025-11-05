@@ -12,6 +12,7 @@ function ObjetDraggable3D({
   position, 
   type,
   enabled = true,
+  locked = false, // ✅ NOUVEAU : État de verrouillage
   selectionHeight = 2,
   onDragStart,
   onDrag,
@@ -31,7 +32,7 @@ function ObjetDraggable3D({
   const currentPosition = useRef(position);
   
   const handlePointerDown = (e) => {
-    if (!enabled) return;
+    if (!enabled || locked) return; // ✅ Empêcher le drag si verrouillé
     
     e.stopPropagation();
     
@@ -67,10 +68,10 @@ function ObjetDraggable3D({
   
   // ✅ Événements globaux pour capturer les mouvements même hors de l'objet
   useEffect(() => {
-    if (!isDragging) return;
+    if (!isDragging || locked) return; // ✅ Empêcher le drag si verrouillé
     
     const handleGlobalPointerMove = (e) => {
-      if (!enabled || !groupRef.current) return;
+      if (!enabled || locked || !groupRef.current) return; // ✅ Vérifier à nouveau le verrouillage
       
       // ✅ Empêcher la propagation vers OrbitControls
       e.stopPropagation();

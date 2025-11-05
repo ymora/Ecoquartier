@@ -188,6 +188,7 @@ function CanvasTerrain3D({
           typeToit: maison.typeToit || '2pans',
           penteToit: maison.penteToit || 3,
           orientationToit: maison.orientationToit || 0,
+          locked: maison.locked || false,
           customType: 'maison'
         };
       });
@@ -213,6 +214,7 @@ function CanvasTerrain3D({
           hauteur: diametre,
           volume: c.volume || 3000,
           elevationSol: c.elevationSol || -2.5,
+          locked: c.locked || false,
           customType: 'citerne'
         };
       });
@@ -241,6 +243,7 @@ function CanvasTerrain3D({
           volume: largeur * profondeur * hauteur,
           angle: c.angle || 0,
           elevationSol: c.elevationSol || -1.0,
+          locked: c.locked || false,
           type: 'caisson',
           customType: 'caisson-eau'
         });
@@ -315,6 +318,7 @@ function CanvasTerrain3D({
           hauteur: t.hauteur || 0.15,
           angle: t.angle || 0,
           elevationSol: t.elevationSol || 0,
+          locked: t.locked || false,
           type: 'terrasse',
           customType: 'terrasse'
         });
@@ -342,6 +346,7 @@ function CanvasTerrain3D({
           profondeur: profondeur,
           hauteur: p.hauteur || 0.08,
           angle: p.angle || 0,
+          locked: p.locked || false,
           type: 'pave-enherbe',
           customType: 'paves'
         });
@@ -387,6 +392,7 @@ function CanvasTerrain3D({
           profondeurRacines: profondeurRacines,
           validationStatus: a.validationStatus || 'ok',
           elevationSol: a.elevationSol !== undefined ? a.elevationSol : 0, // ✅ Élévation du sol (0 = niveau terrain, > 0 = colline, < 0 = fosse)
+          locked: a.locked || false,
           customType: 'arbre-a-planter' // ✅ Ajout pour synchronisation avec le canvas 2D
         };
       });
@@ -529,8 +535,53 @@ function CanvasTerrain3D({
         canvas2D.setActiveObject(objet2D);
         canvas2D.renderAll();
         
-        // ✅ Afficher le modal 2D (système original)
-          // afficherMenuContextuel(objet2D, canvas2D, contextMenuRef2D, contextMenuRef2D);
+        // ✅ Afficher le menu contextuel 2D (maintenant aussi pour la 3D)
+        if (contextMenuRef2D && contextMenuRef2D.current) {
+          const canvasRect = canvas2D.lowerCanvasEl.getBoundingClientRect();
+          const menu = contextMenuRef2D.current;
+          const objCenter = objet2D.getCenterPoint();
+          const objHeight = objet2D.getScaledHeight ? objet2D.getScaledHeight() : objet2D.height || 50;
+          
+          const menuWidth = 220; // Largeur réelle du menu (4 boutons)
+          const menuHeight = 45;
+          
+          // ✅ POSITIONNEMENT SIMPLE : CENTRÉ AU-DESSUS DE L'OBJET (vue 3D)
+          // Position horizontale : centrée sur l'objet
+          let menuLeft = canvasRect.left + objCenter.x - (menuWidth / 2);
+          
+          // Position verticale : AU-DESSUS de l'objet (pour la 3D)
+          let menuTop = canvasRect.top + objCenter.y - (objHeight / 2) - menuHeight - 10;
+          
+          // Contraintes pour rester visible à l'écran
+          if (menuLeft < canvasRect.left + 10) {
+            menuLeft = canvasRect.left + 10;
+          }
+          if (menuLeft + menuWidth > canvasRect.right - 10) {
+            menuLeft = canvasRect.right - menuWidth - 10;
+          }
+          if (menuTop < canvasRect.top + 10) {
+            menuTop = canvasRect.top + 10;
+          }
+          if (menuTop + menuHeight > canvasRect.bottom - 10) {
+            menuTop = canvasRect.bottom - menuHeight - 10;
+          }
+          
+          menu.style.left = `${menuLeft}px`;
+          menu.style.top = `${menuTop}px`;
+          menu.style.display = 'flex';
+          
+          // Mettre à jour l'état verrouillé
+          const btnLock = menu.querySelector('.context-lock');
+          if (btnLock) {
+            if (objet2D.locked) {
+              btnLock.textContent = '🔓';
+              btnLock.title = 'Déverrouiller';
+            } else {
+              btnLock.textContent = '🔒';
+              btnLock.title = 'Verrouiller';
+            }
+          }
+        }
         }
       }
     }
@@ -584,19 +635,35 @@ function CanvasTerrain3D({
     }
   }, [onObjetPositionChange]);
   
+  // ========== CENTRAGE AUTOMATIQUE 3D AU DÉMARRAGE ==========
+  useEffect(() => {
+    if (orbitControlsRef.current) {
+      // Petit délai pour s'assurer que tout est initialisé
+      const timer = setTimeout(() => {
+        if (orbitControlsRef.current) {
+          // Centrer sur le terrain
+          orbitControlsRef.current.target.set(terrainCentreX, 0, terrainCentreZ);
+          orbitControlsRef.current.update();
+          logger.info('3D', `🎯 Caméra centrée sur le terrain (${terrainCentreX}, 0, ${terrainCentreZ})`);
+        }
+      }, 100); // Rapide
+      
+      return () => clearTimeout(timer);
+    }
+  }, []); // Seulement au montage
+
   // Écouter l'événement de réinitialisation de la caméra 3D
   useEffect(() => {
     const handleResetCamera = () => {
       if (orbitControlsRef.current) {
-        // Réinitialiser les contrôles OrbitControls vers le centre (0,0,0)
-        orbitControlsRef.current.reset();
-        
-        // S'assurer que la caméra regarde le centre (0,0,0)
-        orbitControlsRef.current.target.set(0, 0, 0);
+        // S'assurer que la caméra regarde le centre du terrain
+        orbitControlsRef.current.target.set(terrainCentreX, 0, terrainCentreZ);
         orbitControlsRef.current.update();
         
         // Revenir en vue perspective si on est dans une autre vue
         setVueMode('perspective');
+        
+        logger.info('3D', '🔄 Caméra réinitialisée');
       }
     };
     
@@ -605,7 +672,7 @@ function CanvasTerrain3D({
     return () => {
       window.removeEventListener('reset3DCamera', handleResetCamera);
     };
-  }, []);
+  }, [terrainCentreX, terrainCentreZ]);
 
   // ✅ Le modal 2D gère déjà le clic extérieur
 
@@ -717,6 +784,7 @@ function CanvasTerrain3D({
               position={[maison.position[0], positionY, maison.position[2]]}
               type="maison"
               enabled={true}
+              locked={maison.locked || false}
               selectionHeight={(() => {
                 // ✅ Calculer le point le plus haut : hauteur murs + hauteur toit + 0.05m
                 const hauteurMurs = maison.hauteur || 7;
@@ -771,6 +839,7 @@ function CanvasTerrain3D({
               position={[citerne.position[0], positionY, citerne.position[2]]}
               type="citerne"
               enabled={true}
+              locked={citerne.locked || false}
               selectionHeight={(() => {
                 // ✅ Calculer le point le plus haut : elevationSol + hauteur + 0.05m
                 const elevationSol = citerne.elevationSol || -2.5;
@@ -962,6 +1031,7 @@ function CanvasTerrain3D({
               position={[arbre.position[0], positionY, arbre.position[2]]}
               type="arbre-a-planter"
               enabled={true}
+              locked={arbre.locked || false}
               selectionHeight={(() => {
                 // ✅ Calculer le point le plus haut : hauteur actuelle de l'arbre + 0.05m
                 const hauteurPlantation = 2;

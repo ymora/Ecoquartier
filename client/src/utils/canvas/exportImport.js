@@ -53,12 +53,12 @@ export const loggerPositionsPlanCopiable = (planData, echelle) => {
     }
   };
   
-  console.log('%c💡 Copiez le JSON ci-dessous pour mettre à jour planDemo.js', 'color: #ff9800; font-weight: bold');
+  console.log('%c💡 Copiez le JSON ci-dessous pour sauvegarder votre plan', 'color: #ff9800; font-weight: bold');
   console.log('');
-  console.log('%cJSON du plan par défaut:', 'color: #2196f3; font-weight: bold');
+  console.log('%cJSON de votre plan:', 'color: #2196f3; font-weight: bold');
   console.log(JSON.stringify(planParDefaut, null, 2));
   console.log('');
-  console.log('%c💾 Pour utiliser ce JSON, remplacez le contenu de planDemo.js par ce format', 'color: #4caf50; font-weight: bold');
+  console.log('%c💾 Sauvegardez ce JSON et utilisez "Importer plan" pour le recharger', 'color: #4caf50; font-weight: bold');
   
   }, 1000); // Throttle de 1 seconde
 };

@@ -144,3 +144,66 @@ export const calculerDistanceCercle = (pointX, pointY, cercle) => {
   // Distance au bord = distance au centre - rayon
   return Math.max(0, distCentre - rayon);
 };
+
+/**
+ * Trouver le point le plus proche sur une maison (rectangle) depuis un point donné
+ * @param {number} pointX - Coordonnée X du point
+ * @param {number} pointY - Coordonnée Y du point
+ * @param {Object} maison - Rectangle avec left, top, width, height
+ * @returns {Object} Point le plus proche {x, y}
+ */
+export const trouverPointPlusProcheMaison = (pointX, pointY, maison) => {
+  // Centre du rectangle
+  const centreX = maison.left;
+  const centreY = maison.top;
+  
+  // Demi-dimensions
+  const demiLargeur = (maison.getScaledWidth ? maison.getScaledWidth() : maison.width) / 2;
+  const demiHauteur = (maison.getScaledHeight ? maison.getScaledHeight() : maison.height) / 2;
+  
+  // Point le plus proche sur le rectangle
+  const closestX = Math.max(centreX - demiLargeur, Math.min(pointX, centreX + demiLargeur));
+  const closestY = Math.max(centreY - demiHauteur, Math.min(pointY, centreY + demiHauteur));
+  
+  return { x: closestX, y: closestY };
+};
+
+/**
+ * Trouver le point le plus proche sur une ligne depuis un point donné
+ * @param {number} pointX - Coordonnée X du point
+ * @param {number} pointY - Coordonnée Y du point
+ * @param {Object} ligne - Ligne avec x1, y1, x2, y2, left, top
+ * @returns {Object} Point le plus proche {x, y}
+ */
+export const trouverPointPlusProcheLigne = (pointX, pointY, ligne) => {
+  const x1 = ligne.x1 + ligne.left;
+  const y1 = ligne.y1 + ligne.top;
+  const x2 = ligne.x2 + ligne.left;
+  const y2 = ligne.y2 + ligne.top;
+  
+  const A = pointX - x1;
+  const B = pointY - y1;
+  const C = x2 - x1;
+  const D = y2 - y1;
+  
+  const dot = A * C + B * D;
+  const lenSq = C * C + D * D;
+  let param = -1;
+  
+  if (lenSq !== 0) param = dot / lenSq;
+  
+  let xx, yy;
+  
+  if (param < 0) {
+    xx = x1;
+    yy = y1;
+  } else if (param > 1) {
+    xx = x2;
+    yy = y2;
+  } else {
+    xx = x1 + param * C;
+    yy = y1 + param * D;
+  }
+  
+  return { x: xx, y: yy };
+};

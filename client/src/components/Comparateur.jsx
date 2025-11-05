@@ -16,6 +16,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
   // States pour le planificateur (si modePlanification)
   const [dimensions, setDimensions] = useState({ largeur: 30, hauteur: 30 });
   const [orientation, setOrientation] = useState('nord-haut');
+  const [canvasReady, setCanvasReady] = useState(false);
 
   // Mettre à jour la présélection quand elle change (mais pas si l'utilisateur l'a désélectionnée manuellement)
   useEffect(() => {
@@ -332,6 +333,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
             onDimensionsChange={setDimensions}
             onOrientationChange={setOrientation}
             onPlanComplete={() => {}}
+            onCanvasReady={() => setCanvasReady(true)}
           />
         </div>
       ) : selectedPlantes.length > 0 ? (

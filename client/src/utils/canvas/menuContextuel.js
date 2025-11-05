@@ -27,32 +27,29 @@ export const afficherMenuContextuel = (obj, canvas, canvasRef, contextMenuRef) =
 
   const canvasRect = canvasRef.current.getBoundingClientRect();
   const objCenter = obj.getCenterPoint();
-  const objHeight = obj.getScaledHeight ? obj.getScaledHeight() : 50;
+  const objHeight = obj.getScaledHeight ? obj.getScaledHeight() : obj.height || 50;
   
-  // POSITIONNEMENT INTELLIGENT pour éviter masquage
-  let menuLeft = canvasRect.left + objCenter.x;
-  let menuTop = canvasRect.top + objCenter.y - objHeight / 2 - 50;
+  const menuWidth = 220; // Largeur réelle du menu (4 boutons)
+  const menuHeight = 45; // Hauteur du menu
   
-  const menuWidth = 100;
-  const menuHeight = 40;
+  // ✅ POSITIONNEMENT SIMPLE : CENTRÉ EN HAUT DE L'OBJET (DANS l'objet)
+  // Position horizontale : centrée sur l'objet
+  let menuLeft = canvasRect.left + objCenter.x - (menuWidth / 2);
   
-  // Si trop en haut → Placer en dessous
-  if (menuTop < canvasRect.top + 10) {
-    menuTop = canvasRect.top + objCenter.y + objHeight / 2 + 10;
-  }
+  // Position verticale : en haut de l'objet, DANS l'objet (pas au-dessus)
+  let menuTop = canvasRect.top + objCenter.y - (objHeight / 2) + 10; // 10px de marge depuis le haut
   
-  // Si trop à droite → Décaler à gauche
-  if (menuLeft + menuWidth > canvasRect.right) {
-    menuLeft = canvasRect.right - menuWidth - 10;
-  }
-  
-  // Si trop à gauche → Décaler à droite
-  if (menuLeft < canvasRect.left) {
+  // Contraintes pour rester visible à l'écran
+  if (menuLeft < canvasRect.left + 10) {
     menuLeft = canvasRect.left + 10;
   }
-  
-  // Si trop en bas → Remonter
-  if (menuTop + menuHeight > canvasRect.bottom) {
+  if (menuLeft + menuWidth > canvasRect.right - 10) {
+    menuLeft = canvasRect.right - menuWidth - 10;
+  }
+  if (menuTop < canvasRect.top + 10) {
+    menuTop = canvasRect.top + 10;
+  }
+  if (menuTop + menuHeight > canvasRect.bottom - 10) {
     menuTop = canvasRect.bottom - menuHeight - 10;
   }
   

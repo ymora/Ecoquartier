@@ -29,29 +29,50 @@ Application web de planification paysagère pour l'écoquartier de Bessancourt, 
 - **Styling** : CSS Modules + Inline Styles
 - **Build** : Vite avec optimisations avancées
 
-### Structure du Projet
+### Structure du Projet (État Actuel)
 ```
 client/src/
 ├── components/          # Composants React
-│   ├── 3d/             # Composants 3D (Maison3D, Arbre3D, etc.)
-│   ├── ui/             # Composants d'interface
+│   ├── 3d/             # Composants 3D (14 fichiers)
+│   │   ├── Arbre3D.jsx
+│   │   ├── Maison3D.jsx
+│   │   ├── Citerne3D.jsx
+│   │   └── ...
+│   ├── ArbusteDetail.jsx        # Fiche détaillée espèce
+│   ├── CanvasTerrain.jsx        # Canvas 2D (1104 lignes)
+│   ├── CanvasTerrain3D.jsx      # Canvas 3D
+│   ├── Comparateur.jsx          # Mode comparaison
+│   ├── PanneauLateral.jsx       # Panneau contrôles (2247 lignes)
 │   └── ...
-├── hooks/              # Hooks personnalisés
-│   ├── useCanvasInit.js
-│   ├── useCanvasEvents.js
-│   ├── useArbresPlacement.js
-│   └── ...
+├── hooks/              # Hooks personnalisés (5 fichiers)
+│   ├── useCanvasInit.js         # Init canvas Fabric.js
+│   ├── useCanvasEvents.js       # Gestion événements
+│   ├── useTimelineSync.js       # Sync timeline
+│   ├── useLODSystem.js          # Level of detail 3D
+│   └── useObjectProperties.js   # Props objets
 ├── utils/              # Utilitaires
-│   ├── canvas/         # Utilitaires Fabric.js
-│   ├── validation/     # Validation des distances
-│   └── ...
-├── config/             # Configuration
-│   ├── constants.js
-│   └── modeles3D.js
-├── data/               # Données des espèces
-│   └── arbustesData.js
-└── styles/             # Styles CSS
+│   ├── canvas/         # 23 fichiers Fabric.js
+│   │   ├── creerObjets.js       # Création objets 2D
+│   │   ├── actionsCanvas.js     # Actions canvas
+│   │   ├── canvasValidation.js  # Validation distances
+│   │   ├── exportImport.js      # Export/Import JSON
+│   │   └── ...
+│   ├── validation/     # 3 fichiers validation
+│   ├── logger.js
+│   └── notifications.js
+├── config/             # Configuration (6 fichiers)
+│   ├── constants.js             # Constantes globales (UTILISÉ)
+│   ├── colors.js
+│   ├── icons.js
+│   ├── modeles3D.js
+│   └── debug.js
+├── data/               # Données
+│   └── arbustesData.js          # 12 espèces (6 arbres + 6 arbustes)
+└── styles/             # Styles CSS (7 fichiers)
+    └── theme-unified.css         # Thème principal
 ```
+
+**Note :** Les composants sont monolithiques et nécessiteraient un refactoring pour améliorer la maintenabilité.
 
 ## 🔄 Système de Synchronisation 2D↔3D
 
@@ -170,10 +191,11 @@ npm run admin        # Interface admin
 
 ## 📚 Documentation Associée
 
-- **README.md** : Guide d'installation et utilisation
-- **ADMIN_README.md** : Guide de l'interface admin
-- **CHANGELOG.md** : Historique des versions
-- **ARCHITECTURE.md** : Ce document
+- **README.md** : Guide utilisateur principal
+- **ADMIN_README.md** : Guide interface admin
+- **docs/ARCHITECTURE.md** : Ce document (architecture technique)
+- **docs/CHANGELOG.md** : Historique des versions
+- **docs/GUIDE_DEVELOPPEMENT.md** : Guide pour développeurs
 
 ## 🎯 Roadmap Future
 
@@ -186,7 +208,11 @@ npm run admin        # Interface admin
 
 ---
 
-**Version** : 2.19.2  
-**Dernière mise à jour** : 23 octobre 2025  
+**Version** : 2.5.0  
+**Dernière mise à jour** : 2 novembre 2025  
 **Statut** : ✅ Production Ready
+
+## 📝 Note Importante
+
+Cette documentation reflète l'état ACTUEL du code en production. Pour le guide de développement complet, voir `GUIDE_DEVELOPPEMENT.md`.
 

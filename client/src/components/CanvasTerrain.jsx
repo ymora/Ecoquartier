@@ -18,6 +18,7 @@ import {
   creerCanalisation,
   creerCloture,
   recentrerVueSurContenu,
+  centrerVueSurCentre,
   creerGrille,
   creerBoussole,
   creerIndicateurSud,
@@ -61,7 +62,6 @@ import {
   ajouterMesuresLive as ajouterMesuresUtils
 } from '../utils/canvas/exportImport';
 import { logAllCanvasObjects, exportCompleteData } from '../utils/canvas/completeObjectLogger';
-import { chargerPlanDemo as chargerPlanDemoUtils } from '../utils/canvas/planDemo';
 
 import {
   supprimerSelection as supprimerSelectionUtils,
@@ -174,10 +174,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     ajouterMesuresUtils(canvas, echelle, exporterPlan);
   }, [echelle, exporterPlan]);
   
-  const chargerPlanDemo = () => {
-    chargerPlanDemoUtils(fabricCanvasRef.current, echelle, ajouterGrille);
-  };
-  
   const chargerPlanParDefaut = () => {
     if (!fabricCanvasRef.current) return;
     
@@ -196,26 +192,21 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     );
     objets.forEach(obj => canvasOperations.supprimer(canvas, obj));
     
-    // Effacer le localStorage pour forcer le plan par défaut
+    // Effacer le localStorage
     localStorage.removeItem('planTerrain');
     
-    // Plus de liste d'arbres à réinitialiser - les arbres sont gérés directement sur le canvas
-    
-    // Charger le plan par défaut
-    chargerPlanDemoUtils(canvas, echelle, ajouterGrille);
-    
-    // Ajouter un terrain sélectionnable pour voir les couches de sol
+    // Ajouter un terrain vide sélectionnable
     ajouterTerrainAuCanvas(canvas, echelle, dimensions);
     
-    // Recentrer la vue sur le plan
+    // Recentrer la vue sur le terrain
     setTimeout(() => {
       recentrerVueSurContenu(canvas);
     }, 200);
     
     // Notification
-    notifications.planLoaded();
+    notifications.show('🌱 Terrain vide créé - Créez votre plan !', 'success');
     
-    logger.info('Plan', '✅ Plan par défaut rechargé (canvas nettoyé, arbres réinitialisés)');
+    logger.info('Plan', '✅ Terrain vide créé - Prêt pour votre plan personnalisé');
   };
   
   // Log complet de tous les objets
@@ -453,9 +444,23 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
     fabricCanvasRef,
     ajouterGrille,
     ajouterBoussole,
-    ajouterIndicateurSud,
-    chargerPlanDemo
+    ajouterIndicateurSud
   });
+
+  // ========== CENTRAGE AUTOMATIQUE AU DÉMARRAGE ==========
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      // Centrer la vue rapidement après l'initialisation
+      const timer = setTimeout(() => {
+        // Centrer sur le centre du canvas (0, 0) au démarrage
+        centrerVueSurCentre(canvas);
+        logger.info('Canvas', '🎯 Vue centrée automatiquement sur le centre');
+      }, 100); // Juste le temps que le canvas soit prêt
+      
+      return () => clearTimeout(timer);
+    }
+  }, []); // Seulement au montage du composant
 
   // Event listeners du canvas
   useCanvasEvents({

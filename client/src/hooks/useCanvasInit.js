@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
-import { recentrerVueSurContenu } from '../utils/canvas/creerObjets';
 
 /**
  * Hook pour initialiser le canvas Fabric.js
@@ -12,8 +11,7 @@ export const useCanvasInit = ({
   fabricCanvasRef,
   ajouterGrille,
   ajouterBoussole,
-  ajouterIndicateurSud,
-  chargerPlanDemo
+  ajouterIndicateurSud
 }) => {
   // Refs pour le pan (persistent entre renders)
   const isPanningRef = useRef(false);
@@ -146,52 +144,11 @@ export const useCanvasInit = ({
     if (!planChargeRef.current) {
       planChargeRef.current = true; // Marquer comme chargé
       
-      setTimeout(() => {
-        if (chargerPlanDemo) {
-          chargerPlanDemo();
-          logger.info('Canvas', '✅ Plan par défaut personnalisé chargé (première fois)');
-          
-          // Recentrer la vue sur le contenu chargé
-          setTimeout(() => {
-            recentrerVueSurContenu(canvas);
-          }, 300); // Délai supplémentaire pour s'assurer que tous les objets sont chargés
-          
-          // Afficher notification
-          const notification = document.createElement('div');
-          notification.textContent = '🏠 Plan chargé';
-          notification.style.cssText = `
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 10000;
-          `;
-          document.body.appendChild(notification);
-          setTimeout(() => {
-            notification.style.transition = 'opacity 0.3s ease';
-            notification.style.opacity = '0';
-            setTimeout(() => {
-              if (notification.parentNode) {
-                document.body.removeChild(notification);
-              }
-            }, 300);
-          }, 2000);
-        }
-      }, 100);
+      // ✅ Canvas prêt - L'utilisateur créera son propre plan
+      logger.info('Canvas', '✅ Canvas initialisé - Prêt pour votre plan personnalisé');
     }
 
     logger.info('Canvas', '✅ Zoom molette et Pan activés');
-
-    // ✅ Recentrer la vue après initialisation (même sans plan)
-    setTimeout(() => {
-      recentrerVueSurContenu(canvas);
-    }, 500);
 
     return () => {
       // Nettoyer les event listeners DOM

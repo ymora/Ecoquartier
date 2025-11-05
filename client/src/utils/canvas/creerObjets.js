@@ -12,6 +12,28 @@ import { canvasOperations } from './canvasOperations';
 import { appliquerProprietesSelection } from './proprietesSelection';
 
 /**
+ * Centrer la vue sur le centre du canvas (position 0,0)
+ * Utile au démarrage quand il n'y a pas encore d'objets
+ */
+export const centrerVueSurCentre = (canvas) => {
+  if (!canvas) return;
+  
+  // Zoom à 100% centré sur (0, 0)
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
+  const scale = 1; // Zoom 100%
+  
+  // Centrer sur (0, 0) qui est le centre du canvas
+  const offsetX = canvasWidth / 2;
+  const offsetY = canvasHeight / 2;
+  
+  canvas.setViewportTransform([scale, 0, 0, scale, offsetX, offsetY]);
+  canvasOperations.rendre(canvas);
+  
+  logger.info('Canvas', '✅ Vue centrée sur le centre (0, 0)');
+};
+
+/**
  * Recentrer la vue sur le contenu du canvas
  * Calcule les limites de tous les objets et centre la vue avec un zoom approprié
  */
@@ -67,10 +89,8 @@ export const recentrerVueSurContenu = (canvas) => {
     
     logger.info('Canvas', `✅ Vue recentrée sur le contenu (zoom: ${(scale * 100).toFixed(1)}%)`);
   } else {
-    // Si pas d'objets, reset simple
-    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-    canvasOperations.rendre(canvas);
-    logger.info('Canvas', '✅ Vue réinitialisée (aucun objet)');
+    // Si pas d'objets, centrer sur le centre
+    centrerVueSurCentre(canvas);
   }
 };
 
