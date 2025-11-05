@@ -22,8 +22,10 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   // ⭐ MEILLEURE PRATIQUE : Régler la hauteur des NŒUDS (intersections) plutôt que des cellules
   // Cela permet une interpolation naturelle et une surface continue
   const tailleMailleM = 5; // Maillage tous les 5 mètres
-  const nbCellulesX = Math.floor(dimensions.largeur / tailleMailleM);
-  const nbCellulesZ = Math.floor(dimensions.hauteur / tailleMailleM);
+  
+  // ✅ COUVRIR TOUT LE TERRAIN (pas juste une partie)
+  const nbCellulesX = Math.ceil(dimensions.largeur / tailleMailleM);
+  const nbCellulesZ = Math.ceil(dimensions.hauteur / tailleMailleM);
   
   // Nombre de nœuds = nombre de cellules + 1 (les intersections)
   const nbNoeudsX = nbCellulesX + 1;
@@ -73,42 +75,37 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   // ✅ Créer les éléments du maillage (lignes vertes + nœuds cliquables)
   const elementsMaillage = [];
   
-  // Calculer dimensions du maillage centré
-  const largeurMaillage = nbCellulesX * tailleMailleM;
-  const hauteurMaillage = nbCellulesZ * tailleMailleM;
+  // ✅ PAS D'OFFSET - Le maillage couvre TOUT le terrain
   const largeurMaillagePx = nbCellulesX * tailleMailleM * echelle;
   const hauteurMaillagePx = nbCellulesZ * tailleMailleM * echelle;
   
-  // Offset pour centrer le maillage
-  const offsetXPx = (largeur - largeurMaillagePx) / 2;
-  const offsetZPx = (hauteur - hauteurMaillagePx) / 2;
-  
-  // Lignes horizontales (vertes)
+  // Lignes horizontales (vertes) - TOUT LE TERRAIN
   for (let i = 0; i < nbNoeudsZ; i++) {
-    const y = -hauteur / 2 + offsetZPx + i * tailleMailleM * echelle;
+    const y = -hauteur / 2 + i * tailleMailleM * echelle;
     const line = new fabric.Line(
-      [-largeur / 2 + offsetXPx, y, -largeur / 2 + offsetXPx + largeurMaillagePx, y],
-      {
-        stroke: '#2e7d32',
-        strokeWidth: 1,
-        selectable: false,
-        evented: false
-      }
-    );
-    elementsMaillage.push(line);
-  }
-  
-  // Lignes verticales (vertes)
-  for (let j = 0; j < nbNoeudsX; j++) {
-    const x = -largeur / 2 + offsetXPx + j * tailleMailleM * echelle;
-    const line = new fabric.Line(
-      [x, -hauteur / 2 + offsetZPx, x, -hauteur / 2 + offsetZPx + hauteurMaillagePx],
+      [-largeur / 2, y, -largeur / 2 + largeurMaillagePx, y],
       {
         stroke: '#2e7d32',
         strokeWidth: 1,
         selectable: false,
         evented: false,
-        isLigneMaillage: true // ✅ Pour filtrer lors de l'export JSON
+        isLigneMaillage: true
+      }
+    );
+    elementsMaillage.push(line);
+  }
+  
+  // Lignes verticales (vertes) - TOUT LE TERRAIN
+  for (let j = 0; j < nbNoeudsX; j++) {
+    const x = -largeur / 2 + j * tailleMailleM * echelle;
+    const line = new fabric.Line(
+      [x, -hauteur / 2, x, -hauteur / 2 + hauteurMaillagePx],
+      {
+        stroke: '#2e7d32',
+        strokeWidth: 1,
+        selectable: false,
+        evented: false,
+        isLigneMaillage: true
       }
     );
     elementsMaillage.push(line);
@@ -118,8 +115,8 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   // C'est la meilleure pratique : interpolation naturelle entre les nœuds
   for (let i = 0; i < nbNoeudsZ; i++) {
     for (let j = 0; j < nbNoeudsX; j++) {
-      const x = -largeur / 2 + offsetXPx + j * tailleMailleM * echelle;
-      const y = -hauteur / 2 + offsetZPx + i * tailleMailleM * echelle;
+      const x = -largeur / 2 + j * tailleMailleM * echelle;
+      const y = -hauteur / 2 + i * tailleMailleM * echelle;
       const elevation = maillageElevation[i][j];
       
       // Point de contrôle (nœud)

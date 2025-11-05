@@ -6,6 +6,7 @@ import ModeSelector from './components/ModeSelector';
 import LogViewer from './components/LogViewer';
 import ErrorBoundary from './components/ErrorBoundary';
 import plantesData from './data/arbustesData';
+import './styles/modern-2025.css';
 import './App.css';
 import './styles/theme-unified.css';
 

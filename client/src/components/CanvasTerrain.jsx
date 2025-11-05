@@ -1012,33 +1012,45 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
               </button>
             </div>
           </TimelineSection>
+
+          {/* Section 4: Vue et Navigation */}
+          <TimelineSection 
+            width={200}
+            hasBorder={true}
+            bottomText={mode3D ? '🧊 Vue 3D' : '🗺️ Vue 2D'}
+          >
+            <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  className={`btn-saison ${!mode3D ? 'active' : ''}`}
+                  onClick={() => setMode3D(false)}
+                  title="Vue 2D (plan)"
+                  style={{ flex: 1 }}
+                >
+                  <FaMap /> 2D
+                </button>
+                <button 
+                  className={`btn-saison ${mode3D ? 'active' : ''}`}
+                  onClick={() => setMode3D(true)}
+                  title="Vue 3D (perspective)"
+                  style={{ flex: 1 }}
+                >
+                  <FaCube /> 3D
+                </button>
+              </div>
+              <button 
+                className="btn-saison"
+                onClick={resetZoom}
+                title="Recentrer la vue"
+                style={{ width: '100%' }}
+              >
+                📷 Recentrer
+              </button>
+            </div>
+          </TimelineSection>
         </div>
       </div>
       )}
-
-      {/* Boutons 2D/3D */}
-      <div className="toggle-dimension-canvas">
-          <button 
-          className={!mode3D ? 'active' : ''}
-          onClick={() => setMode3D(false)}
-          title="Vue 2D (plan)"
-          >
-          <FaMap /> 2D
-          </button>
-          <button 
-          className={mode3D ? 'active' : ''}
-          onClick={() => setMode3D(true)}
-          title="Vue 3D (perspective)"
-          >
-          <FaCube /> 3D
-          </button>
-          <button 
-          onClick={resetZoom}
-          title="Réinitialiser la caméra (2D/3D)"
-          >
-          📷
-          </button>
-        </div>
 
       {/* Layout avec panneau latéral + vue principale */}
       <div style={{ display: 'flex', width: '100%', height: 'calc(100% - 40px)', marginTop: '40px' }}>

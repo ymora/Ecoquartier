@@ -336,6 +336,7 @@ export const creerCaissonEau = (canvas, echelle) => {
 
 /**
  * Créer une grille fixe (ne bouge jamais)
+ * Couvre une très grande zone pour être toujours visible même avec zoom/pan
  */
 export const creerGrille = (canvas, echelle) => {
   // Supprimer les anciennes lignes de grille
@@ -343,15 +344,20 @@ export const creerGrille = (canvas, echelle) => {
   const oldGridLines = canvas.getObjects().filter(obj => obj.isGridLine);
   canvasOperations.supprimerMultiples(canvas, oldGridLines, false);
   
-  // Grille fixe qui couvre largement (3x la taille du canvas)
-  const width = canvas.width * 3;
-  const height = canvas.height * 3;
-  const offsetX = -canvas.width;
-  const offsetY = -canvas.height;
+  // ✅ Grille TRÈS LARGE qui couvre 10x la taille du canvas
+  // Cela garantit que la grille remplit TOUJOURS la zone visible, même avec zoom/pan
+  const multiplier = 10;
+  const halfCanvas = canvas.width * multiplier / 2;
+  
+  // Centrer la grille sur (0, 0) - centre du canvas
+  const offsetX = -halfCanvas;
+  const offsetY = -halfCanvas;
+  const width = halfCanvas * 2;
+  const height = halfCanvas * 2;
   
   const gridLines = [];
 
-  // Lignes verticales
+  // Lignes verticales (chaque 1m, avec lignes plus épaisses tous les 5m)
   for (let i = offsetX; i <= width + offsetX; i += echelle) {
     const line = new fabric.Line([i, offsetY, i, height + offsetY], {
       stroke: '#c8e6c9',
@@ -363,7 +369,7 @@ export const creerGrille = (canvas, echelle) => {
     gridLines.push(line);
   }
 
-  // Lignes horizontales
+  // Lignes horizontales (chaque 1m, avec lignes plus épaisses tous les 5m)
   for (let i = offsetY; i <= height + offsetY; i += echelle) {
     const line = new fabric.Line([offsetX, i, width + offsetX, i], {
       stroke: '#c8e6c9',
