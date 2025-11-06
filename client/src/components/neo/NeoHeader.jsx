@@ -67,7 +67,6 @@ const NeoHeader = memo(({
             <p className="neo-brand-subtitle-premium">
               <span className="subtitle-icon">📍</span>
               Bessancourt
-              <span className="subtitle-badge">Premium</span>
             </p>
           </div>
         </div>
