@@ -905,20 +905,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         {timelineVisible ? '📅 Masquer' : '📅 Projection'}
       </button>
 
-      {/* Timeline moderne */}
-      {timelineVisible && (
-        <ModernTimeline
-          anneeProjection={anneeProjection}
-          onAnneeChange={setAnneeProjection}
-          heureJournee={heureJournee}
-          onHeureChange={setHeureJournee}
-          saison={saison}
-          onSaisonChange={setSaison}
-          mode3D={mode3D}
-          onToggleMode3D={() => setMode3D(!mode3D)}
-          onRecentrer={resetZoom}
-        />
-      )}
+      {/* Timeline gérée par NeoApp - pas d'affichage ici */}
 
       {/* Layout avec panneau latéral + vue principale */}
       <div style={{ display: 'flex', width: '100%', height: 'calc(100% - 40px)', marginTop: '40px' }}>
