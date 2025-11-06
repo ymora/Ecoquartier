@@ -1,5 +1,5 @@
-/* Import du système de design unifié */
-@import '../styles/theme.css';
+/* Import du système Neo Garden */
+@import '../styles/neo-garden.css';
 @import '../styles/tabs-unified.css';
 
 /* Surcharges spécifiques au panneau latéral */
