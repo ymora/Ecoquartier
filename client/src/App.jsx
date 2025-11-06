@@ -5,7 +5,6 @@
 import { useState, lazy, Suspense, useCallback, useEffect } from 'react';
 import NeoApp from './components/neo/NeoApp';
 import NeoPlantSelector from './components/neo/NeoPlantSelector';
-import NeoModeIndicator from './components/neo/NeoModeIndicator';
 import LogViewer from './components/LogViewer';
 import ErrorBoundary from './components/ErrorBoundary';
 import plantesData from './data/arbustesData';
