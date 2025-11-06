@@ -3,7 +3,7 @@
  * Design Premium avec gradients et glassmorphism avancé
  */
 import { memo } from 'react';
-import { FaSeedling, FaClock, FaSun, FaCamera } from 'react-icons/fa';
+import { FaSeedling, FaClock, FaSun, FaCamera, FaEye } from 'react-icons/fa';
 import './NeoTimeline.css';
 
 const NeoTimeline = memo(({
