@@ -100,25 +100,20 @@ function App() {
     if (mode === 'explorer') {
       // Mode Explorer - Intelligent : Fiche si 1 plante, Tableau si 2+
       return (
-      <Suspense fallback={<LoadingFallback />}>
-          <>
-            {/* Indicateur de mode */}
-            <NeoModeIndicator selectedCount={selectedPlantes.length} />
-            
-            <div className="neo-content-full">
-              {selectedPlantes.length === 1 ? (
-                // Vue Fiche Détaillée (1 plante)
-                <ArbusteDetail arbuste={selectedPlantes[0]} menuOpen={false} />
-              ) : (
-                // Vue Tableau Comparatif (2+ plantes)
-                <Comparateur 
-                  plantes={selectedPlantes} 
-                  preselectedPlante={selectedPlantes[0]}
-                  modePlanification={false}
-                />
-              )}
-                </div>
-          </>
+        <Suspense fallback={<LoadingFallback />}>
+          <div className="neo-content-full">
+            {selectedPlantes.length === 1 ? (
+              // Vue Fiche Détaillée (1 plante)
+              <ArbusteDetail arbuste={selectedPlantes[0]} menuOpen={false} />
+            ) : (
+              // Vue Tableau Comparatif (2+ plantes)
+              <Comparateur 
+                plantes={selectedPlantes} 
+                preselectedPlante={selectedPlantes[0]}
+                modePlanification={false}
+              />
+            )}
+          </div>
         </Suspense>
       );
 
