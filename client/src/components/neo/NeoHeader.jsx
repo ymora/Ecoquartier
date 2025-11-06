@@ -3,16 +3,19 @@
  * Gradients, glassmorphism, animations élégantes
  */
 import { memo, useState } from 'react';
-import { FaLeaf, FaSearch, FaMoon, FaUser, FaBars, FaTimes } from 'react-icons/fa';
+import { FaLeaf, FaSearch, FaMoon, FaSun, FaUser, FaBars, FaTimes, FaSignInAlt } from 'react-icons/fa';
+import useLocalStorage from '../../hooks/useLocalStorage';
 import './NeoHeader.css';
 
 const NeoHeader = memo(({ 
   currentMode, 
   onModeChange,
-  isDarkTheme,
-  onThemeToggle 
+  onOpenLogs
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useLocalStorage('neoTheme', true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const modes = [
     { 
@@ -91,18 +94,33 @@ const NeoHeader = memo(({
 
         {/* Actions avec effet glassmorphism */}
         <div className="neo-header-actions-premium">
-          <button className="neo-action-btn-premium search" title="Rechercher">
+          {/* Recherche */}
+          <button 
+            className="neo-action-btn-premium search" 
+            onClick={() => setSearchOpen(!searchOpen)}
+            title="Rechercher une plante"
+          >
             <FaSearch />
             <span className="btn-ripple"></span>
           </button>
           
-          <button className="neo-action-btn-premium moon" onClick={onThemeToggle} title="Thème">
-            <FaMoon />
+          {/* Toggle Thème Clair/Sombre */}
+          <button 
+            className="neo-action-btn-premium moon" 
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            title={isDarkMode ? 'Mode clair' : 'Mode sombre'}
+          >
+            {isDarkMode ? <FaSun /> : <FaMoon />}
             <span className="btn-ripple"></span>
           </button>
           
-          <button className="neo-action-btn-premium user" title="Profil">
-            <FaUser />
+          {/* Journal des logs (Debug) */}
+          <button 
+            className="neo-action-btn-premium user" 
+            onClick={onOpenLogs}
+            title="Journal des logs (Debug)"
+          >
+            <FaSignInAlt />
             <span className="btn-ripple"></span>
           </button>
 
@@ -116,6 +134,38 @@ const NeoHeader = memo(({
           </button>
         </div>
       </div>
+
+      {/* Barre de recherche dépliante */}
+      {searchOpen && (
+        <div className="neo-search-bar">
+          <div className="search-bar-content">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Rechercher un arbre ou arbuste..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+              autoFocus
+            />
+            <button 
+              className="search-close"
+              onClick={() => {
+                setSearchOpen(false);
+                setSearchQuery('');
+              }}
+            >
+              <FaTimes />
+            </button>
+          </div>
+          {searchQuery && (
+            <div className="search-results">
+              <p className="search-hint">Recherche : "{searchQuery}"</p>
+              <p className="search-hint-sub">Fonctionnalité en développement...</p>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 });

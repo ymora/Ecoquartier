@@ -41,7 +41,15 @@ function App() {
   // Appliquer le thème Neo Garden au body
   useEffect(() => {
     document.body.classList.add('neo-theme');
-    return () => document.body.classList.remove('neo-theme');
+    
+    // Écouter l'événement pour ouvrir les logs
+    const handleOpenLogs = () => setLogViewerOpen(true);
+    window.addEventListener('openLogViewer', handleOpenLogs);
+    
+    return () => {
+      document.body.classList.remove('neo-theme');
+      window.removeEventListener('openLogViewer', handleOpenLogs);
+    };
   }, []);
 
   // Callbacks optimisés

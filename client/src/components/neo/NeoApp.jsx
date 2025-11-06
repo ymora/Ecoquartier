@@ -33,8 +33,11 @@ const NeoApp = memo(({
       <NeoHeader
         currentMode={currentMode}
         onModeChange={onModeChange}
-        isDarkTheme={true}
-        onThemeToggle={() => {}} // Neo Garden est toujours en mode sombre
+        onOpenLogs={() => {
+          // Ouvrir le LogViewer depuis App.jsx
+          const event = new CustomEvent('openLogViewer');
+          window.dispatchEvent(event);
+        }}
       />
 
       <div className="neo-main">
