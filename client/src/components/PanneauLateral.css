@@ -77,16 +77,16 @@
   margin-bottom: 0.75rem;
 }
 
-/* Ligne de configuration uniforme */
+/* Ligne de configuration uniforme - NEO */
 .config-row {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 0.5rem;
-  background: white;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
+  gap: var(--neo-spacing-sm);
+  background: rgba(255, 255, 255, 0.02);
+  padding: var(--neo-spacing-sm);
+  border-radius: 8px;
+  border: 1px solid var(--neo-glass-border);
 }
 
 /* Conteneur des boutons +/- aligné à droite */
@@ -98,9 +98,9 @@
 }
 
 .config-row label {
-  font-size: 0.8rem;
+  font-size: 12px;
   font-weight: 600;
-  color: #555;
+  color: var(--neo-text-secondary);
   margin: 0;
 }
 
