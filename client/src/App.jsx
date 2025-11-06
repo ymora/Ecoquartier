@@ -4,7 +4,7 @@
  */
 import { useState, lazy, Suspense, useCallback, useEffect } from 'react';
 import NeoApp from './components/neo/NeoApp';
-import NeoTimeline from './components/neo/NeoTimeline';
+import NeoPlantSelector from './components/neo/NeoPlantSelector';
 import LogViewer from './components/LogViewer';
 import ErrorBoundary from './components/ErrorBoundary';
 import plantesData from './data/arbustesData';
@@ -30,7 +30,9 @@ function App() {
   // États principaux
   const [mode, setMode] = useState('normal');
   const [selectedPlante, setSelectedPlante] = useState(plantesData[0]);
+  const [selectedPlantes, setSelectedPlantes] = useState([]); // Pour le comparateur
   const [logViewerOpen, setLogViewerOpen] = useState(false);
+  const [selectorCollapsed, setSelectorCollapsed] = useState(false);
   
   // États planificateur
   const [anneeProjection, setAnneeProjection] = useState(0);
@@ -60,47 +62,65 @@ function App() {
     }
   }, []);
 
+  const handleTogglePlante = useCallback((plante) => {
+    setSelectedPlantes(prev => {
+      const exists = prev.find(p => p.id === plante.id);
+      if (exists) {
+        return prev.filter(p => p.id !== plante.id);
+      }
+      return [...prev, plante];
+    });
+  }, []);
+
   const handleRecentrer = useCallback(() => {
     console.log('Recentrer la vue');
     // TODO: Implémenter recentrage canvas
   }, []);
 
+  // Rendu de la sidebar selon le mode
+  const renderSidebar = () => {
+    switch (mode) {
+      case 'normal':
+      case 'comparaison':
+        return (
+          <NeoPlantSelector
+            plantes={plantesData}
+            selectedPlante={selectedPlante}
+            selectedPlantes={selectedPlantes}
+            onSelectPlante={handleSelectPlante}
+            onTogglePlante={handleTogglePlante}
+            multiSelect={mode === 'comparaison'}
+            collapsed={selectorCollapsed}
+            onToggleCollapse={() => setSelectorCollapsed(!selectorCollapsed)}
+          />
+        );
+      case 'planification':
+        return null; // Pas de sidebar en mode planification
+      default:
+        return null;
+    }
+  };
+
   // Rendu du contenu selon le mode
   const renderContent = () => {
     switch (mode) {
       case 'normal':
-        // Mode Fiches Détaillées
+        // Mode Fiches Détaillées - Sidebar gérée séparément
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <div className="neo-fiches-container">
-              <div className="neo-fiches-sidebar">
-                {plantesData.map(plante => (
-                  <button
-                    key={plante.id}
-                    className={`neo-sidebar-item ${selectedPlante?.id === plante.id ? 'active' : ''}`}
-                    onClick={() => handleSelectPlante(plante.id)}
-                  >
-                    <span className="neo-sidebar-icon">
-                      {plante.type === 'arbre' ? '🌳' : '🌿'}
-                    </span>
-                    <span>{plante.name}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="neo-fiches-content">
-                <ArbusteDetail arbuste={selectedPlante} menuOpen={false} />
-              </div>
+            <div className="neo-content-full">
+              <ArbusteDetail arbuste={selectedPlante} menuOpen={false} />
             </div>
           </Suspense>
         );
 
       case 'comparaison':
-        // Mode Comparateur
+        // Mode Comparateur - Sidebar gérée séparément
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <div className="neo-comparateur-wrapper">
+            <div className="neo-content-full">
               <Comparateur 
-                plantes={plantesData} 
+                plantes={selectedPlantes.length > 0 ? selectedPlantes : plantesData} 
                 preselectedPlante={selectedPlante}
                 modePlanification={false}
               />
@@ -132,7 +152,7 @@ function App() {
       <NeoApp
         currentMode={mode}
         onModeChange={setMode}
-        sidebarContent={null}
+        sidebarContent={renderSidebar()}
         canvasContent={renderContent()}
         timelineProps={mode === 'planification' ? {
           anneeProjection,
