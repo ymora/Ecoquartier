@@ -4,9 +4,11 @@ import Disclaimer from './components/Disclaimer';
 import ModeSelector from './components/ModeSelector';
 import ModernHeader from './components/ModernHeader';
 import LogViewer from './components/LogViewer';
+import ThemeToggle from './components/ThemeToggle';
 import ErrorBoundary from './components/ErrorBoundary';
 import plantesData from './data/arbustesData';
 import './styles/theme.css';
+import './styles/theme-dark.css';
 import './App.css';
 
 
@@ -129,6 +131,9 @@ function App() {
         isOpen={logViewerOpen}
         onClose={() => setLogViewerOpen(false)}
       />
+
+      {/* Bouton toggle thème sombre/clair */}
+      <ThemeToggle />
     </div>
     </ErrorBoundary>
   );

@@ -1,5 +1,5 @@
-/* Import des styles unifiés */
-@import '../styles/theme-unified.css';
+/* Import du système de design unifié */
+@import '../styles/theme.css';
 @import '../styles/tabs-unified.css';
 
 /* Surcharges spécifiques au panneau latéral */

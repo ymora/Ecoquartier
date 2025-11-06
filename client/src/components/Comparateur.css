@@ -776,6 +776,9 @@
   min-height: 40px;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 10; /* ✅ Fix: Assure que les boutons sont cliquables */
+  pointer-events: auto; /* ✅ Fix: Force l'interaction */
 }
 
 .selector-item:hover:not(.selected) {

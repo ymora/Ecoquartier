@@ -1,0 +1,362 @@
+/**
+ * Styles pour la timeline moderne
+ */
+
+.modern-timeline {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, var(--surface-primary), var(--surface-secondary));
+  border-top: 2px solid var(--color-primary);
+  border-bottom: 1px solid var(--color-gray-300);
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+}
+
+.modern-timeline-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* === TIMELINE CARDS === */
+.timeline-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+}
+
+.timeline-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.timeline-card-wide {
+  grid-column: span 1;
+}
+
+.timeline-card-actions {
+  grid-column: span 1;
+}
+
+/* === CARD HEADER === */
+.timeline-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.timeline-icon {
+  font-size: var(--font-size-md);
+  color: var(--color-primary);
+}
+
+.timeline-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+/* === CARD BODY === */
+.timeline-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* === SLIDERS === */
+.timeline-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.timeline-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: var(--shadow-md);
+}
+
+.timeline-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.timeline-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: var(--shadow-md);
+}
+
+/* === VALUES === */
+.timeline-value {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  text-align: center;
+  padding: var(--spacing-xs);
+  background: var(--color-primary-bg);
+  border-radius: var(--radius-sm);
+}
+
+/* === SEASON BUTTONS === */
+.season-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-xs);
+}
+
+.season-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs);
+  background: var(--surface-secondary);
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  min-height: 50px;
+}
+
+.season-btn:hover {
+  border-color: var(--season-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.season-btn.active {
+  background: var(--season-color);
+  border-color: var(--season-color);
+  color: white;
+  box-shadow: var(--shadow-md);
+  transform: scale(1.05);
+}
+
+.season-icon {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-xs);
+}
+
+.season-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* === ACTION BUTTONS === */
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background: var(--surface-secondary);
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  min-height: 50px;
+}
+
+.action-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.action-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+  .modern-timeline-container {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .timeline-card-wide {
+    grid-column: span 2;
+  }
+
+  .timeline-card-actions {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .modern-timeline {
+    border-top-width: 1px;
+  }
+
+  .modern-timeline-container {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+  }
+
+  .timeline-card-wide,
+  .timeline-card-actions {
+    grid-column: span 1;
+  }
+
+  .season-buttons {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .season-btn {
+    min-height: 40px;
+    padding: var(--spacing-xs) 4px;
+  }
+
+  .season-icon {
+    font-size: var(--font-size-md);
+  }
+
+  .season-label {
+    font-size: 0.65rem;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+  }
+
+  .action-btn {
+    min-height: 40px;
+    font-size: 0.75rem;
+  }
+}
+
+/* === THÈME SOMBRE === */
+body.dark-theme .modern-timeline {
+  background: linear-gradient(135deg, #252525, #2d2d2d);
+  border-top-color: #4ec9b0;
+  border-bottom-color: #404040;
+}
+
+body.dark-theme .timeline-card {
+  background: #2d2d2d;
+  border-color: #404040;
+}
+
+body.dark-theme .timeline-card:hover {
+  border-color: #4ec9b0;
+}
+
+body.dark-theme .timeline-card-header {
+  border-bottom-color: #404040;
+}
+
+body.dark-theme .timeline-slider {
+  background: #404040;
+}
+
+body.dark-theme .timeline-slider::-webkit-slider-thumb {
+  background: #4ec9b0;
+}
+
+body.dark-theme .timeline-slider::-moz-range-thumb {
+  background: #4ec9b0;
+}
+
+body.dark-theme .timeline-value {
+  background: rgba(78, 201, 176, 0.15);
+  color: #4ec9b0;
+}
+
+body.dark-theme .season-btn {
+  background: #252525;
+  border-color: #404040;
+  color: #d4d4d4;
+}
+
+body.dark-theme .season-btn:hover {
+  border-color: var(--season-color);
+}
+
+body.dark-theme .season-btn.active {
+  color: #1e1e1e;
+}
+
+body.dark-theme .action-btn {
+  background: #252525;
+  border-color: #404040;
+  color: #d4d4d4;
+}
+
+body.dark-theme .action-btn:hover {
+  border-color: #4ec9b0;
+  background: rgba(78, 201, 176, 0.15);
+}
+
+body.dark-theme .action-btn.active {
+  background: #4ec9b0;
+  color: #1e1e1e;
+}
+
+/* === ANIMATIONS === */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modern-timeline {
+  animation: slideDown 0.3s ease;
+}
+
+/* === PRINT === */
+@media print {
+  .modern-timeline {
+    display: none;
+  }
+}
+
