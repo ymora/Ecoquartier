@@ -14,7 +14,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
 }
 
-/* === GRADIENT ANIMÉ EN ARRIÈRE-PLAN === */
+/* === GRADIENT ANIMÉ EN ARRIÈRE-PLAN (Nature) === */
 .neo-header-gradient {
   position: absolute;
   top: 0;
@@ -23,15 +23,15 @@
   bottom: 0;
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 25%,
-    rgba(240, 147, 251, 0.1) 50%,
-    rgba(245, 87, 108, 0.1) 75%,
-    rgba(102, 126, 234, 0.1) 100%
+    rgba(16, 185, 129, 0.1) 0%,
+    rgba(74, 172, 254, 0.1) 25%,
+    rgba(245, 158, 11, 0.1) 50%,
+    rgba(236, 72, 153, 0.1) 75%,
+    rgba(16, 185, 129, 0.1) 100%
   );
   background-size: 400% 400%;
   animation: gradientFlow 15s ease infinite;
-  opacity: 0.3;
+  opacity: 0.4;
 }
 
 @keyframes gradientFlow {
@@ -345,8 +345,8 @@
   background: linear-gradient(135deg, #f59e0b, #f97316);
 }
 
-.neo-action-btn-premium.user:hover {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+.neo-action-btn-premium.debug:hover {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
 .btn-ripple {

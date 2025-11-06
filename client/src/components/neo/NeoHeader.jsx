@@ -2,8 +2,8 @@
  * Header Neo Garden - Design Ultra-Sophistiqué 2025
  * Gradients, glassmorphism, animations élégantes
  */
-import { memo, useState } from 'react';
-import { FaLeaf, FaSearch, FaMoon, FaSun, FaUser, FaBars, FaTimes, FaSignInAlt } from 'react-icons/fa';
+import { memo, useState, useEffect } from 'react';
+import { FaLeaf, FaSearch, FaMoon, FaSun, FaBug, FaBars, FaTimes } from 'react-icons/fa';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import './NeoHeader.css';
 
@@ -16,6 +16,17 @@ const NeoHeader = memo(({
   const [searchOpen, setSearchOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useLocalStorage('neoTheme', true);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Appliquer/retirer la classe du thème
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.remove('neo-light');
+      document.body.classList.add('neo-theme');
+    } else {
+      document.body.classList.remove('neo-theme');
+      document.body.classList.add('neo-light');
+    }
+  }, [isDarkMode]);
 
   const modes = [
     { 
@@ -116,11 +127,11 @@ const NeoHeader = memo(({
           
           {/* Journal des logs (Debug) */}
           <button 
-            className="neo-action-btn-premium user" 
+            className="neo-action-btn-premium debug" 
             onClick={onOpenLogs}
             title="Journal des logs (Debug)"
           >
-            <FaSignInAlt />
+            <FaBug />
             <span className="btn-ripple"></span>
           </button>
 
