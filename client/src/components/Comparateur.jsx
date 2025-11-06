@@ -300,7 +300,7 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
           />
         </div>
       ) : selectedPlantes.length > 0 ? (
-        // Mode Tableau - Comparaison classique
+        // Mode Tableau - Comparaison classique (sélection via sidebar uniquement)
         <div className="comparateur-content">
           <table className="comparison-table">
               <thead>
@@ -312,13 +312,6 @@ function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePla
                   </th>
                   {selectedPlantes.map(plante => (
                     <th key={plante.id} className="comparison-header-cell">
-                      <button 
-                        className="remove-plante"
-                        onClick={() => togglePlante(plante)}
-                        aria-label="Retirer"
-                      >
-                        <FaTimes />
-                      </button>
                       <h3>{plante.name}</h3>
                       <p className="scientific">{plante.nomScientifique}</p>
                     </th>
