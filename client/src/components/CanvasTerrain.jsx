@@ -2,8 +2,7 @@ import { useEffect, useRef, useState, useCallback, useMemo, lazy, Suspense } fro
 import { FaMap, FaCube } from 'react-icons/fa';
 import * as fabric from 'fabric';
 import PanneauLateral from './PanneauLateral';
-import GaugeHeure from './GaugeHeure';
-import TimelineSection from './TimelineSection';
+import ModernTimeline from './ModernTimeline';
 import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 import { notifications } from '../utils/notifications';
@@ -907,149 +906,19 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
         {timelineVisible ? '📅 Masquer' : '📅 Projection'}
       </button>
 
-      {/* Timeline de croissance (slider temporel) - EN BAS, DÉPLAÇABLE */}
+      {/* Timeline moderne */}
       {timelineVisible && (
-      <div className="timeline-croissance">
-        {/* Handle de déplacement */}
-        <div 
-          className="timeline-drag-handle"
-          onMouseDown={(e) => {
-            const timeline = e.currentTarget.parentElement;
-            const rect = timeline.getBoundingClientRect();
-            const startX = e.clientX - rect.left;
-            const startY = e.clientY - rect.top;
-            
-            const handleMouseMove = (moveEvent) => {
-              timeline.style.left = `${moveEvent.clientX - startX}px`;
-              timeline.style.top = `${moveEvent.clientY - startY}px`;
-              timeline.style.transform = 'none';
-            };
-            
-            const handleMouseUp = () => {
-              document.removeEventListener('mousemove', handleMouseMove);
-              document.removeEventListener('mouseup', handleMouseUp);
-            };
-            
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-            e.preventDefault();
-          }}
-        >
-          ⋮⋮ Projection temporelle - Déplacer ⋮⋮
-        </div>
-        
-        <div className="timeline-row">
-          {/* Section 1: Projection temporelle */}
-          <TimelineSection 
-            width={180}
-            bottomText={
-              anneeProjection === 0 ? '🌱 Plantation - Jeunes plants' :
-              anneeProjection > 0 && anneeProjection < 20 ? `🌿 ${anneeProjection} an${anneeProjection > 1 ? 's' : ''} - Croissance (~${Math.round(anneeProjection / 20 * 100)}%)` :
-              '🌳 Maturité (20+ ans)'
-            }
-          >
-            <div className="timeline-slider-container">
-              <span className="timeline-label">Aujourd'hui</span>
-              <input 
-                type="range" 
-                min="0" 
-                max="20" 
-                step="1"
-                value={anneeProjection}
-                onChange={(e) => setAnneeProjection(parseInt(e.target.value))}
-                className="timeline-slider"
-              />
-              <span className="timeline-label">Maturité</span>
-            </div>
-          </TimelineSection>
-          
-          {/* Section 2: Heure du jour */}
-          <GaugeHeure 
-            heureActuelle={heureJournee}
-            saison={saison}
-            onHeureChange={setHeureJournee}
-          />
-          
-          {/* Section 3: Saison */}
-          <TimelineSection 
-            width={200}
-            hasBorder={true}
-            bottomText={
-              saison === 'hiver' ? '❄️ Hiver (18)' :
-              saison === 'printemps' ? '🌸 Printemps (45)' :
-              saison === 'ete' ? '☀️ Été (65)' :
-              '🍂 Automne (45)'
-            }
-          >
-            <div className="saison-buttons">
-              <button 
-                className={`btn-saison ${saison === 'hiver' ? 'active' : ''}`}
-                onClick={() => setSaison('hiver')}
-                title="Hiver (21 déc) - Soleil bas 18°"
-              >
-                ❄️
-              </button>
-              <button 
-                className={`btn-saison ${saison === 'printemps' ? 'active' : ''}`}
-                onClick={() => setSaison('printemps')}
-                title="Printemps (21 mars) - Équinoxe 45°"
-              >
-                🌸
-              </button>
-              <button 
-                className={`btn-saison ${saison === 'ete' ? 'active' : ''}`}
-                onClick={() => setSaison('ete')}
-                title="Été (21 juin) - Soleil haut 65°"
-              >
-                ☀️
-              </button>
-              <button 
-                className={`btn-saison ${saison === 'automne' ? 'active' : ''}`}
-                onClick={() => setSaison('automne')}
-                title="Automne (21 sept) - Équinoxe 45°"
-              >
-                🍂
-              </button>
-            </div>
-          </TimelineSection>
-
-          {/* Section 4: Vue et Navigation */}
-          <TimelineSection 
-            width={200}
-            hasBorder={true}
-            bottomText={mode3D ? '🧊 Vue 3D' : '🗺️ Vue 2D'}
-          >
-            <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button 
-                  className={`btn-saison ${!mode3D ? 'active' : ''}`}
-                  onClick={() => setMode3D(false)}
-                  title="Vue 2D (plan)"
-                  style={{ flex: 1 }}
-                >
-                  <FaMap /> 2D
-                </button>
-                <button 
-                  className={`btn-saison ${mode3D ? 'active' : ''}`}
-                  onClick={() => setMode3D(true)}
-                  title="Vue 3D (perspective)"
-                  style={{ flex: 1 }}
-                >
-                  <FaCube /> 3D
-                </button>
-              </div>
-              <button 
-                className="btn-saison"
-                onClick={resetZoom}
-                title="Recentrer la vue"
-                style={{ width: '100%' }}
-              >
-                📷 Recentrer
-              </button>
-            </div>
-          </TimelineSection>
-        </div>
-      </div>
+        <ModernTimeline
+          anneeProjection={anneeProjection}
+          onAnneeChange={setAnneeProjection}
+          heureJournee={heureJournee}
+          onHeureChange={setHeureJournee}
+          saison={saison}
+          onSaisonChange={setSaison}
+          mode3D={mode3D}
+          onToggleMode3D={() => setMode3D(!mode3D)}
+          onRecentrer={resetZoom}
+        />
       )}
 
       {/* Layout avec panneau latéral + vue principale */}
