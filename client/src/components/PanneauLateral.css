@@ -2,16 +2,19 @@
 @import '../styles/neo-garden.css';
 @import '../styles/tabs-unified.css';
 
-/* Surcharges spécifiques au panneau latéral */
+/* === PANNEAU LATÉRAL NEO GARDEN === */
 .panneau-lateral {
-  width: 320px; /* Élargi encore plus */
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border: 2px solid #1976d2;
-  border-radius: 12px;
-  margin: 0 15px;
-  box-shadow: 0 8px 24px rgba(25, 118, 210, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  width: 320px;
+  background: var(--neo-glass-bg);
+  backdrop-filter: var(--neo-blur-medium);
+  -webkit-backdrop-filter: var(--neo-blur-medium);
+  border: 1px solid var(--neo-glass-border);
+  border-radius: 0;
+  margin: 0;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 /* En-tête avec onglets - utilise le système unifié */
@@ -23,26 +26,28 @@
   /* Hérite des styles .tab-unified */
 }
 
-/* Contenu du panneau outils - COMPACT */
+/* Contenu du panneau outils - NEO */
 .panneau-outils-content {
-  padding: 0.75rem;
+  padding: var(--neo-spacing-md);
   overflow-y: auto;
   flex: 1;
-  font-size: 1rem; /* Augmenté de 0.8rem */
+  font-size: 13px;
 }
 
 .section-title {
-  font-size: 1.1rem; /* Augmenté de 0.9rem */
+  font-size: 11px;
   font-weight: 700;
-  color: #1976d2;
-  margin: 0.75rem 0 0.4rem 0;
-  padding: 0.5rem;
-  border-bottom: 3px solid #1976d2;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+  color: var(--neo-text-tertiary);
+  margin: var(--neo-spacing-md) 0 var(--neo-spacing-sm) 0;
+  padding: var(--neo-spacing-xs) var(--neo-spacing-sm);
+  border-bottom: 2px solid var(--neo-leaf);
+  background: transparent;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--neo-spacing-xs);
 }
 
 .section-title:first-child {
