@@ -3,7 +3,7 @@
  * Gradients, glassmorphism, animations élégantes
  */
 import { memo, useState, useEffect } from 'react';
-import { FaLeaf, FaSearch, FaMoon, FaSun, FaBug, FaBars, FaTimes } from 'react-icons/fa';
+import { FaLeaf, FaMoon, FaSun, FaBug, FaBars, FaTimes } from 'react-icons/fa';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import './NeoHeader.css';
 
@@ -13,9 +13,7 @@ const NeoHeader = memo(({
   onOpenLogs
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useLocalStorage('neoTheme', true);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Appliquer/retirer la classe du thème
   useEffect(() => {
@@ -99,16 +97,6 @@ const NeoHeader = memo(({
 
         {/* Actions avec effet glassmorphism */}
         <div className="neo-header-actions-premium">
-          {/* Recherche */}
-          <button 
-            className="neo-action-btn-premium search" 
-            onClick={() => setSearchOpen(!searchOpen)}
-            title="Rechercher une plante"
-          >
-            <FaSearch />
-            <span className="btn-ripple"></span>
-          </button>
-          
           {/* Toggle Thème Clair/Sombre */}
           <button 
             className="neo-action-btn-premium moon" 
@@ -139,38 +127,6 @@ const NeoHeader = memo(({
           </button>
         </div>
       </div>
-
-      {/* Barre de recherche dépliante */}
-      {searchOpen && (
-        <div className="neo-search-bar">
-          <div className="search-bar-content">
-            <FaSearch className="search-icon" />
-            <input
-              type="text"
-              placeholder="Rechercher un arbre ou arbuste..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-              autoFocus
-            />
-            <button 
-              className="search-close"
-              onClick={() => {
-                setSearchOpen(false);
-                setSearchQuery('');
-              }}
-            >
-              <FaTimes />
-            </button>
-          </div>
-          {searchQuery && (
-            <div className="search-results">
-              <p className="search-hint">Recherche : "{searchQuery}"</p>
-              <p className="search-hint-sub">Fonctionnalité en développement...</p>
-            </div>
-          )}
-        </div>
-      )}
     </header>
   );
 });

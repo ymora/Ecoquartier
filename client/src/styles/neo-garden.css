@@ -7,13 +7,14 @@
 
 /* ==================== VARIABLES CSS ==================== */
 :root {
-  /* === Palette Nature Sombre === */
-  --neo-forest-dark: #0d1b0d;       /* Vert forêt très sombre */
-  --neo-forest-medium: #162816;      /* Vert forêt moyen */
-  --neo-forest-light: #1f3a1f;      /* Vert forêt clair */
-  --neo-moss: #2d4a2d;               /* Mousse */
-  --neo-leaf: #10b981;               /* Feuille verte */
-  --neo-trunk: #3a2a1a;              /* Tronc brun */
+  /* === Palette Sombre avec Accents Nature === */
+  --neo-black: #0a0a0a;              /* Noir profond */
+  --neo-gray-900: #0f0f0f;           /* Noir très foncé */
+  --neo-gray-800: #161616;           /* Gris très foncé */
+  --neo-gray-750: #1a1a1a;           /* Gris foncé */
+  --neo-gray-700: #1f1f1f;           /* Gris */
+  --neo-leaf: #10b981;               /* Accent vert (boutons) */
+  --neo-moss: #059669;               /* Vert foncé */
   
   /* Accents Nature */
   --neo-sky: #4facfe;                /* Ciel bleu */
@@ -90,7 +91,7 @@ body.neo-light {
 
 /* ==================== BASE ==================== */
 body.neo-theme {
-  background: var(--neo-forest-dark);
+  background: var(--neo-black);
   color: var(--neo-text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   margin: 0;
@@ -109,14 +110,14 @@ body.neo-theme {
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background: var(--neo-forest-dark);
+  background: var(--neo-black);
   overflow: hidden;
 }
 
 /* ==================== HEADER ==================== */
 .neo-header {
   height: var(--neo-header-height);
-  background: var(--neo-forest-medium);
+  background: var(--neo-gray-900);
   border-bottom: 1px solid var(--neo-glass-border);
   display: flex;
   align-items: center;
@@ -158,10 +159,10 @@ body.neo-theme {
 /* ==================== CANVAS ==================== */
 .neo-canvas {
   flex: 1;
-  background: var(--neo-forest-dark);
+  background: var(--neo-black);
   background-image: 
     radial-gradient(circle at 30% 30%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 70% 70%, rgba(74, 172, 254, 0.02) 0%, transparent 50%);
+    radial-gradient(circle at 70% 70%, rgba(59, 130, 246, 0.02) 0%, transparent 50%);
   position: relative;
   overflow: auto;
 }

@@ -77,7 +77,7 @@ function App() {
   // Rendu de la sidebar selon le mode
   const renderSidebar = () => {
     if (mode === 'explorer') {
-      return (
+  return (
         <NeoPlantSelector
           plantes={plantesData}
           selectedPlante={selectedPlantes[0]} // Première plante
@@ -90,7 +90,7 @@ function App() {
           multiSelect={true} // Toujours multi-sélection
           collapsed={selectorCollapsed}
           onToggleCollapse={() => setSelectorCollapsed(!selectorCollapsed)}
-        />
+      />
       );
     }
     return null; // Pas de sidebar en mode planification
@@ -101,7 +101,7 @@ function App() {
     if (mode === 'explorer') {
       // Mode Explorer - Intelligent : Fiche si 1 plante, Tableau si 2+
       return (
-        <Suspense fallback={<LoadingFallback />}>
+      <Suspense fallback={<LoadingFallback />}>
           <>
             {/* Indicateur de mode */}
             <NeoModeIndicator selectedCount={selectedPlantes.length} />
@@ -118,7 +118,7 @@ function App() {
                   modePlanification={false}
                 />
               )}
-            </div>
+                </div>
           </>
         </Suspense>
       );
@@ -133,7 +133,7 @@ function App() {
               preselectedPlante={selectedPlantes[0]}
               modePlanification={true}
             />
-          </Suspense>
+      </Suspense>
         </div>
       );
     }
