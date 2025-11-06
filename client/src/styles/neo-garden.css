@@ -170,6 +170,65 @@ body.neo-theme {
 
 /* ==================== APPLIQUER THÈME À TOUS LES COMPOSANTS ==================== */
 
+/* === FORCER THÈME NUIT SUR TOUS LES ÉLÉMENTS === */
+body.neo-theme * {
+  color: var(--neo-text-primary) !important;
+}
+
+body.neo-theme h1,
+body.neo-theme h2,
+body.neo-theme h3,
+body.neo-theme h4,
+body.neo-theme h5,
+body.neo-theme h6 {
+  color: var(--neo-leaf) !important;
+}
+
+body.neo-theme p,
+body.neo-theme span,
+body.neo-theme div,
+body.neo-theme label {
+  color: var(--neo-text-primary) !important;
+}
+
+body.neo-theme a {
+  color: var(--neo-leaf) !important;
+}
+
+body.neo-theme button {
+  color: var(--neo-text-primary) !important;
+}
+
+body.neo-theme input,
+body.neo-theme select,
+body.neo-theme textarea {
+  color: var(--neo-text-primary) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.neo-theme input::placeholder,
+body.neo-theme textarea::placeholder {
+  color: var(--neo-text-secondary) !important;
+}
+
+/* Tables */
+body.neo-theme table {
+  color: var(--neo-text-primary) !important;
+  background: transparent !important;
+}
+
+body.neo-theme th {
+  color: var(--neo-leaf) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.neo-theme td {
+  color: var(--neo-text-primary) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
 /* Comparateur */
 body.neo-theme .comparateur {
   background: transparent !important;
@@ -192,6 +251,59 @@ body.neo-theme .selector-item:hover {
   background: var(--neo-moss) !important;
   border-color: var(--neo-leaf) !important;
   color: var(--neo-text-primary) !important;
+}
+
+/* ArbusteDetail - Forcer thème nuit */
+body.neo-theme .arbuste-detail {
+  background: transparent !important;
+  color: var(--neo-text-primary) !important;
+}
+
+body.neo-theme .arbuste-header {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.neo-theme .scientific-name {
+  color: var(--neo-text-secondary) !important;
+}
+
+body.neo-theme .family {
+  color: var(--neo-leaf) !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+}
+
+body.neo-theme .tab {
+  color: var(--neo-text-secondary) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.neo-theme .tab:hover {
+  color: var(--neo-leaf) !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+}
+
+body.neo-theme .tab.active {
+  color: var(--neo-leaf) !important;
+  border-color: var(--neo-leaf) !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Cards et sections */
+body.neo-theme .card,
+body.neo-theme .section {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Images - garder opacité normale */
+body.neo-theme img {
+  color: initial !important;
+}
+
+/* Icons - garder couleur d'origine */
+body.neo-theme svg {
+  color: inherit !important;
 }
 
 body.neo-theme .selector-item.selected {
