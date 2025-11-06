@@ -1,14 +1,13 @@
 import { useState, lazy, Suspense, useCallback } from 'react';
-import { FaBug } from 'react-icons/fa';
 import Navigation from './components/Navigation';
 import Disclaimer from './components/Disclaimer';
 import ModeSelector from './components/ModeSelector';
+import ModernHeader from './components/ModernHeader';
 import LogViewer from './components/LogViewer';
 import ErrorBoundary from './components/ErrorBoundary';
 import plantesData from './data/arbustesData';
-import './styles/modern-2025.css';
+import './styles/theme.css';
 import './App.css';
-import './styles/theme-unified.css';
 
 
 // 🚀 Lazy loading des composants lourds pour optimiser le chargement initial
@@ -38,6 +37,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(true);
   const [disclaimerClosed, setDisclaimerClosed] = useState(false);
   const [logViewerOpen, setLogViewerOpen] = useState(false);
+  const [useModernUI, setUseModernUI] = useState(true); // Toggle nouvelle interface
 
   // 🚀 Optimisation : useCallback pour éviter les re-renders inutiles
   const handleSelectPlante = useCallback((planteId) => {
@@ -59,11 +59,19 @@ function App() {
     <ErrorBoundary>
       <div className="app">
       
-      {/* Sélecteur de mode unifié */}
-      <ModeSelector 
-        modeActuel={mode}
-        onModeChange={setMode}
-      />
+      {/* Nouvelle interface moderne (optionnelle) */}
+      {useModernUI ? (
+        <ModernHeader 
+          currentMode={mode}
+          onModeChange={setMode}
+        />
+      ) : (
+        /* Sélecteur de mode classique */
+        <ModeSelector 
+          modeActuel={mode}
+          onModeChange={setMode}
+        />
+      )}
 
       {/* 🚀 Suspense pour gérer le lazy loading */}
       <Suspense fallback={<LoadingFallback />}>
