@@ -30,16 +30,10 @@ const NeoHeader = memo(({
 
   const modes = [
     { 
-      id: 'normal', 
-      label: 'Fiches Détaillées', 
-      icon: '📋',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    },
-    { 
-      id: 'comparaison', 
-      label: 'Comparateur', 
-      icon: '🔍',
-      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+      id: 'explorer', 
+      label: 'Explorer les Plantes', 
+      icon: '🌿',
+      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
     },
     { 
       id: 'planification', 

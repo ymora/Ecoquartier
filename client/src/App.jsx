@@ -5,6 +5,7 @@
 import { useState, lazy, Suspense, useCallback, useEffect } from 'react';
 import NeoApp from './components/neo/NeoApp';
 import NeoPlantSelector from './components/neo/NeoPlantSelector';
+import NeoModeIndicator from './components/neo/NeoModeIndicator';
 import LogViewer from './components/LogViewer';
 import ErrorBoundary from './components/ErrorBoundary';
 import plantesData from './data/arbustesData';
@@ -28,9 +29,8 @@ function LoadingFallback() {
 
 function App() {
   // États principaux
-  const [mode, setMode] = useState('normal');
-  const [selectedPlante, setSelectedPlante] = useState(plantesData[0]);
-  const [selectedPlantes, setSelectedPlantes] = useState([]); // Pour le comparateur
+  const [mode, setMode] = useState('explorer'); // Mode unifié : 'explorer' ou 'planification'
+  const [selectedPlantes, setSelectedPlantes] = useState([plantesData[0]]); // Toujours un tableau
   const [logViewerOpen, setLogViewerOpen] = useState(false);
   const [selectorCollapsed, setSelectorCollapsed] = useState(false);
   
@@ -54,20 +54,17 @@ function App() {
     };
   }, []);
 
-  // Callbacks optimisés
-  const handleSelectPlante = useCallback((planteId) => {
-    const plante = plantesData.find(p => p.id === planteId);
-    if (plante) {
-      setSelectedPlante(plante);
-    }
-  }, []);
-
+  // Callbacks optimisés - Un seul callback pour gérer la sélection
   const handleTogglePlante = useCallback((plante) => {
     setSelectedPlantes(prev => {
       const exists = prev.find(p => p.id === plante.id);
       if (exists) {
-        return prev.filter(p => p.id !== plante.id);
+        // Si déjà sélectionné, on retire
+        const newSelection = prev.filter(p => p.id !== plante.id);
+        // Garder au moins 1 plante sélectionnée
+        return newSelection.length > 0 ? newSelection : [plante];
       }
+      // Ajouter à la sélection
       return [...prev, plante];
     });
   }, []);
@@ -79,72 +76,64 @@ function App() {
 
   // Rendu de la sidebar selon le mode
   const renderSidebar = () => {
-    switch (mode) {
-      case 'normal':
-      case 'comparaison':
-        return (
-          <NeoPlantSelector
-            plantes={plantesData}
-            selectedPlante={selectedPlante}
-            selectedPlantes={selectedPlantes}
-            onSelectPlante={handleSelectPlante}
-            onTogglePlante={handleTogglePlante}
-            multiSelect={mode === 'comparaison'}
-            collapsed={selectorCollapsed}
-            onToggleCollapse={() => setSelectorCollapsed(!selectorCollapsed)}
-          />
-        );
-      case 'planification':
-        return null; // Pas de sidebar en mode planification
-      default:
-        return null;
+    if (mode === 'explorer') {
+      return (
+        <NeoPlantSelector
+          plantes={plantesData}
+          selectedPlante={selectedPlantes[0]} // Première plante
+          selectedPlantes={selectedPlantes}
+          onSelectPlante={(planteId) => {
+            const plante = plantesData.find(p => p.id === planteId);
+            if (plante) setSelectedPlantes([plante]); // Sélection unique
+          }}
+          onTogglePlante={handleTogglePlante}
+          multiSelect={true} // Toujours multi-sélection
+          collapsed={selectorCollapsed}
+          onToggleCollapse={() => setSelectorCollapsed(!selectorCollapsed)}
+        />
+      );
     }
+    return null; // Pas de sidebar en mode planification
   };
 
   // Rendu du contenu selon le mode
   const renderContent = () => {
-    switch (mode) {
-      case 'normal':
-        // Mode Fiches Détaillées - Sidebar gérée séparément
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <div className="neo-content-full">
-              <ArbusteDetail arbuste={selectedPlante} menuOpen={false} />
-            </div>
-          </Suspense>
-        );
-
-      case 'comparaison':
-        // Mode Comparateur - Sidebar gérée séparément
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <div className="neo-content-full">
+    if (mode === 'explorer') {
+      // Mode Explorer - Intelligent : Fiche si 1 plante, Tableau si 2+
+      return (
+        <Suspense fallback={<LoadingFallback />}>
+          <div className="neo-content-full">
+            {selectedPlantes.length === 1 ? (
+              // Vue Fiche Détaillée (1 plante)
+              <ArbusteDetail arbuste={selectedPlantes[0]} menuOpen={false} />
+            ) : (
+              // Vue Tableau Comparatif (2+ plantes)
               <Comparateur 
-                plantes={selectedPlantes.length > 0 ? selectedPlantes : plantesData} 
-                preselectedPlante={selectedPlante}
+                plantes={selectedPlantes} 
+                preselectedPlante={selectedPlantes[0]}
                 modePlanification={false}
               />
-            </div>
-          </Suspense>
-        );
-
-      case 'planification':
-        // Mode Planificateur avec timeline
-        return (
-          <div className="neo-planificateur-wrapper">
-            <Suspense fallback={<LoadingFallback />}>
-              <Comparateur 
-                plantes={plantesData} 
-                preselectedPlante={selectedPlante}
-                modePlanification={true}
-              />
-            </Suspense>
+            )}
           </div>
-        );
+        </Suspense>
+      );
 
-      default:
-        return <LoadingFallback />;
+    } else if (mode === 'planification') {
+      // Mode Planificateur avec timeline
+      return (
+        <div className="neo-planificateur-wrapper">
+          <Suspense fallback={<LoadingFallback />}>
+            <Comparateur 
+              plantes={plantesData} 
+              preselectedPlante={selectedPlantes[0]}
+              modePlanification={true}
+            />
+          </Suspense>
+        </div>
+      );
     }
+    
+    return <LoadingFallback />;
   };
 
   return (
