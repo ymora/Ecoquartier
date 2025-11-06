@@ -160,9 +160,6 @@ body.neo-theme {
 .neo-canvas {
   flex: 1;
   background: var(--neo-black);
-  background-image: 
-    radial-gradient(circle at 30% 30%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 70% 70%, rgba(59, 130, 246, 0.02) 0%, transparent 50%);
   position: relative;
   overflow: auto;
 }

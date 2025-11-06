@@ -5,6 +5,14 @@
   height: 100%;
   position: relative;
   overflow: visible; /* Permettre à la timeline de dépasser */
+  background: var(--neo-black);
+  background-image: 
+    url('/images/page-background.png'),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+  background-size: cover, 100%;
+  background-position: center, center;
+  background-blend-mode: soft-light, normal;
+  background-attachment: fixed;
 }
 
 /* Boutons 2D/3D maintenant dans la timeline - styles supprimés car utilise btn-saison */
