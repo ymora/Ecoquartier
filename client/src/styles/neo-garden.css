@@ -602,11 +602,26 @@ body.neo-theme {
 
 @media (max-width: 768px) {
   .neo-header-nav {
-    display: none;
+    position: fixed;
+    top: var(--neo-header-height);
+    left: 0;
+    right: 0;
+    background: var(--neo-gray-900);
+    border-bottom: 1px solid var(--neo-gray-750);
+    padding: var(--neo-spacing-md);
+    flex-direction: column;
+    gap: var(--neo-spacing-sm);
+    z-index: 99;
   }
   
   .neo-brand-subtitle {
     display: none;
+  }
+  
+  .neo-nav-link {
+    width: 100%;
+    justify-content: flex-start;
+    padding: var(--neo-spacing-md);
   }
   
   .neo-timeline {

@@ -11,9 +11,9 @@ const NeoHeader = memo(({
   onThemeToggle 
 }) => {
   const modes = [
-    { id: 'normal', label: 'Fiches', icon: '📋' },
+    { id: 'normal', label: 'Fiches Détaillées', icon: '📋' },
     { id: 'comparaison', label: 'Comparateur', icon: '🔍' },
-    { id: 'planification', label: 'Planificateur', icon: '🌳' }
+    { id: 'planification', label: 'Planificateur 3D', icon: '🌳' }
   ];
 
   return (
