@@ -1,0 +1,489 @@
+/**
+ * Styles Header Neo Garden Ultra-Sophistiqué
+ * Design Premium avec gradients et animations
+ */
+
+/* ==================== HEADER PRINCIPAL ==================== */
+.neo-header-premium {
+  height: 72px;
+  position: relative;
+  background: #000000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+}
+
+/* === GRADIENT ANIMÉ EN ARRIÈRE-PLAN === */
+.neo-header-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 25%,
+    rgba(240, 147, 251, 0.1) 50%,
+    rgba(245, 87, 108, 0.1) 75%,
+    rgba(102, 126, 234, 0.1) 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientFlow 15s ease infinite;
+  opacity: 0.3;
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* === PARTICULES LUMINEUSES === */
+.neo-header-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+  border-radius: 50%;
+  animation: float 20s infinite ease-in-out;
+}
+
+.particle:nth-child(1) {
+  left: 20%;
+  top: 50%;
+  animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+  left: 50%;
+  top: 30%;
+  animation-delay: 5s;
+}
+
+.particle:nth-child(3) {
+  left: 80%;
+  top: 60%;
+  animation-delay: 10s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+    opacity: 0.8;
+  }
+}
+
+/* === CONTENU HEADER === */
+.neo-header-content {
+  position: relative;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--neo-spacing-xl);
+  gap: var(--neo-spacing-xl);
+  z-index: 2;
+}
+
+/* ==================== BRAND SECTION ==================== */
+.neo-header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--neo-spacing-md);
+  flex-shrink: 0;
+}
+
+/* === LOGO PREMIUM AVEC GLOW === */
+.neo-logo-premium {
+  width: 48px;
+  height: 48px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #10b981, #3b82f6);
+  border-radius: 12px;
+  font-size: 24px;
+  color: white;
+  box-shadow: 
+    0 0 20px rgba(16, 185, 129, 0.4),
+    0 0 40px rgba(59, 130, 246, 0.2);
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+.logo-glow {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.4), transparent 70%);
+  border-radius: 50%;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(5deg); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* === TEXTE BRAND === */
+.neo-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.neo-brand-title-premium {
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, #a3a3a3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+
+.neo-brand-subtitle-premium {
+  font-size: 12px;
+  color: #a3a3a3;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.subtitle-icon {
+  font-size: 10px;
+  color: #10b981;
+}
+
+.subtitle-badge {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+/* ==================== NAVIGATION PREMIUM ==================== */
+.neo-nav-premium {
+  display: flex;
+  gap: var(--neo-spacing-md);
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.neo-nav-btn-premium {
+  position: relative;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #fafafa;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  animation: btnSlideIn 0.6s ease var(--animation-delay) both;
+}
+
+.nav-btn-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.neo-nav-btn-premium:hover .nav-btn-bg {
+  opacity: 0.15;
+}
+
+.neo-nav-btn-premium.active .nav-btn-bg {
+  opacity: 1;
+}
+
+.nav-btn-icon {
+  font-size: 18px;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.nav-btn-text {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.nav-btn-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.neo-nav-btn-premium:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.neo-nav-btn-premium:hover .nav-btn-glow {
+  opacity: 1;
+}
+
+.neo-nav-btn-premium.active {
+  transform: scale(1.08);
+  border-color: transparent;
+  color: white;
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.6),
+    0 0 60px rgba(255, 255, 255, 0.2);
+}
+
+.neo-nav-btn-premium.active .nav-btn-glow {
+  opacity: 1;
+}
+
+@keyframes btnSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== ACTIONS PREMIUM ==================== */
+.neo-header-actions-premium {
+  display: flex;
+  align-items: center;
+  gap: var(--neo-spacing-sm);
+  flex-shrink: 0;
+}
+
+.neo-action-btn-premium {
+  width: 44px;
+  height: 44px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #d4d4d4;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.neo-action-btn-premium:hover {
+  transform: translateY(-3px) rotate(5deg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.neo-action-btn-premium.search:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.neo-action-btn-premium.moon:hover {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.neo-action-btn-premium.user:hover {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.btn-ripple {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+  transform: scale(0);
+  transition: transform 0.6s ease;
+}
+
+.neo-action-btn-premium:active .btn-ripple {
+  transform: scale(2);
+}
+
+/* Menu burger */
+.neo-menu-burger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fafafa;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.neo-menu-burger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(90deg);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1200px) {
+  .neo-brand-title-premium {
+    font-size: 16px;
+  }
+  
+  .nav-btn-text {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .neo-header-premium {
+    height: 64px;
+  }
+
+  .neo-menu-burger {
+    display: flex;
+  }
+
+  .neo-header-actions-premium .neo-action-btn-premium:not(.neo-menu-burger) {
+    display: none;
+  }
+
+  .neo-brand-subtitle-premium {
+    display: none;
+  }
+
+  .neo-nav-premium {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(20px);
+    padding: var(--neo-spacing-lg);
+    gap: var(--neo-spacing-sm);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+  }
+
+  .neo-nav-premium.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .neo-nav-btn-premium {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 16px 20px;
+  }
+}
+
+/* ==================== ANIMATIONS SUPPLÉMENTAIRES ==================== */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.neo-brand-title-premium::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  animation: shimmer 3s infinite;
+}
+
+/* ==================== EFFECTS PREMIUM ==================== */
+.neo-header-premium::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(59, 130, 246, 0.5) 25%,
+    rgba(16, 185, 129, 0.5) 50%,
+    rgba(245, 158, 11, 0.5) 75%,
+    transparent 100%
+  );
+  opacity: 0.5;
+}
+
