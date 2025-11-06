@@ -5,10 +5,13 @@ import ModeSelector from './components/ModeSelector';
 import ModernHeader from './components/ModernHeader';
 import LogViewer from './components/LogViewer';
 import ThemeToggle from './components/ThemeToggle';
+import NeoApp from './components/neo/NeoApp';
+import NeoTimeline from './components/neo/NeoTimeline';
 import ErrorBoundary from './components/ErrorBoundary';
 import plantesData from './data/arbustesData';
 import './styles/theme.css';
 import './styles/theme-dark.css';
+import './styles/neo-garden.css';
 import './App.css';
 
 
@@ -39,7 +42,13 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(true);
   const [disclaimerClosed, setDisclaimerClosed] = useState(false);
   const [logViewerOpen, setLogViewerOpen] = useState(false);
-  const [useModernUI, setUseModernUI] = useState(true); // Toggle nouvelle interface
+  const [useNeoGarden, setUseNeoGarden] = useState(true); // Toggle interface Neo Garden
+  
+  // États pour le planificateur Neo
+  const [anneeProjection, setAnneeProjection] = useState(0);
+  const [heureJournee, setHeureJournee] = useState(90);
+  const [saison, setSaison] = useState('ete');
+  const [mode3D, setMode3D] = useState(false);
 
   // 🚀 Optimisation : useCallback pour éviter les re-renders inutiles
   const handleSelectPlante = useCallback((planteId) => {
@@ -57,12 +66,56 @@ function App() {
     setDisclaimerClosed(true);
   }, []);
 
+  // Rendu avec Neo Garden (mode planification uniquement)
+  if (mode === 'planification' && useNeoGarden) {
+    return (
+      <ErrorBoundary>
+        <NeoApp
+          currentMode={mode}
+          onModeChange={setMode}
+          sidebarContent={
+            <div style={{ padding: '1rem', color: '#d4d4d4' }}>
+              <p style={{ fontSize: '12px', marginBottom: '1rem' }}>Panneau en construction...</p>
+            </div>
+          }
+          canvasContent={
+            <Suspense fallback={<LoadingFallback />}>
+              <Comparateur 
+                plantes={plantesData} 
+                preselectedPlante={selectedPlante}
+                modePlanification={true}
+              />
+            </Suspense>
+          }
+          timelineProps={{
+            anneeProjection,
+            onAnneeChange: setAnneeProjection,
+            heureJournee,
+            onHeureChange: setHeureJournee,
+            saison,
+            onSaisonChange: setSaison,
+            mode3D,
+            onToggleMode3D: (is3D) => setMode3D(is3D),
+            onRecentrer: () => console.log('Recentrer')
+          }}
+          showTimeline={true}
+        />
+
+        <LogViewer 
+          isOpen={logViewerOpen}
+          onClose={() => setLogViewerOpen(false)}
+        />
+      </ErrorBoundary>
+    );
+  }
+
+  // Rendu classique pour les autres modes
   return (
     <ErrorBoundary>
       <div className="app">
       
       {/* Nouvelle interface moderne (optionnelle) */}
-      {useModernUI ? (
+      {useNeoGarden ? (
         <ModernHeader 
           currentMode={mode}
           onModeChange={setMode}
@@ -132,8 +185,8 @@ function App() {
         onClose={() => setLogViewerOpen(false)}
       />
 
-      {/* Bouton toggle thème sombre/clair */}
-      <ThemeToggle />
+      {/* Bouton toggle thème sombre/clair (seulement en mode classique) */}
+      {!useNeoGarden && <ThemeToggle />}
     </div>
     </ErrorBoundary>
   );
