@@ -1,7 +1,7 @@
 /**
  * ========================================
- * NEO GARDEN - Système de Design 2025
- * Interface Moderne Professionnelle
+ * NEO GARDEN - Système de Design Complet 2025
+ * Interface Sombre Professionnelle
  * ========================================
  */
 
@@ -74,10 +74,14 @@
 body.neo-theme {
   background: var(--neo-black);
   color: var(--neo-text-primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 /* ==================== APP CONTAINER ==================== */
@@ -101,6 +105,7 @@ body.neo-theme {
   padding: 0 var(--neo-spacing-lg);
   z-index: 100;
   box-shadow: var(--neo-shadow-sm);
+  flex-shrink: 0;
 }
 
 .neo-header-left {
@@ -117,7 +122,8 @@ body.neo-theme {
   justify-content: center;
   background: linear-gradient(135deg, var(--neo-green), var(--neo-blue));
   border-radius: 8px;
-  font-size: 20px;
+  font-size: 18px;
+  color: white;
 }
 
 .neo-brand-title {
@@ -150,6 +156,9 @@ body.neo-theme {
   cursor: pointer;
   transition: all var(--neo-transition-fast);
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .neo-nav-link:hover {
@@ -207,9 +216,11 @@ body.neo-theme {
   border-right: 1px solid var(--neo-glass-border);
   display: flex;
   flex-direction: column;
-  transition: all var(--neo-transition-normal);
+  transition: width var(--neo-transition-normal);
   z-index: 50;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+  position: relative;
+  flex-shrink: 0;
 }
 
 .neo-sidebar.collapsed {
@@ -231,7 +242,7 @@ body.neo-theme {
 }
 
 .neo-sidebar-section-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -306,6 +317,7 @@ body.neo-theme {
   color: var(--neo-text-secondary);
   font-size: 12px;
   transition: all var(--neo-transition-fast);
+  z-index: 51;
 }
 
 .neo-sidebar-toggle:hover {
@@ -319,7 +331,11 @@ body.neo-theme {
   background: var(--neo-black);
   background-image: radial-gradient(circle at 50% 50%, var(--neo-gray-900) 0%, var(--neo-black) 100%);
   position: relative;
-  overflow: hidden;
+  overflow: auto;
+}
+
+.neo-canvas.full-width {
+  width: 100%;
 }
 
 /* ==================== TIMELINE ==================== */
@@ -334,6 +350,7 @@ body.neo-theme {
   grid-template-columns: repeat(4, 1fr);
   gap: var(--neo-spacing-md);
   z-index: 40;
+  flex-shrink: 0;
 }
 
 .neo-timeline-card {
@@ -380,12 +397,12 @@ body.neo-theme {
 }
 
 .neo-timeline-icon {
-  font-size: 20px;
+  font-size: 18px;
   color: var(--card-accent-color);
 }
 
 .neo-timeline-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -399,6 +416,7 @@ body.neo-theme {
   gap: var(--neo-spacing-sm);
 }
 
+/* === SLIDERS === */
 .neo-slider {
   width: 100%;
   height: 4px;
@@ -445,14 +463,14 @@ body.neo-theme {
 }
 
 .neo-timeline-value {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--neo-text-primary);
   text-align: center;
-  padding: var(--neo-spacing-xs);
+  padding: var(--neo-spacing-xs) var(--neo-spacing-sm);
   background: var(--neo-gray-800);
   border-radius: 6px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Consolas', 'Monaco', monospace;
 }
 
 .neo-timeline-buttons {
@@ -467,7 +485,7 @@ body.neo-theme {
   border: 1px solid var(--neo-gray-700);
   border-radius: 8px;
   color: var(--neo-text-secondary);
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
   transition: all var(--neo-transition-fast);
   display: flex;
@@ -477,8 +495,9 @@ body.neo-theme {
 }
 
 .neo-season-btn span {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
+  text-transform: uppercase;
 }
 
 .neo-season-btn:hover {
@@ -492,6 +511,7 @@ body.neo-theme {
   border-color: var(--season-color);
   transform: scale(1.05);
   box-shadow: var(--neo-shadow-md);
+  color: white;
 }
 
 .neo-action-buttons {
@@ -547,20 +567,25 @@ body.neo-theme {
 }
 
 /* ==================== SCROLLBAR ==================== */
-.neo-sidebar-content::-webkit-scrollbar {
-  width: 6px;
+.neo-sidebar-content::-webkit-scrollbar,
+.neo-canvas::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.neo-sidebar-content::-webkit-scrollbar-track {
-  background: transparent;
+.neo-sidebar-content::-webkit-scrollbar-track,
+.neo-canvas::-webkit-scrollbar-track {
+  background: var(--neo-gray-900);
 }
 
-.neo-sidebar-content::-webkit-scrollbar-thumb {
+.neo-sidebar-content::-webkit-scrollbar-thumb,
+.neo-canvas::-webkit-scrollbar-thumb {
   background: var(--neo-gray-700);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
-.neo-sidebar-content::-webkit-scrollbar-thumb:hover {
+.neo-sidebar-content::-webkit-scrollbar-thumb:hover,
+.neo-canvas::-webkit-scrollbar-thumb:hover {
   background: var(--neo-gray-600);
 }
 
@@ -568,12 +593,10 @@ body.neo-theme {
 @media (max-width: 1024px) {
   .neo-timeline {
     grid-template-columns: repeat(2, 1fr);
-    height: auto;
-    padding: var(--neo-spacing-sm);
   }
   
-  .neo-sidebar {
-    width: var(--neo-sidebar-collapsed);
+  .neo-sidebar:not(.collapsed) {
+    width: 240px;
   }
 }
 
@@ -593,6 +616,18 @@ body.neo-theme {
   
   .neo-timeline-buttons {
     grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .neo-sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--neo-header-height);
+    bottom: 0;
+    transform: translateX(-100%);
+  }
+  
+  .neo-sidebar:not(.collapsed) {
+    transform: translateX(0);
   }
 }
 
@@ -632,3 +667,112 @@ body.neo-theme {
 .neo-timeline-card:nth-child(3) { animation: neoFadeIn 0.3s ease 0.3s both; }
 .neo-timeline-card:nth-child(4) { animation: neoFadeIn 0.3s ease 0.4s both; }
 
+/* ==================== STYLES POUR COMPOSANTS EXISTANTS ==================== */
+
+/* Appliquer Neo Garden aux composants existants */
+body.neo-theme .arbuste-detail,
+body.neo-theme .comparateur,
+body.neo-theme .canvas-terrain {
+  background: var(--neo-black);
+  color: var(--neo-text-primary);
+}
+
+body.neo-theme .btn {
+  background: var(--neo-gray-800);
+  border: 1px solid var(--neo-gray-700);
+  color: var(--neo-text-secondary);
+}
+
+body.neo-theme .btn:hover {
+  background: var(--neo-gray-700);
+  color: var(--neo-text-primary);
+}
+
+body.neo-theme .btn-primary,
+body.neo-theme .btn.active {
+  background: var(--neo-blue);
+  border-color: var(--neo-blue);
+  color: white;
+}
+
+body.neo-theme input,
+body.neo-theme select,
+body.neo-theme textarea {
+  background: var(--neo-gray-800);
+  border: 1px solid var(--neo-gray-700);
+  color: var(--neo-text-primary);
+}
+
+body.neo-theme input:focus,
+body.neo-theme select:focus,
+body.neo-theme textarea:focus {
+  border-color: var(--neo-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Comparateur Neo */
+body.neo-theme .comparateur-selector {
+  background: var(--neo-glass-bg);
+  backdrop-filter: var(--neo-blur-medium);
+  border-right: 1px solid var(--neo-glass-border);
+}
+
+body.neo-theme .selector-item {
+  background: var(--neo-gray-800);
+  border-color: var(--neo-gray-700);
+  color: var(--neo-text-secondary);
+}
+
+body.neo-theme .selector-item:hover {
+  background: var(--neo-gray-700);
+  border-color: var(--neo-blue);
+}
+
+body.neo-theme .selector-item.selected {
+  background: var(--neo-green);
+  border-color: var(--neo-green);
+  color: white;
+}
+
+body.neo-theme .comparison-table {
+  background: var(--neo-gray-900);
+  border-color: var(--neo-gray-700);
+}
+
+body.neo-theme .comparison-header-cell {
+  background: var(--neo-gray-800);
+  border-bottom-color: var(--neo-blue);
+  color: var(--neo-text-primary);
+}
+
+body.neo-theme .comparison-cell {
+  border-bottom-color: var(--neo-gray-750);
+  color: var(--neo-text-secondary);
+}
+
+body.neo-theme .comparison-row:hover {
+  background: var(--neo-gray-800);
+}
+
+/* Navigation Neo */
+body.neo-theme .navigation {
+  background: var(--neo-glass-bg);
+  backdrop-filter: var(--neo-blur-medium);
+  border-right-color: var(--neo-glass-border);
+}
+
+body.neo-theme .nav-item {
+  background: var(--neo-gray-800);
+  border-color: var(--neo-gray-700);
+  color: var(--neo-text-secondary);
+}
+
+body.neo-theme .nav-item:hover {
+  background: var(--neo-gray-700);
+  border-color: var(--neo-blue);
+}
+
+body.neo-theme .nav-item.active {
+  background: var(--neo-blue);
+  color: white;
+}

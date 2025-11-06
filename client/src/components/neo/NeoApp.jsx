@@ -1,9 +1,10 @@
 /**
- * Wrapper principal pour l'interface Neo Garden
+ * Wrapper principal Neo Garden
+ * Applique le thème sombre à toute l'application
  */
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import NeoHeader from './NeoHeader';
-import NeoSidebar from './NeoSidebar';
 import NeoTimeline from './NeoTimeline';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import '../../styles/neo-garden.css';
@@ -14,37 +15,53 @@ const NeoApp = memo(({
   sidebarContent,
   canvasContent,
   timelineProps,
-  showTimeline = true
+  showTimeline = false,
+  showSidebar = true
 }) => {
-  const [isDarkTheme, setIsDarkTheme] = useLocalStorage('neoTheme', true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage('neoSidebarCollapsed', false);
 
+  // Activer le thème Neo au montage
   useEffect(() => {
-    if (isDarkTheme) {
-      document.body.classList.add('neo-theme');
-    } else {
+    document.body.classList.add('neo-theme');
+    return () => {
       document.body.classList.remove('neo-theme');
-    }
-  }, [isDarkTheme]);
+    };
+  }, []);
 
   return (
     <div className="neo-app">
       <NeoHeader
         currentMode={currentMode}
         onModeChange={onModeChange}
-        isDarkTheme={isDarkTheme}
-        onThemeToggle={() => setIsDarkTheme(!isDarkTheme)}
+        isDarkTheme={true}
+        onThemeToggle={() => {}} // Neo Garden est toujours en mode sombre
       />
 
       <div className="neo-main">
-        <NeoSidebar>
-          {sidebarContent}
-        </NeoSidebar>
+        {/* Sidebar optionnelle */}
+        {showSidebar && sidebarContent && (
+          <aside className={`neo-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+            <div className="neo-sidebar-content">
+              {sidebarContent}
+            </div>
+            
+            <button
+              className="neo-sidebar-toggle"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              title={sidebarCollapsed ? 'Étendre' : 'Réduire'}
+            >
+              {sidebarCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
+            </button>
+          </aside>
+        )}
 
-        <main className="neo-canvas">
+        {/* Canvas/Contenu principal */}
+        <main className={`neo-canvas ${!showSidebar || !sidebarContent ? 'full-width' : ''}`}>
           {canvasContent}
         </main>
       </div>
 
+      {/* Timeline optionnelle */}
       {showTimeline && timelineProps && (
         <NeoTimeline {...timelineProps} />
       )}
@@ -55,4 +72,3 @@ const NeoApp = memo(({
 NeoApp.displayName = 'NeoApp';
 
 export default NeoApp;
-

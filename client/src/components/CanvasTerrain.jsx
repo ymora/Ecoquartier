@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback, useMemo, lazy, Suspense } fro
 import { FaMap, FaCube } from 'react-icons/fa';
 import * as fabric from 'fabric';
 import PanneauLateral from './PanneauLateral';
-import ModernTimeline from './ModernTimeline';
 import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 import { notifications } from '../utils/notifications';

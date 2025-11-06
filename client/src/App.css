@@ -1,58 +1,24 @@
 /**
- * Styles de base pour l'application
- * Utilise les variables CSS du système de design unifié (theme.css)
+ * Styles App - Neo Garden Theme
  */
 
-/* Application principale */
-.app {
-  min-height: 100vh;
+/* Container global Neo */
+.neo-loading {
   display: flex;
   flex-direction: column;
-  background-color: var(--surface-secondary);
-}
-
-/* Layout principal */
-.main-layout {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* Zone de contenu */
-.content {
-  flex: 1;
-  padding: var(--spacing-lg);
-  overflow-y: auto;
-  transition: margin-left var(--transition-normal);
-}
-
-.content.full-width {
-  width: 100%;
-  padding: 0;
-}
-
-.content.menu-open {
-  margin-left: 0;
-}
-
-/* Loading fallback */
-.loading-fallback {
-  display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  font-size: var(--font-size-lg);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-medium);
-  gap: var(--spacing-md);
+  background: var(--neo-black);
+  gap: var(--neo-spacing-lg);
 }
 
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--color-gray-200);
-  border-top-color: var(--color-primary);
-  border-radius: var(--radius-full);
+.neo-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--neo-gray-700);
+  border-top-color: var(--neo-blue);
+  border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
@@ -60,89 +26,58 @@
   to { transform: rotate(360deg); }
 }
 
-/* Message d'accueil */
-.welcome-message {
-  text-align: center;
-  padding: var(--spacing-2xl);
-  max-width: 600px;
-  margin: 0 auto;
+.neo-loading-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--neo-text-secondary);
 }
 
-.welcome-message h2 {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
-}
-
-.welcome-message p {
-  font-size: var(--font-size-lg);
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-/* Toggle UI moderne (bouton debug) */
-.ui-toggle {
-  position: fixed;
-  bottom: var(--spacing-lg);
-  right: var(--spacing-lg);
-  z-index: var(--z-fixed);
-  background-color: var(--color-primary);
-  color: var(--text-inverse);
-  border: none;
-  border-radius: var(--radius-full);
-  width: 56px;
-  height: 56px;
+/* Mode Fiches */
+.neo-fiches-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: var(--shadow-xl);
-  transition: all var(--transition-normal);
-  font-size: var(--font-size-xl);
+  height: 100%;
+  width: 100%;
+  background: var(--neo-black);
 }
 
-.ui-toggle:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-2xl);
-  background-color: var(--color-primary-dark);
+.neo-fiches-sidebar {
+  width: 280px;
+  background: var(--neo-glass-bg);
+  backdrop-filter: var(--neo-blur-medium);
+  border-right: 1px solid var(--neo-glass-border);
+  overflow-y: auto;
+  padding: var(--neo-spacing-md);
 }
 
-.ui-toggle:active {
-  transform: scale(0.95);
+.neo-fiches-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--neo-spacing-xl);
+  background: var(--neo-black);
+}
+
+/* Mode Comparateur */
+.neo-comparateur-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: var(--neo-black);
+}
+
+/* Mode Planificateur */
+.neo-planificateur-wrapper {
+  width: 100%;
+  height: 100%;
+  background: var(--neo-black);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .content {
-    padding: var(--spacing-md);
+  .neo-fiches-sidebar {
+    width: 240px;
   }
 
-  .welcome-message {
-    padding: var(--spacing-xl);
-  }
-
-  .welcome-message h2 {
-    font-size: var(--font-size-2xl);
-  }
-
-  .welcome-message p {
-    font-size: var(--font-size-md);
-  }
-
-  .ui-toggle {
-    bottom: var(--spacing-md);
-    right: var(--spacing-md);
-    width: 48px;
-    height: 48px;
-    font-size: var(--font-size-lg);
-  }
-}
-
-/* Impression */
-@media print {
-  .ui-toggle,
-  .loading-fallback {
-    display: none !important;
+  .neo-fiches-content {
+    padding: var(--neo-spacing-md);
   }
 }
