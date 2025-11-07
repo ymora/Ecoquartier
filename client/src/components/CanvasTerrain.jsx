@@ -94,7 +94,6 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [opaciteImage, setOpaciteImage] = useState(0.8);
   const [solTransparent, setSolTransparent] = useState(false);
   const [anneeProjection, setAnneeProjection] = useState(0);
-  const [timelineVisible, setTimelineVisible] = useState(true);
   const [saison, setSaison] = useState('ete');
   const [ongletActif, setOngletActif] = useState(null); // ✅ Pour forcer l'ouverture de l'onglet Config depuis 3D
   const [heureJournee, setHeureJournee] = useState(90); // Angle de 0° (matin) à 180° (soir), 90° = midi
