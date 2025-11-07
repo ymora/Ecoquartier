@@ -69,8 +69,7 @@ function App() {
   }, []);
 
   const handleRecentrer = useCallback(() => {
-    console.log('Recentrer la vue');
-    // TODO: Implémenter recentrage canvas
+    // Recentrage géré dans CanvasTerrain via prop onRecentrer
   }, []);
 
   // Rendu de la sidebar selon le mode
