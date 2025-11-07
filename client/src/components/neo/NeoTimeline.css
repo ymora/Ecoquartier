@@ -56,13 +56,15 @@
   -webkit-backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  padding: var(--neo-spacing-md);
+  padding: var(--neo-spacing-sm) var(--neo-spacing-md);
   display: flex;
   flex-direction: column;
-  gap: var(--neo-spacing-sm);
+  gap: var(--neo-spacing-xs);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   animation: cardFadeIn 0.6s ease var(--animation-delay) both;
+  min-height: 100px;
+  height: 100%;
 }
 
 .neo-card-premium::before {
@@ -408,21 +410,34 @@
 
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 1024px) {
+  .neo-timeline-premium {
+    max-height: 30vh;
+  }
+
   .neo-timeline-container-premium {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--neo-spacing-md);
+    gap: var(--neo-spacing-sm);
+  }
+
+  .neo-card-premium {
+    min-height: 90px;
   }
 }
 
 @media (max-width: 768px) {
   .neo-timeline-premium {
-    height: auto;
+    max-height: 40vh;
+    padding: var(--neo-spacing-sm) 0;
   }
 
   .neo-timeline-container-premium {
     grid-template-columns: 1fr;
-    gap: var(--neo-spacing-sm);
-    padding: var(--neo-spacing-md);
+    gap: var(--neo-spacing-xs);
+    padding: 0 var(--neo-spacing-md);
+  }
+
+  .neo-card-premium {
+    min-height: 80px;
   }
 
   .season-buttons-premium {
@@ -430,7 +445,11 @@
   }
 
   .season-label {
-    display: none;
+    font-size: 8px;
+  }
+
+  .season-emoji {
+    font-size: 16px;
   }
 }
 
