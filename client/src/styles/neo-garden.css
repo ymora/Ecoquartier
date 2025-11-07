@@ -172,7 +172,7 @@ body.neo-theme {
 
 /* === FORCER THÈME NUIT (SEULEMENT EN MODE SOMBRE) === */
 body.neo-theme:not(.neo-light) * {
-  color: var(--neo-text-primary);
+  color: var(--neo-text-primary) !important;
 }
 
 body.neo-theme:not(.neo-light) h1,
@@ -181,52 +181,69 @@ body.neo-theme:not(.neo-light) h3,
 body.neo-theme:not(.neo-light) h4,
 body.neo-theme:not(.neo-light) h5,
 body.neo-theme:not(.neo-light) h6 {
-  color: var(--neo-leaf);
+  color: var(--neo-leaf) !important;
 }
 
 body.neo-theme:not(.neo-light) p,
 body.neo-theme:not(.neo-light) span,
 body.neo-theme:not(.neo-light) div:not(.neo-logo-premium):not([class*="icon"]),
-body.neo-theme:not(.neo-light) label {
-  color: var(--neo-text-primary);
+body.neo-theme:not(.neo-light) label,
+body.neo-theme:not(.neo-light) li,
+body.neo-theme:not(.neo-light) strong,
+body.neo-theme:not(.neo-light) em {
+  color: var(--neo-text-primary) !important;
 }
 
 body.neo-theme:not(.neo-light) a {
-  color: var(--neo-leaf);
+  color: var(--neo-leaf) !important;
+}
+
+/* FORCER FOND SOMBRE SUR TOUS LES ÉLÉMENTS */
+body.neo-theme:not(.neo-light) div:not([class*="icon"]):not([class*="logo"]):not([class*="glow"]):not([class*="shine"]) {
+  background-color: transparent !important;
 }
 
 body.neo-theme:not(.neo-light) button {
-  color: var(--neo-text-primary);
+  color: var(--neo-text-primary) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 body.neo-theme:not(.neo-light) input,
 body.neo-theme:not(.neo-light) select,
 body.neo-theme:not(.neo-light) textarea {
-  color: var(--neo-text-primary);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--neo-text-primary) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 body.neo-theme:not(.neo-light) input::placeholder,
 body.neo-theme:not(.neo-light) textarea::placeholder {
-  color: var(--neo-text-secondary);
+  color: var(--neo-text-secondary) !important;
 }
 
 /* Tables */
 body.neo-theme:not(.neo-light) table {
-  color: var(--neo-text-primary);
-  background: transparent;
+  color: var(--neo-text-primary) !important;
+  background: transparent !important;
+}
+
+body.neo-theme:not(.neo-light) thead,
+body.neo-theme:not(.neo-light) tbody,
+body.neo-theme:not(.neo-light) tr {
+  background: transparent !important;
 }
 
 body.neo-theme:not(.neo-light) th {
-  color: var(--neo-leaf);
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--neo-leaf) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 body.neo-theme:not(.neo-light) td {
-  color: var(--neo-text-primary);
-  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--neo-text-primary) !important;
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* === MODE JOUR (THÈME CLAIR) === */
@@ -267,16 +284,40 @@ body.neo-light td {
   border-color: rgba(5, 150, 105, 0.1);
 }
 
-/* Comparateur - Mode nuit */
-body.neo-theme:not(.neo-light) .comparateur {
-  background: transparent;
-  color: var(--neo-text-primary);
+/* Comparateur - Mode nuit FORCÉ */
+body.neo-theme:not(.neo-light) .comparateur,
+body.neo-theme:not(.neo-light) .comparateur *,
+body.neo-theme:not(.neo-light) .comparison-table,
+body.neo-theme:not(.neo-light) .comparison-table * {
+  background-color: transparent !important;
+  color: var(--neo-text-primary) !important;
+}
+
+body.neo-theme:not(.neo-light) .comparateur h1,
+body.neo-theme:not(.neo-light) .comparateur h2,
+body.neo-theme:not(.neo-light) .comparateur h3,
+body.neo-theme:not(.neo-light) .comparison-table h3 {
+  color: var(--neo-leaf) !important;
+}
+
+body.neo-theme:not(.neo-light) .comparison-header-cell,
+body.neo-theme:not(.neo-light) .comparison-label-cell {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.neo-theme:not(.neo-light) .btn,
+body.neo-theme:not(.neo-light) .btn-primary,
+body.neo-theme:not(.neo-light) .btn-secondary {
+  color: var(--neo-text-primary) !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: var(--neo-leaf) !important;
 }
 
 /* Comparateur - Mode jour */
 body.neo-light .comparateur {
-  background: transparent;
-  color: var(--neo-text-primary);
+  background: transparent !important;
+  color: var(--neo-text-primary) !important;
 }
 
 body.neo-theme .comparateur-selector {
@@ -297,40 +338,58 @@ body.neo-theme .selector-item:hover {
   color: var(--neo-text-primary) !important;
 }
 
-/* ArbusteDetail - Mode nuit */
-body.neo-theme:not(.neo-light) .arbuste-detail {
-  background: transparent;
-  color: var(--neo-text-primary);
+/* ArbusteDetail - Mode nuit FORCÉ */
+body.neo-theme:not(.neo-light) .arbuste-detail,
+body.neo-theme:not(.neo-light) .arbuste-detail * {
+  background-color: transparent !important;
+  color: var(--neo-text-primary) !important;
 }
 
 body.neo-theme:not(.neo-light) .arbuste-header {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.neo-theme:not(.neo-light) .arbuste-detail h1,
+body.neo-theme:not(.neo-light) .arbuste-detail h2,
+body.neo-theme:not(.neo-light) .arbuste-detail h3,
+body.neo-theme:not(.neo-light) .arbuste-detail h4 {
+  color: var(--neo-leaf) !important;
 }
 
 body.neo-theme:not(.neo-light) .scientific-name {
-  color: var(--neo-text-secondary);
+  color: var(--neo-text-secondary) !important;
 }
 
 body.neo-theme:not(.neo-light) .family {
-  color: var(--neo-leaf);
-  background: rgba(16, 185, 129, 0.15);
+  color: var(--neo-leaf) !important;
+  background: rgba(16, 185, 129, 0.15) !important;
 }
 
 body.neo-theme:not(.neo-light) .tab {
-  color: var(--neo-text-secondary);
-  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--neo-text-secondary) !important;
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 body.neo-theme:not(.neo-light) .tab:hover {
-  color: var(--neo-leaf);
-  background: rgba(16, 185, 129, 0.1);
+  color: var(--neo-leaf) !important;
+  background: rgba(16, 185, 129, 0.1) !important;
 }
 
 body.neo-theme:not(.neo-light) .tab.active {
-  color: var(--neo-leaf);
-  border-color: var(--neo-leaf);
-  background: rgba(16, 185, 129, 0.15);
+  color: var(--neo-leaf) !important;
+  border-color: var(--neo-leaf) !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Tous les éléments de contenu */
+body.neo-theme:not(.neo-light) .content,
+body.neo-theme:not(.neo-light) .section,
+body.neo-theme:not(.neo-light) .panel,
+body.neo-theme:not(.neo-light) .container {
+  background: transparent !important;
+  color: var(--neo-text-primary) !important;
 }
 
 /* ArbusteDetail - Mode jour */
