@@ -6,50 +6,33 @@ import { getInfoOmbreArbre } from '../utils/canvas/ombreArbre';
 import './Comparateur.css';
 
 function Comparateur({ plantes, preselectedPlante, onArbresSelectionnes, modePlanification }) {
-  const [selectedPlantes, setSelectedPlantes] = useState(preselectedPlante ? [preselectedPlante] : []);
-  const [imageIndices, setImageIndices] = useState(preselectedPlante ? { [preselectedPlante.id]: 0 } : {});
+  // UTILISER DIRECTEMENT LES PLANTES PASSÉES EN PROP (sélection gérée par App.jsx)
+  const selectedPlantes = plantes || [];
+  
+  const [imageIndices, setImageIndices] = useState({});
   const [visibleCriteres, setVisibleCriteres] = useState({});
   const [zoomedImage, setZoomedImage] = useState(null);
-  const [selectedImageType, setSelectedImageType] = useState('tous'); // Type d'image à afficher
-  const [manuallyDeselected, setManuallyDeselected] = useState([]); // Tracker les arbres désélectionnés manuellement
+  const [selectedImageType, setSelectedImageType] = useState('tous');
   
   // States pour le planificateur (si modePlanification)
   const [dimensions, setDimensions] = useState({ largeur: 30, hauteur: 30 });
   const [orientation, setOrientation] = useState('nord-haut');
   const [canvasReady, setCanvasReady] = useState(false);
 
-  // Mettre à jour la présélection quand elle change (mais pas si l'utilisateur l'a désélectionnée manuellement)
+  // Initialiser les indices d'images pour toutes les plantes
   useEffect(() => {
-    if (preselectedPlante && 
-        !selectedPlantes.find(p => p.id === preselectedPlante.id) &&
-        !manuallyDeselected.includes(preselectedPlante.id)) {
-      setSelectedPlantes([preselectedPlante]);
-      setImageIndices({ [preselectedPlante.id]: 0 });
+    const newIndices = {};
+    selectedPlantes.forEach(p => {
+      if (!imageIndices[p.id]) {
+        newIndices[p.id] = 0;
+      }
+    });
+    if (Object.keys(newIndices).length > 0) {
+      setImageIndices(prev => ({ ...prev, ...newIndices }));
     }
-  }, [preselectedPlante]); // Enlever selectedPlantes des dépendances pour éviter la boucle
+  }, [selectedPlantes]);
 
-  // Remonter les arbres sélectionnés au parent
-  useEffect(() => {
-    if (onArbresSelectionnes) {
-      onArbresSelectionnes(selectedPlantes);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPlantes]); // Volontairement pas onArbresSelectionnes pour éviter la boucle
-
-  const togglePlante = (plante) => {
-    if (selectedPlantes.find(p => p.id === plante.id)) {
-      // Retirer si déjà sélectionné
-      setSelectedPlantes(selectedPlantes.filter(p => p.id !== plante.id));
-      // Marquer comme désélectionné manuellement pour éviter le re-ajout automatique
-      setManuallyDeselected(prev => [...prev, plante.id]);
-    } else {
-      // Ajouter sans limite
-      setSelectedPlantes([...selectedPlantes, plante]);
-      setImageIndices({ ...imageIndices, [plante.id]: 0 });
-      // Retirer de la liste des désélections manuelles
-      setManuallyDeselected(prev => prev.filter(id => id !== plante.id));
-    }
-  };
+  // Fonction togglePlante supprimée - sélection gérée par NeoPlantSelector dans App.jsx
 
   const changeImage = useCallback((planteId, direction) => {
     const plante = selectedPlantes.find(p => p.id === planteId);
