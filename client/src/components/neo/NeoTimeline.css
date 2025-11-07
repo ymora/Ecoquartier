@@ -38,13 +38,13 @@
 
 .neo-timeline-container-premium {
   position: relative;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  height: 100%;
+  height: auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--neo-spacing-lg);
-  padding: var(--neo-spacing-lg);
+  gap: var(--neo-spacing-md);
+  padding: 0 var(--neo-spacing-xl);
   z-index: 2;
 }
 
