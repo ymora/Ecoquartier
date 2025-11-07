@@ -892,19 +892,7 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   return (
     <div className="canvas-terrain-container">
-      {/* Bouton toggle timeline */}
-      <button 
-        className="timeline-toggle-btn"
-        onClick={() => {
-          setTimelineVisible(!timelineVisible);
-          logger.info('Timeline', `Timeline ${!timelineVisible ? 'affichée' : 'masquée'}`);
-        }}
-        title={timelineVisible ? 'Masquer la projection temporelle' : 'Afficher la projection temporelle'}
-      >
-        {timelineVisible ? '📅 Masquer' : '📅 Projection'}
-      </button>
-
-      {/* Timeline gérée par NeoApp - pas d'affichage ici */}
+      {/* Timeline gérée par NeoApp/NeoTimeline - pas de bouton toggle ici */}
 
       {/* Layout avec panneau latéral + vue principale */}
       <div style={{ display: 'flex', width: '100%', height: 'calc(100% - 40px)', marginTop: '40px' }}>
