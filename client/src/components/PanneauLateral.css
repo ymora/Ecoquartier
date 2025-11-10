@@ -28,7 +28,7 @@
 
 /* Contenu du panneau outils - NEO */
 .panneau-outils-content {
-  padding: var(--neo-spacing-md);
+  padding: var(--space-4);
   overflow-y: auto;
   flex: 1;
   font-size: 13px;
@@ -82,9 +82,9 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: var(--neo-spacing-sm);
+  gap: var(--space-2);
   background: rgba(255, 255, 255, 0.03);
-  padding: var(--neo-spacing-sm);
+  padding: var(--space-2);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -100,21 +100,21 @@
 .config-row label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--neo-text-secondary);
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .config-row input[type="number"],
 .config-row select {
   width: 80px;
-  padding: var(--neo-spacing-xs);
+  padding: var(--space-1);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   font-size: 13px;
   text-align: right;
   background: rgba(255, 255, 255, 0.06);
-  color: var(--neo-text-primary);
-  transition: all var(--neo-transition-fast);
+  color: var(--text-primary);
+  transition: all var(--transition-base);
 }
 
 .config-row input[type="number"]:focus,
@@ -127,7 +127,7 @@
 
 .config-row .unit {
   font-size: 11px;
-  color: var(--neo-text-tertiary);
+  color: var(--text-tertiary);
   font-weight: 600;
   min-width: 20px;
   text-align: left;
@@ -138,15 +138,15 @@
 .config-row input[type="text"] {
   width: 60px;
   min-width: 50px;
-  padding: var(--neo-spacing-xs);
+  padding: var(--space-1);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   font-size: 13px;
   text-align: right;
   flex-shrink: 1;
   background: rgba(255, 255, 255, 0.06);
-  color: var(--neo-text-primary);
-  transition: all var(--neo-transition-fast);
+  color: var(--text-primary);
+  transition: all var(--transition-base);
 }
 
 .config-row input[type="text"]:focus {
@@ -159,14 +159,14 @@
 /* Boîte info Neo */
 .info-box {
   background: rgba(16, 185, 129, 0.1);
-  border: 1px solid var(--neo-leaf);
+  border: 1px solid var(--accent);
   border-radius: 10px;
-  padding: var(--neo-spacing-md);
+  padding: var(--space-4);
   text-align: center;
   font-size: 13px;
-  margin-bottom: var(--neo-spacing-sm);
+  margin-bottom: var(--space-2);
   font-weight: 600;
-  color: var(--neo-leaf);
+  color: var(--accent);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
 }
 
@@ -174,13 +174,13 @@
   font-weight: bold;
   font-size: 13px;
   margin-bottom: 0.2rem;
-  color: var(--neo-text-primary);
+  color: var(--text-primary);
 }
 
 .info-box .info-subtitle {
   font-size: 11px;
   opacity: 0.8;
-  color: var(--neo-text-secondary);
+  color: var(--text-secondary);
 }
 
 .btn-outil {
