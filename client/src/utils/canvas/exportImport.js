@@ -367,19 +367,27 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
     const reader = new FileReader();
     reader.onload = (event) => {
       console.log('📖 Fichier lu avec succès');
-      const imgUrl = event.target.result;
+      const imgUrl = event.target.result; // Data URL (base64)
       
-      try {
-        console.log('🔄 Tentative de création de l\'image Fabric...');
-        
-        // Créer une URL temporaire pour l'image
-        const blob = new Blob([file], { type: file.type });
-        const url = URL.createObjectURL(blob);
-        
-        // Utiliser fabric.Image.fromURL avec l'URL temporaire
-        fabric.Image.fromURL(url, (img) => {
-          console.log('🖼️ Image Fabric chargée:', img);
-        const canvas = fabricCanvasRef.current;
+      console.log('🔄 Tentative de création de l\'image Fabric...');
+      console.log('📊 Type de données:', typeof imgUrl, '- Longueur:', imgUrl?.length);
+      console.log('📊 Début de l\'URL:', imgUrl?.substring(0, 50));
+      
+      const canvas = fabricCanvasRef.current;
+      if (!canvas) {
+        console.error('❌ Canvas non disponible');
+        alert('❌ Erreur: Canvas non disponible');
+        return;
+      }
+      
+      // Utiliser directement la data URL du FileReader
+      fabric.Image.fromURL(imgUrl, (img) => {
+        console.log('🖼️ Image Fabric chargée avec succès!', img);
+        if (!img) {
+          console.error('❌ Image est null après chargement!');
+          alert('❌ Erreur: Impossible de charger l\'image');
+          return;
+        }
           if (!canvas) {
             console.error('❌ Canvas non disponible');
             return;
@@ -496,19 +504,7 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         });
         
         logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scale.toFixed(2)}, opacité: ${opaciteImage})`);
-        
-        // Nettoyer l'URL temporaire
-        URL.revokeObjectURL(url);
-        
-        }, (error) => {
-          console.error('❌ Erreur lors du chargement de l\'image:', error);
-          // Nettoyer l'URL temporaire même en cas d'erreur
-          URL.revokeObjectURL(url);
-        });
-        
-      } catch (error) {
-        console.error('❌ Erreur lors de la création de l\'image:', error);
-      }
+      });
     };
     reader.readAsDataURL(file);
   };
