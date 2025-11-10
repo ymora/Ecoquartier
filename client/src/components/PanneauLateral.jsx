@@ -569,10 +569,10 @@ function PanneauLateral({
           📂 Charger mon plan
         </button>
         
-        {/* 3. Sauvegarder mon plan */}
+        {/* 3. Exporter mon plan */}
         <button
           onClick={onExporterPlan}
-          title="Sauvegarder le plan actuel"
+          title="Télécharger votre plan au format JSON"
           style={{ 
             background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
             color: 'white',
@@ -603,7 +603,7 @@ function PanneauLateral({
             e.target.style.boxShadow = '0 3px 6px rgba(76, 175, 80, 0.3)';
           }}
         >
-          💾 Sauvegarder mon plan
+          💾 Exporter mon plan
         </button>
         
         {/* Contrôles d'opacité si image chargée */}
