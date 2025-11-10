@@ -197,23 +197,24 @@ export default function AppClean() {
           )}
         </main>
 
-        {/* Timeline en bas pour le planificateur */}
+        {/* Timeline compacte en bas pour le planificateur */}
         {mode === 'planner' && (
-          <div className="timeline-bottom">
-            <div className="timeline-control">
-              <label>📅 Croissance</label>
+          <div className="timeline-compact">
+            <div className="timeline-item">
+              <span className="timeline-label">📅</span>
               <input
                 type="range"
                 min="0"
                 max="20"
                 value={anneeProjection}
                 onChange={(e) => setAnneeProjection(Number(e.target.value))}
+                title="Croissance"
               />
-              <span className="timeline-value">{anneeProjection} ans</span>
+              <span className="timeline-val">{anneeProjection}a</span>
             </div>
 
-            <div className="timeline-control">
-              <label>🕐 Heure</label>
+            <div className="timeline-item">
+              <span className="timeline-label">🕐</span>
               <input
                 type="range"
                 min="0"
@@ -221,13 +222,14 @@ export default function AppClean() {
                 step="10"
                 value={heureJournee}
                 onChange={(e) => setHeureJournee(Number(e.target.value))}
+                title="Heure de la journée"
               />
-              <span className="timeline-value">{Math.floor(heureJournee / 15) + 6}h</span>
+              <span className="timeline-val">{Math.floor(heureJournee / 15) + 6}h</span>
             </div>
 
-            <div className="timeline-control">
-              <label>🌸 Saison</label>
-              <div className="season-buttons">
+            <div className="timeline-item">
+              <span className="timeline-label">🌸</span>
+              <div className="season-compact">
                 {[
                   { id: 'printemps', icon: '🌸' },
                   { id: 'ete', icon: '☀️' },
@@ -236,7 +238,7 @@ export default function AppClean() {
                 ].map(s => (
                   <button
                     key={s.id}
-                    className={`season-btn ${saison === s.id ? 'active' : ''}`}
+                    className={`season-compact-btn ${saison === s.id ? 'active' : ''}`}
                     onClick={() => setSaison(s.id)}
                     title={s.id.charAt(0).toUpperCase() + s.id.slice(1)}
                   >
