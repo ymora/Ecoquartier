@@ -1,14 +1,14 @@
-/* Import du système Neo Garden */
-@import '../styles/neo-garden.css';
-@import '../styles/tabs-unified.css';
+/* Import du système Neo Garden (désactivé, on utilise le nouveau design system) */
+/* @import '../styles/neo-garden.css'; */
+/* @import '../styles/tabs-unified.css'; */
 
 /* === PANNEAU LATÉRAL NEO GARDEN === */
 .panneau-lateral {
   width: 320px;
-  background: rgba(10, 10, 10, 0.85);
+  background: var(--bg-secondary);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid var(--border-default);
   border-radius: 0;
   margin: 0;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
@@ -39,15 +39,15 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--neo-text-tertiary);
-  margin: var(--neo-spacing-md) 0 var(--neo-spacing-sm) 0;
-  padding: var(--neo-spacing-xs) var(--neo-spacing-sm);
-  border-bottom: 2px solid var(--neo-leaf);
+  color: var(--text-secondary);
+  margin: var(--space-4) 0 var(--space-2) 0;
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 2px solid var(--accent);
   background: transparent;
   border-radius: 0;
   display: flex;
   align-items: center;
-  gap: var(--neo-spacing-xs);
+  gap: var(--space-1);
 }
 
 .section-title:first-child {

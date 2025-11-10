@@ -1,0 +1,534 @@
+/**
+ * PLANNER THEME FIX - Force les bons thèmes dans le planificateur
+ * Corrige TOUTES les couleurs codées en dur de PanneauLateral et CanvasTerrain
+ */
+
+/* === PANNEAU LATERAL - Background === */
+.panneau-lateral {
+  background: var(--bg-secondary) !important;
+  border-left: 1px solid var(--border-default) !important;
+  color: var(--text-primary) !important;
+}
+
+/* === CANVAS TERRAIN === */
+.canvas-terrain {
+  background: var(--bg-primary) !important;
+}
+
+.canvas-terrain-container {
+  background: var(--bg-primary) !important;
+}
+
+.panneau-outils-content,
+.panneau-config-content,
+.panneau-plan-content {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.section-title {
+  font-size: var(--text-xs, 0.75rem) !important;
+  font-weight: var(--font-bold, 700) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: var(--text-tertiary) !important;
+  margin: var(--space-6, 24px) 0 var(--space-3, 12px) 0 !important;
+  padding: 0 0 var(--space-2, 8px) 0 !important;
+  border-bottom: 1px solid var(--border-default) !important;
+  background: transparent !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-2, 8px) !important;
+}
+
+.section-title:first-child {
+  margin-top: var(--space-4, 16px) !important;
+}
+
+/* === BOUTONS OUTILS MODERNES === */
+.tool-button {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-2, 8px) !important;
+  padding: var(--space-3, 12px) var(--space-4, 16px) !important;
+  width: 100% !important;
+  
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-md, 8px) !important;
+  
+  font-size: var(--text-sm, 0.875rem) !important;
+  font-weight: var(--font-medium, 500) !important;
+  
+  cursor: pointer !important;
+  transition: all var(--transition-base, 0.2s) !important;
+  text-align: left !important;
+}
+
+.tool-button:hover {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-hover) !important;
+  transform: translateX(2px) !important;
+}
+
+.tool-button.active {
+  background: var(--accent) !important;
+  color: white !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-muted, rgba(16, 185, 129, 0.1)) !important;
+}
+
+/* Inputs et labels */
+.config-row label,
+.dimension-row label,
+.input-group label {
+  color: var(--text-primary) !important;
+}
+
+.config-row input,
+.dimension-row input,
+.input-group input {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+.config-row input:focus,
+.dimension-row input:focus,
+.input-group input:focus {
+  border-color: var(--accent) !important;
+}
+
+/* Boutons de validation */
+.validation-icon.ok {
+  background: #4caf50 !important; /* Vert, pas de changement */
+}
+
+.validation-icon.warning {
+  background: #ff9800 !important; /* Orange, pas de changement */
+}
+
+.validation-icon.error {
+  background: #f44336 !important; /* Rouge, pas de changement */
+}
+
+/* Messages de validation */
+.validation-message {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Boutons action */
+.btn-action {
+  background: var(--accent) !important;
+  color: white !important;
+}
+
+.btn-action:hover {
+  background: var(--accent-hover) !important;
+}
+
+.btn-danger {
+  background: #ef4444 !important;
+  color: white !important;
+}
+
+.btn-danger:hover {
+  background: #dc2626 !important;
+}
+
+/* === ONGLETS MODERNES (Outils, Config, Plan) === */
+.panneau-tabs {
+  display: flex;
+  gap: 0 !important;
+  background: var(--bg-tertiary) !important;
+  padding: var(--space-2, 8px) !important;
+  border-bottom: 1px solid var(--border-default) !important;
+  margin: 0 !important;
+}
+
+.tab-unified,
+.tab-btn {
+  flex: 1 !important;
+  padding: var(--space-3, 12px) var(--space-4, 16px) !important;
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border: none !important;
+  border-radius: var(--radius-md, 8px) !important;
+  font-size: var(--text-sm, 0.875rem) !important;
+  font-weight: var(--font-semibold, 600) !important;
+  cursor: pointer !important;
+  transition: all var(--transition-base, 0.2s) !important;
+  text-align: center !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+.tab-unified:hover,
+.tab-btn:hover {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.tab-unified.active,
+.tab-btn.active {
+  background: var(--bg-secondary) !important;
+  color: var(--accent) !important;
+  border-bottom: 2px solid var(--accent) !important;
+  font-weight: var(--font-bold, 700) !important;
+}
+
+/* Accordéons */
+.accordion-header {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+.accordion-header:hover {
+  background: var(--bg-primary) !important;
+}
+
+.accordion-content {
+  background: var(--bg-secondary) !important;
+}
+
+/* Sections dépliables dans PanneauLateral */
+.panneau-lateral .section-content,
+.panneau-lateral .collapsible-content,
+.panneau-lateral .expandable-section,
+.section-arbres,
+.section-maisons,
+.section-citernes,
+.section-canalisations,
+.section-clotures {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Headers de sections dépliables */
+.section-header {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+.section-header:hover {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-hover) !important;
+}
+
+/* Éléments dans les sections dépliées */
+.panneau-lateral .section-content *,
+.panneau-lateral .collapsible-content *,
+.panneau-lateral .expandable-section *,
+.section-arbres *,
+.section-maisons *,
+.section-citernes *,
+.section-canalisations *,
+.section-clotures * {
+  color: var(--text-primary) !important;
+}
+
+.panneau-lateral .section-content label,
+.panneau-lateral .collapsible-content label,
+.panneau-lateral .expandable-section label,
+.section-arbres label,
+.section-maisons label {
+  color: var(--text-primary) !important;
+}
+
+.panneau-lateral .section-content input,
+.panneau-lateral .collapsible-content input,
+.panneau-lateral .expandable-section input,
+.section-arbres input,
+.section-maisons input {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+
+.panneau-lateral .section-content button,
+.panneau-lateral .collapsible-content button,
+.panneau-lateral .expandable-section button,
+.section-arbres button,
+.section-maisons button {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+
+/* Listes d'arbres/objets dans les sections */
+.arbre-item,
+.maison-item,
+.citerne-item,
+.canalisation-item,
+.cloture-item,
+.objet-terrain-item {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+.arbre-item:hover,
+.maison-item:hover,
+.citerne-item:hover {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-hover) !important;
+}
+
+.arbre-item.selected,
+.maison-item.selected,
+.citerne-item.selected {
+  background: var(--accent-muted) !important;
+  border-color: var(--accent) !important;
+}
+
+/* FORCER TOUS les éléments avec style inline dans PanneauLateral */
+.panneau-lateral button[style],
+.panneau-lateral div[style],
+.panneau-lateral span[style] {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+
+/* Spécifique pour les headers de sections arbres */
+.panneau-lateral button[style*="background"] {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.panneau-lateral button[style*="background"]:hover {
+  background: var(--accent) !important;
+  color: white !important;
+}
+
+/* Info boxes avec background orange/jaune */
+.panneau-lateral .info-box[style*="#fff3e0"],
+.panneau-lateral div[style*="#fff3e0"],
+.panneau-lateral div[style*="background: #fff3e0"] {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--accent) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Tous les boutons contenant ➕ */
+.panneau-lateral button {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+.panneau-lateral button:hover:not(.btn-action):not(.btn-danger) {
+  background: var(--accent) !important;
+  color: white !important;
+}
+
+/* Divs avec padding dans sections (probablement contenus) */
+.panneau-lateral div[style*="padding"] {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Canvas wrapper */
+.canvas-wrapper {
+  background: var(--bg-primary) !important;
+}
+
+/* Modal sol */
+.modal-sol {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border-default) !important;
+}
+
+.modal-sol-header {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-default) !important;
+}
+
+/* Sliders (conservent leurs couleurs pour lisibilité) */
+input[type="range"] {
+  background: var(--bg-tertiary) !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  background: var(--accent) !important;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: var(--accent) !important;
+}
+
+/* Objets liste */
+.objet-item {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-primary) !important;
+}
+
+.objet-item:hover {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-hover) !important;
+}
+
+.objet-item.selected {
+  background: var(--accent-muted) !important;
+  border-color: var(--accent) !important;
+}
+
+/* Menu contextuel */
+.context-menu {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.context-btn {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.context-btn:hover {
+  background: var(--accent) !important;
+  color: white !important;
+}
+
+/* === TOUS LES ÉLÉMENTS DE STRUCTURE === */
+
+/* Dividers */
+hr,
+.divider {
+  border-color: var(--border-default) !important;
+  background: var(--border-default) !important;
+}
+
+/* Cards et panels */
+.card,
+.panel,
+.box {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Headers de section */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary) !important;
+}
+
+.panneau-lateral h1,
+.panneau-lateral h2,
+.panneau-lateral h3,
+.panneau-lateral h4 {
+  color: var(--text-primary) !important;
+}
+
+/* Paragraphes et textes */
+.panneau-lateral p,
+.panneau-lateral span:not(.badge):not(.icon) {
+  color: var(--text-secondary) !important;
+}
+
+/* Selects et textareas */
+select,
+textarea {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+select:focus,
+textarea:focus {
+  border-color: var(--accent) !important;
+}
+
+/* Checkboxes et radios (style de base) */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--accent) !important;
+}
+
+/* Tous les boutons génériques */
+button:not(.tool-button):not(.btn-action):not(.btn-danger):not(.tab-unified):not(.context-btn):not(.category-header):not(.header-actions button):not(.toggle-2d3d):not(.season-buttons button) {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+button:not(.tool-button):not(.btn-action):not(.btn-danger):not(.tab-unified):not(.context-btn):not(.category-header):not(.header-actions button):not(.toggle-2d3d):not(.season-buttons button):hover {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-hover) !important;
+}
+
+/* Grilles et listes */
+.grid,
+.list {
+  background: var(--bg-primary) !important;
+}
+
+/* Scrollbars PARTOUT - Respect du thème */
+::-webkit-scrollbar {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-tertiary) !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-hover) !important;
+  border-radius: var(--radius-full) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent) !important;
+}
+
+/* Scrollbars spécifiques au panneau latéral */
+.panneau-lateral ::-webkit-scrollbar-track {
+  background: var(--bg-primary) !important;
+}
+
+.panneau-lateral ::-webkit-scrollbar-thumb {
+  background: var(--border-default) !important;
+}
+
+.panneau-lateral ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent) !important;
+}
+
+/* Scrollbars dans le canvas */
+.canvas-terrain ::-webkit-scrollbar-track,
+.canvas-wrapper ::-webkit-scrollbar-track {
+  background: var(--bg-secondary) !important;
+}
+
+.canvas-terrain ::-webkit-scrollbar-thumb,
+.canvas-wrapper ::-webkit-scrollbar-thumb {
+  background: var(--border-default) !important;
+}
+
+.canvas-terrain ::-webkit-scrollbar-thumb:hover,
+.canvas-wrapper ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent) !important;
+}
+
+/* Info boxes */
+.info-box,
+.alert,
+.notice {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Tooltips */
+.tooltip {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+

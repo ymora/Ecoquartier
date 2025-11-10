@@ -4,20 +4,62 @@
   width: 100%;
   height: 100%;
   position: relative;
-  overflow: visible; /* Permettre à la timeline de dépasser */
-  background: var(--neo-black);
-  background-image: 
-    url('/images/page-background.png'),
-    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
-  background-size: cover, 100%;
-  background-position: center, center;
-  background-blend-mode: soft-light, normal;
-  background-attachment: fixed;
+  overflow: visible;
+  background: var(--bg-primary);
 }
 
-/* Boutons 2D/3D maintenant dans la timeline - styles supprimés car utilise btn-saison */
+/* === BOUTON TOGGLE 2D/3D MODERNE === */
+.canvas-view-toggle {
+  position: absolute;
+  top: var(--space-4, 16px);
+  right: var(--space-4, 16px);
+  z-index: 1000;
+  
+  display: flex;
+  gap: var(--space-2, 8px);
+  background: var(--bg-secondary, #18181b);
+  padding: var(--space-2, 8px);
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid var(--border-default, #27272a);
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+}
 
-/* Panneau en haut dans la version mobile, à gauche en desktop via @media */
+.view-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-3, 12px) var(--space-5, 20px);
+  
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  
+  color: var(--text-secondary, #a1a1aa);
+  font-size: var(--text-base, 1rem);
+  font-weight: var(--font-semibold, 600);
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  
+  cursor: pointer;
+  transition: all var(--transition-base, 0.2s);
+  
+  min-width: 100px;
+  justify-content: center;
+}
+
+.view-btn:hover {
+  background: var(--bg-tertiary, #27272a);
+  color: var(--text-primary, #fafafa);
+}
+
+.view-btn.active {
+  background: var(--accent, #10b981);
+  color: white;
+  box-shadow: 0 0 0 3px var(--accent-muted, rgba(16, 185, 129, 0.1));
+}
+
+.view-btn svg {
+  font-size: 18px;
+}
 
 /* Modal composition du sol - déplaçable */
 .modal-sol {

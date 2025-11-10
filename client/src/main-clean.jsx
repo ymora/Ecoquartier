@@ -1,10 +1,14 @@
+/**
+ * POINT D'ENTRÉE CLEAN - Interface Sans Doublons
+ * Complètement neuve, zéro ancien code
+ */
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import AppClean from './App-clean.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <AppClean />
   </StrictMode>,
 )
+

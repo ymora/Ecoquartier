@@ -892,10 +892,28 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
 
   return (
     <div className="canvas-terrain-container">
-      {/* Timeline gérée par NeoApp/NeoTimeline - pas de bouton toggle ici */}
+      {/* Bouton Toggle 2D/3D moderne et bien visible */}
+      <div className="canvas-view-toggle">
+        <button
+          className={`view-btn ${!mode3D ? 'active' : ''}`}
+          onClick={() => setMode3D(false)}
+          title="Vue 2D - Plan du dessus"
+        >
+          <FaMap />
+          <span>Vue 2D</span>
+        </button>
+        <button
+          className={`view-btn ${mode3D ? 'active' : ''}`}
+          onClick={() => setMode3D(true)}
+          title="Vue 3D - Perspective immersive"
+        >
+          <FaCube />
+          <span>Vue 3D</span>
+        </button>
+      </div>
 
       {/* Layout avec panneau latéral + vue principale */}
-      <div style={{ display: 'flex', width: '100%', height: 'calc(100% - 40px)', marginTop: '40px' }}>
+      <div style={{ display: 'flex', width: '100%', height: '100%' }}>
         {/* Panneau latéral avec outils et stats - TOUJOURS VISIBLE */}
         <PanneauLateral
             canvas={fabricCanvasRef.current} 

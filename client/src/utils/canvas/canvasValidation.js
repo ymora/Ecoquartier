@@ -44,12 +44,9 @@ export const revaliderTousLesArbres = (canvas, echelle, couchesSol, orientation)
     validerPositionArbre(canvas, arbre, echelle, couchesSol, orientation);
   });
   
-  // PHASE 3 : Afficher les lignes de mesure pour TOUS les arbres problématiques
+  // PHASE 3 : Afficher TOUTES les contraintes violées pour TOUS les arbres
   arbres.forEach(arbre => {
-    // Afficher les lignes seulement si l'arbre a des problèmes
-    if (arbre.validationStatus && arbre.validationStatus !== 'ok') {
-      afficherLignesMesure(canvas, arbre, echelle);
-    }
+    afficherToutesLesContraintes(canvas, arbre, echelle);
   });
   
   canvas.renderAll();
@@ -111,8 +108,114 @@ export const validerPositionArbre = (canvas, arbreGroup, echelle, couchesSol, or
 };
 
 /**
- * Afficher les lignes de mesure pour les distances problématiques
- * INCHANGÉ : Logique d'affichage des lignes
+ * Afficher TOUTES les contraintes violées pour un arbre
+ * Vérifie toutes les distances (maisons, canalisations, clôtures, citernes, terrasses, autres arbres)
+ */
+const afficherToutesLesContraintes = (canvas, arbreGroup, echelle) => {
+  const arbre = arbreGroup.arbreData;
+  if (!arbre) return;
+  
+  const x = arbreGroup.left;
+  const y = arbreGroup.top;
+  
+  // Extraire les distances minimales
+  const distanceFondations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fondations?.split('m')[0] || '5');
+  const distanceCanalisations = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.canalisations?.split('m')[0] || '4');
+  const distanceCloture = parseFloat(arbre.reglementation?.distancesLegales?.voisinage?.distance?.split('m')[0] || '2');
+  const distanceFosseSeptique = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.fossesSeptiques?.split('m')[0] || '6');
+  const distanceTerrasse = parseFloat(arbre.reglementation?.distancesLegales?.infrastructures?.terrasse?.split('m')[0] || '3');
+  const distanceEntreArbres = parseFloat(arbre.reglementation?.distancesLegales?.entreArbres?.distance?.split('m')[0] || '5');
+  const systemeRacinaire = arbre.reglementation?.systemeRacinaire?.agressivite || 'Modérée';
+  
+  // 1. Vérifier TOUTES les maisons
+  const maisons = canvas.getObjects().filter(obj => obj.customType === 'maison');
+  maisons.forEach(maison => {
+    const distMaison = calculerDistanceRectangle(x, y, maison) / echelle;
+    if (distMaison < distanceFondations) {
+      const pointProche = trouverPointPlusProcheMaison(x, y, maison);
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distMaison, distanceFondations, '🏠 Maison');
+    }
+  });
+  
+  // 2. Vérifier TOUTES les canalisations
+  const canalisations = canvas.getObjects().filter(obj => obj.customType === 'canalisation');
+  canalisations.forEach(canal => {
+    const distCanal = calculerDistanceLigne(x, y, canal) / echelle;
+    if (distCanal < distanceCanalisations) {
+      const pointProche = trouverPointPlusProcheLigne(x, y, canal);
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distCanal, distanceCanalisations, '🚰 Canalisation');
+    }
+  });
+  
+  // 3. Vérifier TOUTES les clôtures
+  const clotures = canvas.getObjects().filter(obj => obj.customType === 'cloture');
+  clotures.forEach(cloture => {
+    const distCloture = calculerDistanceLigne(x, y, cloture) / echelle;
+    if (distCloture < distanceCloture || distCloture < 0.15) {
+      const pointProche = trouverPointPlusProcheLigne(x, y, cloture);
+      const iconeLegal = distCloture < distanceCloture ? '⚖️ Clôture (légal)' : '🚧 Clôture (trop près)';
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distCloture, distanceCloture, iconeLegal);
+    }
+  });
+  
+  // 4. Vérifier TOUTES les citernes
+  const citernes = canvas.getObjects().filter(obj => obj.customType === 'citerne' || obj.customType === 'caisson-eau');
+  citernes.forEach(citerne => {
+    const distCiterne = calculerDistanceRectangle(x, y, citerne) / echelle;
+    if (distCiterne < distanceFosseSeptique) {
+      const pointProche = trouverPointPlusProcheMaison(x, y, citerne);
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distCiterne, distanceFosseSeptique, '💧 Citerne');
+    }
+  });
+  
+  // 5. Vérifier TOUTES les terrasses
+  const terrasses = canvas.getObjects().filter(obj => obj.customType === 'paves' || obj.customType === 'terrasse');
+  const distMinTerrasse = (systemeRacinaire === 'Élevée' || systemeRacinaire === 'Forte') 
+    ? distanceTerrasse + 1 
+    : distanceTerrasse;
+  
+  terrasses.forEach(terrasse => {
+    const distTer = calculerDistanceRectangle(x, y, terrasse) / echelle;
+    if (distTer < distMinTerrasse) {
+      const pointProche = trouverPointPlusProcheMaison(x, y, terrasse);
+      ajouterLigneMesureProbleme(canvas, arbreGroup, x, y, pointProche.x, pointProche.y, distTer, distMinTerrasse, '🟩 Terrasse');
+    }
+  });
+  
+  // 6. Vérifier TOUS les autres arbres
+  const autresArbres = canvas.getObjects().filter(obj => 
+    (obj.customType === 'arbre-a-planter' || obj.customType === 'arbre-existant') && obj !== arbreGroup
+  );
+  
+  autresArbres.forEach(autreArbre => {
+    const dx = (x - autreArbre.left) / echelle;
+    const dy = (y - autreArbre.top) / echelle;
+    const distArbre = Math.sqrt(dx * dx + dy * dy);
+    
+    // Distance min applicable (contrainte bidirectionnelle)
+    const autreArbreData = autreArbre.arbreData;
+    const distanceAutreArbre = autreArbreData?.reglementation?.distancesLegales?.entreArbres?.distance 
+      ? parseFloat(autreArbreData.reglementation.distancesLegales.entreArbres.distance.split('m')[0])
+      : 5;
+    const distanceMinApplicable = Math.max(distanceEntreArbres, distanceAutreArbre);
+    
+    if (distArbre < distanceMinApplicable) {
+      const nomAutreArbre = autreArbreData?.name || 'Arbre';
+      ajouterLigneMesureProbleme(
+        canvas,
+        arbreGroup,
+        x, y, 
+        autreArbre.left, autreArbre.top, 
+        distArbre, 
+        distanceMinApplicable, 
+        `🌳 ${nomAutreArbre}`
+      );
+    }
+  });
+};
+
+/**
+ * Afficher les lignes de mesure pour les distances problématiques (ANCIENNE VERSION - conservée pour compatibilité)
  */
 export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
   // NE PAS supprimer les lignes des autres arbres ici
@@ -230,6 +333,7 @@ export const afficherLignesMesure = (canvas, arbreGroup, echelle) => {
 
 /**
  * Ajouter une ligne de mesure problématique
+ * Affiche la distance actuelle et la distance minimale requise
  */
 const ajouterLigneMesureProbleme = (canvas, arbreGroup, x1, y1, x2, y2, distActuelle, distMin, icone) => {
   logger.info('LignesMesure', `➕ Ajout ligne: ${icone} ${distActuelle.toFixed(1)}m < ${distMin}m`);

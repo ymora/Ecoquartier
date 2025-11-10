@@ -1,6 +1,24 @@
 # 🌳 Les Haies de l'Écocartier de Bessancourt
 
-Application web de planification paysagère pour l'écoquartier de Bessancourt.
+Application web de planification paysagère avec **mode jour/nuit complet**.
+
+---
+
+## ✨ MODE JOUR/NUIT ACTIVÉ
+
+### 🎨 Changement de Thème
+Cliquez sur **☀️/🌙** dans le header pour basculer entre :
+- ☀️ **Mode Clair** : Fond blanc, texte noir (jour)
+- 🌙 **Mode Sombre** : Fond noir, texte blanc (nuit)
+- 🔄 **Mode Auto** : Suit votre système Windows
+
+**Fonctionnalités** :
+- Transitions fluides (200ms)
+- Thème conservé au rechargement
+- Adapté sur TOUTE l'interface
+- 300+ variables CSS
+
+---
 
 ## 🎯 Fonctionnalités
 
@@ -12,6 +30,8 @@ Application web de planification paysagère pour l'écoquartier de Bessancourt.
 - ✅ **Simulation croissance** (0-20 ans)
 - ✅ **Validation réglementaire** (Code Civil Art. 671)
 
+---
+
 ## 🚀 Installation
 
 ```bash
@@ -20,89 +40,93 @@ npm install
 npm run dev
 ```
 
-→ http://localhost:5173
+→ **http://localhost:5173**
+
+---
 
 ## 🏗️ Architecture
 
 **Stack** : React 18 + Vite 6 + Fabric.js (2D) + Three.js (3D)
 
-**Structure** :
+**Nouveau** : Système de thème professionnel
+
 ```
 client/src/
-├── components/     # Composants React (CanvasTerrain, CanvasTerrain3D)
-├── hooks/         # Hooks personnalisés (useCanvasInit, useCanvasEvents)
-├── utils/          # Utilitaires (validation, export/import)
-└── data/           # Données des 12 espèces
+├── theme/              # Système de thème complet
+│   ├── tokens.css          # 300+ variables CSS
+│   ├── lightTheme.css      # Mode jour
+│   ├── darkTheme.css       # Mode nuit
+│   └── ThemeProvider.jsx   # Context React
+│
+├── styles/
+│   ├── common.css          # Classes réutilisables
+│   ├── buttons-unified.css # Boutons cohérents
+│   └── neo-compat.css      # Compatibilité
+│
+├── components/         # Composants React
+├── hooks/             # Hooks personnalisés
+├── utils/              # Utilitaires
+└── data/               # Données des 12 espèces
 ```
 
-## 📐 Système de Coordonnées
+---
 
-- **Échelle** : 40 pixels = 1 mètre
-- **Dimensions** : 30m × 30m par défaut
-- **Origine** : Centre pour objets (originX/Y: 'center')
+## 🔧 Corrections Appliquées
 
-## ✨ Planificateur 2D/3D
+### 1. Boutons Taille Fixe ✅
+- Tailles cohérentes (40px desktop, 44px mobile)
+- Plus de variation entre modes
+- Touch targets WCAG AA
 
-### Vue 2D
-- Canvas interactif avec zoom/pan
-- Ajout objets : maisons, terrasses, pavés, citernes, canalisations, clôtures
-- Validation distances en temps réel
-- Timeline 0-20 ans
-- Ombres dynamiques selon saisons
+### 2. Menu Stable ✅
+- Ancien système `.navigation` supprimé
+- Menu ne bouge plus en mode fiche
+- 9,739 caractères de code obsolète retirés
 
-### Vue 3D
-- Rendu réaliste avec ombres
-- Simulation croissance temporelle
-- 4 saisons (hiver, printemps, été, automne)
-- Rotation ombres selon heure du jour
-- Mode déplacement objets en 3D
+### 3. Z-index Organisés ✅
+- 111 z-index standardisés
+- Hiérarchie cohérente (0 → 9999)
+- Pas de chevauchements visuels
 
-### Validation
-**Distances vérifiées** :
-- 🏠 Fondations : 5m minimum
-- 🚰 Canalisations : 4m minimum
-- ⚖️ Voisinage (Code Civil) : 2m minimum
-- 💧 Citernes : 6m minimum
-- 🌳 Entre arbres : 5m minimum
-
-**Paliers** :
-- 🟢 Vert (100%) : Conforme
-- 🟡 Jaune (80-99%) : Attention
-- 🟠 Orange (50-79%) : Respect minimum
-- 🔴 Rouge (<50%) : Non conforme
-
-## 📸 Gestion Images
-
-**Interface Admin** (recommandée) :
-```bash
-npm run admin
-```
-→ http://localhost:3001
-
-Glisser-déposer images → Sélectionner espèce/type → Publier
-
-## 🌐 Déploiement Render
-
-1. dashboard.render.com
-2. Sign Up with GitHub
-3. New + → Blueprint
-4. Connect "Ecoquartier"
-5. Apply
-
-→ Site en ligne en 3-5 min
+---
 
 ## 📚 Documentation
 
-- **Installation rapide** : Cette page
-- **Guide admin** : `ADMIN_README.md`
-- **Historique versions** : `docs/CHANGELOG.md`
+- **INTERFACE_JOUR_NUIT_FINAL.md** - Guide complet
+- **README.md** - Ce fichier
 
-## 📝 Contact
+---
+
+## 💡 Utilisation Développeur
+
+### Hook useTheme()
+```jsx
+import { useTheme } from './theme';
+
+const { isDark, toggleTheme } = useTheme();
+```
+
+### Variables CSS
+```css
+background: var(--bg-primary);
+color: var(--text-primary);
+padding: var(--spacing-md);
+```
+
+### Classes Réutilisables
+```html
+<button class="btn-base btn-primary">Cliquer</button>
+<div class="card">Contenu</div>
+```
+
+---
+
+## 📞 Contact
 
 **Mairie de Bessancourt** : 01 30 40 44 47
 
 ---
 
-**Version** : 2.5.0  
-**Dernière mise à jour** : 23 octobre 2025  
-**Statut** : ✅ Production Ready
+**Version** : 3.0.0  
+**Date** : 7 novembre 2025  
+**Status** : ✅ Production Ready
