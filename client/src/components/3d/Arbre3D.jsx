@@ -280,30 +280,31 @@ function Arbre3D({
 
   return (
     <group ref={groupRef} position={positionAjustee} onClick={handleClick}>
-      {/* Racines souterraines (cône inversé) */}
+      {/* Racines souterraines (cône inversé principal) */}
       <mesh position={[0, -arbreCalculs.profondeurRacinesActuelle / 2, 0]} castShadow>
         <primitive object={geometries.racines} />
         <primitive object={materials.racines} />
       </mesh>
       
-      {/* Racines visibles qui sortent du sol (4 branches radiales) */}
+      {/* Racines souterraines radiales (4 branches enfouies) */}
       {[0, 90, 180, 270].map((angle) => {
         const rad = (angle * Math.PI) / 180;
         const longueurRacine = arbreCalculs.envergureActuelle * 0.4;
-        const epaisseurRacine = arbreCalculs.rayonTroncBase * 0.5;
+        const epaisseurRacine = arbreCalculs.rayonTroncBase * 0.4;
+        const profondeurRacine = arbreCalculs.profondeurRacinesActuelle * 0.5;
         
         return (
           <mesh
             key={angle}
             position={[
               Math.cos(rad) * longueurRacine * 0.3,
-              -0.05,
+              -profondeurRacine,
               Math.sin(rad) * longueurRacine * 0.3
             ]}
-            rotation={[0, rad, Math.PI / 12]}
+            rotation={[0, rad, Math.PI / 6]}
             castShadow
           >
-            <cylinderGeometry args={[epaisseurRacine * 0.6, epaisseurRacine, longueurRacine, 6]} />
+            <cylinderGeometry args={[epaisseurRacine * 0.5, epaisseurRacine, longueurRacine, 6]} />
             <primitive object={materials.racines} />
           </mesh>
         );

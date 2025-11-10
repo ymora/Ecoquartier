@@ -96,12 +96,15 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
   // Calculer l'envergure actuelle selon la progression
   const envergureActuelle = envergure * scaleProgression;
   
-  // Matériau pour les racines
+  // Matériau pour les racines souterraines
   const racinesMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     color: '#5d4037',
     roughness: 0.95,
     metalness: 0.1
   }), []);
+  
+  // Profondeur des racines (proportionnelle à la taille)
+  const profondeurRacines = finalScale * 2;
   
   return (
     <group ref={groupRef}>
@@ -113,7 +116,16 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
         onClick={onClick}
       />
       
-      {/* Racines visibles qui sortent du sol (4 branches radiales) */}
+      {/* Racines souterraines (cône inversé principal) */}
+      <mesh 
+        position={[position[0], position[1] - profondeurRacines / 2, position[2]]}
+        castShadow
+      >
+        <coneGeometry args={[finalScale * 2, profondeurRacines, 8]} />
+        <primitive object={racinesMaterial} />
+      </mesh>
+      
+      {/* Racines souterraines radiales (4 branches enfouies) */}
       {[0, 90, 180, 270].map((angle) => {
         const rad = (angle * Math.PI) / 180;
         const longueurRacine = envergureActuelle * 0.4;
@@ -124,13 +136,13 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
             key={angle}
             position={[
               position[0] + Math.cos(rad) * longueurRacine * 0.3,
-              position[1] - 0.05,
+              position[1] - profondeurRacines * 0.5,
               position[2] + Math.sin(rad) * longueurRacine * 0.3
             ]}
-            rotation={[0, rad, Math.PI / 12]}
+            rotation={[0, rad, Math.PI / 6]}
             castShadow
           >
-            <cylinderGeometry args={[epaisseurRacine * 0.6, epaisseurRacine, longueurRacine, 6]} />
+            <cylinderGeometry args={[epaisseurRacine * 0.5, epaisseurRacine, longueurRacine, 6]} />
             <primitive object={racinesMaterial} />
           </mesh>
         );
