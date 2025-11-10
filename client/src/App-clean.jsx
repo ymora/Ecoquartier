@@ -228,7 +228,6 @@ export default function AppClean() {
             </div>
 
             <div className="timeline-item">
-              <span className="timeline-label">🌸</span>
               <div className="season-compact">
                 {[
                   { id: 'printemps', icon: '🌸' },
