@@ -401,6 +401,14 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           center: { x: canvas.width / 2, y: canvas.height / 2 }
         });
         
+        // Configuration de l'image avec logs détaillés
+        console.log('📐 Configuration de l\'image:');
+        console.log('  - Dimensions image:', { width: img.width, height: img.height });
+        console.log('  - Dimensions canvas:', { width: canvas.width, height: canvas.height });
+        console.log('  - Scale calculé:', scale);
+        console.log('  - Position:', { left: canvas.width / 2, top: canvas.height / 2 });
+        console.log('  - Opacité:', opaciteImage);
+        
         img.set({
           left: canvas.width / 2,
           top: canvas.height / 2,
@@ -412,11 +420,23 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           hasBorders: true,
           isImageFond: true,
           evented: true,
-          // S'assurer que l'image est visible
           visible: true,
-          // Centrer l'image sur le canvas
           originX: 'center',
-          originY: 'center'
+          originY: 'center',
+          // CRITIQUE: S'assurer que l'image a bien un fond
+          backgroundColor: null,
+          fill: null
+        });
+        
+        console.log('✅ Image configurée:', {
+          left: img.left,
+          top: img.top,
+          scaleX: img.scaleX,
+          scaleY: img.scaleY,
+          width: img.width,
+          height: img.height,
+          opacity: img.opacity,
+          visible: img.visible
         });
         
         canvasOperations.ajouter(canvas, img);
@@ -432,14 +452,38 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         // Ne PAS toucher à la grille, elle est déjà au bon endroit
         
         console.log('🔧 Après tri, ordre des objets:');
-        canvas.getObjects().slice(0, 5).forEach((obj, idx) => {
-          console.log(`  ${idx}: ${obj.isImageFond ? 'IMAGE FOND' : obj.isGridLine ? 'GRILLE' : obj.customType || 'autre'}`);
+        canvas.getObjects().slice(0, 10).forEach((obj, idx) => {
+          const type = obj.isImageFond ? '🖼️ IMAGE FOND' : 
+                       obj.isGridLine ? '📏 GRILLE' : 
+                       obj.customType ? `📦 ${obj.customType}` : 
+                       '❓ ' + obj.type;
+          console.log(`  Index ${idx}: ${type} - visible: ${obj.visible}, opacity: ${obj.opacity}`);
         });
         
         imageFondRef.current = img;
         setImageFondChargee(true);
         
+        console.log('🎨 Rendu du canvas...');
         canvasOperations.rendre(canvas);
+        
+        // VÉRIFICATION POST-RENDU
+        setTimeout(() => {
+          const imgDansCanvas = canvas.getObjects().find(o => o.isImageFond);
+          if (imgDansCanvas) {
+            console.log('✅ VERIFICATION: Image présente dans le canvas après rendu');
+            console.log('  - Index:', canvas.getObjects().indexOf(imgDansCanvas));
+            console.log('  - Visible:', imgDansCanvas.visible);
+            console.log('  - Opacity:', imgDansCanvas.opacity);
+            console.log('  - Position:', { left: imgDansCanvas.left, top: imgDansCanvas.top });
+            console.log('  - Scale:', { x: imgDansCanvas.scaleX, y: imgDansCanvas.scaleY });
+            console.log('  - Rendered dimensions:', {
+              width: imgDansCanvas.width * imgDansCanvas.scaleX,
+              height: imgDansCanvas.height * imgDansCanvas.scaleY
+            });
+          } else {
+            console.error('❌ ERREUR: Image NON trouvée dans le canvas après rendu!');
+          }
+        }, 100);
         
         // Debug pour vérifier la visibilité
         console.log('Image de fond chargée:', {
