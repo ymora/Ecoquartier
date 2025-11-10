@@ -423,9 +423,10 @@ const chargerImageDepuisURL = async (fabricCanvasRef, imageFondRef, opaciteImage
     setImageFondChargee(true);
     canvasOperations.rendre(canvas);
     
-    logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scale.toFixed(2)})`);
+    logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scaleX.toFixed(2)} × ${scaleY.toFixed(2)})`);
   } catch (error) {
     console.error('❌ Erreur lors du chargement de l\'image:', error);
+    alert(`❌ Erreur chargement image: ${error.message}`);
   }
 };
 
