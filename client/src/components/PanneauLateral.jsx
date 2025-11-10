@@ -459,10 +459,10 @@ function PanneauLateral({
       {/* Boutons de chargement - TOUJOURS VISIBLES - ORDRE: Fond / Charger / Exporter */}
       <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         
-        {/* 1. Charger image de fond */}
+        {/* 1. Plan d'implantation */}
         <button
           onClick={onChargerImageFond}
-          title="Charger plan cadastral, photo aérienne..."
+          title="Charger votre plan cadastral ou photo aérienne"
           style={{ 
             background: imageFondChargee ? 
               'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)' : 
@@ -503,7 +503,7 @@ function PanneauLateral({
             e.target.style.boxShadow = '0 3px 6px rgba(156, 39, 176, 0.3)';
           }}
         >
-          🖼️ {imageFondChargee ? 'Image chargée' : 'Charger fond'}
+          📍 {imageFondChargee ? 'Plan chargé' : 'Plan d\'implantation'}
         </button>
         
         {/* 2. Charger mon plan */}
@@ -1246,25 +1246,25 @@ function PanneauLateral({
                             return true;
                           })
                           .map((msg, index) => {
-                            // Identifier les types de problèmes
-                            const isRacines = msg.includes('Racines') || msg.includes('racines');
-                            const isFondations = msg.includes('🏠') || msg.includes('fondations');
-                            const isCanalisations = msg.includes('🚰') || msg.includes('canalisations');
-                            const isCritique = msg.includes('CRITIQUE') || msg.includes('ILLÉGAL');
-                            
-                            return (
-                              <div key={index} className={`info-box ${isCritique ? 'info-box-error' : 'info-box-warning'}`} style={{ 
-                                marginBottom: '0.3rem',
-                                padding: '0.3rem',
-                                fontSize: '0.8rem'
-                              }}>
-                                {isRacines && <span style={{ fontWeight: 'bold' }}>🌱 RACINES: </span>}
-                                {isFondations && <span style={{ fontWeight: 'bold' }}>🏠 FONDATIONS: </span>}
-                                {isCanalisations && <span style={{ fontWeight: 'bold' }}>🚰 CANALISATIONS: </span>}
-                                {msg}
-                              </div>
-                            );
-                          })}
+                          // Identifier les types de problèmes
+                          const isRacines = msg.includes('Racines') || msg.includes('racines');
+                          const isFondations = msg.includes('🏠') || msg.includes('fondations');
+                          const isCanalisations = msg.includes('🚰') || msg.includes('canalisations');
+                          const isCritique = msg.includes('CRITIQUE') || msg.includes('ILLÉGAL');
+                          
+                          return (
+                            <div key={index} className={`info-box ${isCritique ? 'info-box-error' : 'info-box-warning'}`} style={{ 
+                              marginBottom: '0.3rem',
+                              padding: '0.3rem',
+                              fontSize: '0.8rem'
+                            }}>
+                              {isRacines && <span style={{ fontWeight: 'bold' }}>🌱 RACINES: </span>}
+                              {isFondations && <span style={{ fontWeight: 'bold' }}>🏠 FONDATIONS: </span>}
+                              {isCanalisations && <span style={{ fontWeight: 'bold' }}>🚰 CANALISATIONS: </span>}
+                              {msg}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>

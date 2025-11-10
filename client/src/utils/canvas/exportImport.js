@@ -369,11 +369,11 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
       console.log('📖 Fichier lu avec succès');
       const imgUrl = event.target.result; // Data URL (base64)
       
-      console.log('🔄 Tentative de création de l\'image Fabric...');
+        console.log('🔄 Tentative de création de l\'image Fabric...');
       console.log('📊 Type de données:', typeof imgUrl, '- Longueur:', imgUrl?.length);
       console.log('📊 Début de l\'URL:', imgUrl?.substring(0, 50));
       
-      const canvas = fabricCanvasRef.current;
+        const canvas = fabricCanvasRef.current;
       if (!canvas) {
         console.error('❌ Canvas non disponible');
         alert('❌ Erreur: Canvas non disponible');
@@ -388,14 +388,22 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           alert('❌ Erreur: Impossible de charger l\'image');
           return;
         }
-        if (!canvas) {
-          console.error('❌ Canvas non disponible');
-          return;
-        }
+          if (!canvas) {
+            console.error('❌ Canvas non disponible');
+            return;
+          }
         
         if (imageFondRef.current) {
           canvasOperations.supprimer(canvas, imageFondRef.current);
         }
+        
+        // Trouver le centre du terrain (croix rouge)
+        const terrainObj = canvas.getObjects().find(obj => obj.customType === 'sol');
+        const centreTerrain = terrainObj ? 
+          { x: terrainObj.left, y: terrainObj.top } : 
+          { x: canvas.width / 2, y: canvas.height / 2 };
+        
+        console.log('🎯 Centre du terrain (croix rouge):', centreTerrain);
         
         const scale = Math.min(
           canvas.width / img.width,
@@ -406,7 +414,7 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
           image: { width: img.width, height: img.height },
           canvas: { width: canvas.width, height: canvas.height },
           scale: scale,
-          center: { x: canvas.width / 2, y: canvas.height / 2 }
+          centreTerrain: centreTerrain
         });
         
         // Configuration de l'image avec logs détaillés
@@ -414,12 +422,12 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         console.log('  - Dimensions image:', { width: img.width, height: img.height });
         console.log('  - Dimensions canvas:', { width: canvas.width, height: canvas.height });
         console.log('  - Scale calculé:', scale);
-        console.log('  - Position:', { left: canvas.width / 2, top: canvas.height / 2 });
+        console.log('  - Position (centre terrain):', centreTerrain);
         console.log('  - Opacité:', opaciteImage);
         
         img.set({
-          left: canvas.width / 2,
-          top: canvas.height / 2,
+          left: centreTerrain.x,
+          top: centreTerrain.y,
           scaleX: scale,
           scaleY: scale,
           opacity: opaciteImage,
