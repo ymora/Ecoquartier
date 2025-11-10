@@ -140,18 +140,27 @@ function Sol3D({
     const nbNoeudsX = maillageElevation[0]?.length || 0;
     const nodes = [];
     
-    const largeurMaillage = (nbNoeudsX - 1) * tailleMailleM;
-    const hauteurMaillage = (nbNoeudsZ - 1) * tailleMailleM;
-    const offsetXMaillage = (largeur - largeurMaillage) / 2;
-    const offsetZMaillage = (hauteur - hauteurMaillage) / 2;
+    // ✅ CORRECTION: Utiliser exactement les dimensions du terrain (comme l'image)
+    // Répartir les nœuds uniformément sur toute la largeur/hauteur
+    const stepX = largeur / (nbNoeudsX - 1);
+    const stepZ = hauteur / (nbNoeudsZ - 1);
+    
+    console.log('🔵 Nœuds 3D:', {
+      nbNoeudsX,
+      nbNoeudsZ,
+      stepX,
+      stepZ,
+      largeur,
+      hauteur
+    });
     
     for (let i = 0; i < nbNoeudsZ; i++) {
       for (let j = 0; j < nbNoeudsX; j++) {
         const elevation = maillageElevation[i][j];
         
-        // Position du nœud (centré sur le terrain)
-        const x = -largeur / 2 + offsetXMaillage + j * tailleMailleM;
-        const z = -hauteur / 2 + offsetZMaillage + i * tailleMailleM;
+        // Position du nœud répartie uniformément sur le terrain
+        const x = -largeur / 2 + j * stepX;
+        const z = -hauteur / 2 + i * stepZ;
         
         nodes.push({
           position: [x, elevation, z],
