@@ -720,18 +720,21 @@ function CanvasTerrain3D({
           terrainCentreZ={terrainCentreZ}
         />
         
-        {/* Repères visuels au centre du terrain */}
-        <mesh position={[terrainCentreX, 2.0, terrainCentreZ]}>
-          <sphereGeometry args={[0.5, 16, 16]} />
-          <meshStandardMaterial 
-            color="#ff0000"
-            emissive="#ff0000"
-            emissiveIntensity={0.8}
-          />
+        {/* Croix rouge au centre du terrain (comme en 2D) */}
+        {/* Barre horizontale (axe X) */}
+        <mesh position={[terrainCentreX, 0.05, terrainCentreZ]}>
+          <boxGeometry args={[3, 0.1, 0.3]} />
+          <meshBasicMaterial color="#ff0000" />
         </mesh>
-        <mesh position={[terrainCentreX, 0.1, terrainCentreZ]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[1.2, 1.5, 32]} />
-          <meshBasicMaterial color="#ff0000" side={2} />
+        {/* Barre verticale (axe Z) */}
+        <mesh position={[terrainCentreX, 0.05, terrainCentreZ]}>
+          <boxGeometry args={[0.3, 0.1, 3]} />
+          <meshBasicMaterial color="#ff0000" />
+        </mesh>
+        {/* Petit cercle au centre pour marquer l'intersection */}
+        <mesh position={[terrainCentreX, 0.06, terrainCentreZ]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.3, 16]} />
+          <meshBasicMaterial color="#ff0000" />
         </mesh>
         
         {/* Lumière ambiante (éclairage global) */}
