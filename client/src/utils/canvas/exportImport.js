@@ -351,7 +351,75 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
  */
 
 /**
- * Charger une image de fond
+ * Charger une image de fond depuis une URL ou un fichier
+ */
+const chargerImageDepuisURL = async (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, imageUrl) => {
+  console.log('🔍 chargerImageDepuisURL:', imageUrl);
+  
+  const canvas = fabricCanvasRef.current;
+  if (!canvas) {
+    console.error('❌ Canvas non disponible');
+    return;
+  }
+  
+  try {
+    const img = await fabric.Image.fromURL(imageUrl);
+    console.log('🖼️ Image chargée avec succès!', img);
+    if (!img) {
+      console.error('❌ Image est null après chargement!');
+      return;
+    }
+    
+    if (imageFondRef.current) {
+      canvasOperations.supprimer(canvas, imageFondRef.current);
+    }
+    
+    // Le terrain est TOUJOURS centré à 0,0 (avec originX/Y: 'center')
+    const centreTerrain = { x: 0, y: 0 };
+    
+    const scale = Math.min(
+      canvas.width / img.width,
+      canvas.height / img.height
+    );
+    
+    console.log('📐 Configuration de l\'image:', {
+      dimensions: { width: img.width, height: img.height },
+      scale: scale,
+      position: centreTerrain,
+      opacity: opaciteImage
+    });
+    
+    img.set({
+      left: centreTerrain.x,
+      top: centreTerrain.y,
+      scaleX: scale,
+      scaleY: scale,
+      opacity: opaciteImage,
+      selectable: true,
+      hasControls: true,
+      hasBorders: true,
+      isImageFond: true,
+      evented: true,
+      visible: true,
+      originX: 'center',
+      originY: 'center'
+    });
+    
+    canvasOperations.ajouter(canvas, img);
+    canvas.sendObjectToBack(img);
+    
+    imageFondRef.current = img;
+    setImageFondChargee(true);
+    canvasOperations.rendre(canvas);
+    
+    logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scale.toFixed(2)})`);
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement de l\'image:', error);
+  }
+};
+
+/**
+ * Charger une image de fond depuis un fichier utilisateur
  */
 export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille) => {
   console.log('🔍 chargerImageFond appelée');
@@ -528,6 +596,18 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
   };
   
   input.click();
+};
+
+/**
+ * Charger le plan d'implantation par défaut au démarrage
+ */
+export const chargerPlanImplantationParDefaut = async (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee) => {
+  console.log('🏗️ Chargement du plan d\'implantation par défaut...');
+  
+  // URL de l'image par défaut (à ajuster selon l'image disponible)
+  const imageParDefaut = '/images/page-background.png';
+  
+  await chargerImageDepuisURL(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, imageParDefaut);
 };
 
 /**

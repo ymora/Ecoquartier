@@ -54,6 +54,7 @@ import {
   exporterPlan as exporterPlanUtils,
   telechargerPlanJSON as telechargerPlanJSONUtils,
   chargerImageFond as chargerImageUtils,
+  chargerPlanImplantationParDefaut,
   ajusterOpaciteImage as ajusterOpaciteUtils,
   supprimerImageFond as supprimerImageUtils,
   ajouterMesuresLive as ajouterMesuresUtils
@@ -459,7 +460,11 @@ function CanvasTerrain({
         // Centrer sur le centre du canvas (0, 0) au démarrage
         centrerVueSurCentre(canvas);
         logger.info('Canvas', '🎯 Vue centrée automatiquement sur le centre');
-      }, 100); // Juste le temps que le canvas soit prêt
+        
+        // Charger le plan d'implantation par défaut (pour exemple)
+        chargerPlanImplantationParDefaut(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee);
+        logger.info('Canvas', '🖼️ Plan d\'implantation par défaut chargé');
+      }, 800); // 800ms pour laisser le canvas se stabiliser
       
       return () => clearTimeout(timer);
     }
