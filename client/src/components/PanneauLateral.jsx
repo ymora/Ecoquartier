@@ -503,7 +503,7 @@ function PanneauLateral({
             e.target.style.boxShadow = '0 3px 6px rgba(156, 39, 176, 0.3)';
           }}
         >
-          📍 {imageFondChargee ? 'Plan chargé' : 'Plan d\'implantation'}
+          📍 {imageFondChargee ? 'Plan cadastral ✓' : 'Plan cadastral'}
         </button>
         
         {/* 2. Charger mon plan */}
