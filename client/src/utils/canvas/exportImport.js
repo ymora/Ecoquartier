@@ -604,8 +604,8 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
 export const chargerPlanImplantationParDefaut = async (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee) => {
   console.log('🏗️ Chargement du plan d\'implantation par défaut...');
   
-  // URL de l'image par défaut (à ajuster selon l'image disponible)
-  const imageParDefaut = '/images/page-background.png';
+  // Plan d'implantation d'exemple pour les nouveaux utilisateurs
+  const imageParDefaut = '/images/plan-implantation-defaut.jpg';
   
   await chargerImageDepuisURL(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, imageParDefaut);
 };
