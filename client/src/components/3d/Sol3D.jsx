@@ -200,11 +200,30 @@ function Sol3D({
         />
       </mesh>
       
-      {/* ✅ Nœuds d'élévation visibles en 3D (petits repères discrets) */}
+      {/* ✅ Nœuds d'élévation visibles et cliquables en 3D */}
       {noeuds3D.map((noeud, idx) => (
         <mesh 
           key={idx}
           position={noeud.position}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onTerrainClick) {
+              onTerrainClick({
+                customType: 'sol-noeud',
+                noeudI: noeud.i,
+                noeudJ: noeud.j,
+                elevation: noeud.elevation
+              });
+            }
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            document.body.style.cursor = 'pointer';
+          }}
+          onPointerOut={(e) => {
+            e.stopPropagation();
+            document.body.style.cursor = 'auto';
+          }}
         >
           <sphereGeometry args={[0.08, 8, 8]} />
           <meshStandardMaterial 
