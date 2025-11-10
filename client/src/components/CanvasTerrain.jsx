@@ -170,7 +170,18 @@ function CanvasTerrain({
   }, [dimensions, orientation, echelle, onPlanComplete]);
   
   const telechargerPlanJSON = useCallback(() => {
-    if (!fabricCanvasRef.current) return;
+    console.log('🔧 DEBUG telechargerPlanJSON appelé');
+    console.log('  - Canvas:', fabricCanvasRef.current ? 'OUI' : 'NON');
+    console.log('  - Dimensions:', dimensions);
+    console.log('  - Orientation:', orientation);
+    console.log('  - Échelle:', echelle);
+    
+    if (!fabricCanvasRef.current) {
+      console.error('❌ Canvas non disponible pour l\'export');
+      alert('❌ Erreur: Canvas non disponible');
+      return;
+    }
+    
     telechargerPlanJSONUtils(fabricCanvasRef.current, dimensions, orientation, echelle);
   }, [dimensions, orientation, echelle]);
   
