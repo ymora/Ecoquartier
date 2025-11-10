@@ -76,7 +76,16 @@ import { useTimelineSync } from '../hooks/useTimelineSync';
 import './CanvasTerrain.css';
 import { canvasOperations } from '../utils/canvas/canvasOperations';
 
-function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientationChange, onPlanComplete }) {
+function CanvasTerrain({ 
+  dimensions, 
+  orientation, 
+  onDimensionsChange, 
+  onOrientationChange, 
+  onPlanComplete,
+  anneeProjection = 0,
+  heureJournee = 90,
+  saison = 'ete'
+}) {
   // ========== REFS ==========
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
@@ -93,10 +102,8 @@ function CanvasTerrain({ dimensions, orientation, onDimensionsChange, onOrientat
   const [imageFondChargee, setImageFondChargee] = useState(false);
   const [opaciteImage, setOpaciteImage] = useState(0.8);
   const [solTransparent, setSolTransparent] = useState(false);
-  const [anneeProjection, setAnneeProjection] = useState(0);
-  const [saison, setSaison] = useState('ete');
+  // ✅ anneeProjection, heureJournee et saison sont maintenant des props (gérées par App-clean.jsx)
   const [ongletActif, setOngletActif] = useState(null); // ✅ Pour forcer l'ouverture de l'onglet Config depuis 3D
-  const [heureJournee, setHeureJournee] = useState(90); // Angle de 0° (matin) à 180° (soir), 90° = midi
   const [mode3D, setMode3D] = useState(false);
   const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D
   const syncTimerRef = useRef(null); // Timer pour throttle de la sync
