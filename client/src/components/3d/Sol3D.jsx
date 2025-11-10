@@ -191,17 +191,17 @@ function Sol3D({
         />
       </mesh>
       
-      {/* ✅ Nœuds d'élévation visibles en 3D */}
+      {/* ✅ Nœuds d'élévation visibles en 3D (petits repères discrets) */}
       {noeuds3D.map((noeud, idx) => (
         <mesh 
           key={idx}
           position={noeud.position}
         >
-          <sphereGeometry args={[0.15, 8, 8]} />
+          <sphereGeometry args={[0.08, 8, 8]} />
           <meshStandardMaterial 
             color={noeud.elevation === 0 ? '#2196f3' : (noeud.elevation > 0 ? '#4caf50' : '#f44336')}
             emissive={noeud.elevation === 0 ? '#1565c0' : (noeud.elevation > 0 ? '#2e7d32' : '#c62828')}
-            emissiveIntensity={0.3}
+            emissiveIntensity={0.4}
           />
         </mesh>
       ))}
