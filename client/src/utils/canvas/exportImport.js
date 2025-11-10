@@ -421,15 +421,20 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         
         canvasOperations.ajouter(canvas, img);
         
-        // Ordre de profondeur correct: image fond (tout derrière) -> grille -> objets
-        const allObjects = canvas.getObjects();
-        const gridLines = allObjects.filter(o => o.isGridLine);
+        // Ordre de profondeur correct: image fond (index 0) -> grille (index 1+) -> objets
+        console.log('🔧 Avant tri z-order, objets sur canvas:', canvas.getObjects().length);
         
-        // 1. Envoyer d'abord les lignes de grille au fond
-        gridLines.forEach(line => canvas.sendObjectToBack(line));
-        
-        // 2. Puis envoyer l'image encore plus au fond (derrière la grille)
+        // 1. Envoyer l'image tout au fond (index 0)
         canvas.sendObjectToBack(img);
+        console.log('🔧 Image envoyée au fond, son index:', canvas.getObjects().indexOf(img));
+        
+        // 2. La grille reste où elle est (au-dessus de l'image)
+        // Ne PAS toucher à la grille, elle est déjà au bon endroit
+        
+        console.log('🔧 Après tri, ordre des objets:');
+        canvas.getObjects().slice(0, 5).forEach((obj, idx) => {
+          console.log(`  ${idx}: ${obj.isImageFond ? 'IMAGE FOND' : obj.isGridLine ? 'GRILLE' : obj.customType || 'autre'}`);
+        });
         
         imageFondRef.current = img;
         setImageFondChargee(true);
