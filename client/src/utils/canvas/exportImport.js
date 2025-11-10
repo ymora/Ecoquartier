@@ -380,18 +380,18 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         return;
       }
       
-      // Utiliser directement la data URL du FileReader
-      fabric.Image.fromURL(imgUrl, (img) => {
+      // Fabric.js v6 utilise des Promises (syntaxe moderne)
+      fabric.Image.fromURL(imgUrl).then((img) => {
         console.log('🖼️ Image Fabric chargée avec succès!', img);
         if (!img) {
           console.error('❌ Image est null après chargement!');
           alert('❌ Erreur: Impossible de charger l\'image');
           return;
         }
-          if (!canvas) {
-            console.error('❌ Canvas non disponible');
-            return;
-          }
+        if (!canvas) {
+          console.error('❌ Canvas non disponible');
+          return;
+        }
         
         if (imageFondRef.current) {
           canvasOperations.supprimer(canvas, imageFondRef.current);
@@ -504,6 +504,9 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         });
         
         logger.info('ImageFond', `✅ Image chargée (${img.width}x${img.height}px, échelle: ${scale.toFixed(2)}, opacité: ${opaciteImage})`);
+      }).catch((error) => {
+        console.error('❌ Erreur Fabric.js lors du chargement de l\'image:', error);
+        alert(`❌ Erreur lors du chargement de l'image: ${error.message}`);
       });
     };
     reader.readAsDataURL(file);
