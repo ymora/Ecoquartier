@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
+import { ajouterTerrainAuCanvas } from '../utils/canvas/terrainUtils';
 
 /**
  * Hook pour initialiser le canvas Fabric.js
@@ -11,7 +12,9 @@ export const useCanvasInit = ({
   fabricCanvasRef,
   ajouterGrille,
   ajouterBoussole,
-  ajouterIndicateurSud
+  ajouterIndicateurSud,
+  dimensions,
+  echelle
 }) => {
   // Refs pour le pan (persistent entre renders)
   const isPanningRef = useRef(false);
@@ -138,6 +141,10 @@ export const useCanvasInit = ({
     ajouterGrille(canvas);
     ajouterBoussole(canvas);
     ajouterIndicateurSud(canvas);
+    
+    // ✅ Ajouter le terrain avec maillage sélectionnable pour régler les niveaux
+    ajouterTerrainAuCanvas(canvas, echelle, dimensions);
+    logger.info('Canvas', '✅ Terrain avec maillage ajouté');
 
     // ✅ CHARGEMENT DU PLAN : Uniquement au premier chargement
     // Ne JAMAIS recharger après (sinon perte des modifications utilisateur)

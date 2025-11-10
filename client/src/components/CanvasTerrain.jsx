@@ -468,7 +468,9 @@ function CanvasTerrain({
     fabricCanvasRef,
     ajouterGrille,
     ajouterBoussole,
-    ajouterIndicateurSud
+    ajouterIndicateurSud,
+    dimensions,
+    echelle
   });
 
   // ========== CENTRAGE AUTOMATIQUE AU DÉMARRAGE ==========
