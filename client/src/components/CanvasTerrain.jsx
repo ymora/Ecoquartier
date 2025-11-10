@@ -77,8 +77,8 @@ import './CanvasTerrain.css';
 import { canvasOperations } from '../utils/canvas/canvasOperations';
 
 function CanvasTerrain({ 
-  dimensions, 
-  orientation, 
+  dimensions: dimensionsProp, 
+  orientation: orientationProp, 
   onDimensionsChange, 
   onOrientationChange, 
   onPlanComplete,
@@ -86,6 +86,15 @@ function CanvasTerrain({
   heureJournee = 90,
   saison = 'ete'
 }) {
+  // ✅ Si dimensions/orientation ne sont pas passées en props, utiliser des states locaux
+  const [dimensionsLocal, setDimensionsLocal] = useState({ largeur: 30, hauteur: 30 });
+  const [orientationLocal, setOrientationLocal] = useState('nord-haut');
+  
+  const dimensions = dimensionsProp || dimensionsLocal;
+  const orientation = orientationProp || orientationLocal;
+  
+  const handleDimensionsChange = onDimensionsChange || setDimensionsLocal;
+  const handleOrientationChange = onOrientationChange || setOrientationLocal;
   // ========== REFS ==========
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
@@ -235,7 +244,7 @@ function CanvasTerrain({
   }, [echelle]);
   
   const chargerImageFond = () => {
-    chargerImageUtils(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille);
+    chargerImageUtils(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille, dimensions, echelle);
   };
   
   const ajusterOpaciteImage = (nouvelleOpacite) => {
@@ -473,7 +482,7 @@ function CanvasTerrain({
         logger.info('Canvas', '🎯 Vue centrée automatiquement sur le centre');
         
         // Charger le plan d'implantation par défaut (pour exemple)
-        chargerPlanImplantationParDefaut(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee);
+        chargerPlanImplantationParDefaut(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, dimensions, echelle);
         logger.info('Canvas', '🖼️ Plan d\'implantation par défaut chargé');
       }, 800); // 800ms pour laisser le canvas se stabiliser
       

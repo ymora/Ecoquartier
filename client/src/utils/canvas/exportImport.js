@@ -353,7 +353,7 @@ export const exporterPlan = (canvas, dimensions, orientation, echelle, onPlanCom
 /**
  * Charger une image de fond depuis une URL ou un fichier
  */
-const chargerImageDepuisURL = async (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, imageUrl) => {
+const chargerImageDepuisURL = async (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, imageUrl, dimensions, echelle) => {
   console.log('🔍 chargerImageDepuisURL:', imageUrl);
   
   const canvas = fabricCanvasRef.current;
@@ -377,14 +377,25 @@ const chargerImageDepuisURL = async (fabricCanvasRef, imageFondRef, opaciteImage
     // Le terrain est TOUJOURS centré à 0,0 (avec originX/Y: 'center')
     const centreTerrain = { x: 0, y: 0 };
     
-    const scale = Math.min(
-      canvas.width / img.width,
-      canvas.height / img.height
-    );
+    // ✅ ÉCHELLE RÉELLE : L'image doit correspondre aux dimensions du TERRAIN (en mètres)
+    // Terrain : dimensions.largeur × dimensions.hauteur (mètres)
+    // Taille en pixels : (dimensions.largeur × echelle) × (dimensions.hauteur × echelle)
+    const tailleTerrainPxLargeur = dimensions.largeur * echelle;
+    const tailleTerrainPxHauteur = dimensions.hauteur * echelle;
+    
+    const scaleX = tailleTerrainPxLargeur / img.width;
+    const scaleY = tailleTerrainPxHauteur / img.height;
+    
+    console.log('📏 ÉCHELLE RÉELLE (même qu\'en 3D):');
+    console.log('  - Terrain réel:', dimensions.largeur, 'm ×', dimensions.hauteur, 'm');
+    console.log('  - Terrain en pixels:', tailleTerrainPxLargeur, 'px ×', tailleTerrainPxHauteur, 'px');
+    console.log('  - Image originale:', img.width, 'px ×', img.height, 'px');
+    console.log('  - Scale calculé:', { x: scaleX, y: scaleY });
     
     console.log('📐 Configuration de l\'image:', {
       dimensions: { width: img.width, height: img.height },
-      scale: scale,
+      scaleX: scaleX,
+      scaleY: scaleY,
       position: centreTerrain,
       opacity: opaciteImage
     });
@@ -392,8 +403,8 @@ const chargerImageDepuisURL = async (fabricCanvasRef, imageFondRef, opaciteImage
     img.set({
       left: centreTerrain.x,
       top: centreTerrain.y,
-      scaleX: scale,
-      scaleY: scale,
+      scaleX: scaleX,
+      scaleY: scaleY,
       opacity: opaciteImage,
       selectable: true,
       hasControls: true,
@@ -601,13 +612,13 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
 /**
  * Charger le plan d'implantation par défaut au démarrage
  */
-export const chargerPlanImplantationParDefaut = async (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee) => {
+export const chargerPlanImplantationParDefaut = async (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, dimensions, echelle) => {
   console.log('🏗️ Chargement du plan d\'implantation par défaut...');
   
   // Plan d'implantation d'exemple pour les nouveaux utilisateurs
   const imageParDefaut = '/images/plan-implantation-defaut.jpg';
   
-  await chargerImageDepuisURL(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, imageParDefaut);
+  await chargerImageDepuisURL(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, imageParDefaut, dimensions, echelle);
 };
 
 /**
