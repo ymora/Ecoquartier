@@ -26,6 +26,11 @@ export default function AppClean() {
   const [logViewerOpen, setLogViewerOpen] = useState(false);
   const [arbresExpanded, setArbresExpanded] = useState(true);
   const [arbustesExpanded, setArbustesExpanded] = useState(true);
+  
+  // États pour la timeline du planificateur
+  const [anneeProjection, setAnneeProjection] = useState(0);
+  const [heureJournee, setHeureJournee] = useState(90);
+  const [saison, setSaison] = useState('ete');
 
   // Appliquer le thème au chargement et aux changements
   if (typeof document !== 'undefined') {
@@ -183,10 +188,65 @@ export default function AppClean() {
 
           {mode === 'planner' && (
             <Suspense fallback={<div className="loading">Chargement du planificateur...</div>}>
-              <CanvasTerrain />
+              <CanvasTerrain
+                anneeProjection={anneeProjection}
+                heureJournee={heureJournee}
+                saison={saison}
+              />
             </Suspense>
           )}
         </main>
+
+        {/* Timeline en bas pour le planificateur */}
+        {mode === 'planner' && (
+          <div className="timeline-bottom">
+            <div className="timeline-control">
+              <label>📅 Croissance</label>
+              <input
+                type="range"
+                min="0"
+                max="20"
+                value={anneeProjection}
+                onChange={(e) => setAnneeProjection(Number(e.target.value))}
+              />
+              <span className="timeline-value">{anneeProjection} ans</span>
+            </div>
+
+            <div className="timeline-control">
+              <label>🕐 Heure</label>
+              <input
+                type="range"
+                min="0"
+                max="180"
+                step="10"
+                value={heureJournee}
+                onChange={(e) => setHeureJournee(Number(e.target.value))}
+              />
+              <span className="timeline-value">{Math.floor(heureJournee / 15) + 6}h</span>
+            </div>
+
+            <div className="timeline-control">
+              <label>🌸 Saison</label>
+              <div className="season-buttons">
+                {[
+                  { id: 'printemps', icon: '🌸' },
+                  { id: 'ete', icon: '☀️' },
+                  { id: 'automne', icon: '🍂' },
+                  { id: 'hiver', icon: '❄️' }
+                ].map(s => (
+                  <button
+                    key={s.id}
+                    className={`season-btn ${saison === s.id ? 'active' : ''}`}
+                    onClick={() => setSaison(s.id)}
+                    title={s.id.charAt(0).toUpperCase() + s.id.slice(1)}
+                  >
+                    {s.icon}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Log Viewer */}
