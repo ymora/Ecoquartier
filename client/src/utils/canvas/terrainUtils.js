@@ -299,10 +299,27 @@ export const creerObjetTerrain = (echelle, dimensions) => {
  * @param {number} increment - Incrément d'élévation (ex: +0.1m ou -0.1m)
  */
 export const modifierElevationNoeudsSelectionnes = (terrainGroup, increment) => {
-  if (!terrainGroup || !terrainGroup.noeudsSelectionnes || terrainGroup.noeudsSelectionnes.length === 0) {
+  console.log('🔧 modifierElevationNoeudsSelectionnes appelée', { terrainGroup, increment });
+  
+  if (!terrainGroup) {
+    console.error('❌ terrainGroup est null/undefined');
+    logger.warn('Terrain', 'terrainGroup non fourni');
+    return;
+  }
+  
+  if (!terrainGroup.noeudsSelectionnes) {
+    console.error('❌ terrainGroup.noeudsSelectionnes est undefined');
+    logger.warn('Terrain', 'noeudsSelectionnes non initialisé');
+    return;
+  }
+  
+  if (terrainGroup.noeudsSelectionnes.length === 0) {
+    console.warn('⚠️ Aucun nœud sélectionné');
     logger.warn('Terrain', 'Aucun nœud sélectionné');
     return;
   }
+  
+  console.log('✅ Modification de', terrainGroup.noeudsSelectionnes.length, 'nœud(s)');
   
   const maillageElevation = terrainGroup.maillageElevation;
   
@@ -333,14 +350,20 @@ export const modifierElevationNoeudsSelectionnes = (terrainGroup, increment) => 
   // ✅ CRITIQUE : Créer une NOUVELLE copie du tableau pour forcer React à détecter le changement
   terrainGroup.maillageElevation = maillageElevation.map(row => [...row]);
   
+  console.log('🎨 Mise à jour du canvas et synchronisation 3D...');
+  
   // Synchroniser la 3D et forcer mise à jour du panneau Config
   if (terrainGroup.canvas) {
     terrainGroup.canvas.renderAll();
     terrainGroup.canvas.fire('object:modified', { target: terrainGroup });
     terrainGroup.canvas.fire('selection:updated', { selected: [terrainGroup] }); // ✅ Force React à se mettre à jour
+    console.log('✅ Canvas mis à jour et événements déclenchés');
+  } else {
+    console.error('❌ terrainGroup.canvas est undefined!');
   }
   
   logger.info('Terrain', `✅ ${terrainGroup.noeudsSelectionnes.length} nœud(s) modifié(s) de ${increment > 0 ? '+' : ''}${increment.toFixed(2)}m`);
+  console.log('✅ Modification terminée avec succès');
 };
 
 /**
