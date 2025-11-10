@@ -8,41 +8,41 @@
   background: var(--bg-primary);
 }
 
-/* === BOUTON TOGGLE 2D/3D MODERNE === */
+/* === BOUTON TOGGLE 2D/3D COMPACT === */
 .canvas-view-toggle {
   position: absolute;
-  top: var(--space-4, 16px);
-  right: var(--space-4, 16px);
+  top: var(--space-3, 12px);
+  right: var(--space-3, 12px);
   z-index: 1000;
   
   display: flex;
-  gap: var(--space-2, 8px);
+  gap: 0;
   background: var(--bg-secondary, #18181b);
-  padding: var(--space-2, 8px);
-  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-1, 4px);
+  border-radius: var(--radius-md, 8px);
   border: 1px solid var(--border-default, #27272a);
-  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.1));
 }
 
 .view-btn {
   display: flex;
   align-items: center;
-  gap: var(--space-2, 8px);
-  padding: var(--space-3, 12px) var(--space-5, 20px);
+  gap: var(--space-1, 4px);
+  padding: var(--space-2, 8px) var(--space-3, 12px);
   
   background: transparent;
   border: none;
-  border-radius: var(--radius-md, 8px);
+  border-radius: var(--radius-sm, 6px);
   
   color: var(--text-secondary, #a1a1aa);
-  font-size: var(--text-base, 1rem);
-  font-weight: var(--font-semibold, 600);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
   font-family: var(--font-sans, -apple-system, sans-serif);
   
   cursor: pointer;
   transition: all var(--transition-base, 0.2s);
   
-  min-width: 100px;
+  min-width: 70px;
   justify-content: center;
 }
 
@@ -54,11 +54,11 @@
 .view-btn.active {
   background: var(--accent, #10b981);
   color: white;
-  box-shadow: 0 0 0 3px var(--accent-muted, rgba(16, 185, 129, 0.1));
+  box-shadow: 0 0 0 2px var(--accent-muted, rgba(16, 185, 129, 0.1));
 }
 
 .view-btn svg {
-  font-size: 18px;
+  font-size: 14px;
 }
 
 /* Modal composition du sol - déplaçable */

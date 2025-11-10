@@ -532,38 +532,63 @@
   flex: 1;
 }
 
-/* === TIMELINE BOTTOM === */
+/* === TIMELINE BOTTOM - Visible au-dessus de la barre Windows === */
 .timeline-bottom {
   position: fixed;
-  bottom: 0;
+  bottom: 48px; /* Décalage pour la barre Windows */
   left: 0;
   right: 0;
-  height: 80px;
+  height: 72px;
   background: var(--bg-secondary);
-  border-top: 1px solid var(--border-default);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-6);
-  padding: var(--space-4) var(--space-8);
+  gap: var(--space-8);
+  padding: var(--space-3) var(--space-8);
   align-items: center;
   z-index: 100;
 }
 
+/* Alternative : Timeline en haut du canvas si préféré */
+@media (max-height: 800px) {
+  .timeline-bottom {
+    bottom: 8px; /* Moins de décalage sur petits écrans */
+    height: 64px;
+    padding: var(--space-2) var(--space-6);
+  }
+  
+  .timeline-control label {
+    min-width: 70px;
+    font-size: var(--text-xs);
+  }
+  
+  .season-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+}
+
 .timeline-control {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .timeline-control label {
   font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
   color: var(--text-primary);
+  min-width: 90px;
+  flex-shrink: 0;
 }
 
 .timeline-control input[type="range"] {
-  width: 100%;
-  height: 6px;
+  flex: 1;
+  height: 8px;
   background: var(--bg-tertiary);
   border-radius: var(--radius-full);
   outline: none;
@@ -571,49 +596,68 @@
   cursor: pointer;
 }
 
+.timeline-control input[type="range"]::-webkit-slider-track {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+}
+
 .timeline-control input[type="range"]::-webkit-slider-thumb {
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background: var(--accent);
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: transform var(--transition-base);
+  transition: all var(--transition-base);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .timeline-control input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px var(--accent-muted);
+}
+
+.timeline-control input[type="range"]::-moz-range-track {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
 }
 
 .timeline-control input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background: var(--accent);
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .timeline-value {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
   color: var(--accent);
+  min-width: 60px;
   text-align: center;
+  padding: var(--space-1) var(--space-2);
+  background: var(--accent-muted);
+  border-radius: var(--radius-sm);
 }
 
 .season-buttons {
   display: flex;
   gap: var(--space-2);
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .season-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background: var(--bg-tertiary);
   border: 2px solid var(--border-default);
   border-radius: var(--radius-md);
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
   transition: all var(--transition-base);
   display: flex;
@@ -623,13 +667,16 @@
 
 .season-btn:hover {
   border-color: var(--border-hover);
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .season-btn.active {
   border-color: var(--accent);
-  background: var(--accent-muted);
-  transform: scale(1.1);
+  background: var(--accent);
+  color: white;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 0 3px var(--accent-muted);
 }
 
 /* === RESPONSIVE === */
