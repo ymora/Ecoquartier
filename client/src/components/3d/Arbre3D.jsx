@@ -280,11 +280,34 @@ function Arbre3D({
 
   return (
     <group ref={groupRef} position={positionAjustee} onClick={handleClick}>
-      {/* Racines */}
+      {/* Racines souterraines (cône inversé) */}
       <mesh position={[0, -arbreCalculs.profondeurRacinesActuelle / 2, 0]} castShadow>
         <primitive object={geometries.racines} />
         <primitive object={materials.racines} />
       </mesh>
+      
+      {/* Racines visibles qui sortent du sol (4 branches radiales) */}
+      {[0, 90, 180, 270].map((angle) => {
+        const rad = (angle * Math.PI) / 180;
+        const longueurRacine = arbreCalculs.envergureActuelle * 0.4;
+        const epaisseurRacine = arbreCalculs.rayonTroncBase * 0.5;
+        
+        return (
+          <mesh
+            key={angle}
+            position={[
+              Math.cos(rad) * longueurRacine * 0.3,
+              -0.05,
+              Math.sin(rad) * longueurRacine * 0.3
+            ]}
+            rotation={[0, rad, Math.PI / 12]}
+            castShadow
+          >
+            <cylinderGeometry args={[epaisseurRacine * 0.6, epaisseurRacine, longueurRacine, 6]} />
+            <primitive object={materials.racines} />
+          </mesh>
+        );
+      })}
       
       {/* Tronc */}
       <mesh position={[0, arbreCalculs.hauteurActuelle * 0.35, 0]} castShadow receiveShadow>

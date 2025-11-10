@@ -69,7 +69,9 @@
 }
 
 .plant-header {
-  min-width: 250px;
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
   vertical-align: top;
 }
 
@@ -131,7 +133,9 @@
 }
 
 .comparison-cell {
-  min-width: 250px;
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
 }
 
 /* === IMAGES DANS LE TABLEAU === */
@@ -285,7 +289,9 @@
   
   .plant-header,
   .comparison-cell {
-    min-width: 200px;
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
   }
   
   .comparison-image-container {
@@ -302,7 +308,9 @@
   
   .plant-header,
   .comparison-cell {
-    min-width: 180px;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
   }
   
   .comparison-image-container {

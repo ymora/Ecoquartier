@@ -96,6 +96,13 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
   // Calculer l'envergure actuelle selon la progression
   const envergureActuelle = envergure * scaleProgression;
   
+  // Matériau pour les racines
+  const racinesMaterial = useMemo(() => new THREE.MeshStandardMaterial({
+    color: '#5d4037',
+    roughness: 0.95,
+    metalness: 0.1
+  }), []);
+  
   return (
     <group ref={groupRef}>
       <primitive 
@@ -105,6 +112,29 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
         rotation={rotation}
         onClick={onClick}
       />
+      
+      {/* Racines visibles qui sortent du sol (4 branches radiales) */}
+      {[0, 90, 180, 270].map((angle) => {
+        const rad = (angle * Math.PI) / 180;
+        const longueurRacine = envergureActuelle * 0.4;
+        const epaisseurRacine = finalScale * 0.3;
+        
+        return (
+          <mesh
+            key={angle}
+            position={[
+              position[0] + Math.cos(rad) * longueurRacine * 0.3,
+              position[1] - 0.05,
+              position[2] + Math.sin(rad) * longueurRacine * 0.3
+            ]}
+            rotation={[0, rad, Math.PI / 12]}
+            castShadow
+          >
+            <cylinderGeometry args={[epaisseurRacine * 0.6, epaisseurRacine, longueurRacine, 6]} />
+            <primitive object={racinesMaterial} />
+          </mesh>
+        );
+      })}
       
       {/* HALO PULSANT ANIMÉ - Uniquement si validation NON-OK */}
       {validationStatus !== 'ok' && (
