@@ -55,13 +55,12 @@ function ImageFond3D({
   
   if (!texture) return null;
   
-  // Positionner l'image au centre du terrain, légèrement au-dessus du sol (pour être visible)
-  const centreX = offsetX + largeur / 2;
-  const centreZ = offsetZ + hauteur / 2;
+  // ✅ Positionner l'image au centre absolu (0, 0, 0) comme la croix rouge
+  // Le terrain 3D est centré sur (0, 0), donc l'image aussi
   
   return (
     <mesh
-      position={[centreX, 0.05, centreZ]} // Légèrement au-dessus du sol (5cm)
+      position={[0, 0.04, 0]} // Centre absolu, juste sous le sol (4cm) pour ne pas masquer la croix
       rotation={[-Math.PI / 2, 0, 0]} // Rotation pour être à plat
       receiveShadow
     >
