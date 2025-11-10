@@ -83,12 +83,16 @@ const estMaillageNonPlat = (maillage) => {
  * Télécharger le plan actuel en fichier JSON (format compatible avec planLoader)
  */
 export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) => {
+  console.log('🔧 DEBUG telechargerPlanJSON:', { canvas, dimensions, orientation, echelle });
+  
   if (!canvas) {
     logger.error('Export', 'Canvas non disponible');
+    alert('❌ Erreur: Canvas non disponible pour l\'export');
     return;
   }
   
   const objets = canvas.getObjects();
+  console.log('🔧 DEBUG objets sur le canvas:', objets.length);
   
   // ✅ Convertir au format compatible avec planLoader.js
   const planJSON = {
@@ -305,18 +309,22 @@ export const telechargerPlanJSON = (canvas, dimensions, orientation, echelle) =>
   
   // Créer un blob JSON
   const blob = new Blob([jsonString], { type: 'application/json' });
+  console.log('🔧 DEBUG blob créé:', blob.size, 'bytes');
   
   // Créer un lien de téléchargement
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = `plan-haies-${new Date().toISOString().slice(0, 10)}.json`;
+  console.log('🔧 DEBUG téléchargement:', a.download);
+  
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   
   logger.info('Export', `✅ Plan exporté : ${a.download} (${planJSON.objets.length} objets)`);
+  alert(`✅ Plan sauvegardé : ${a.download}\n${planJSON.objets.length} objets exportés`);
 };
 
 /**
@@ -413,15 +421,15 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         
         canvasOperations.ajouter(canvas, img);
         
-        // Ordre de profondeur: grille (tout derrière) -> image fond -> objets
+        // Ordre de profondeur correct: image fond (tout derrière) -> grille -> objets
         const allObjects = canvas.getObjects();
         const gridLines = allObjects.filter(o => o.isGridLine);
         
-        // Envoyer l'image tout au fond
-        canvas.sendObjectToBack(img);
-        
-        // Envoyer les lignes de grille encore plus au fond
+        // 1. Envoyer d'abord les lignes de grille au fond
         gridLines.forEach(line => canvas.sendObjectToBack(line));
+        
+        // 2. Puis envoyer l'image encore plus au fond (derrière la grille)
+        canvas.sendObjectToBack(img);
         
         imageFondRef.current = img;
         setImageFondChargee(true);
