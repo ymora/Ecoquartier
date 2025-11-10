@@ -1236,26 +1236,35 @@ function PanneauLateral({
                     {/* Messages de validation */}
                     {objetSelectionne.validationMessages && objetSelectionne.validationMessages.length > 0 && (
                       <div style={{ fontSize: '0.8rem' }}>
-                        {objetSelectionne.validationMessages.map((msg, index) => {
-                          // Identifier les types de problèmes
-                          const isRacines = msg.includes('Racines') || msg.includes('racines');
-                          const isFondations = msg.includes('🏠') || msg.includes('fondations');
-                          const isCanalisations = msg.includes('🚰') || msg.includes('canalisations');
-                          const isCritique = msg.includes('CRITIQUE') || msg.includes('ILLÉGAL');
-                          
-                          return (
-                            <div key={index} className={`info-box ${isCritique ? 'info-box-error' : 'info-box-warning'}`} style={{ 
-                              marginBottom: '0.3rem',
-                              padding: '0.3rem',
-                              fontSize: '0.8rem'
-                            }}>
-                              {isRacines && <span style={{ fontWeight: 'bold' }}>🌱 RACINES: </span>}
-                              {isFondations && <span style={{ fontWeight: 'bold' }}>🏠 FONDATIONS: </span>}
-                              {isCanalisations && <span style={{ fontWeight: 'bold' }}>🚰 CANALISATIONS: </span>}
-                              {msg}
-                            </div>
-                          );
-                        })}
+                        {objetSelectionne.validationMessages
+                          .filter(msg => {
+                            // Filtrer le message "Position conforme" si déjà affiché dans le titre
+                            if (objetSelectionne.validationStatus === 'ok' && 
+                                (msg.includes('Position conforme') || msg.includes('conforme à toutes les règles'))) {
+                              return false;
+                            }
+                            return true;
+                          })
+                          .map((msg, index) => {
+                            // Identifier les types de problèmes
+                            const isRacines = msg.includes('Racines') || msg.includes('racines');
+                            const isFondations = msg.includes('🏠') || msg.includes('fondations');
+                            const isCanalisations = msg.includes('🚰') || msg.includes('canalisations');
+                            const isCritique = msg.includes('CRITIQUE') || msg.includes('ILLÉGAL');
+                            
+                            return (
+                              <div key={index} className={`info-box ${isCritique ? 'info-box-error' : 'info-box-warning'}`} style={{ 
+                                marginBottom: '0.3rem',
+                                padding: '0.3rem',
+                                fontSize: '0.8rem'
+                              }}>
+                                {isRacines && <span style={{ fontWeight: 'bold' }}>🌱 RACINES: </span>}
+                                {isFondations && <span style={{ fontWeight: 'bold' }}>🏠 FONDATIONS: </span>}
+                                {isCanalisations && <span style={{ fontWeight: 'bold' }}>🚰 CANALISATIONS: </span>}
+                                {msg}
+                              </div>
+                            );
+                          })}
                       </div>
                     )}
                   </div>
