@@ -207,43 +207,10 @@ export const creerObjetTerrain = (echelle, dimensions) => {
       });
       
       elementsMaillage.push(noeud);
-      
-      // Label d'élévation à côté du nœud
-      const labelElev = new fabric.Text(elevation.toFixed(2) + 'm', {
-        left: x + 10,
-        top: y - 10,
-        fontSize: 10,
-        fontWeight: 'bold',
-        fill: elevation === 0 ? '#1976d2' : (elevation > 0 ? '#2e7d32' : '#c62828'),
-        originX: 'left',
-        originY: 'bottom',
-        selectable: false,
-        evented: false,
-        noeudI: i,
-        noeudJ: j,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        padding: 2,
-        isLabelMaillage: true // ✅ Pour filtrer lors de l'export JSON
-      });
-      elementsMaillage.push(labelElev);
     }
   }
   
-  // Ajouter un label pour identifier le terrain
-  const label = new fabric.Text('TERRAIN', {
-    left: 0,
-    top: -hauteur / 4,
-    fontSize: Math.min(16, hauteur / 8),
-    fill: '#1976d2',
-    fontWeight: 'bold',
-    originX: 'center',
-    originY: 'center',
-    selectable: false,
-    evented: false,
-    isLabelMaillage: true // ✅ Pour filtrer lors de l'export JSON
-  });
-  
-  elementsMaillage.push(label);
+  // Plus de label "TERRAIN" pour alléger l'affichage
   
   // ✅ Grouper la zone de sélection invisible + les éléments du maillage visibles
   const terrainGroup = new fabric.Group([zoneSelection, ...elementsMaillage], {
