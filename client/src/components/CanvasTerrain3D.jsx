@@ -513,13 +513,69 @@ function CanvasTerrain3D({
     if (canvas2D && contextMenuRef2D) {
       const objets2D = canvas2D.getObjects();
       
-      // ✅ GESTION SPÉCIALE POUR LE TERRAIN
-      if (objet.customType === 'sol') {
+      // ✅ GESTION SPÉCIALE POUR LE TERRAIN (complet ou nœud individuel)
+      if (objet.customType === 'sol' || objet.customType === 'sol-noeud') {
         const terrain2D = objets2D.find(obj => obj.customType === 'sol');
         if (terrain2D) {
+          // ✅ Pour un nœud, on le sélectionne dans le terrain 2D
+          if (objet.customType === 'sol-noeud') {
+            // Initialiser noeudsSelectionnes si nécessaire
+            if (!terrain2D.noeudsSelectionnes) {
+              terrain2D.noeudsSelectionnes = [];
+            }
+            
+            // Trouver le nœud 2D correspondant dans les objets du groupe terrain
+            const items = terrain2D.getObjects();
+            const noeudKey = `${objet.noeudI},${objet.noeudJ}`;
+            const noeud2D = items.find(item => 
+              item.customType === 'noeud-elevation' && 
+              item.i === objet.noeudI && 
+              item.j === objet.noeudJ
+            );
+            
+            if (noeud2D) {
+              // Désélectionner tous les autres nœuds d'abord
+              terrain2D.noeudsSelectionnes.forEach(({ noeud }) => {
+                noeud.isSelected = false;
+                noeud.set({
+                  stroke: '#ffffff',
+                  strokeWidth: 2,
+                  radius: 6
+                });
+              });
+              
+              // Sélectionner le nouveau nœud
+              noeud2D.isSelected = true;
+              noeud2D.set({
+                stroke: '#ffc107',
+                strokeWidth: 3,
+                radius: 8
+              });
+              
+              // Mettre à jour la liste des nœuds sélectionnés
+              terrain2D.noeudsSelectionnes = [{ i: objet.noeudI, j: objet.noeudJ, key: noeudKey, noeud: noeud2D }];
+              
+              logger.info('3D', `✅ Nœud [${objet.noeudI},${objet.noeudJ}] sélectionné depuis la vue 3D`);
+            }
+          } else {
+            // Si on clique sur le terrain complet, désélectionner tous les nœuds
+            if (terrain2D.noeudsSelectionnes) {
+              terrain2D.noeudsSelectionnes.forEach(({ noeud }) => {
+                noeud.isSelected = false;
+                noeud.set({
+                  stroke: '#ffffff',
+                  strokeWidth: 2,
+                  radius: 6
+                });
+              });
+              terrain2D.noeudsSelectionnes = [];
+            }
+          }
+          
           // ✅ Sélectionner le terrain 2D
           canvas2D.setActiveObject(terrain2D);
           canvas2D.renderAll();
+          canvas2D.fire('selection:updated', { selected: [terrain2D] });
           logger.info('3D', '✅ Terrain sélectionné en 2D depuis la vue 3D');
         }
       } else {
