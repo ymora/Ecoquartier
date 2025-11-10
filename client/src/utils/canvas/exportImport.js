@@ -399,11 +399,18 @@ export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, se
         
         // Trouver le centre du terrain (croix rouge)
         const terrainObj = canvas.getObjects().find(obj => obj.customType === 'sol');
-        const centreTerrain = terrainObj ? 
-          { x: terrainObj.left, y: terrainObj.top } : 
-          { x: canvas.width / 2, y: canvas.height / 2 };
+        console.log('🔍 Terrain trouvé:', terrainObj ? 'OUI' : 'NON');
+        if (terrainObj) {
+          console.log('  - Position terrain:', { left: terrainObj.left, top: terrainObj.top });
+          console.log('  - Origin terrain:', { x: terrainObj.originX, y: terrainObj.originY });
+          console.log('  - Dimensions terrain:', { width: terrainObj.width, height: terrainObj.height });
+        }
         
-        console.log('🎯 Centre du terrain (croix rouge):', centreTerrain);
+        // Le terrain est TOUJOURS centré à 0,0 (avec originX/Y: 'center')
+        // Donc le centre absolu du terrain sur le canvas est à 0,0
+        const centreTerrain = { x: 0, y: 0 };
+        
+        console.log('🎯 Centre du terrain utilisé pour l\'image:', centreTerrain);
         
         const scale = Math.min(
           canvas.width / img.width,
