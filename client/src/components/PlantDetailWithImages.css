@@ -1,5 +1,79 @@
 /* === PLANT DETAIL WITH IMAGES === */
 
+/* === FILTRES PAR TYPE D'IMAGE === */
+.image-filters {
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.filters-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.filters-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.image-filters .filter-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.image-filters .filter-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.image-filters .filter-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.image-filters .filter-btn.active:hover {
+  background: var(--primary-dark);
+}
+
+.filter-label {
+  white-space: nowrap;
+}
+
+/* Responsive pour les filtres */
+@media (max-width: 768px) {
+  .filters-buttons {
+    gap: var(--space-1);
+  }
+  
+  .image-filters .filter-btn {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+  }
+  
+  .filter-label {
+    display: none; /* Masquer le texte sur mobile, garder seulement l'icône */
+  }
+}
+
 .image-gallery {
   margin-bottom: var(--space-6);
   border-radius: var(--radius-lg);

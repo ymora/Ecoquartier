@@ -148,7 +148,7 @@ export const creerObjetTerrain = (echelle, dimensions) => {
             terrainGroup.noeudsSelectionnes = [];
             
             this.set({ fill: '#ffc107' }); // Jaune
-            terrainGroup.noeudsSelectionnes.push({ i, j, key: noeudKey, noeud: this });
+          terrainGroup.noeudsSelectionnes.push({ i, j, key: noeudKey, noeud: this });
             logger.debug('Terrain', `✅ Nœud [${i},${j}] sélectionné (unique)`);
           }
         }
@@ -173,7 +173,7 @@ export const creerObjetTerrain = (echelle, dimensions) => {
       
       noeud.on('mouseout', function() {
         this.set({ opacity: 1 });
-        this.canvas?.renderAll();
+          this.canvas?.renderAll();
       });
       
       elementsMaillage.push(noeud);

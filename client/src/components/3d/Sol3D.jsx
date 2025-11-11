@@ -299,21 +299,21 @@ function Sol3D({
               </mesh>
             ) : (
               // ✅ Fallback : couche plate classique (si pas de relief)
-              <mesh 
-                position={[0, couche.positionY, 0]}
+          <mesh 
+            position={[0, couche.positionY, 0]}
                 raycast={() => null}
-              >
-                <boxGeometry args={[largeur, couche.profondeurM, hauteur]} />
-                <meshStandardMaterial 
-                  color={couche.couleur}
-                  transparent 
-                  opacity={transparent ? 0.25 - index * 0.05 : 0.85 - index * 0.1}
-                  roughness={0.95}
-                  metalness={index * 0.05}
-                  depthWrite={!transparent}
-                  side={2}
-                />
-              </mesh>
+          >
+            <boxGeometry args={[largeur, couche.profondeurM, hauteur]} />
+            <meshStandardMaterial 
+              color={couche.couleur}
+              transparent 
+              opacity={transparent ? 0.25 - index * 0.05 : 0.85 - index * 0.1}
+              roughness={0.95}
+              metalness={index * 0.05}
+              depthWrite={!transparent}
+              side={2}
+            />
+          </mesh>
             )}
           
           {/* Bordure visible entre les couches (sauf pour la dernière) - Masquée si transparent */}
@@ -351,7 +351,7 @@ function Sol3D({
               </mesh>
             </>
           )}
-          </group>
+        </group>
         );
       })}
       

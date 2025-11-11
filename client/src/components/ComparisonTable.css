@@ -194,24 +194,27 @@
 .comparison-image-container {
   position: relative;
   width: 100%;
-  height: 240px; /* ✅ Hauteur fixe augmentée pour cadres uniformes */
+  min-height: 240px; /* ✅ Hauteur minimale (peut augmenter avec miniatures) */
   border-radius: var(--radius-md);
   overflow: hidden;
-  cursor: pointer;
   background: var(--bg-tertiary); /* Fond si image pas chargée */
+  display: flex;
+  flex-direction: column;
 }
 
 /* ✅ Cadre fixe pour uniformiser les tailles */
 .image-frame {
+  position: relative;
   width: 100%;
-  height: 100%;
+  height: 240px; /* ✅ Hauteur fixe pour l'image elle-même */
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg-secondary); /* ✅ S'adapte au thème jour/nuit */
   border: 2px solid var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0; /* ✅ Coins arrondis seulement en haut */
   overflow: hidden;
+  cursor: pointer;
 }
 
 .comparison-image {
@@ -255,18 +258,22 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  background: rgba(0, 0, 0, 0.6);
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
   border: none;
   border-radius: var(--radius-full);
   color: white;
-  font-size: 14px;
+  font-size: 24px;
+  font-weight: bold;
   cursor: pointer;
   opacity: 0;
   transition: all var(--transition-base);
-  z-index: 2;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .comparison-image-container:hover .img-nav {
@@ -274,15 +281,15 @@
 }
 
 .img-nav:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: translateY(-50%) scale(1.1);
+  background: rgba(0, 0, 0, 0.9);
+  transform: translateY(-50%) scale(1.15);
 }
 
-.img-prev {
+.img-nav-left {
   left: var(--space-2);
 }
 
-.img-next {
+.img-nav-right {
   right: var(--space-2);
 }
 
@@ -291,7 +298,7 @@
   top: var(--space-2);
   right: var(--space-2);
   padding: var(--space-1) var(--space-2);
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
   border-radius: var(--radius-sm);
   color: white;
@@ -299,11 +306,61 @@
   font-weight: var(--font-medium);
   opacity: 0;
   transition: opacity var(--transition-base);
-  z-index: 2;
+  z-index: 3;
 }
 
 .comparison-image-container:hover .img-counter {
   opacity: 1;
+}
+
+/* === MINIATURES === */
+.img-thumbnails {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-default);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.img-thumbnails::-webkit-scrollbar {
+  height: 4px;
+}
+
+.img-thumbnails::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.img-thumbnails::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.img-thumbnail {
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  opacity: 0.6;
+}
+
+.img-thumbnail:hover {
+  opacity: 0.9;
+  transform: scale(1.1);
+  border-color: var(--primary);
+}
+
+.img-thumbnail.active {
+  opacity: 1;
+  border-color: var(--primary);
+  border-width: 3px;
+  box-shadow: 0 0 0 2px var(--primary-light);
 }
 
 /* === MODAL PLEIN ÉCRAN === */

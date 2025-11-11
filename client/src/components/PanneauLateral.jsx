@@ -457,16 +457,16 @@ function PanneauLateral({
   return (
     <div className="panneau-lateral">
       {/* Boutons de chargement - TOUJOURS VISIBLES - Thème unifié */}
-
+        
       {/* En-tête avec onglets */}
       <div className="tabs-unified">
-        <button 
+        <button
           className={`tab-unified ${ongletActif === 'outils' ? 'active' : ''}`}
           onClick={() => setOngletActif('outils')}
         >
           ⚙️ Outils
         </button>
-        <button 
+        <button
           className={`tab-unified ${ongletActif === 'config' ? 'active' : ''}`}
           onClick={() => setOngletActif('config')}
         >
@@ -498,8 +498,8 @@ function PanneauLateral({
               <div style={{ marginBottom: '1rem' }}>
                 <button
                   onClick={() => setSurPlanOuvert(!surPlanOuvert)}
-                  style={{
-                    width: '100%',
+          style={{
+            width: '100%',
                     padding: '0.6rem',
                     background: surPlanOuvert ? '#4caf50' : 'white',
                     color: surPlanOuvert ? 'white' : '#333',
@@ -508,15 +508,15 @@ function PanneauLateral({
                     cursor: 'pointer',
                     fontWeight: 'bold',
                     fontSize: '0.85rem',
-                    display: 'flex',
-                    alignItems: 'center',
+            display: 'flex',
+            alignItems: 'center',
                     justifyContent: 'space-between',
                     transition: 'all 0.2s'
-                  }}
+          }}
                 >
                   <span>📦 Sur le plan ({nbObjets})</span>
                   <span style={{ fontSize: '1rem' }}>{surPlanOuvert ? '▼' : '▶'}</span>
-                </button>
+        </button>
                 {surPlanOuvert && (
                   <div style={{ 
                     marginTop: '0.3rem',
@@ -555,24 +555,24 @@ function PanneauLateral({
                             onClick={() => {
                               canvas.setActiveObject(obj);
                               canvas.renderAll();
-                            }}
-                            onMouseEnter={(e) => {
+          }}
+          onMouseEnter={(e) => {
                               highlightHover(obj, canvas);
                               e.currentTarget.style.borderColor = '#4caf50';
                               e.currentTarget.style.background = '#f1f8e9';
-                            }}
-                            onMouseLeave={(e) => {
+          }}
+          onMouseLeave={(e) => {
                               unhighlightHover(obj, canvas);
                               e.currentTarget.style.borderColor = '#e0e0e0';
                               e.currentTarget.style.background = 'white';
-                            }}
+          }}
                             style={{
                               display: 'flex',
                               justifyContent: 'space-between',
                               alignItems: 'center',
                               padding: '0.5rem',
                               marginBottom: '0.2rem',
-                              background: 'white',
+            background: 'white',
                               borderRadius: '3px',
                               fontSize: '0.75rem',
                               border: '1px solid #e0e0e0',
@@ -583,36 +583,36 @@ function PanneauLateral({
                             <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
                               {icone} {nom}
                             </span>
-                            <button 
+            <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 canvasOperations.supprimer(canvas, obj);
                                 canvasOperations.rendre(canvas);
                                 onExporterPlan && onExporterPlan(canvas);
                               }}
-                              style={{
-                                background: '#f44336',
-                                color: 'white',
-                                border: 'none',
+              style={{
+                background: '#f44336',
+                color: 'white',
+                border: 'none',
                                 borderRadius: '3px',
                                 padding: '0.2rem 0.4rem',
-                                cursor: 'pointer',
+                cursor: 'pointer',
                                 fontSize: '0.7rem',
                                 transition: 'transform 0.2s'
-                              }}
+              }}
                               onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
                               onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                               title={`Supprimer ${nom}`}
-                            >
+            >
                               🗑️
-                            </button>
+            </button>
                           </div>
                         );
                       })}
                     </div>
-                  </div>
-                )}
-              </div>
+          </div>
+        )}
+      </div>
             );
           })()}
           

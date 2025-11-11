@@ -447,10 +447,10 @@ function CanvasTerrain({
         
         // Mettre à jour les dimensions si présentes
         if (planData.dimensions) {
-          setDimensions(planData.dimensions);
+          handleDimensionsChange(planData.dimensions);
         }
         if (planData.orientation !== undefined) {
-          setOrientation(planData.orientation);
+          handleOrientationChange(planData.orientation);
         }
         
         notifications.show('✅ Plan chargé avec succès', 'success');
@@ -461,7 +461,7 @@ function CanvasTerrain({
       }
     };
     input.click();
-  }, [echelle, setDimensions, setOrientation]);
+  }, [echelle, handleDimensionsChange, handleOrientationChange]);
   
   // Exposer les actions au composant parent
   useEffect(() => {

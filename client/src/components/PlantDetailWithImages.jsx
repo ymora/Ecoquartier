@@ -7,13 +7,77 @@ import './PlantDetailWithImages.css';
 export default function PlantDetailWithImages({ plant }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
+  const [typeImageActif, setTypeImageActif] = useState('toutes');
   
-  // Récupérer toutes les images de la plante
-  const images = plant.images || [];
+  // ✅ Obtenir les images filtrées par type
+  const getImagesParType = () => {
+    const toutes = plant.images || [];
+    if (toutes.length === 0) return [];
+    
+    if (typeImageActif === 'toutes') {
+      return toutes;
+    }
+    
+    // Filtrer par type
+    const motsClefs = {
+      'vue_generale': ['vue_generale', 'general', 'port', 'silhouette', 'ensemble', 'entier'],
+      'bourgeons': ['bourgeon', 'bud', 'printemps_debut'],
+      'fleurs': ['fleur', 'floraison', 'blossom', 'flower', 'inflorescence'],
+      'feuilles': ['feuille', 'feuillage', 'foliage', 'leaf'],
+      'fruits': ['fruit', 'baie', 'drupe', 'berry', 'fructification'],
+      'tronc': ['tronc', 'ecorce', 'bark', 'trunk', 'tige', 'rameau'],
+      'automne': ['automne', 'fall', 'autumn'],
+      'hiver': ['hiver', 'winter', 'neige']
+    };
+    
+    const motsRecherche = motsClefs[typeImageActif] || [];
+    return toutes.filter(img => 
+      motsRecherche.some(mot => img.toLowerCase().includes(mot))
+    );
+  };
+  
+  // Récupérer les images filtrées
+  const images = getImagesParType();
   const hasImages = images.length > 0;
+  
+  // Types de vues d'images
+  const typesVues = [
+    { id: 'toutes', label: 'Toutes', icon: '🖼️' },
+    { id: 'vue_generale', label: 'Vue générale', icon: '🌳' },
+    { id: 'bourgeons', label: 'Bourgeons', icon: '🌱' },
+    { id: 'fleurs', label: 'Fleurs', icon: '🌸' },
+    { id: 'feuilles', label: 'Feuilles', icon: '🍃' },
+    { id: 'fruits', label: 'Fruits', icon: '🫐' },
+    { id: 'tronc', label: 'Tronc/Écorce', icon: '🪵' },
+    { id: 'automne', label: 'Automne', icon: '🍁' },
+    { id: 'hiver', label: 'Hiver', icon: '❄️' }
+  ];
+  
+  // Réinitialiser l'index quand le filtre change
+  const handleTypeChange = (newType) => {
+    setTypeImageActif(newType);
+    setCurrentImageIndex(0);
+  };
 
   return (
     <div className="plant-detail-clean">
+      {/* ✅ Filtres par type d'image */}
+      <div className="image-filters">
+        <div className="filters-label">🖼️ Type de vue :</div>
+        <div className="filters-buttons">
+          {typesVues.map(type => (
+            <button
+              key={type.id}
+              onClick={() => handleTypeChange(type.id)}
+              className={`filter-btn ${typeImageActif === type.id ? 'active' : ''}`}
+              title={`Afficher les images : ${type.label}`}
+            >
+              {type.icon} <span className="filter-label">{type.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      
       {/* Galerie d'images - Toujours afficher pour garder l'alignement */}
       <div className="image-gallery">
         {hasImages ? (

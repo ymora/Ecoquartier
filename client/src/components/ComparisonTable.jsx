@@ -7,18 +7,21 @@ import './ComparisonTable.css';
 
 export default function ComparisonTable({ plants }) {
   const [fullscreenImage, setFullscreenImage] = useState(null);
-  const [typeImageActif, setTypeImageActif] = useState('toutes'); // 'toutes', 'loin', 'fleur', 'feuillage', 'fruit'
+  const [typeImageActif, setTypeImageActif] = useState('toutes');
+  
+  // ✅ Index de l'image actuelle pour chaque plante (par ID de plante)
+  const [currentImageIndexes, setCurrentImageIndexes] = useState({});
 
-  // ✅ Déterminer quelle image afficher pour chaque plante selon le filtre
-  const getImageParType = (plant) => {
+  // ✅ Obtenir TOUTES les images correspondant au type de filtre
+  const getImagesParType = (plant) => {
     const images = plant.images || [];
-    if (images.length === 0) return null;
+    if (images.length === 0) return [];
     
     if (typeImageActif === 'toutes') {
-      return images[0]; // Première image par défaut
+      return images; // Toutes les images
     }
     
-    // ✅ Chercher une image contenant le mot-clé du type (TOUS les types du mode admin)
+    // ✅ Chercher TOUTES les images contenant le mot-clé du type
     const motsClefs = {
       'vue_generale': ['vue_generale', 'general', 'port', 'silhouette', 'ensemble', 'entier'],
       'bourgeons': ['bourgeon', 'bud', 'printemps_debut'],
@@ -31,27 +34,55 @@ export default function ComparisonTable({ plants }) {
     };
     
     const motsRecherche = motsClefs[typeImageActif] || [];
-    const imageCorrespondante = images.find(img => 
+    const imagesCorrespondantes = images.filter(img => 
       motsRecherche.some(mot => img.toLowerCase().includes(mot))
     );
     
-    return imageCorrespondante || images[0]; // Fallback sur première image
+    return imagesCorrespondantes; // ✅ Retourne tableau vide si aucune image du type
+  };
+  
+  // ✅ Obtenir l'index actuel pour une plante
+  const getCurrentIndex = (plantId) => {
+    return currentImageIndexes[plantId] || 0;
+  };
+  
+  // ✅ Changer l'image active pour une plante
+  const changeImage = (plantId, delta, maxIndex) => {
+    setCurrentImageIndexes(prev => {
+      const currentIndex = prev[plantId] || 0;
+      const newIndex = (currentIndex + delta + maxIndex + 1) % (maxIndex + 1);
+      return { ...prev, [plantId]: newIndex };
+    });
+  };
+  
+  // ✅ Réinitialiser les index quand le filtre change
+  const handleTypeChange = (newType) => {
+    setTypeImageActif(newType);
+    setCurrentImageIndexes({}); // Reset tous les index
   };
 
   const rows = [
     {
       label: '📸 Photos',
       render: (plant) => {
-        const imagePath = getImageParType(plant);
+        const plantId = plant.nomScientifique || plant.name;
+        const imagesDisponibles = getImagesParType(plant);
+        const currentIndex = getCurrentIndex(plantId);
         
-        if (!imagePath) {
+        // ✅ Si aucune image du type sélectionné
+        if (imagesDisponibles.length === 0) {
           return (
             <div className="comparison-no-image">
-              <div className="no-image-placeholder">📷</div>
-              <p>Photos à venir</p>
+              <div className="no-image-placeholder">🚫</div>
+              <p style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>
+                Aucune image<br />{typeImageActif !== 'toutes' ? 'de ce type' : 'disponible'}
+              </p>
             </div>
           );
         }
+
+        const imagePath = imagesDisponibles[currentIndex];
+        const hasMultipleImages = imagesDisponibles.length > 1;
 
         return (
           <div className="comparison-image-container">
@@ -62,7 +93,53 @@ export default function ComparisonTable({ plants }) {
                 onClick={() => setFullscreenImage({ plant, imagePath })}
                 className="comparison-image"
               />
+              
+              {/* ✅ Flèches de navigation si plusieurs images */}
+              {hasMultipleImages && (
+                <>
+                  <button
+                    className="img-nav img-nav-left"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      changeImage(plantId, -1, imagesDisponibles.length - 1);
+                    }}
+                    title="Image précédente"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    className="img-nav img-nav-right"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      changeImage(plantId, 1, imagesDisponibles.length - 1);
+                    }}
+                    title="Image suivante"
+                  >
+                    ›
+                  </button>
+                  
+                  {/* ✅ Compteur d'images */}
+                  <div className="img-counter">
+                    {currentIndex + 1} / {imagesDisponibles.length}
+                  </div>
+                </>
+              )}
             </div>
+            
+            {/* ✅ Miniatures si plusieurs images */}
+            {hasMultipleImages && (
+              <div className="img-thumbnails">
+                {imagesDisponibles.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={`img-thumbnail ${idx === currentIndex ? 'active' : ''}`}
+                    onClick={() => setCurrentImageIndexes(prev => ({ ...prev, [plantId]: idx }))}
+                    style={{ backgroundImage: `url(/images/${img})` }}
+                    title={`Image ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         );
       }
@@ -136,7 +213,7 @@ export default function ComparisonTable({ plants }) {
             {typesVues.map(type => (
               <button
                 key={type.id}
-                onClick={() => setTypeImageActif(type.id)}
+                onClick={() => handleTypeChange(type.id)}
                 className={`filter-btn ${typeImageActif === type.id ? 'active' : ''}`}
                 title={`Afficher les images : ${type.label}`}
               >
