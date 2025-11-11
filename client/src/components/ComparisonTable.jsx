@@ -18,12 +18,16 @@ export default function ComparisonTable({ plants }) {
       return images[0]; // Première image par défaut
     }
     
-    // Chercher une image contenant le mot-clé du type
+    // ✅ Chercher une image contenant le mot-clé du type (TOUS les types du mode admin)
     const motsClefs = {
-      'loin': ['loin', 'general', 'port', 'silhouette'],
-      'fleur': ['fleur', 'floraison', 'printemps'],
-      'feuillage': ['feuillage', 'feuille', 'ete', 'automne'],
-      'fruit': ['fruit', 'baie', 'drupes', 'akenes']
+      'vue_generale': ['vue_generale', 'general', 'port', 'silhouette', 'ensemble', 'entier'],
+      'bourgeons': ['bourgeon', 'bud', 'printemps_debut'],
+      'fleurs': ['fleur', 'floraison', 'blossom', 'flower', 'inflorescence'],
+      'feuilles': ['feuille', 'feuillage', 'foliage', 'leaf'],
+      'fruits': ['fruit', 'baie', 'drupe', 'berry', 'fructification'],
+      'tronc': ['tronc', 'ecorce', 'bark', 'trunk', 'tige', 'rameau'],
+      'automne': ['automne', 'fall', 'autumn'],
+      'hiver': ['hiver', 'winter', 'neige']
     };
     
     const motsRecherche = motsClefs[typeImageActif] || [];
@@ -90,13 +94,17 @@ export default function ComparisonTable({ plants }) {
     { label: '☠️ Toxicité', path: 'toxicite.niveau' },
   ];
   
-  // ✅ Types de vues d'images
+  // ✅ Types de vues d'images (TOUS les types du mode admin)
   const typesVues = [
-    { id: 'toutes', label: 'Toutes vues', icon: '🖼️' },
-    { id: 'loin', label: 'De loin', icon: '🌳' },
-    { id: 'fleur', label: 'En fleur', icon: '🌸' },
-    { id: 'feuillage', label: 'Feuillage', icon: '🍂' },
-    { id: 'fruit', label: 'Fruits', icon: '🫐' }
+    { id: 'toutes', label: 'Toutes', icon: '🖼️' },
+    { id: 'vue_generale', label: 'Vue générale', icon: '🌳' },
+    { id: 'bourgeons', label: 'Bourgeons', icon: '🌱' },
+    { id: 'fleurs', label: 'Fleurs', icon: '🌸' },
+    { id: 'feuilles', label: 'Feuilles', icon: '🍃' },
+    { id: 'fruits', label: 'Fruits', icon: '🫐' },
+    { id: 'tronc', label: 'Tronc/Écorce', icon: '🪵' },
+    { id: 'automne', label: 'Automne', icon: '🍁' },
+    { id: 'hiver', label: 'Hiver', icon: '❄️' }
   ];
 
   const getValue = (plant, row) => {
