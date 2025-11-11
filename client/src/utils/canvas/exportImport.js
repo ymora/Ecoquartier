@@ -433,7 +433,7 @@ const chargerImageDepuisURL = async (fabricCanvasRef, imageFondRef, opaciteImage
 /**
  * Charger une image de fond depuis un fichier utilisateur
  */
-export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille) => {
+export const chargerImageFond = (fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, dimensions, echelle) => {
   console.log('🔍 chargerImageFond appelée');
   const input = document.createElement('input');
   input.type = 'file';

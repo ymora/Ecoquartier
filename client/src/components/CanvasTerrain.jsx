@@ -236,7 +236,7 @@ function CanvasTerrain({
   // ✅ Fonctions loggerComplet et exporterComplet supprimées - Non utilisées
   
   const chargerImageFond = () => {
-    chargerImageUtils(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille, dimensions, echelle);
+    chargerImageUtils(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, dimensions, echelle);
   };
   
   const ajusterOpaciteImage = (nouvelleOpacite) => {

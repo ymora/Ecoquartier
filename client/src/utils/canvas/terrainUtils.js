@@ -75,43 +75,7 @@ export const creerObjetTerrain = (echelle, dimensions) => {
   // ✅ Créer les éléments du maillage (lignes vertes + nœuds cliquables)
   const elementsMaillage = [];
   
-  // ✅ PAS D'OFFSET - Le maillage couvre TOUT le terrain
-  const largeurMaillagePx = nbCellulesX * tailleMailleM * echelle;
-  const hauteurMaillagePx = nbCellulesZ * tailleMailleM * echelle;
-  
-  // Lignes horizontales (vertes) - TOUT LE TERRAIN
-  for (let i = 0; i < nbNoeudsZ; i++) {
-    const y = -hauteur / 2 + i * tailleMailleM * echelle;
-    const line = new fabric.Line(
-      [-largeur / 2, y, -largeur / 2 + largeurMaillagePx, y],
-      {
-        stroke: '#2e7d32',
-        strokeWidth: 1,
-        selectable: false,
-        evented: false,
-        isLigneMaillage: true
-      }
-    );
-    elementsMaillage.push(line);
-  }
-  
-  // Lignes verticales (vertes) - TOUT LE TERRAIN
-  for (let j = 0; j < nbNoeudsX; j++) {
-    const x = -largeur / 2 + j * tailleMailleM * echelle;
-    const line = new fabric.Line(
-      [x, -hauteur / 2, x, -hauteur / 2 + hauteurMaillagePx],
-      {
-        stroke: '#2e7d32',
-        strokeWidth: 1,
-        selectable: false,
-        evented: false,
-        isLigneMaillage: true
-      }
-    );
-    elementsMaillage.push(line);
-  }
-  
-  // ⭐ Créer les NŒUDS cliquables (intersections des lignes)
+  // ✅ Créer uniquement les NŒUDS cliquables (pas de lignes de grille)
   // C'est la meilleure pratique : interpolation naturelle entre les nœuds
   for (let i = 0; i < nbNoeudsZ; i++) {
     for (let j = 0; j < nbNoeudsX; j++) {
