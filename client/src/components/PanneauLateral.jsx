@@ -1599,8 +1599,8 @@ function PanneauLateral({
                               const nouvellesCouches = [...couchesSol];
                               const [deplacee] = nouvellesCouches.splice(fromIndex, 1);
                               nouvellesCouches.splice(index, 0, deplacee);
-                              mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
-                              onCouchesSolChange(nouvellesCouches);
+                      mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
                             }
                           }}
                           style={{
@@ -1925,203 +1925,287 @@ function PanneauLateral({
                 borderRadius: '4px',
                 border: '1px solid #ddd'
               }}>
-                <button 
-                  onClick={() => {
-                    const typeCouche = { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'terre' };
-                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                    if (terrain) {
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                    }
-                  }}
-                  title="Terre végétale (30cm)"
+                <div 
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
+                    transition: 'background 0.2s'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-                  <span>🌱 Terre végétale</span>
-                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
-                </button>
-                <button 
-                  onClick={() => {
-                    const typeCouche = { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' };
-                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                    if (terrain) {
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                    }
-                  }}
-                  title="Marne calcaire (70cm)"
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                    🌱 Terre végétale
+                  </span>
+                  <button 
+                    onClick={() => {
+                      const typeCouche = { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'terre' };
+                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                      if (terrain) {
+                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                        mettreAJourCouchesSol(terrain, nouvellesCouches);
+                        onCouchesSolChange(nouvellesCouches);
+                      }
+                    }}
+                    style={{
+                      background: '#4caf50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Ajouter Terre végétale"
+                  >
+                    ➕
+                  </button>
+                </div>
+                <div 
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
+                    transition: 'background 0.2s'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-                  <span>🪨 Marne calcaire</span>
-                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
-                </button>
-                <button 
-                  onClick={() => {
-                    const typeCouche = { nom: 'Sable', profondeur: 50, couleur: '#fdd835', type: 'sable' };
-                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                    if (terrain) {
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                    }
-                  }}
-                  title="Sable (50cm)"
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                    🪨 Marne calcaire
+                  </span>
+                  <button 
+                    onClick={() => {
+                      const typeCouche = { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' };
+                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                      if (terrain) {
+                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                        mettreAJourCouchesSol(terrain, nouvellesCouches);
+                        onCouchesSolChange(nouvellesCouches);
+                      }
+                    }}
+                    style={{
+                      background: '#4caf50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Ajouter Marne calcaire"
+                  >
+                    ➕
+                  </button>
+                </div>
+                <div 
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
+                    transition: 'background 0.2s'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-                  <span>⏳ Sable</span>
-                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
-                </button>
-                <button 
-                  onClick={() => {
-                    const typeCouche = { nom: 'Argile', profondeur: 60, couleur: '#d32f2f', type: 'argile' };
-                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                    if (terrain) {
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                    }
-                  }}
-                  title="Argile (60cm)"
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                    ⏳ Sable
+                  </span>
+                  <button 
+                    onClick={() => {
+                      const typeCouche = { nom: 'Sable', profondeur: 50, couleur: '#fdd835', type: 'sable' };
+                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                      if (terrain) {
+                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                        mettreAJourCouchesSol(terrain, nouvellesCouches);
+                        onCouchesSolChange(nouvellesCouches);
+                      }
+                    }}
+                    style={{
+                      background: '#4caf50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Ajouter Sable"
+                  >
+                    ➕
+                  </button>
+                </div>
+                <div 
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
+                    transition: 'background 0.2s'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-                  <span>🧱 Argile</span>
-                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
-                </button>
-                <button 
-                  onClick={() => {
-                    const typeCouche = { nom: 'Gravier', profondeur: 40, couleur: '#9e9e9e', type: 'gravier' };
-                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                    if (terrain) {
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                    }
-                  }}
-                  title="Gravier (40cm)"
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                    🧱 Argile
+                  </span>
+                  <button 
+                    onClick={() => {
+                      const typeCouche = { nom: 'Argile', profondeur: 60, couleur: '#d32f2f', type: 'argile' };
+                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                      if (terrain) {
+                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                        mettreAJourCouchesSol(terrain, nouvellesCouches);
+                        onCouchesSolChange(nouvellesCouches);
+                      }
+                    }}
+                    style={{
+                      background: '#4caf50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Ajouter Argile"
+                  >
+                    ➕
+                  </button>
+                </div>
+                <div 
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
+                    transition: 'background 0.2s'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-                  <span>🪨 Gravier</span>
-                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
-                </button>
-                <button 
-                  onClick={() => {
-                    const typeCouche = { nom: 'Roche mère', profondeur: 100, couleur: '#5d4037', type: 'roche' };
-                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                    if (terrain) {
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                    }
-                  }}
-                  title="Roche mère (100cm)"
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                    🪨 Gravier
+                  </span>
+                  <button 
+                    onClick={() => {
+                      const typeCouche = { nom: 'Gravier', profondeur: 40, couleur: '#9e9e9e', type: 'gravier' };
+                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                      if (terrain) {
+                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                        mettreAJourCouchesSol(terrain, nouvellesCouches);
+                        onCouchesSolChange(nouvellesCouches);
+                      }
+                    }}
+                    style={{
+                      background: '#4caf50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Ajouter Gravier"
+                  >
+                    ➕
+                  </button>
+                </div>
+                <div 
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    padding: '0.4rem',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-                  <span>⛰️ Roche mère</span>
-                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
-                </button>
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                    ⛰️ Roche mère
+                  </span>
+                  <button 
+                    onClick={() => {
+                      const typeCouche = { nom: 'Roche mère', profondeur: 100, couleur: '#5d4037', type: 'roche' };
+                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                      if (terrain) {
+                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                        mettreAJourCouchesSol(terrain, nouvellesCouches);
+                        onCouchesSolChange(nouvellesCouches);
+                      }
+                    }}
+                    style={{
+                      background: '#4caf50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Ajouter Roche mère"
+                  >
+                    ➕
+                  </button>
+                </div>
               </div>
             )}
           </div>
