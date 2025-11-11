@@ -1944,11 +1944,16 @@ function PanneauLateral({
                     onClick={() => {
                       const typeCouche = { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'terre' };
                       const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (terrain) {
-                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                        mettreAJourCouchesSol(terrain, nouvellesCouches);
-                        onCouchesSolChange(nouvellesCouches);
+                      if (!terrain) {
+                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
+                        return;
                       }
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                      canvas.setActiveObject(terrain);
+                      canvas.renderAll();
+                      setOngletActif('config');
                     }}
                     style={{
                       background: '#4caf50',
@@ -1991,11 +1996,16 @@ function PanneauLateral({
                     onClick={() => {
                       const typeCouche = { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' };
                       const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (terrain) {
-                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                        mettreAJourCouchesSol(terrain, nouvellesCouches);
-                        onCouchesSolChange(nouvellesCouches);
+                      if (!terrain) {
+                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
+                        return;
                       }
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                      canvas.setActiveObject(terrain);
+                      canvas.renderAll();
+                      setOngletActif('config');
                     }}
                     style={{
                       background: '#4caf50',
@@ -2038,11 +2048,16 @@ function PanneauLateral({
                     onClick={() => {
                       const typeCouche = { nom: 'Sable', profondeur: 50, couleur: '#fdd835', type: 'sable' };
                       const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (terrain) {
-                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                        mettreAJourCouchesSol(terrain, nouvellesCouches);
-                        onCouchesSolChange(nouvellesCouches);
+                      if (!terrain) {
+                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
+                        return;
                       }
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                      canvas.setActiveObject(terrain);
+                      canvas.renderAll();
+                      setOngletActif('config');
                     }}
                     style={{
                       background: '#4caf50',
@@ -2085,11 +2100,16 @@ function PanneauLateral({
                     onClick={() => {
                       const typeCouche = { nom: 'Argile', profondeur: 60, couleur: '#d32f2f', type: 'argile' };
                       const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (terrain) {
-                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                        mettreAJourCouchesSol(terrain, nouvellesCouches);
-                        onCouchesSolChange(nouvellesCouches);
+                      if (!terrain) {
+                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
+                        return;
                       }
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                      canvas.setActiveObject(terrain);
+                      canvas.renderAll();
+                      setOngletActif('config');
                     }}
                     style={{
                       background: '#4caf50',
@@ -2132,11 +2152,16 @@ function PanneauLateral({
                     onClick={() => {
                       const typeCouche = { nom: 'Gravier', profondeur: 40, couleur: '#9e9e9e', type: 'gravier' };
                       const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (terrain) {
-                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                        mettreAJourCouchesSol(terrain, nouvellesCouches);
-                        onCouchesSolChange(nouvellesCouches);
+                      if (!terrain) {
+                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
+                        return;
                       }
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                      canvas.setActiveObject(terrain);
+                      canvas.renderAll();
+                      setOngletActif('config');
                     }}
                     style={{
                       background: '#4caf50',
@@ -2178,11 +2203,16 @@ function PanneauLateral({
                     onClick={() => {
                       const typeCouche = { nom: 'Roche mère', profondeur: 100, couleur: '#5d4037', type: 'roche' };
                       const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (terrain) {
-                        const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                        mettreAJourCouchesSol(terrain, nouvellesCouches);
-                        onCouchesSolChange(nouvellesCouches);
+                      if (!terrain) {
+                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
+                        return;
                       }
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                      canvas.setActiveObject(terrain);
+                      canvas.renderAll();
+                      setOngletActif('config');
                     }}
                     style={{
                       background: '#4caf50',
@@ -2385,82 +2415,82 @@ function PanneauLateral({
               )}
           </div>
           
-          {/* ARBUSTES */}
-          <div style={{ marginBottom: '0.5rem' }}>
+            {/* ARBUSTES */}
+            <div style={{ marginBottom: '0.5rem' }}>
             <button 
-              onClick={() => setArbustesOuvert(!arbustesOuvert)}
-              style={{
-                width: '100%',
-                padding: '0.6rem',
-                background: arbustesOuvert ? '#8bc34a' : 'white',
-                color: arbustesOuvert ? 'white' : '#333',
-                border: '1px solid #8bc34a',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '0.85rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                transition: 'all 0.2s'
-              }}
-            >
-              <span>🌿 Arbustes ({arbustes.length})</span>
-              <span style={{ fontSize: '1rem' }}>{arbustesOuvert ? '▼' : '▶'}</span>
+                onClick={() => setArbustesOuvert(!arbustesOuvert)}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem',
+                  background: arbustesOuvert ? '#8bc34a' : 'white',
+                  color: arbustesOuvert ? 'white' : '#333',
+                  border: '1px solid #8bc34a',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>🌿 Arbustes ({arbustes.length})</span>
+                <span style={{ fontSize: '1rem' }}>{arbustesOuvert ? '▼' : '▶'}</span>
             </button>
-            {arbustesOuvert && (
-              <div style={{ 
-                maxHeight: '250px', 
-                overflowY: 'auto',
-                marginTop: '0.3rem',
-                background: 'white',
-                borderRadius: '4px',
-                border: '1px solid #ddd'
-              }}>
-                {arbustes.map(plante => (
-                  <div 
-                    key={plante.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '0.4rem',
-                      borderBottom: '1px solid #f0f0f0',
-                      cursor: 'pointer',
-                      transition: 'background 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                  >
-                    <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
-                      {plante.name}
-                    </span>
-                    <button 
-                      onClick={() => onAjouterArbrePlante && onAjouterArbrePlante(plante)}
+              {arbustesOuvert && (
+                <div style={{ 
+                  maxHeight: '250px', 
+                  overflowY: 'auto',
+                  marginTop: '0.3rem',
+                  background: 'white',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd'
+                }}>
+                  {arbustes.map(plante => (
+                    <div 
+                      key={plante.id}
                       style={{
-                        background: '#8bc34a',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '28px',
-                        height: '28px',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
+                        padding: '0.4rem',
+                        borderBottom: '1px solid #f0f0f0',
                         cursor: 'pointer',
-                        fontSize: '1rem',
-                        fontWeight: 'bold',
-                        transition: 'transform 0.2s'
+                        transition: 'background 0.2s'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                      onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                      title={`Ajouter ${plante.name}`}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                     >
-                      ➕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+                      <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                        {plante.name}
+                      </span>
+            <button 
+                        onClick={() => onAjouterArbrePlante && onAjouterArbrePlante(plante)}
+                        style={{
+                          background: '#8bc34a',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '28px',
+                          height: '28px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          fontSize: '1rem',
+                          fontWeight: 'bold',
+                          transition: 'transform 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        title={`Ajouter ${plante.name}`}
+                      >
+                        ➕
+            </button>
+                    </div>
+                  ))}
+                </div>
+              )}
           </div>
           
           {/* ACTIONS */}

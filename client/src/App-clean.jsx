@@ -69,7 +69,6 @@ export default function AppClean() {
             {mode === 'planner' && (
               <div className="dropdown-menu-header">
                 <div className="dropdown-menu-content">
-                  <div className="dropdown-menu-title">📁 Gestion du plan</div>
                   <button 
                     className="dropdown-menu-item"
                     onClick={() => canvasActions.chargerPlan && canvasActions.chargerPlan()}
