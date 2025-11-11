@@ -39,7 +39,6 @@ function PanneauLateral({
   onAjusterOpaciteImage,
   onSupprimerImageFond,
   onExporterPlan,
-  onExporterComplet,
   onAjouterArbrePlante,
   onSyncKeyChange,
   ongletActifExterne = null

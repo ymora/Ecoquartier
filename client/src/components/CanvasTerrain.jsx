@@ -59,7 +59,7 @@ import {
   supprimerImageFond as supprimerImageUtils,
   ajouterMesuresLive as ajouterMesuresUtils
 } from '../utils/canvas/exportImport';
-import { logAllCanvasObjects, exportCompleteData } from '../utils/canvas/completeObjectLogger';
+// ✅ Imports completeObjectLogger supprimés - Code diagnostic inutilisé
 
 import {
   supprimerSelection as supprimerSelectionUtils,
@@ -233,15 +233,7 @@ function CanvasTerrain({
     logger.info('Plan', '✅ Terrain vide créé - Prêt pour votre plan personnalisé');
   };
   
-  // Log complet de tous les objets
-  const loggerComplet = useCallback(() => {
-    logAllCanvasObjects(fabricCanvasRef.current, echelle);
-  }, [echelle]);
-
-  // Export complet des données
-  const exporterComplet = useCallback(() => {
-    exportCompleteData(fabricCanvasRef.current, echelle);
-  }, [echelle]);
+  // ✅ Fonctions loggerComplet et exporterComplet supprimées - Non utilisées
   
   const chargerImageFond = () => {
     chargerImageUtils(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, ajouterGrille, dimensions, echelle);
@@ -974,8 +966,6 @@ function CanvasTerrain({
         onSupprimerImageFond={supprimerImageFond}
         onResetZoom={resetZoom}
         onExporterPlan={telechargerPlanJSON}
-        onLoggerComplet={loggerComplet}
-        onExporterComplet={exporterComplet}
         onAjouterArbrePlante={ajouterArbrePlante}
         onSyncKeyChange={setSyncKey}
         ongletActifExterne={ongletActif}

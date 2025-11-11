@@ -55,23 +55,4 @@ export const chargerPlanJSONAvecExplorateur = (onPlanLoaded) => {
   }, '.json');
 };
 
-/**
- * Exporter un plan vers un fichier JSON
- * @param {Object} planData - Données du plan à exporter
- * @param {string} fileName - Nom du fichier (défaut: 'mon-plan.json')
- */
-export const exporterPlanVersFichier = (planData, fileName = 'mon-plan.json') => {
-  const dataStr = JSON.stringify(planData, null, 2);
-  const dataBlob = new Blob([dataStr], { type: 'application/json' });
-  
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(dataBlob);
-  link.download = fileName;
-  link.style.display = 'none';
-  
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  URL.revokeObjectURL(link.href);
-};
+// ✅ exporterPlanVersFichier supprimé - Doublon avec telechargerPlanJSON() dans exportImport.js

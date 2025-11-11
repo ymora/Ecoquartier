@@ -21,8 +21,7 @@ import LumiereDirectionnelle from './3d/LumiereDirectionnelle';
 import { ECHELLE_PIXELS_PAR_METRE } from '../config/constants';
 // import { validerArbres3D } from '../utils/validation3D'; // ✅ Plus utilisé - validation faite en 2D
 import logger from '../utils/logger';
-import { diagnostiquerPositions2D3D } from '../utils/canvas/diagnosticPositions';
-// import { diagnostiquerSynchronisation } from '../utils/canvas/diagnosticSync'; // Désactivé temporairement
+// ✅ Imports diagnostics supprimés - Code diagnostic inutilisé
 import './CanvasTerrain3D.css';
 
 // Fonction utilitaire pour parser la taille à maturité depuis arbustesData
