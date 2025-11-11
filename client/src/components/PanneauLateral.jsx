@@ -50,6 +50,7 @@ function PanneauLateral({
   const [arbresOuvert, setArbresOuvert] = useState(false);
   const [arbustesOuvert, setArbustesOuvert] = useState(false);
   const [batimentsOuvert, setBatimentsOuvert] = useState(false);
+  const [solOuvert, setSolOuvert] = useState(false);
   const [reseauxOuvert, setReseauxOuvert] = useState(false);
   const [actionsOuvert, setActionsOuvert] = useState(false);
   const [surPlanOuvert, setSurPlanOuvert] = useState(true); // Ouvert par défaut
@@ -1551,55 +1552,30 @@ function PanneauLateral({
                     </div>
                   </div>
                   
-                  {/* Composition du sol */}
+                  {/* Composition du sol - Gestion */}
                   <div className="section-header" style={{ marginTop: '1rem' }}>
                     <h3 className="section-title">🪨 Composition du sol ({couchesSol?.length || 0} couches)</h3>
                   </div>
                   
-                  {/* ✅ Bouton ajouter couche avec menu déroulant */}
-                  <div style={{ marginBottom: '1rem' }}>
-                    <select
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          const typesDeCouhes = {
-                            'terre': { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'terre' },
-                            'marne': { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' },
-                            'sable': { nom: 'Sable', profondeur: 50, couleur: '#fdd835', type: 'sable' },
-                            'argile': { nom: 'Argile', profondeur: 60, couleur: '#d32f2f', type: 'argile' },
-                            'gravier': { nom: 'Gravier', profondeur: 40, couleur: '#9e9e9e', type: 'gravier' },
-                            'roche': { nom: 'Roche mère', profondeur: 100, couleur: '#5d4037', type: 'roche' }
-                          };
-                          
-                          const nouvelleCouche = typesDeCouhes[e.target.value];
-                          if (nouvelleCouche) {
-                            const nouvellesCouches = [...(couchesSol || []), nouvelleCouche];
-                      mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                          }
-                          e.target.value = ''; // Reset
-                        }
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '0.6rem',
-                        background: 'white',
-                        color: '#2e7d32',
-                        border: '1px solid #4caf50',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      <option value="">➕ Ajouter une couche de sol</option>
-                      <option value="terre">🌱 Terre végétale</option>
-                      <option value="marne">🪨 Marne calcaire</option>
-                      <option value="sable">⏳ Sable</option>
-                      <option value="argile">🧱 Argile</option>
-                      <option value="gravier">🪨 Gravier</option>
-                      <option value="roche">⛰️ Roche mère</option>
-                    </select>
-                  </div>
+                  {/* ✅ Info : Ajout depuis Outils */}
+                  {(!couchesSol || couchesSol.length === 0) && (
+                    <div style={{
+                      background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                      border: '2px solid #ff9800',
+                      borderRadius: '8px',
+                      padding: '1rem',
+                      marginBottom: '1rem',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🪨</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#e65100', marginBottom: '0.3rem' }}>
+                        Aucune couche de sol ajoutée
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#f57c00' }}>
+                        Ajoutez des couches depuis l'onglet <strong>⚙️ Outils</strong> → <strong>🪨 Couches de sol</strong>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* ✅ Liste des couches avec drag & drop et contrôles */}
                   {couchesSol && couchesSol.length > 0 && (
@@ -1921,55 +1897,233 @@ function PanneauLateral({
           
           {/* SOL / COMPOSITION */}
           <div style={{ marginBottom: '0.5rem' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, #8d6e63 0%, #5d4037 100%)',
-              borderRadius: '8px',
-              padding: '1rem',
-              border: '2px solid #6d4c41'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>🪨</span>
-                <h3 style={{ color: 'white', margin: 0, fontSize: '0.9rem', fontWeight: 'bold' }}>
-                  Composition du sol
-                </h3>
-              </div>
-              <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.75rem', margin: '0 0 0.5rem 0', lineHeight: '1.4' }}>
-                Gérez les couches de sol (terre, marne, sable, argile, gravier, roche mère)
-              </p>
-              <div style={{ 
-                background: 'rgba(255,255,255,0.15)', 
-                borderRadius: '6px', 
+            <button
+              onClick={() => setSolOuvert(!solOuvert)}
+              style={{
+                width: '100%',
                 padding: '0.6rem',
-                border: '1px solid rgba(255,255,255,0.2)'
-              }}>
-                <div style={{ color: 'white', fontSize: '0.7rem', marginBottom: '0.4rem', fontWeight: '600' }}>
-                  📍 Pour configurer :
-                </div>
-                <ol style={{ 
-                  color: 'rgba(255,255,255,0.95)', 
-                  fontSize: '0.7rem', 
-                  margin: 0, 
-                  paddingLeft: '1.2rem',
-                  lineHeight: '1.6'
-                }}>
-                  <li>Ajoutez un <strong>Terrain</strong> (section Structures ci-dessus)</li>
-                  <li>Basculez dans l'onglet <strong>📋 Config</strong></li>
-                  <li>Sélectionnez le terrain sur le plan</li>
-                  <li>Ajoutez et organisez vos couches de sol</li>
-                </ol>
-              </div>
-              <div style={{
-                marginTop: '0.6rem',
-                padding: '0.4rem',
-                background: 'rgba(76, 175, 80, 0.2)',
+                background: solOuvert ? '#8d6e63' : 'white',
+                color: solOuvert ? 'white' : '#333',
+                border: '1px solid #8d6e63',
                 borderRadius: '4px',
-                border: '1px solid rgba(76, 175, 80, 0.4)'
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span>🪨 Couches de sol (6)</span>
+              <span style={{ fontSize: '1rem' }}>{solOuvert ? '▼' : '▶'}</span>
+            </button>
+            {solOuvert && (
+              <div style={{ 
+                marginTop: '0.3rem',
+                background: 'white',
+                borderRadius: '4px',
+                border: '1px solid #ddd'
               }}>
-                <div style={{ color: 'white', fontSize: '0.65rem', textAlign: 'center' }}>
-                  ✨ Drag & drop pour réorganiser • Réglage épaisseur par couche
-                </div>
+                <button 
+                  onClick={() => {
+                    const typeCouche = { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'terre' };
+                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                    if (terrain) {
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                    }
+                  }}
+                  title="Terre végétale (30cm)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  <span>🌱 Terre végétale</span>
+                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    const typeCouche = { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' };
+                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                    if (terrain) {
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                    }
+                  }}
+                  title="Marne calcaire (70cm)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  <span>🪨 Marne calcaire</span>
+                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    const typeCouche = { nom: 'Sable', profondeur: 50, couleur: '#fdd835', type: 'sable' };
+                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                    if (terrain) {
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                    }
+                  }}
+                  title="Sable (50cm)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  <span>⏳ Sable</span>
+                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    const typeCouche = { nom: 'Argile', profondeur: 60, couleur: '#d32f2f', type: 'argile' };
+                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                    if (terrain) {
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                    }
+                  }}
+                  title="Argile (60cm)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  <span>🧱 Argile</span>
+                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    const typeCouche = { nom: 'Gravier', profondeur: 40, couleur: '#9e9e9e', type: 'gravier' };
+                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                    if (terrain) {
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                    }
+                  }}
+                  title="Gravier (40cm)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  <span>🪨 Gravier</span>
+                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    const typeCouche = { nom: 'Roche mère', profondeur: 100, couleur: '#5d4037', type: 'roche' };
+                    const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
+                    if (terrain) {
+                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
+                      mettreAJourCouchesSol(terrain, nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
+                    }
+                  }}
+                  title="Roche mère (100cm)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  <span>⛰️ Roche mère</span>
+                  <span style={{ fontSize: '1.2rem', color: '#4caf50' }}>+</span>
+                </button>
               </div>
-            </div>
+            )}
           </div>
           
           {/* RÉSEAUX */}
