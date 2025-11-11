@@ -1919,6 +1919,59 @@ function PanneauLateral({
             )}
           </div>
           
+          {/* SOL / COMPOSITION */}
+          <div style={{ marginBottom: '0.5rem' }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #8d6e63 0%, #5d4037 100%)',
+              borderRadius: '8px',
+              padding: '1rem',
+              border: '2px solid #6d4c41'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.5rem' }}>🪨</span>
+                <h3 style={{ color: 'white', margin: 0, fontSize: '0.9rem', fontWeight: 'bold' }}>
+                  Composition du sol
+                </h3>
+              </div>
+              <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.75rem', margin: '0 0 0.5rem 0', lineHeight: '1.4' }}>
+                Gérez les couches de sol (terre, marne, sable, argile, gravier, roche mère)
+              </p>
+              <div style={{ 
+                background: 'rgba(255,255,255,0.15)', 
+                borderRadius: '6px', 
+                padding: '0.6rem',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <div style={{ color: 'white', fontSize: '0.7rem', marginBottom: '0.4rem', fontWeight: '600' }}>
+                  📍 Pour configurer :
+                </div>
+                <ol style={{ 
+                  color: 'rgba(255,255,255,0.95)', 
+                  fontSize: '0.7rem', 
+                  margin: 0, 
+                  paddingLeft: '1.2rem',
+                  lineHeight: '1.6'
+                }}>
+                  <li>Ajoutez un <strong>Terrain</strong> (section Structures ci-dessus)</li>
+                  <li>Basculez dans l'onglet <strong>📋 Config</strong></li>
+                  <li>Sélectionnez le terrain sur le plan</li>
+                  <li>Ajoutez et organisez vos couches de sol</li>
+                </ol>
+              </div>
+              <div style={{
+                marginTop: '0.6rem',
+                padding: '0.4rem',
+                background: 'rgba(76, 175, 80, 0.2)',
+                borderRadius: '4px',
+                border: '1px solid rgba(76, 175, 80, 0.4)'
+              }}>
+                <div style={{ color: 'white', fontSize: '0.65rem', textAlign: 'center' }}>
+                  ✨ Drag & drop pour réorganiser • Réglage épaisseur par couche
+                </div>
+              </div>
+            </div>
+          </div>
+          
           {/* RÉSEAUX */}
           <div style={{ marginBottom: '0.5rem' }}>
             <button
