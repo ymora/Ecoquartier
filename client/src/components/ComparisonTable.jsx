@@ -6,41 +6,41 @@ import { useState } from 'react';
 import './ComparisonTable.css';
 
 export default function ComparisonTable({ plants }) {
-  const [currentImages, setCurrentImages] = useState(
-    plants.reduce((acc, plant) => ({ ...acc, [plant.id]: 0 }), {})
-  );
   const [fullscreenImage, setFullscreenImage] = useState(null);
-  const [filtresActifs, setFiltresActifs] = useState(['general', 'floraison', 'feuillage', 'sol', 'entretien', 'reglementation']);
+  const [typeImageActif, setTypeImageActif] = useState('toutes'); // 'toutes', 'loin', 'fleur', 'feuillage', 'fruit'
 
-  const changeImage = (plantId, delta) => {
-    const plant = plants.find(p => p.id === plantId);
-    const images = plant?.images || [];
-    if (images.length === 0) return;
-
-    setCurrentImages(prev => ({
-      ...prev,
-      [plantId]: (prev[plantId] + delta + images.length) % images.length
-    }));
-  };
-  
-  const toggleFiltre = (filtre) => {
-    setFiltresActifs(prev => 
-      prev.includes(filtre) 
-        ? prev.filter(f => f !== filtre)
-        : [...prev, filtre]
+  // ✅ Déterminer quelle image afficher pour chaque plante selon le filtre
+  const getImageParType = (plant) => {
+    const images = plant.images || [];
+    if (images.length === 0) return null;
+    
+    if (typeImageActif === 'toutes') {
+      return images[0]; // Première image par défaut
+    }
+    
+    // Chercher une image contenant le mot-clé du type
+    const motsClefs = {
+      'loin': ['loin', 'general', 'port', 'silhouette'],
+      'fleur': ['fleur', 'floraison', 'printemps'],
+      'feuillage': ['feuillage', 'feuille', 'ete', 'automne'],
+      'fruit': ['fruit', 'baie', 'drupes', 'akenes']
+    };
+    
+    const motsRecherche = motsClefs[typeImageActif] || [];
+    const imageCorrespondante = images.find(img => 
+      motsRecherche.some(mot => img.toLowerCase().includes(mot))
     );
+    
+    return imageCorrespondante || images[0]; // Fallback sur première image
   };
 
-  // ✅ Organisation des critères par catégorie
-  const toutesLesLignes = [
+  const rows = [
     {
       label: '📸 Photos',
-      categorie: 'general',
       render: (plant) => {
-        const images = plant.images || [];
-        const currentIdx = currentImages[plant.id] || 0;
+        const imagePath = getImageParType(plant);
         
-        if (images.length === 0) {
+        if (!imagePath) {
           return (
             <div className="comparison-no-image">
               <div className="no-image-placeholder">📷</div>
@@ -53,71 +53,50 @@ export default function ComparisonTable({ plants }) {
           <div className="comparison-image-container">
             <div className="image-frame">
               <img
-                src={`/images/${images[currentIdx]}`}
+                src={`/images/${imagePath}`}
                 alt={plant.name}
-                onClick={() => setFullscreenImage({ plant, index: currentIdx })}
+                onClick={() => setFullscreenImage({ plant, imagePath })}
                 className="comparison-image"
               />
             </div>
-            {images.length > 1 && (
-              <>
-                <button
-                  className="img-nav img-prev"
-                  onClick={() => changeImage(plant.id, -1)}
-                >
-                  ◀
-                </button>
-                <button
-                  className="img-nav img-next"
-                  onClick={() => changeImage(plant.id, 1)}
-                >
-                  ▶
-                </button>
-                <div className="img-counter">{currentIdx + 1}/{images.length}</div>
-              </>
-            )}
           </div>
         );
       }
     },
-    { label: '🌿 Nom commun', key: 'name', categorie: 'general' },
-    { label: '🔬 Nom scientifique', key: 'nomScientifique', categorie: 'general' },
-    { label: '👨‍👩‍👧‍👦 Famille', key: 'famille', categorie: 'general' },
-    { label: '🏷️ Type', render: (p) => p.type === 'arbre' ? '🌳 Arbre' : '🌿 Arbuste', categorie: 'general' },
-    { label: '📏 Hauteur', key: 'tailleMaturite', categorie: 'general' },
-    { label: '↔️ Envergure', key: 'envergure', categorie: 'general' },
-    { label: '📈 Croissance', key: 'croissance', categorie: 'general' },
-    { label: '🌸 Floraison période', path: 'floraison.periode', categorie: 'floraison' },
-    { label: '🎨 Floraison couleur', path: 'floraison.couleur', categorie: 'floraison' },
-    { label: '👃 Parfum', path: 'floraison.parfum', categorie: 'floraison' },
-    { label: '🍂 Feuillage type', path: 'feuillage.type', categorie: 'feuillage' },
-    { label: '🍁 Couleur automne', path: 'feuillage.couleurAutomne', categorie: 'feuillage' },
-    { label: '🌍 Sol type', path: 'sol.type', categorie: 'sol' },
-    { label: '⚗️ Sol pH', path: 'sol.ph', categorie: 'sol' },
-    { label: '💧 Sol humidité', path: 'sol.humidite', categorie: 'sol' },
-    { label: '☀️ Exposition', key: 'exposition', categorie: 'sol' },
-    { label: '💧 Arrosage', key: 'arrosage', categorie: 'entretien' },
-    { label: '❄️ Rusticité', key: 'rusticite', categorie: 'entretien' },
-    { label: '✂️ Taille période', path: 'taille.periode', categorie: 'entretien' },
-    { label: '✂️ Taille fréquence', path: 'taille.frequence', categorie: 'entretien' },
-    { label: '🌱 Plantation période', path: 'plantation.periode', categorie: 'entretien' },
-    { label: '📏 Distance voisinage', path: 'reglementation.distancesLegales.voisinage.distance', categorie: 'reglementation' },
-    { label: '🏠 Distance fondations', path: 'reglementation.distancesLegales.infrastructures.fondations', categorie: 'reglementation' },
-    { label: '🌳 Distance entre arbres', path: 'reglementation.distancesLegales.entreArbres.distance', categorie: 'reglementation' },
-    { label: '☠️ Toxicité', path: 'toxicite.niveau', categorie: 'reglementation' },
+    { label: '🌿 Nom commun', key: 'name' },
+    { label: '🔬 Nom scientifique', key: 'nomScientifique' },
+    { label: '👨‍👩‍👧‍👦 Famille', key: 'famille' },
+    { label: '🏷️ Type', render: (p) => p.type === 'arbre' ? '🌳 Arbre' : '🌿 Arbuste' },
+    { label: '📏 Hauteur', key: 'tailleMaturite' },
+    { label: '↔️ Envergure', key: 'envergure' },
+    { label: '📈 Croissance', key: 'croissance' },
+    { label: '🌸 Floraison période', path: 'floraison.periode' },
+    { label: '🎨 Floraison couleur', path: 'floraison.couleur' },
+    { label: '👃 Parfum', path: 'floraison.parfum' },
+    { label: '🍂 Feuillage type', path: 'feuillage.type' },
+    { label: '🍁 Couleur automne', path: 'feuillage.couleurAutomne' },
+    { label: '🌍 Sol type', path: 'sol.type' },
+    { label: '⚗️ Sol pH', path: 'sol.ph' },
+    { label: '💧 Sol humidité', path: 'sol.humidite' },
+    { label: '☀️ Exposition', key: 'exposition' },
+    { label: '💧 Arrosage', key: 'arrosage' },
+    { label: '❄️ Rusticité', key: 'rusticite' },
+    { label: '✂️ Taille période', path: 'taille.periode' },
+    { label: '✂️ Taille fréquence', path: 'taille.frequence' },
+    { label: '🌱 Plantation période', path: 'plantation.periode' },
+    { label: '📏 Distance voisinage', path: 'reglementation.distancesLegales.voisinage.distance' },
+    { label: '🏠 Distance fondations', path: 'reglementation.distancesLegales.infrastructures.fondations' },
+    { label: '🌳 Distance entre arbres', path: 'reglementation.distancesLegales.entreArbres.distance' },
+    { label: '☠️ Toxicité', path: 'toxicite.niveau' },
   ];
   
-  // ✅ Filtrer les lignes selon les filtres actifs
-  const rows = toutesLesLignes.filter(row => filtresActifs.includes(row.categorie));
-  
-  // ✅ Catégories de filtres
-  const categories = [
-    { id: 'general', label: '📋 Général', icon: '📋' },
-    { id: 'floraison', label: '🌸 Floraison', icon: '🌸' },
-    { id: 'feuillage', label: '🍂 Feuillage', icon: '🍂' },
-    { id: 'sol', label: '🌍 Sol', icon: '🌍' },
-    { id: 'entretien', label: '✂️ Entretien', icon: '✂️' },
-    { id: 'reglementation', label: '📏 Réglementation', icon: '📏' }
+  // ✅ Types de vues d'images
+  const typesVues = [
+    { id: 'toutes', label: 'Toutes vues', icon: '🖼️' },
+    { id: 'loin', label: 'De loin', icon: '🌳' },
+    { id: 'fleur', label: 'En fleur', icon: '🌸' },
+    { id: 'feuillage', label: 'Feuillage', icon: '🍂' },
+    { id: 'fruit', label: 'Fruits', icon: '🫐' }
   ];
 
   const getValue = (plant, row) => {
@@ -140,19 +119,23 @@ export default function ComparisonTable({ plants }) {
         <h2>Comparaison de {plants.length} plantes</h2>
         <p>Toutes les caractéristiques côte à côte</p>
         
-        {/* ✅ Filtres par catégorie */}
+        {/* ✅ Filtres par TYPE d'image */}
         <div className="comparison-filters">
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => toggleFiltre(cat.id)}
-              className={`filter-btn ${filtresActifs.includes(cat.id) ? 'active' : ''}`}
-              title={filtresActifs.includes(cat.id) ? 'Cliquer pour masquer' : 'Cliquer pour afficher'}
-            >
-              <span className="filter-icon">{cat.icon}</span>
-              <span className="filter-label">{cat.label}</span>
-            </button>
-          ))}
+          <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+            🖼️ Type de vue :
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+            {typesVues.map(type => (
+              <button
+                key={type.id}
+                onClick={() => setTypeImageActif(type.id)}
+                className={`filter-btn ${typeImageActif === type.id ? 'active' : ''}`}
+                title={`Afficher les images : ${type.label}`}
+              >
+                {type.icon} {type.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -194,7 +177,7 @@ export default function ComparisonTable({ plants }) {
         <div className="fullscreen-modal" onClick={() => setFullscreenImage(null)}>
           <button className="fullscreen-close" onClick={() => setFullscreenImage(null)}>✕</button>
           <img
-            src={`/images/${fullscreenImage.plant.images[fullscreenImage.index]}`}
+            src={`/images/${fullscreenImage.imagePath}`}
             alt={fullscreenImage.plant.name}
             onClick={(e) => e.stopPropagation()}
           />
