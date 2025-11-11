@@ -2222,26 +2222,6 @@ function PanneauLateral({
                 >
                   ⚠️ Effacer tout
                 </button>
-                <button 
-                  onClick={onExporterComplet} 
-                  title="Exporter toutes les données en JSON"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#4caf50',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#e8f5e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-                  💾 Export JSON
-                </button>
               </div>
             )}
           </div>
