@@ -456,64 +456,44 @@ function PanneauLateral({
 
   return (
     <div className="panneau-lateral">
-      {/* Boutons de chargement - TOUJOURS VISIBLES - ORDRE: Fond / Charger / Exporter */}
-      <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      {/* Boutons de chargement - TOUJOURS VISIBLES - Thème unifié */}
+      <div style={{ padding: '0.75rem', borderBottom: '1px solid #ddd', background: 'white', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         
         {/* 1. Plan d'implantation - ✅ Bloc unifié avec contrôles */}
         <div style={{
-          background: imageFondChargee ? 
-            'linear-gradient(135deg, #e8f5e9 0%, #f3e5f5 100%)' : 
-            'transparent',
-          borderRadius: '8px',
-          border: imageFondChargee ? '2px solid #4caf50' : 'none',
+          background: 'white',
+          borderRadius: '4px',
+          border: imageFondChargee ? '2px solid #4caf50' : '1px solid #9c27b0',
           padding: imageFondChargee ? '0.5rem' : '0',
-          boxShadow: imageFondChargee ? '0 2px 8px rgba(76, 175, 80, 0.2)' : 'none',
           transition: 'all 0.3s ease'
         }}>
           <button
             onClick={onChargerImageFond}
             title="Charger votre plan cadastral ou photo aérienne"
             style={{ 
-              background: imageFondChargee ? 
-                'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)' : 
-                'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
-              color: 'white',
+              background: imageFondChargee ? '#e8f5e9' : 'white',
+              color: imageFondChargee ? '#2e7d32' : '#9c27b0',
               border: 'none',
-              borderRadius: imageFondChargee ? '6px' : '8px',
-              padding: '0.7rem 1rem',
-              fontSize: '0.9rem',
-              fontWeight: '600',
+              borderRadius: '4px',
+              padding: '0.6rem',
+              fontSize: '0.85rem',
+              fontWeight: 'bold',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 3px 6px rgba(156, 39, 176, 0.3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
+              transition: 'all 0.2s',
               width: '100%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem'
+              justifyContent: 'space-between'
             }}
             onMouseEnter={(e) => {
-              if (imageFondChargee) {
-                e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
-              } else {
-                e.target.style.background = 'linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%)';
-              }
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 6px 12px rgba(156, 39, 176, 0.4)';
+              e.currentTarget.style.background = imageFondChargee ? '#c8e6c9' : '#f3e5f5';
             }}
             onMouseLeave={(e) => {
-              if (imageFondChargee) {
-                e.target.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
-              } else {
-                e.target.style.background = 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)';
-              }
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 3px 6px rgba(156, 39, 176, 0.3)';
+              e.currentTarget.style.background = imageFondChargee ? '#e8f5e9' : 'white';
             }}
           >
-            📍 {imageFondChargee ? 'Plan cadastral ✓' : 'Plan cadastral'}
+            <span>📍 Plan cadastral</span>
+            {imageFondChargee && <span style={{ fontSize: '1rem' }}>✓</span>}
           </button>
           
           {/* ✅ Contrôles intégrés (opacité + suppression) */}
@@ -616,36 +596,29 @@ function PanneauLateral({
           }}
           title="Charger un plan sauvegardé"
           style={{
-            background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '0.7rem 1rem',
-            fontSize: '0.9rem',
-            fontWeight: '600',
+            background: 'white',
+            color: '#2196f3',
+            border: '1px solid #2196f3',
+            borderRadius: '4px',
+            padding: '0.6rem',
+            fontSize: '0.85rem',
+            fontWeight: 'bold',
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 3px 6px rgba(33, 150, 243, 0.3)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
+            transition: 'all 0.2s',
             width: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem'
+            justifyContent: 'space-between'
           }}
           onMouseEnter={(e) => {
-              e.target.style.background = 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)';
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 6px 12px rgba(33, 150, 243, 0.4)';
+            e.currentTarget.style.background = '#e3f2fd';
           }}
           onMouseLeave={(e) => {
-              e.target.style.background = 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)';
-            e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 3px 6px rgba(33, 150, 243, 0.3)';
+            e.currentTarget.style.background = 'white';
           }}
         >
-          📂 Charger mon plan
+          <span>📂 Charger mon plan</span>
+          <span style={{ fontSize: '1rem' }}>▶</span>
         </button>
         
         {/* 3. Exporter mon plan */}
@@ -653,36 +626,29 @@ function PanneauLateral({
           onClick={onExporterPlan}
           title="Télécharger votre plan au format JSON"
           style={{ 
-            background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '0.7rem 1rem',
-            fontSize: '0.9rem',
-            fontWeight: '600',
+            background: 'white',
+            color: '#4caf50',
+            border: '1px solid #4caf50',
+            borderRadius: '4px',
+            padding: '0.6rem',
+            fontSize: '0.85rem',
+            fontWeight: 'bold',
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 3px 6px rgba(76, 175, 80, 0.3)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
+            transition: 'all 0.2s',
             width: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem'
+            justifyContent: 'space-between'
           }}
           onMouseEnter={(e) => {
-            e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 6px 12px rgba(76, 175, 80, 0.4)';
+            e.currentTarget.style.background = '#e8f5e9';
           }}
           onMouseLeave={(e) => {
-            e.target.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 3px 6px rgba(76, 175, 80, 0.3)';
+            e.currentTarget.style.background = 'white';
           }}
         >
-          💾 Exporter mon plan
+          <span>💾 Exporter mon plan</span>
+          <span style={{ fontSize: '1rem' }}>▶</span>
         </button>
       </div>
 
