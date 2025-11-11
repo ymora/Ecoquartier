@@ -243,10 +243,10 @@ export default function AppClean() {
               <input
                 type="range"
                 min="0"
-                max="20"
+                max="30"
                 value={anneeProjection}
                 onChange={(e) => setAnneeProjection(Number(e.target.value))}
-                title="Croissance"
+                title="Croissance (0-30 ans)"
               />
               <span className="timeline-val">{anneeProjection}a</span>
             </div>

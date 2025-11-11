@@ -174,7 +174,7 @@ export const SNAP_SIZE_FACTEUR = 0.05; // 5% de l'échelle
  */
 export const ANNEES_PROJECTION = {
   min: 0,
-  max: 20
+  max: 30 // ✅ Augmenté pour voir la croissance sur 30 ans
 };
 
 // ========== MESSAGES ==========

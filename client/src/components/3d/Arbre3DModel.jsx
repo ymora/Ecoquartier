@@ -85,7 +85,9 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
   const scaleNecessaire = hauteurMaturite / hauteurModele;
   
   // 2. Appliquer la croissance selon anneeProjection
-  const progression = Math.min(anneeProjection / 20, 1);
+  // ✅ Calculer avec les infos réelles de l'arbre (anneesMaturite dynamique)
+  const anneesMaturite = arbreData?.anneesMaturite || 20;
+  const progression = Math.min(anneeProjection / anneesMaturite, 1); // ✅ Plafonne à 100% à maturité
   const scaleJeune = 0.15; // 15% de la hauteur à maturité (jeune plant)
   const scaleProgression = scaleJeune + (1 - scaleJeune) * progression;
   
