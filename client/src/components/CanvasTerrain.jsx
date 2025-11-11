@@ -236,9 +236,9 @@ function CanvasTerrain({
   
   // ✅ Fonctions loggerComplet et exporterComplet supprimées - Non utilisées
   
-  const chargerImageFond = () => {
+  const chargerImageFond = useCallback(() => {
     chargerImageUtils(fabricCanvasRef, imageFondRef, opaciteImage, setImageFondChargee, dimensions, echelle);
-  };
+  }, [opaciteImage, dimensions, echelle]);
   
   const ajusterOpaciteImage = (nouvelleOpacite) => {
     ajusterOpaciteUtils(nouvelleOpacite, fabricCanvasRef, imageFondRef, setOpaciteImage);
@@ -463,16 +463,19 @@ function CanvasTerrain({
     input.click();
   }, [echelle, handleDimensionsChange, handleOrientationChange]);
   
+  // ✅ Mémoriser l'objet des actions pour éviter les re-créations
+  const actions = useMemo(() => ({
+    chargerPlan,
+    chargerImageFond,
+    exporterPlan: telechargerPlanJSON
+  }), [chargerPlan, chargerImageFond, telechargerPlanJSON]);
+  
   // Exposer les actions au composant parent
   useEffect(() => {
     if (onActionsReady) {
-      onActionsReady({
-        chargerPlan,
-        chargerImageFond,
-        exporterPlan: telechargerPlanJSON
-      });
+      onActionsReady(actions);
     }
-  }, [chargerPlan, chargerImageFond, telechargerPlanJSON, onActionsReady]);
+  }, [onActionsReady, actions]); // ✅ Se déclenche seulement si actions ou callback changent
   const ajouterPaves = () => preparerPlacement('paves');
   
   const ajouterArbrePlante = (plante) => {
