@@ -606,43 +606,70 @@ function PanneauLateral({
           💾 Exporter mon plan
         </button>
         
-        {/* Contrôles d'opacité si image chargée */}
+        {/* ✅ Contrôles plan cadastral - Intégration améliorée */}
         {imageFondChargee && (
           <div style={{ 
             marginTop: '0.5rem',
-            background: 'white',
-            borderRadius: '6px',
-            border: '1px solid #ddd',
-            padding: '0.5rem'
+            display: 'flex',
+            gap: '0.5rem',
+            alignItems: 'stretch'
           }}>
-            <label style={{ fontSize: '0.75rem', color: '#1976d2', fontWeight: 'bold', display: 'block', marginBottom: '0.3rem' }}>
-              Opacité: {Math.round(opaciteImage * 100)}%
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={opaciteImage}
-              onChange={(e) => onAjusterOpaciteImage(parseFloat(e.target.value))}
-              style={{ width: '100%' }}
-            />
+            {/* Opacité */}
+            <div style={{
+              flex: 1,
+              background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
+              borderRadius: '6px',
+              border: '1px solid #9c27b0',
+              padding: '0.5rem',
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <label style={{ fontSize: '0.7rem', color: '#1976d2', fontWeight: 'bold', marginBottom: '0.3rem', whiteSpace: 'nowrap' }}>
+                ⚙️ {Math.round(opaciteImage * 100)}%
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={opaciteImage}
+                onChange={(e) => onAjusterOpaciteImage(parseFloat(e.target.value))}
+                style={{ width: '100%', cursor: 'pointer' }}
+                title="Ajuster l'opacité du plan cadastral"
+              />
+            </div>
+            
+            {/* Bouton suppression avec icône */}
             <button
               onClick={onSupprimerImageFond}
+              title="Supprimer le plan cadastral"
               style={{
-                width: '100%',
-                marginTop: '0.3rem',
-                padding: '0.4rem',
-                background: '#f44336',
+                width: '40px',
+                height: '100%',
+                background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 cursor: 'pointer',
-                fontSize: '0.75rem',
-                fontWeight: 'bold'
+                fontSize: '1.2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 4px rgba(244, 67, 54, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'linear-gradient(135deg, #e53935 0%, #c62828 100%)';
+                e.target.style.transform = 'scale(1.05)';
+                e.target.style.boxShadow = '0 4px 8px rgba(244, 67, 54, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)';
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 2px 4px rgba(244, 67, 54, 0.3)';
               }}
             >
-              🗑️ Supprimer image
+              🗑️
             </button>
           </div>
         )}
@@ -1508,14 +1535,11 @@ function PanneauLateral({
                       if (noeudsModifies.length === 0) return null;
                       
                       return (
-                        <div style={{ 
+                        <div className="relief-actuel-box" style={{ 
                           fontSize: '0.7rem', 
-                          color: '#555', 
                           marginBottom: '0.8rem',
-                          background: '#fff',
                           padding: '0.5rem',
                           borderRadius: '4px',
-                          border: '1px solid #e0e0e0',
                           maxHeight: '100px',
                           overflowY: 'auto'
                         }}>

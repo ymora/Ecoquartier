@@ -36,16 +36,20 @@ function Sol3D({
   
   // Calculer les profondeurs cumulées
   let profondeurCumulee = 0;
-  const couches = couchesSol.map((couche) => {
+  const couches = couchesSol.map((couche, index) => {
     const profondeurM = couche.profondeur / 100;
     const position = profondeurCumulee + profondeurM / 2;
     profondeurCumulee += profondeurM;
     
+    // ✅ Ajuster l'herbe (+5cm au-dessus de la surface) et autres couches
+    const offsetHauteur = index === 0 ? 0.05 : 0; // Première couche = herbe +5cm
+    
     return {
       ...couche,
       profondeurM,
-      positionY: -position,
-      profondeurCumuleeAvant: profondeurCumulee - profondeurM
+      positionY: -position + offsetHauteur,
+      profondeurCumuleeAvant: profondeurCumulee - profondeurM,
+      offsetHauteur // Pour référence
     };
   });
   
@@ -131,6 +135,41 @@ function Sol3D({
     
     return geometry;
   }, [maillageElevation, tailleMailleM, largeur, hauteur]);
+  
+  // ✅ Créer les géométries des couches de sol qui suivent le relief
+  const geometriesCouches = useMemo(() => {
+    if (!maillageElevation || maillageElevation.length === 0) {
+      return []; // Pas de relief, on utilisera des boxGeometry classiques
+    }
+    
+    const nbNoeudsZ = maillageElevation.length;
+    const nbNoeudsX = maillageElevation[0]?.length || 0;
+    const nbCellulesX = nbNoeudsX - 1;
+    const nbCellulesZ = nbNoeudsZ - 1;
+    
+    return couches.map((couche, indexCouche) => {
+      // Créer une géométrie déformée pour chaque couche
+      const geometry = new THREE.PlaneGeometry(largeur, hauteur, nbCellulesX, nbCellulesZ);
+      const vertices = geometry.attributes.position.array;
+      
+      // Appliquer les élévations, décalées vers le bas selon la profondeur de la couche
+      for (let i = 0; i <= nbCellulesZ; i++) {
+        for (let j = 0; j <= nbCellulesX; j++) {
+          const index = (i * (nbCellulesX + 1) + j) * 3;
+          const elevation = maillageElevation[i][j] || 0;
+          
+          // ✅ Décalage : chaque couche suit le relief mais est décalée vers le bas
+          // Première couche (terre végétale) : +5cm au-dessus de la surface
+          vertices[index + 2] = elevation + (indexCouche === 0 ? 0.05 : 0);
+        }
+      }
+      
+      geometry.attributes.position.needsUpdate = true;
+      geometry.computeVertexNormals();
+      
+      return geometry;
+    });
+  }, [maillageElevation, couches, largeur, hauteur]);
   
   // ✅ Afficher les nœuds en 3D si maillage disponible
   const noeuds3D = useMemo(() => {
@@ -234,25 +273,48 @@ function Sol3D({
         </mesh>
       ))}
       
-      {/* COUCHES DE SOL (dynamique) */}
-      {couches.map((couche, index) => (
-        <group key={index}>
-          {/* Couche de sol - ✅ Transparence augmentée pour voir les racines */}
-          <mesh 
-            position={[0, couche.positionY, 0]}
-            raycast={() => null} // ✅ Désactiver l'interaction pour permettre clic sur objets en dessous
-          >
-            <boxGeometry args={[largeur, couche.profondeurM, hauteur]} />
-            <meshStandardMaterial 
-              color={couche.couleur}
-              transparent 
-              opacity={transparent ? 0.25 - index * 0.05 : 0.85 - index * 0.1}
-              roughness={0.95}
-              metalness={index * 0.05}
-              depthWrite={!transparent}
-              side={2}
-            />
-          </mesh>
+      {/* COUCHES DE SOL (dynamique) - ✅ Suivent le relief du terrain */}
+      {couches.map((couche, index) => {
+        // ✅ Si on a un maillage d'élévation ET une géométrie déformée pour cette couche
+        const hasRelief = geometriesCouches && geometriesCouches[index];
+        
+        return (<group key={index}>
+            {hasRelief ? (
+              // ✅ Surface déformée qui suit le relief (première couche = herbe à +5cm)
+              <mesh 
+                rotation={[-Math.PI / 2, 0, 0]}
+                position={[0, couche.positionY, 0]}
+                geometry={geometriesCouches[index]}
+                raycast={() => null}
+              >
+                <meshStandardMaterial 
+                  color={couche.couleur}
+                  transparent 
+                  opacity={transparent ? 0.25 - index * 0.05 : 0.85 - index * 0.1}
+                  roughness={0.95}
+                  metalness={index * 0.05}
+                  depthWrite={!transparent}
+                  side={2}
+                />
+              </mesh>
+            ) : (
+              // ✅ Fallback : couche plate classique (si pas de relief)
+              <mesh 
+                position={[0, couche.positionY, 0]}
+                raycast={() => null}
+              >
+                <boxGeometry args={[largeur, couche.profondeurM, hauteur]} />
+                <meshStandardMaterial 
+                  color={couche.couleur}
+                  transparent 
+                  opacity={transparent ? 0.25 - index * 0.05 : 0.85 - index * 0.1}
+                  roughness={0.95}
+                  metalness={index * 0.05}
+                  depthWrite={!transparent}
+                  side={2}
+                />
+              </mesh>
+            )}
           
           {/* Bordure visible entre les couches (sauf pour la dernière) - Masquée si transparent */}
           {!transparent && index < couches.length - 1 && (
@@ -289,8 +351,9 @@ function Sol3D({
               </mesh>
             </>
           )}
-        </group>
-      ))}
+          </group>
+        );
+      })}
       
       {/* Label supprimé - vestige qui créait un rectangle blanc */}
       
