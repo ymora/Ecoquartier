@@ -73,6 +73,44 @@ export default function AppClean() {
           >
             🌳 Planifier
           </button>
+          
+          {/* ✅ Bouton Admin - Visible UNIQUEMENT en développement */}
+          {import.meta.env.DEV && (
+            <button
+              className="admin-shortcut"
+              onClick={() => window.open('http://localhost:3001', '_blank')}
+              title="Ouvrir l'interface admin (upload images)"
+              style={{
+                position: 'absolute',
+                right: '1rem',
+                padding: '0.5rem 1rem',
+                background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(255, 152, 0, 0.3)',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #f57c00 0%, #e65100 100%)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(255, 152, 0, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 4px rgba(255, 152, 0, 0.3)';
+              }}
+            >
+              ⚙️ Admin
+            </button>
+          )}
         </nav>
 
         <div className="header-actions">
