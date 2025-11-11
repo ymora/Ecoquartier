@@ -10,6 +10,7 @@ export default function ComparisonTable({ plants }) {
     plants.reduce((acc, plant) => ({ ...acc, [plant.id]: 0 }), {})
   );
   const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [filtresActifs, setFiltresActifs] = useState(['general', 'floraison', 'feuillage', 'sol', 'entretien', 'reglementation']);
 
   const changeImage = (plantId, delta) => {
     const plant = plants.find(p => p.id === plantId);
@@ -21,10 +22,20 @@ export default function ComparisonTable({ plants }) {
       [plantId]: (prev[plantId] + delta + images.length) % images.length
     }));
   };
+  
+  const toggleFiltre = (filtre) => {
+    setFiltresActifs(prev => 
+      prev.includes(filtre) 
+        ? prev.filter(f => f !== filtre)
+        : [...prev, filtre]
+    );
+  };
 
-  const rows = [
+  // ✅ Organisation des critères par catégorie
+  const toutesLesLignes = [
     {
       label: '📸 Photos',
+      categorie: 'general',
       render: (plant) => {
         const images = plant.images || [];
         const currentIdx = currentImages[plant.id] || 0;
@@ -40,12 +51,14 @@ export default function ComparisonTable({ plants }) {
 
         return (
           <div className="comparison-image-container">
-            <img
-              src={`/images/${images[currentIdx]}`}
-              alt={plant.name}
-              onClick={() => setFullscreenImage({ plant, index: currentIdx })}
-              className="comparison-image"
-            />
+            <div className="image-frame">
+              <img
+                src={`/images/${images[currentIdx]}`}
+                alt={plant.name}
+                onClick={() => setFullscreenImage({ plant, index: currentIdx })}
+                className="comparison-image"
+              />
+            </div>
             {images.length > 1 && (
               <>
                 <button
@@ -67,31 +80,44 @@ export default function ComparisonTable({ plants }) {
         );
       }
     },
-    { label: '🌿 Nom commun', key: 'name' },
-    { label: '🔬 Nom scientifique', key: 'nomScientifique' },
-    { label: '👨‍👩‍👧‍👦 Famille', key: 'famille' },
-    { label: '🏷️ Type', render: (p) => p.type === 'arbre' ? '🌳 Arbre' : '🌿 Arbuste' },
-    { label: '📏 Hauteur', key: 'tailleMaturite' },
-    { label: '↔️ Envergure', key: 'envergure' },
-    { label: '📈 Croissance', key: 'croissance' },
-    { label: '🌸 Floraison période', path: 'floraison.periode' },
-    { label: '🎨 Floraison couleur', path: 'floraison.couleur' },
-    { label: '👃 Parfum', path: 'floraison.parfum' },
-    { label: '🍂 Feuillage type', path: 'feuillage.type' },
-    { label: '🍁 Couleur automne', path: 'feuillage.couleurAutomne' },
-    { label: '🌍 Sol type', path: 'sol.type' },
-    { label: '⚗️ Sol pH', path: 'sol.ph' },
-    { label: '💧 Sol humidité', path: 'sol.humidite' },
-    { label: '☀️ Exposition', key: 'exposition' },
-    { label: '💧 Arrosage', key: 'arrosage' },
-    { label: '❄️ Rusticité', key: 'rusticite' },
-    { label: '✂️ Taille période', path: 'taille.periode' },
-    { label: '✂️ Taille fréquence', path: 'taille.frequence' },
-    { label: '🌱 Plantation période', path: 'plantation.periode' },
-    { label: '📏 Distance voisinage', path: 'reglementation.distancesLegales.voisinage.distance' },
-    { label: '🏠 Distance fondations', path: 'reglementation.distancesLegales.infrastructures.fondations' },
-    { label: '🌳 Distance entre arbres', path: 'reglementation.distancesLegales.entreArbres.distance' },
-    { label: '☠️ Toxicité', path: 'toxicite.niveau' },
+    { label: '🌿 Nom commun', key: 'name', categorie: 'general' },
+    { label: '🔬 Nom scientifique', key: 'nomScientifique', categorie: 'general' },
+    { label: '👨‍👩‍👧‍👦 Famille', key: 'famille', categorie: 'general' },
+    { label: '🏷️ Type', render: (p) => p.type === 'arbre' ? '🌳 Arbre' : '🌿 Arbuste', categorie: 'general' },
+    { label: '📏 Hauteur', key: 'tailleMaturite', categorie: 'general' },
+    { label: '↔️ Envergure', key: 'envergure', categorie: 'general' },
+    { label: '📈 Croissance', key: 'croissance', categorie: 'general' },
+    { label: '🌸 Floraison période', path: 'floraison.periode', categorie: 'floraison' },
+    { label: '🎨 Floraison couleur', path: 'floraison.couleur', categorie: 'floraison' },
+    { label: '👃 Parfum', path: 'floraison.parfum', categorie: 'floraison' },
+    { label: '🍂 Feuillage type', path: 'feuillage.type', categorie: 'feuillage' },
+    { label: '🍁 Couleur automne', path: 'feuillage.couleurAutomne', categorie: 'feuillage' },
+    { label: '🌍 Sol type', path: 'sol.type', categorie: 'sol' },
+    { label: '⚗️ Sol pH', path: 'sol.ph', categorie: 'sol' },
+    { label: '💧 Sol humidité', path: 'sol.humidite', categorie: 'sol' },
+    { label: '☀️ Exposition', key: 'exposition', categorie: 'sol' },
+    { label: '💧 Arrosage', key: 'arrosage', categorie: 'entretien' },
+    { label: '❄️ Rusticité', key: 'rusticite', categorie: 'entretien' },
+    { label: '✂️ Taille période', path: 'taille.periode', categorie: 'entretien' },
+    { label: '✂️ Taille fréquence', path: 'taille.frequence', categorie: 'entretien' },
+    { label: '🌱 Plantation période', path: 'plantation.periode', categorie: 'entretien' },
+    { label: '📏 Distance voisinage', path: 'reglementation.distancesLegales.voisinage.distance', categorie: 'reglementation' },
+    { label: '🏠 Distance fondations', path: 'reglementation.distancesLegales.infrastructures.fondations', categorie: 'reglementation' },
+    { label: '🌳 Distance entre arbres', path: 'reglementation.distancesLegales.entreArbres.distance', categorie: 'reglementation' },
+    { label: '☠️ Toxicité', path: 'toxicite.niveau', categorie: 'reglementation' },
+  ];
+  
+  // ✅ Filtrer les lignes selon les filtres actifs
+  const rows = toutesLesLignes.filter(row => filtresActifs.includes(row.categorie));
+  
+  // ✅ Catégories de filtres
+  const categories = [
+    { id: 'general', label: '📋 Général', icon: '📋' },
+    { id: 'floraison', label: '🌸 Floraison', icon: '🌸' },
+    { id: 'feuillage', label: '🍂 Feuillage', icon: '🍂' },
+    { id: 'sol', label: '🌍 Sol', icon: '🌍' },
+    { id: 'entretien', label: '✂️ Entretien', icon: '✂️' },
+    { id: 'reglementation', label: '📏 Réglementation', icon: '📏' }
   ];
 
   const getValue = (plant, row) => {
@@ -113,6 +139,21 @@ export default function ComparisonTable({ plants }) {
       <div className="comparison-header">
         <h2>Comparaison de {plants.length} plantes</h2>
         <p>Toutes les caractéristiques côte à côte</p>
+        
+        {/* ✅ Filtres par catégorie */}
+        <div className="comparison-filters">
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => toggleFiltre(cat.id)}
+              className={`filter-btn ${filtresActifs.includes(cat.id) ? 'active' : ''}`}
+              title={filtresActifs.includes(cat.id) ? 'Cliquer pour masquer' : 'Cliquer pour afficher'}
+            >
+              <span className="filter-icon">{cat.icon}</span>
+              <span className="filter-label">{cat.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="comparison-scroll">
