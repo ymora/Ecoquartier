@@ -466,20 +466,20 @@ function PanneauLateral({
           padding: imageFondChargee ? '0.5rem' : '0',
           transition: 'all 0.3s ease'
         }}>
-          <button
-            onClick={onChargerImageFond}
+        <button
+          onClick={onChargerImageFond}
             title="Charger votre plan cadastral ou photo aérienne"
-            style={{ 
+          style={{ 
               background: imageFondChargee ? '#e8f5e9' : 'white',
               color: imageFondChargee ? '#2e7d32' : '#9c27b0',
-              border: 'none',
+            border: 'none',
               borderRadius: '4px',
               padding: '0.6rem',
               fontSize: '0.85rem',
               fontWeight: 'bold',
-              cursor: 'pointer',
+            cursor: 'pointer',
               transition: 'all 0.2s',
-              width: '100%',
+            width: '100%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between'
@@ -541,25 +541,25 @@ function PanneauLateral({
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '1.3rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
                   transition: 'all 0.3s ease',
                   boxShadow: '0 2px 4px rgba(244, 67, 54, 0.3)'
-                }}
-                onMouseEnter={(e) => {
+          }}
+          onMouseEnter={(e) => {
                   e.target.style.background = 'linear-gradient(135deg, #e53935 0%, #c62828 100%)';
                   e.target.style.transform = 'scale(1.05)';
                   e.target.style.boxShadow = '0 4px 8px rgba(244, 67, 54, 0.4)';
-                }}
-                onMouseLeave={(e) => {
+          }}
+          onMouseLeave={(e) => {
                   e.target.style.background = 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)';
                   e.target.style.transform = 'scale(1)';
                   e.target.style.boxShadow = '0 2px 4px rgba(244, 67, 54, 0.3)';
                 }}
               >
                 🗑️
-              </button>
+        </button>
             </div>
           )}
         </div>
@@ -648,7 +648,7 @@ function PanneauLateral({
         >
           <span>💾 Exporter mon plan</span>
           <span style={{ fontSize: '1rem' }}>▶</span>
-        </button>
+            </button>
       </div>
 
       {/* En-tête avec onglets */}
@@ -1607,20 +1607,226 @@ function PanneauLateral({
                   
                   {/* Composition du sol */}
                   <div className="section-header" style={{ marginTop: '1rem' }}>
-                    <h3 className="section-title">🪨 Composition du sol</h3>
+                    <h3 className="section-title">🪨 Composition du sol ({couchesSol?.length || 0} couches)</h3>
                   </div>
-                  <SolInteractif 
-                    couchesSol={couchesSol} 
-                    onCouchesSolChange={(nouvellesCouches) => {
-                      // Mettre à jour les couches dans l'objet terrain sélectionné
+                  
+                  {/* ✅ Bouton ajouter couche avec menu déroulant */}
+                  <div style={{ marginBottom: '1rem' }}>
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          const typesDeCouhes = {
+                            'terre': { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'terre' },
+                            'marne': { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' },
+                            'sable': { nom: 'Sable', profondeur: 50, couleur: '#fdd835', type: 'sable' },
+                            'argile': { nom: 'Argile', profondeur: 60, couleur: '#d32f2f', type: 'argile' },
+                            'gravier': { nom: 'Gravier', profondeur: 40, couleur: '#9e9e9e', type: 'gravier' },
+                            'roche': { nom: 'Roche mère', profondeur: 100, couleur: '#5d4037', type: 'roche' }
+                          };
+                          
+                          const nouvelleCouche = typesDeCouhes[e.target.value];
+                          if (nouvelleCouche) {
+                            const nouvellesCouches = [...(couchesSol || []), nouvelleCouche];
                       mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
-                      // Mettre à jour l'état global
                       onCouchesSolChange(nouvellesCouches);
-                    }} 
-                  />
+                          }
+                          e.target.value = ''; // Reset
+                        }
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '0.6rem',
+                        background: 'white',
+                        color: '#2e7d32',
+                        border: '1px solid #4caf50',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      <option value="">➕ Ajouter une couche de sol</option>
+                      <option value="terre">🌱 Terre végétale</option>
+                      <option value="marne">🪨 Marne calcaire</option>
+                      <option value="sable">⏳ Sable</option>
+                      <option value="argile">🧱 Argile</option>
+                      <option value="gravier">🪨 Gravier</option>
+                      <option value="roche">⛰️ Roche mère</option>
+                    </select>
+                  </div>
+                  
+                  {/* ✅ Liste des couches avec drag & drop et contrôles */}
+                  {couchesSol && couchesSol.length > 0 && (
+                    <div style={{ marginBottom: '1rem' }}>
+                      {couchesSol.map((couche, index) => (
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.effectAllowed = 'move';
+                            e.dataTransfer.setData('text/plain', index);
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'move';
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                            if (fromIndex !== index) {
+                              const nouvellesCouches = [...couchesSol];
+                              const [deplacee] = nouvellesCouches.splice(fromIndex, 1);
+                              nouvellesCouches.splice(index, 0, deplacee);
+                              mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
+                              onCouchesSolChange(nouvellesCouches);
+                            }
+                          }}
+                          style={{
+                            background: 'white',
+                            border: '2px solid #ddd',
+                            borderRadius: '6px',
+                            padding: '0.6rem',
+                            marginBottom: '0.5rem',
+                            cursor: 'grab',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#4caf50';
+                            e.currentTarget.style.boxShadow = '0 2px 4px rgba(76, 175, 80, 0.2)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '#ddd';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                        >
+                          {/* Header avec drag handle */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                            <div style={{ fontSize: '1.2rem', cursor: 'grab' }} title="Glisser pour réorganiser">
+                              ⋮⋮
+                            </div>
+                            <div
+                              style={{
+                                width: '20px',
+                                height: '20px',
+                                background: couche.couleur,
+                                borderRadius: '3px',
+                                border: '1px solid #666',
+                                flexShrink: 0
+                              }}
+                            />
+                            <div style={{ flex: 1, fontWeight: 'bold', fontSize: '0.85rem', color: '#333' }}>
+                              {couche.nom}
+                            </div>
+                            <div style={{ fontSize: '0.7rem', color: '#888', fontWeight: '600' }}>
+                              Niveau {index + 1}
+                            </div>
+                            <button
+                              onClick={() => {
+                                const nouvellesCouches = couchesSol.filter((_, i) => i !== index);
+                                mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
+                                onCouchesSolChange(nouvellesCouches);
+                              }}
+                              style={{
+                                background: '#f44336',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                width: '28px',
+                                height: '28px',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                              title="Supprimer cette couche"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                          
+                          {/* Contrôles de hauteur */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <label style={{ fontSize: '0.75rem', color: '#666', minWidth: '60px' }}>Épaisseur:</label>
+                            <button
+                              onClick={() => {
+                                const nouvellesCouches = [...couchesSol];
+                                nouvellesCouches[index].profondeur = Math.max(5, couche.profondeur - 5);
+                                mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
+                                onCouchesSolChange(nouvellesCouches);
+                              }}
+                              style={{
+                                background: '#f44336',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                width: '30px',
+                                height: '30px',
+                                cursor: 'pointer',
+                                fontSize: '1.1rem',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              −
+                            </button>
+                            <input
+                              type="number"
+                              value={couche.profondeur}
+                              onChange={(e) => {
+                                const nouvellesCouches = [...couchesSol];
+                                nouvellesCouches[index].profondeur = Math.max(5, Math.min(300, parseInt(e.target.value) || 5));
+                                mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
+                                onCouchesSolChange(nouvellesCouches);
+                              }}
+                              style={{
+                                width: '60px',
+                                padding: '0.3rem',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                textAlign: 'center',
+                                fontSize: '0.85rem',
+                                fontWeight: 'bold'
+                              }}
+                            />
+                            <span style={{ fontSize: '0.75rem', color: '#888', minWidth: '30px' }}>cm</span>
+                            <button
+                              onClick={() => {
+                                const nouvellesCouches = [...couchesSol];
+                                const profondeurTotaleSansActuelle = nouvellesCouches.reduce((sum, c, i) => 
+                                  i === index ? sum : sum + c.profondeur, 0);
+                                if (profondeurTotaleSansActuelle + couche.profondeur + 5 <= 300) {
+                                  nouvellesCouches[index].profondeur = couche.profondeur + 5;
+                                  mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
+                                  onCouchesSolChange(nouvellesCouches);
+                                }
+                              }}
+                              style={{
+                                background: '#4caf50',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                width: '30px',
+                                height: '30px',
+                                cursor: 'pointer',
+                                fontSize: '1.1rem',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   
                   <div className="info-box info-box-info" style={{ marginTop: '0.5rem' }}>
-                    📏 Profondeur totale : {couchesSol ? (couchesSol.reduce((sum, c) => sum + c.profondeur, 0) / 100).toFixed(2) : 0} m
+                    📏 Profondeur totale : {couchesSol ? (couchesSol.reduce((sum, c) => sum + c.profondeur, 0) / 100).toFixed(2) : 0} m / 3.00 m max
+                    {couchesSol && couchesSol.reduce((sum, c) => sum + c.profondeur, 0) > 300 && (
+                      <div style={{ color: '#f44336', fontWeight: 'bold', marginTop: '0.3rem' }}>
+                        ⚠️ Limite dépassée ! Réduisez l'épaisseur des couches.
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
