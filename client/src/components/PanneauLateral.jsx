@@ -459,52 +459,131 @@ function PanneauLateral({
       {/* Boutons de chargement - TOUJOURS VISIBLES - ORDRE: Fond / Charger / Exporter */}
       <div style={{ padding: '0.75rem', borderBottom: '2px solid #1976d2', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         
-        {/* 1. Plan d'implantation */}
-        <button
-          onClick={onChargerImageFond}
-          title="Charger votre plan cadastral ou photo aérienne"
-          style={{ 
-            background: imageFondChargee ? 
-              'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)' : 
-              'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '0.7rem 1rem',
-            fontSize: '0.9rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 3px 6px rgba(156, 39, 176, 0.3)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem'
-          }}
-          onMouseEnter={(e) => {
-            if (imageFondChargee) {
-              e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
-            } else {
-              e.target.style.background = 'linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%)';
-            }
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 6px 12px rgba(156, 39, 176, 0.4)';
-          }}
-          onMouseLeave={(e) => {
-            if (imageFondChargee) {
-              e.target.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
-            } else {
-              e.target.style.background = 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)';
-            }
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 3px 6px rgba(156, 39, 176, 0.3)';
-          }}
-        >
-          📍 {imageFondChargee ? 'Plan cadastral ✓' : 'Plan cadastral'}
-        </button>
+        {/* 1. Plan d'implantation - ✅ Bloc unifié avec contrôles */}
+        <div style={{
+          background: imageFondChargee ? 
+            'linear-gradient(135deg, #e8f5e9 0%, #f3e5f5 100%)' : 
+            'transparent',
+          borderRadius: '8px',
+          border: imageFondChargee ? '2px solid #4caf50' : 'none',
+          padding: imageFondChargee ? '0.5rem' : '0',
+          boxShadow: imageFondChargee ? '0 2px 8px rgba(76, 175, 80, 0.2)' : 'none',
+          transition: 'all 0.3s ease'
+        }}>
+          <button
+            onClick={onChargerImageFond}
+            title="Charger votre plan cadastral ou photo aérienne"
+            style={{ 
+              background: imageFondChargee ? 
+                'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)' : 
+                'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: imageFondChargee ? '6px' : '8px',
+              padding: '0.7rem 1rem',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 3px 6px rgba(156, 39, 176, 0.3)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem'
+            }}
+            onMouseEnter={(e) => {
+              if (imageFondChargee) {
+                e.target.style.background = 'linear-gradient(135deg, #388e3c 0%, #2e7d32 100%)';
+              } else {
+                e.target.style.background = 'linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%)';
+              }
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 12px rgba(156, 39, 176, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              if (imageFondChargee) {
+                e.target.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
+              } else {
+                e.target.style.background = 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)';
+              }
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 3px 6px rgba(156, 39, 176, 0.3)';
+            }}
+          >
+            📍 {imageFondChargee ? 'Plan cadastral ✓' : 'Plan cadastral'}
+          </button>
+          
+          {/* ✅ Contrôles intégrés (opacité + suppression) */}
+          {imageFondChargee && (
+            <div style={{ 
+              marginTop: '0.5rem',
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'stretch'
+            }}>
+              {/* Opacité */}
+              <div style={{
+                flex: 1,
+                background: 'white',
+                borderRadius: '6px',
+                border: '1px solid #ddd',
+                padding: '0.5rem',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <label style={{ fontSize: '0.7rem', color: '#388e3c', fontWeight: 'bold', marginBottom: '0.3rem', whiteSpace: 'nowrap' }}>
+                  ⚙️ Opacité {Math.round(opaciteImage * 100)}%
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={opaciteImage}
+                  onChange={(e) => onAjusterOpaciteImage(parseFloat(e.target.value))}
+                  style={{ width: '100%', cursor: 'pointer' }}
+                  title="Ajuster l'opacité du plan cadastral"
+                />
+              </div>
+              
+              {/* Bouton suppression */}
+              <button
+                onClick={onSupprimerImageFond}
+                title="Supprimer le plan cadastral"
+                style={{
+                  width: '50px',
+                  height: '100%',
+                  background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '1.3rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 2px 4px rgba(244, 67, 54, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'linear-gradient(135deg, #e53935 0%, #c62828 100%)';
+                  e.target.style.transform = 'scale(1.05)';
+                  e.target.style.boxShadow = '0 4px 8px rgba(244, 67, 54, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)';
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 2px 4px rgba(244, 67, 54, 0.3)';
+                }}
+              >
+                🗑️
+              </button>
+            </div>
+          )}
+        </div>
         
         {/* 2. Charger mon plan */}
         <button
@@ -605,74 +684,6 @@ function PanneauLateral({
         >
           💾 Exporter mon plan
         </button>
-        
-        {/* ✅ Contrôles plan cadastral - Intégration améliorée */}
-        {imageFondChargee && (
-          <div style={{ 
-            marginTop: '0.5rem',
-            display: 'flex',
-            gap: '0.5rem',
-            alignItems: 'stretch'
-          }}>
-            {/* Opacité */}
-            <div style={{
-              flex: 1,
-              background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
-              borderRadius: '6px',
-              border: '1px solid #9c27b0',
-              padding: '0.5rem',
-              display: 'flex',
-              flexDirection: 'column'
-            }}>
-              <label style={{ fontSize: '0.7rem', color: '#1976d2', fontWeight: 'bold', marginBottom: '0.3rem', whiteSpace: 'nowrap' }}>
-                ⚙️ {Math.round(opaciteImage * 100)}%
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={opaciteImage}
-                onChange={(e) => onAjusterOpaciteImage(parseFloat(e.target.value))}
-                style={{ width: '100%', cursor: 'pointer' }}
-                title="Ajuster l'opacité du plan cadastral"
-              />
-            </div>
-            
-            {/* Bouton suppression avec icône */}
-            <button
-              onClick={onSupprimerImageFond}
-              title="Supprimer le plan cadastral"
-              style={{
-                width: '40px',
-                height: '100%',
-                background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '1.2rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 2px 4px rgba(244, 67, 54, 0.3)'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = 'linear-gradient(135deg, #e53935 0%, #c62828 100%)';
-                e.target.style.transform = 'scale(1.05)';
-                e.target.style.boxShadow = '0 4px 8px rgba(244, 67, 54, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)';
-                e.target.style.transform = 'scale(1)';
-                e.target.style.boxShadow = '0 2px 4px rgba(244, 67, 54, 0.3)';
-              }}
-            >
-              🗑️
-            </button>
-          </div>
-        )}
       </div>
 
       {/* En-tête avec onglets */}
