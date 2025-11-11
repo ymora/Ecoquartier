@@ -25,6 +25,7 @@ function PanneauLateral({
   onDimensionsChange,
   imageFondChargee,
   opaciteImage,
+  onAjouterTerrain,
   onAjouterMaison,
   onAjouterTerrasse,
   onAjouterPaves,
@@ -670,6 +671,145 @@ function PanneauLateral({
       {/* Contenu selon onglet actif */}
       {ongletActif === 'config' ? (
         <div className="panneau-outils-content">
+          {/* ✅ LISTE DES OBJETS SUR LE PLAN */}
+          {(canvas && canvas.getObjects) && (() => {
+            const objetsCanvas = canvas.getObjects().filter(obj => 
+              obj.customType && 
+              obj.customType !== 'arbre-a-planter' && 
+              obj.customType !== 'arbre-existant' &&
+              !obj.isGridLine && 
+              !obj.isBoussole && 
+              !obj.isImageFond &&
+              !obj.measureLabel &&
+              !obj.isLigneMesure
+            );
+            
+            const nbObjets = objetsCanvas.length;
+            
+            if (nbObjets === 0) return null;
+            
+            return (
+              <div style={{ marginBottom: '1rem' }}>
+                <button
+                  onClick={() => setSurPlanOuvert(!surPlanOuvert)}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem',
+                    background: surPlanOuvert ? '#4caf50' : 'white',
+                    color: surPlanOuvert ? 'white' : '#333',
+                    border: '1px solid #4caf50',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span>📦 Sur le plan ({nbObjets})</span>
+                  <span style={{ fontSize: '1rem' }}>{surPlanOuvert ? '▼' : '▶'}</span>
+                </button>
+                {surPlanOuvert && (
+                  <div style={{ 
+                    marginTop: '0.3rem',
+                    background: 'white',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd'
+                  }}>
+                    <div style={{ 
+                      maxHeight: '200px', 
+                      overflowY: 'auto'
+                    }}>
+                      {objetsCanvas.map((obj, index) => {
+                        const icone = 
+                          obj.customType === 'maison' ? '🏠' :
+                          obj.customType === 'terrasse' ? '🪵' :
+                          obj.customType === 'paves' ? '🌿' :
+                          obj.customType === 'citerne' ? '💧' :
+                          obj.customType === 'caisson-eau' ? '💦' :
+                          obj.customType === 'canalisation' ? '🚰' :
+                          obj.customType === 'cloture' ? '🚧' :
+                          obj.customType === 'sol' ? '🌍' : '📦';
+                        
+                        const nom = 
+                          obj.customType === 'maison' ? 'Maison' :
+                          obj.customType === 'terrasse' ? 'Terrasse' :
+                          obj.customType === 'paves' ? 'Pavés enherbés' :
+                          obj.customType === 'citerne' ? 'Citerne' :
+                          obj.customType === 'caisson-eau' ? 'Caisson eau' :
+                          obj.customType === 'canalisation' ? 'Canalisation' :
+                          obj.customType === 'cloture' ? 'Clôture' :
+                          obj.customType === 'sol' ? 'Terrain' : `Type: ${obj.customType || 'inconnu'}`;
+                        
+                        return (
+                          <div 
+                            key={`objet-${obj.customType}-${index}`}
+                            onClick={() => {
+                              canvas.setActiveObject(obj);
+                              canvas.renderAll();
+                            }}
+                            onMouseEnter={(e) => {
+                              highlightHover(obj, canvas);
+                              e.currentTarget.style.borderColor = '#4caf50';
+                              e.currentTarget.style.background = '#f1f8e9';
+                            }}
+                            onMouseLeave={(e) => {
+                              unhighlightHover(obj, canvas);
+                              e.currentTarget.style.borderColor = '#e0e0e0';
+                              e.currentTarget.style.background = 'white';
+                            }}
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '0.5rem',
+                              marginBottom: '0.2rem',
+                              background: 'white',
+                              borderRadius: '3px',
+                              fontSize: '0.75rem',
+                              border: '1px solid #e0e0e0',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
+                              {icone} {nom}
+                            </span>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                canvasOperations.supprimer(canvas, obj);
+                                canvasOperations.rendre(canvas);
+                                onExporterPlan && onExporterPlan(canvas);
+                              }}
+                              style={{
+                                background: '#f44336',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '3px',
+                                padding: '0.2rem 0.4rem',
+                                cursor: 'pointer',
+                                fontSize: '0.7rem',
+                                transition: 'transform 0.2s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                              title={`Supprimer ${nom}`}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+          
           {/* OBJET SÉLECTIONNÉ */}
           {objetSelectionne && (
             <>
@@ -1855,7 +1995,7 @@ function PanneauLateral({
                 transition: 'all 0.2s'
               }}
             >
-              <span>🏗️ Structures (4)</span>
+              <span>🏗️ Structures (5)</span>
               <span style={{ fontSize: '1rem' }}>{batimentsOuvert ? '▼' : '▶'}</span>
             </button>
             {batimentsOuvert && (
@@ -1865,6 +2005,27 @@ function PanneauLateral({
                 borderRadius: '4px',
                 border: '1px solid #ddd'
               }}>
+                <button 
+                  onClick={onAjouterTerrain} 
+                  title="Terrain sélectionnable avec maillage 5×5m pour gérer le relief et les couches de sol"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  🌍 Terrain
+                </button>
                 <button 
                   onClick={onAjouterMaison} 
                   title="Maison 10×10m, Hauteur 7m"
@@ -2209,130 +2370,6 @@ function PanneauLateral({
           </div>
           
           </div>
-          
-          {/* Liste des éléments sur le plan - ACCORDÉON */}
-          {(canvas && canvas.getObjects) && (() => {
-            const objetsCanvas = canvas.getObjects().filter(obj => 
-              obj.customType && 
-              obj.customType !== 'arbre-a-planter' && // Les arbres à planter sont gérés séparément
-              obj.customType !== 'arbre-existant' && // Arbres existants supprimés
-              !obj.isGridLine && 
-              !obj.isBoussole && 
-              !obj.isImageFond &&
-              !obj.measureLabel &&
-              !obj.isLigneMesure
-            );
-            
-            const nbObjets = objetsCanvas.length; // arbresAPlanter supprimé
-            
-            if (nbObjets === 0) return null;
-            
-            return (
-              <div style={{ marginBottom: '0.5rem' }}>
-                <button
-                  onClick={() => setSurPlanOuvert(!surPlanOuvert)}
-                  style={{
-                    width: '100%',
-                    padding: '0.6rem',
-                    background: surPlanOuvert ? '#4caf50' : 'white',
-                    color: surPlanOuvert ? 'white' : '#333',
-                    border: '1px solid #4caf50',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                    fontSize: '0.85rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <span>📦 Sur le plan ({nbObjets})</span>
-                  <span style={{ fontSize: '1rem' }}>{surPlanOuvert ? '▼' : '▶'}</span>
-                </button>
-                {surPlanOuvert && (
-                  <div style={{ 
-                    marginTop: '0.3rem',
-                    background: 'white',
-                    borderRadius: '4px',
-                    border: '1px solid #ddd'
-                  }}>
-                    <div style={{ 
-                      maxHeight: '200px', 
-                      overflowY: 'auto'
-                    }}>
-                    {/* Arbres à planter */}
-                    
-                    {/* Autres objets du canvas */}
-                    {objetsCanvas.map((obj, index) => {
-                      const icone = 
-                        obj.customType === 'maison' ? '🏠' :
-                        obj.customType === 'terrasse' ? '🪵' :
-                        obj.customType === 'paves' ? '🌿' :
-                        obj.customType === 'citerne' ? '💧' :
-                        obj.customType === 'caisson-eau' ? '💦' :
-                        obj.customType === 'canalisation' ? '🚰' :
-                        obj.customType === 'cloture' ? '🚧' : '📦';
-                      
-                      const nom = 
-                        obj.customType === 'maison' ? 'Maison' :
-                        obj.customType === 'terrasse' ? 'Terrasse' :
-                        obj.customType === 'paves' ? 'Pavés enherbés' :
-                        obj.customType === 'citerne' ? 'Citerne' :
-                        obj.customType === 'caisson-eau' ? 'Caisson eau' :
-                        obj.customType === 'canalisation' ? 'Canalisation' :
-                        obj.customType === 'cloture' ? 'Clôture' : `Type: ${obj.customType || 'inconnu'}`;
-                      
-                      return (
-                        <div 
-                          key={`objet-${obj.customType}-${index}`}
-                          onMouseEnter={() => highlightHover(obj, canvas)}
-                          onMouseLeave={() => unhighlightHover(obj, canvas)}
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '0.3rem',
-                            marginBottom: '0.2rem',
-                            background: 'white',
-                            borderRadius: '3px',
-                            fontSize: '0.75rem',
-                            border: '1px solid #e0e0e0',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
-                            {icone} {nom}
-                          </span>
-          <button 
-                            onClick={() => {
-                              canvasOperations.supprimer(canvas, obj);
-                              canvasOperations.rendre(canvas);
-                              onExporterPlan && onExporterPlan(canvas);
-                            }}
-                            style={{
-                              background: '#f44336',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '3px',
-                              padding: '0.2rem 0.4rem',
-                              cursor: 'pointer',
-                              fontSize: '0.7rem',
-                              transition: 'transform 0.2s'
-                            }}
-                            title={`Supprimer ${nom}`}
-                          >
-                            🗑️
-          </button>
-              </div>
-                      );
-                    })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
           
           {/* ACTIONS */}
           <div style={{ marginBottom: '0.5rem' }}>

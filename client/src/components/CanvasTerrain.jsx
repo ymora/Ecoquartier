@@ -84,7 +84,8 @@ function CanvasTerrain({
   onPlanComplete,
   anneeProjection = 0,
   heureJournee = 90,
-  saison = 'ete'
+  saison = 'ete',
+  onActionsReady = null
 }) {
   // ✅ Si dimensions/orientation ne sont pas passées en props, utiliser des states locaux
   const [dimensionsLocal, setDimensionsLocal] = useState({ largeur: 30, hauteur: 30 });
@@ -328,6 +329,39 @@ function CanvasTerrain({
   
   
   
+  // Ajout du terrain
+  const ajouterTerrain = useCallback(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    
+    // Vérifier s'il existe déjà un terrain
+    const terrainExistant = canvas.getObjects().find(obj => obj.customType === 'sol');
+    if (terrainExistant) {
+      notifications.show('⚠️ Un terrain existe déjà sur le plan', 'warning');
+      canvas.setActiveObject(terrainExistant);
+      canvas.renderAll();
+      setOngletActif('config');
+      return;
+    }
+    
+    // Ajouter le terrain au canvas
+    ajouterTerrainAuCanvas(canvas, echelle, dimensions);
+    
+    // Sélectionner le terrain et basculer sur Config
+    const nouveauTerrain = canvas.getObjects().find(obj => obj.customType === 'sol');
+    if (nouveauTerrain) {
+      canvas.setActiveObject(nouveauTerrain);
+      canvas.renderAll();
+      setOngletActif('config');
+    }
+    
+    // Exporter le plan
+    exporterPlan(canvas);
+    
+    notifications.show('✅ Terrain ajouté - Configurez le relief et les couches de sol dans Config', 'success');
+    logger.info('Terrain', '✅ Terrain ajouté au plan');
+  }, [echelle, dimensions, exporterPlan]);
+  
   // Création d'objets en mode placement
   const preparerPlacement = useCallback((typeObjet) => {
     const canvas = fabricCanvasRef.current;
@@ -387,6 +421,58 @@ function CanvasTerrain({
     revaliderTous(fabricCanvasRef.current);
   };
   const ajouterTerrasse = () => preparerPlacement('terrasse');
+  
+  // Charger un plan depuis un fichier JSON
+  const chargerPlan = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      try {
+        const text = await file.text();
+        const planData = JSON.parse(text);
+        
+        const canvas = fabricCanvasRef.current;
+        if (!canvas || !planData) {
+          logger.error('Import', 'Canvas ou planData manquant');
+          return;
+        }
+        
+        // Importer dynamiquement planLoader
+        const { chargerPlanDepuisJSON } = await import('../utils/canvas/planLoader');
+        await chargerPlanDepuisJSON(canvas, echelle, planData);
+        
+        // Mettre à jour les dimensions si présentes
+        if (planData.dimensions) {
+          setDimensions(planData.dimensions);
+        }
+        if (planData.orientation !== undefined) {
+          setOrientation(planData.orientation);
+        }
+        
+        notifications.show('✅ Plan chargé avec succès', 'success');
+        logger.info('Plan', '✅ Plan chargé depuis fichier');
+      } catch (error) {
+        logger.error('Import', 'Erreur chargement plan:', error);
+        notifications.show('❌ Erreur lors du chargement du plan', 'error');
+      }
+    };
+    input.click();
+  }, [echelle, setDimensions, setOrientation]);
+  
+  // Exposer les actions au composant parent
+  useEffect(() => {
+    if (onActionsReady) {
+      onActionsReady({
+        chargerPlan,
+        chargerImageFond,
+        exporterPlan: telechargerPlanJSON
+      });
+    }
+  }, [chargerPlan, chargerImageFond, telechargerPlanJSON, onActionsReady]);
   const ajouterPaves = () => preparerPlacement('paves');
   
   const ajouterArbrePlante = (plante) => {
@@ -951,6 +1037,7 @@ function CanvasTerrain({
         opaciteImage={opaciteImage}
         solTransparent={solTransparent}
         onSolTransparentChange={setSolTransparent}
+        onAjouterTerrain={ajouterTerrain}
         onAjouterMaison={ajouterMaison}
         onAjouterTerrasse={ajouterTerrasse}
         onAjouterPaves={ajouterPaves}

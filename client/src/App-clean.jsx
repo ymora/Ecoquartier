@@ -31,6 +31,13 @@ export default function AppClean() {
   const [anneeProjection, setAnneeProjection] = useState(0);
   const [heureJournee, setHeureJournee] = useState(90);
   const [saison, setSaison] = useState('ete');
+  
+  // Callbacks pour les actions du menu déroulant
+  const [canvasActions, setCanvasActions] = useState({
+    chargerPlan: null,
+    chargerImageFond: null,
+    exporterPlan: null
+  });
 
   // Appliquer le thème au chargement et aux changements
   if (typeof document !== 'undefined') {
@@ -52,11 +59,44 @@ export default function AppClean() {
     <div className="app-clean">
       {/* HEADER */}
       <header className="header-clean">
-        <div className="header-brand">
+        <div className="header-brand" style={{ position: 'relative' }}>
           <div className="logo">🌳</div>
-          <div>
+          <div className="header-title-menu">
             <h1>Haies Bessancourt</h1>
             <p>Écocartier</p>
+            
+            {/* Menu déroulant au survol */}
+            {mode === 'planner' && (
+              <div className="dropdown-menu-header">
+                <div className="dropdown-menu-content">
+                  <div className="dropdown-menu-title">📁 Gestion du plan</div>
+                  <button 
+                    className="dropdown-menu-item"
+                    onClick={() => canvasActions.chargerPlan && canvasActions.chargerPlan()}
+                    disabled={!canvasActions.chargerPlan}
+                  >
+                    <span className="dropdown-icon">📂</span>
+                    <span>Charger mon plan</span>
+                  </button>
+                  <button 
+                    className="dropdown-menu-item"
+                    onClick={() => canvasActions.chargerImageFond && canvasActions.chargerImageFond()}
+                    disabled={!canvasActions.chargerImageFond}
+                  >
+                    <span className="dropdown-icon">📍</span>
+                    <span>Plan cadastral</span>
+                  </button>
+                  <button 
+                    className="dropdown-menu-item"
+                    onClick={() => canvasActions.exporterPlan && canvasActions.exporterPlan()}
+                    disabled={!canvasActions.exporterPlan}
+                  >
+                    <span className="dropdown-icon">💾</span>
+                    <span>Exporter mon plan</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -230,6 +270,7 @@ export default function AppClean() {
                 anneeProjection={anneeProjection}
                 heureJournee={heureJournee}
                 saison={saison}
+                onActionsReady={setCanvasActions}
               />
             </Suspense>
           )}
