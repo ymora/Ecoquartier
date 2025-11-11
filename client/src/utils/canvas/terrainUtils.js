@@ -138,72 +138,157 @@ export const creerObjetTerrain = (echelle, dimensions) => {
         isNoeudMaillage: true // ✅ Pour filtrer lors de l'export JSON
       });
       
-      // ✅ Gestionnaire de clic pour SÉLECTIONNER/DÉSÉLECTIONNER le nœud
+      // ✅ Gestionnaire de clic pour SÉLECTION PROGRESSIVE (nœud → segment → ligne → désélection)
       noeud.on('mousedown', function(e) {
         if (e.e) e.e.stopPropagation();
         
         const terrainGroup = this.group;
         if (!terrainGroup) return;
         
-        // Toggle sélection
-        this.isSelected = !this.isSelected;
-        
-        // Mettre à jour l'apparence
-        if (this.isSelected) {
-          this.set({
-            stroke: '#ffeb3b', // Jaune pour indiquer la sélection
-            strokeWidth: 4,
-            radius: 8
-          });
-        } else {
-          this.set({
-            stroke: '#ffffff',
-            strokeWidth: 2,
-            radius: 6
-          });
-        }
-        
-        // Mettre à jour la liste des nœuds sélectionnés dans le terrain
+        // Initialiser le compteur de clics et les listes
         if (!terrainGroup.noeudsSelectionnes) {
           terrainGroup.noeudsSelectionnes = [];
         }
+        if (!terrainGroup.modeSelection) {
+          terrainGroup.modeSelection = 'noeud'; // noeud, segment, ligne
+        }
+        if (!terrainGroup.dernierNoeudClique) {
+          terrainGroup.dernierNoeudClique = null;
+        }
         
         const noeudKey = `${i},${j}`;
-        const index = terrainGroup.noeudsSelectionnes.findIndex(n => n.key === noeudKey);
+        const estDejaSel = terrainGroup.noeudsSelectionnes.findIndex(n => n.key === noeudKey) !== -1;
         
-        if (this.isSelected && index === -1) {
+        // ✅ LOGIQUE DE SÉLECTION PROGRESSIVE
+        if (!estDejaSel) {
+          // ========== 1er clic : Sélectionner le nœud ==========
+          terrainGroup.modeSelection = 'noeud';
+          terrainGroup.dernierNoeudClique = { i, j, noeud: this };
+          
+          // Désélectionner tous les autres nœuds
+          terrainGroup.noeudsSelectionnes.forEach(({ noeud }) => {
+            noeud.set({ fill: noeud.elevation === 0 ? '#2196f3' : (noeud.elevation > 0 ? '#4caf50' : '#f44336') });
+          });
+          terrainGroup.noeudsSelectionnes = [];
+          
+          // Sélectionner ce nœud
+          this.set({ fill: '#ffc107' }); // Jaune pour sélection
           terrainGroup.noeudsSelectionnes.push({ i, j, key: noeudKey, noeud: this });
-        } else if (!this.isSelected && index !== -1) {
-          terrainGroup.noeudsSelectionnes.splice(index, 1);
+          
+          logger.debug('Terrain', `✅ 1er clic - Nœud [${i},${j}] sélectionné`);
+          
+        } else if (terrainGroup.modeSelection === 'noeud' && terrainGroup.dernierNoeudClique) {
+          // ========== 2ème clic : Sélectionner le segment ou la ligne ==========
+          const dernier = terrainGroup.dernierNoeudClique;
+          
+          // Vérifier si c'est sur la même ligne (horizontale ou verticale)
+          if (i === dernier.i) {
+            // Ligne HORIZONTALE
+            const minJ = Math.min(j, dernier.j);
+            const maxJ = Math.max(j, dernier.j);
+            const distance = maxJ - minJ;
+            
+            if (distance === 1) {
+              // ========== Segment adjacent ==========
+              terrainGroup.modeSelection = 'segment';
+              // Sélectionner tous les nœuds entre les deux
+              for (let jj = minJ; jj <= maxJ; jj++) {
+                const noeudSegment = elementsMaillage.find(n => n.noeudI === i && n.noeudJ === jj);
+                if (noeudSegment) {
+                  const key = `${i},${jj}`;
+                  if (!terrainGroup.noeudsSelectionnes.find(n => n.key === key)) {
+                    noeudSegment.set({ fill: '#ffc107' });
+                    terrainGroup.noeudsSelectionnes.push({ i, j: jj, key, noeud: noeudSegment });
+                  }
+                }
+              }
+              logger.debug('Terrain', `✅ 2ème clic - Segment horizontal [${i}][${minJ}→${maxJ}] sélectionné`);
+            } else {
+              // ========== Ligne complète ==========
+              terrainGroup.modeSelection = 'ligne';
+              // Sélectionner TOUTE la ligne horizontale
+              for (let jj = 0; jj < nbNoeudsX; jj++) {
+                const noeudLigne = elementsMaillage.find(n => n.noeudI === i && n.noeudJ === jj);
+                if (noeudLigne) {
+                  const key = `${i},${jj}`;
+                  if (!terrainGroup.noeudsSelectionnes.find(n => n.key === key)) {
+                    noeudLigne.set({ fill: '#ffc107' });
+                    terrainGroup.noeudsSelectionnes.push({ i, j: jj, key, noeud: noeudLigne });
+                  }
+                }
+              }
+              logger.debug('Terrain', `✅ 2ème clic - Ligne horizontale complète [${i}] sélectionnée`);
+            }
+            
+          } else if (j === dernier.j) {
+            // Ligne VERTICALE
+            const minI = Math.min(i, dernier.i);
+            const maxI = Math.max(i, dernier.i);
+            const distance = maxI - minI;
+            
+            if (distance === 1) {
+              // ========== Segment adjacent ==========
+              terrainGroup.modeSelection = 'segment';
+              for (let ii = minI; ii <= maxI; ii++) {
+                const noeudSegment = elementsMaillage.find(n => n.noeudI === ii && n.noeudJ === j);
+                if (noeudSegment) {
+                  const key = `${ii},${j}`;
+                  if (!terrainGroup.noeudsSelectionnes.find(n => n.key === key)) {
+                    noeudSegment.set({ fill: '#ffc107' });
+                    terrainGroup.noeudsSelectionnes.push({ i: ii, j, key, noeud: noeudSegment });
+                  }
+                }
+              }
+              logger.debug('Terrain', `✅ 2ème clic - Segment vertical [${minI}→${maxI}][${j}] sélectionné`);
+            } else {
+              // ========== Ligne complète ==========
+              terrainGroup.modeSelection = 'ligne';
+              for (let ii = 0; ii < nbNoeudsZ; ii++) {
+                const noeudLigne = elementsMaillage.find(n => n.noeudI === ii && n.noeudJ === j);
+                if (noeudLigne) {
+                  const key = `${ii},${j}`;
+                  if (!terrainGroup.noeudsSelectionnes.find(n => n.key === key)) {
+                    noeudLigne.set({ fill: '#ffc107' });
+                    terrainGroup.noeudsSelectionnes.push({ i: ii, j, key, noeud: noeudLigne });
+                  }
+                }
+              }
+              logger.debug('Terrain', `✅ 2ème clic - Ligne verticale complète [${j}] sélectionnée`);
+            }
+          }
+          
+        } else {
+          // ========== 3ème clic : DÉSÉLECTIONNER TOUT ==========
+          terrainGroup.noeudsSelectionnes.forEach(({ noeud }) => {
+            noeud.set({ fill: noeud.elevation === 0 ? '#2196f3' : (noeud.elevation > 0 ? '#4caf50' : '#f44336') });
+          });
+          terrainGroup.noeudsSelectionnes = [];
+          terrainGroup.modeSelection = 'noeud';
+          terrainGroup.dernierNoeudClique = null;
+          logger.debug('Terrain', `✅ 3ème clic - Désélection complète`);
         }
         
         // ✅ IMPORTANT : Créer une NOUVELLE copie du tableau pour forcer la mise à jour React
         terrainGroup.noeudsSelectionnes = [...terrainGroup.noeudsSelectionnes];
         
         if (terrainGroup.canvas) {
-          // ✅ IMPORTANT : Forcer la sélection du terrain parent pour mettre à jour le panneau Config
           terrainGroup.canvas.setActiveObject(terrainGroup);
           terrainGroup.canvas.renderAll();
-          // Déclencher l'événement pour forcer React à se mettre à jour
           terrainGroup.canvas.fire('selection:updated', { selected: [terrainGroup] });
         }
-        
-        logger.debug('Terrain', `Nœud [${i},${j}] ${this.isSelected ? 'sélectionné' : 'désélectionné'}. Total: ${terrainGroup.noeudsSelectionnes.length}`);
       });
       
-      // Survol
+      // ✅ Survol simplifié (SANS changement de taille pour éviter décalages)
       noeud.on('mouseover', function() {
-        if (!this.isSelected) {
-          this.set({ radius: 8, strokeWidth: 3 });
+        if (!this.group?.noeudsSelectionnes?.find(n => n.key === `${i},${j}`)) {
+          this.set({ opacity: 0.7 }); // Juste un peu transparent
           this.canvas?.renderAll();
         }
       });
       
       noeud.on('mouseout', function() {
-        if (!this.isSelected) {
-          this.set({ radius: 6, strokeWidth: 2 });
-          this.canvas?.renderAll();
-        }
+        this.set({ opacity: 1 });
+        this.canvas?.renderAll();
       });
       
       elementsMaillage.push(noeud);
