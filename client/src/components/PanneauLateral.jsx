@@ -2306,9 +2306,6 @@ function PanneauLateral({
           </div>
             )}
           </div>
-          
-          {/* ARBRES ET ARBUSTES À PLANTER */}
-          <div style={{ marginBottom: '0.5rem' }}>
             
             {/* ARBRES */}
             <div style={{ marginBottom: '0.5rem' }}>
@@ -2388,84 +2385,82 @@ function PanneauLateral({
               )}
           </div>
           
-            {/* ARBUSTES */}
-            <div style={{ marginBottom: '0.5rem' }}>
+          {/* ARBUSTES */}
+          <div style={{ marginBottom: '0.5rem' }}>
             <button 
-                onClick={() => setArbustesOuvert(!arbustesOuvert)}
-                style={{
-                  width: '100%',
-                  padding: '0.6rem',
-                  background: arbustesOuvert ? '#8bc34a' : 'white',
-                  color: arbustesOuvert ? 'white' : '#333',
-                  border: '1px solid #8bc34a',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '0.85rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <span>🌿 Arbustes ({arbustes.length})</span>
-                <span style={{ fontSize: '1rem' }}>{arbustesOuvert ? '▼' : '▶'}</span>
+              onClick={() => setArbustesOuvert(!arbustesOuvert)}
+              style={{
+                width: '100%',
+                padding: '0.6rem',
+                background: arbustesOuvert ? '#8bc34a' : 'white',
+                color: arbustesOuvert ? 'white' : '#333',
+                border: '1px solid #8bc34a',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span>🌿 Arbustes ({arbustes.length})</span>
+              <span style={{ fontSize: '1rem' }}>{arbustesOuvert ? '▼' : '▶'}</span>
             </button>
-              {arbustesOuvert && (
-                <div style={{ 
-                  maxHeight: '250px', 
-                  overflowY: 'auto',
-                  marginTop: '0.3rem',
-                  background: 'white',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd'
-                }}>
-                  {arbustes.map(plante => (
-                    <div 
-                      key={plante.id}
+            {arbustesOuvert && (
+              <div style={{ 
+                maxHeight: '250px', 
+                overflowY: 'auto',
+                marginTop: '0.3rem',
+                background: 'white',
+                borderRadius: '4px',
+                border: '1px solid #ddd'
+              }}>
+                {arbustes.map(plante => (
+                  <div 
+                    key={plante.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '0.4rem',
+                      borderBottom: '1px solid #f0f0f0',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  >
+                    <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
+                      {plante.name}
+                    </span>
+                    <button 
+                      onClick={() => onAjouterArbrePlante && onAjouterArbrePlante(plante)}
                       style={{
+                        background: '#8bc34a',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '28px',
+                        height: '28px',
                         display: 'flex',
                         alignItems: 'center',
-                        padding: '0.4rem',
-                        borderBottom: '1px solid #f0f0f0',
+                        justifyContent: 'center',
                         cursor: 'pointer',
-                        transition: 'background 0.2s'
+                        fontSize: '1rem',
+                        fontWeight: 'bold',
+                        transition: 'transform 0.2s'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      title={`Ajouter ${plante.name}`}
                     >
-                      <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
-                        {plante.name}
-                      </span>
-            <button 
-                        onClick={() => onAjouterArbrePlante && onAjouterArbrePlante(plante)}
-                        style={{
-                          background: '#8bc34a',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '28px',
-                          height: '28px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          fontSize: '1rem',
-                          fontWeight: 'bold',
-                          transition: 'transform 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        title={`Ajouter ${plante.name}`}
-                      >
-                        ➕
-            </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-          </div>
-          
+                      ➕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           
           {/* ACTIONS */}
