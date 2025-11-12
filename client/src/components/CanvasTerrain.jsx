@@ -1055,7 +1055,7 @@ function CanvasTerrain({
         onAjusterOpaciteImage={ajusterOpaciteImage}
         onSupprimerImageFond={supprimerImageFond}
         onResetZoom={resetZoom}
-        onExporterPlan={telechargerPlanJSON}
+        onExporterPlan={exporterPlan}
         onAjouterArbrePlante={ajouterArbrePlante}
         onSyncKeyChange={setSyncKey}
         ongletActifExterne={ongletActif}
