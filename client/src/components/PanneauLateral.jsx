@@ -505,6 +505,8 @@ function PanneauLateral({
               obj.customType && 
               obj.customType !== 'arbre-a-planter' && 
               obj.customType !== 'arbre-existant' &&
+              obj.customType !== 'maillage-relief' && // ✅ Masquer le maillage (élément de fond permanent)
+              obj.customType !== 'noeud-relief' && // ✅ Masquer les nœuds
               !obj.isGridLine && 
               !obj.isBoussole && 
               !obj.isImageFond &&
@@ -637,8 +639,8 @@ function PanneauLateral({
             );
           })()}
           
-          {/* OBJET SÉLECTIONNÉ */}
-          {objetSelectionne && (
+          {/* ✅ OBJET SÉLECTIONNÉ - Uniquement pour les objets utilisateur (pas le maillage) */}
+          {objetSelectionne && objetSelectionne.customType !== 'maillage-relief' && (
             <>
               <div className="section-title">🎯 Objet sélectionné</div>
               <div className="info-box" style={{ background: '#fff3e0', borderColor: '#ff9800' }}>
@@ -652,7 +654,6 @@ function PanneauLateral({
                   {objetSelectionne.customType === 'paves' && `🌱 Pavés enherbés${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'arbre-a-planter' && `🌳 ${objetSelectionne.arbreData?.name || 'Arbre'}${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'arbre-existant' && `🌳 Arbre existant${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
-                  {objetSelectionne.customType === 'maillage-relief' && '🌍 Maillage de relief'}
                 </div>
               </div>
               
@@ -1337,12 +1338,16 @@ function PanneauLateral({
                 </div>
               )}
               
-              {/* ✅ Maillage Relief : Configurer le relief */}
-              {objetSelectionne.customType === 'maillage-relief' && (
-                <div className="objet-controls">
-                  <div className="section-header">
-                    <h3 className="section-title">🌍 Configuration du terrain</h3>
-                  </div>
+              {/* ✅ RELIEF ET COUCHES DE SOL - Section permanente (toujours visible) */}
+              {canvas && (() => {
+                const maillage = canvas.getObjects().find(obj => obj.customType === 'maillage-relief');
+                if (!maillage) return null;
+                
+                return (
+                  <div className="objet-controls">
+                    <div className="section-header">
+                      <h3 className="section-title">🌍 Relief et Couches de Sol</h3>
+                    </div>
                   
                   {/* SECTION : Maillage d'élévation - ✅ SIMPLIFIÉ */}
                   <div style={{
@@ -1789,7 +1794,8 @@ function PanneauLateral({
                     )}
                   </div>
                 </div>
-              )}
+              );
+            })()}
             </>
           )}
         </div>
