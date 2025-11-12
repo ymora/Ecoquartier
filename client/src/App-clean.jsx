@@ -5,7 +5,6 @@
 import { useState, lazy, Suspense } from 'react';
 import './styles-v2/reset.css';
 import './styles-v2/design-tokens.css';
-import './styles-v2/neo-bridge.css';
 import './styles-v2/app-clean.css';
 import './styles-v2/planner-theme-fix.css';
 import plantesData from './data/arbustesData';
@@ -120,27 +119,7 @@ export default function AppClean() {
             <button 
               onClick={() => window.open('http://localhost:3001', '_blank')}
               title="Ouvrir l'interface admin (upload images)"
-              style={{
-                background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: 'var(--radius-md)',
-                padding: '0 var(--space-3)',
-                fontSize: '18px',
-                cursor: 'pointer',
-                transition: 'all var(--transition-base)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, #f57c00 0%, #e65100 100%)';
-                e.currentTarget.style.transform = 'scale(1.05)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
+              className="header-icon-btn"
             >
               ⚙️
             </button>

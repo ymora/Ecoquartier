@@ -1,6 +1,16 @@
 /**
  * PLANNER THEME FIX - Force les bons thèmes dans le planificateur
  * Corrige TOUTES les couleurs codées en dur de PanneauLateral et CanvasTerrain
+ * 
+ * POURQUOI LES !important ?
+ * - PanneauLateral.jsx contient des styles inline (style={{...}}) qui ont une spécificité élevée
+ * - Certains composants ont des sélecteurs CSS très spécifiques difficiles à surcharger
+ * - Les !important garantissent que le thème jour/nuit fonctionne partout
+ * 
+ * REFACTORISATION FUTURE (optionnelle) :
+ * - Migrer PanneauLateral.jsx vers des classes CSS uniquement
+ * - Supprimer tous les styles inline du JSX
+ * - Réduire progressivement les !important
  */
 
 /* === PANNEAU LATERAL - Background === */

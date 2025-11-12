@@ -1,7 +1,3 @@
-/* Import du système Neo Garden (désactivé, on utilise le nouveau design system) */
-/* @import '../styles/neo-garden.css'; */
-/* @import '../styles/tabs-unified.css'; */
-
 /* === PANNEAU LATÉRAL NEO GARDEN === */
 .panneau-lateral {
   width: 320px;
