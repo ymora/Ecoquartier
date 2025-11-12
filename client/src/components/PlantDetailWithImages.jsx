@@ -2,6 +2,7 @@
  * PLANT DETAIL WITH IMAGES - Fiche avec galerie d'images
  */
 import { useState } from 'react';
+import FullscreenGallery from './FullscreenGallery';
 import './PlantDetailWithImages.css';
 
 export default function PlantDetailWithImages({ plant }) {
@@ -244,38 +245,17 @@ export default function PlantDetailWithImages({ plant }) {
         </div>
       )}
 
-      {/* Modal Plein Écran */}
-      {fullscreenOpen && (
-        <div className="fullscreen-modal" onClick={() => setFullscreenOpen(false)}>
-          <button className="fullscreen-close" onClick={() => setFullscreenOpen(false)}>✕</button>
-          <img 
-            src={`/images/${images[currentImageIndex]}`} 
-            alt={`${plant.name} - ${currentImageIndex + 1}`}
-            onClick={(e) => e.stopPropagation()}
-          />
-          <div className="fullscreen-nav">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setCurrentImageIndex((currentImageIndex - 1 + images.length) % images.length);
-              }}
-              disabled={images.length <= 1}
-            >
-              ◀ Précédent
-            </button>
-            <span>{currentImageIndex + 1} / {images.length}</span>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setCurrentImageIndex((currentImageIndex + 1) % images.length);
-              }}
-              disabled={images.length <= 1}
-            >
-              Suivant ▶
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Modal Plein Écran - Composant réutilisable */}
+      <FullscreenGallery
+        isOpen={fullscreenOpen}
+        onClose={() => setFullscreenOpen(false)}
+        currentImage={`/images/${images[currentImageIndex]}`}
+        currentIndex={currentImageIndex}
+        totalImages={images.length}
+        onPrevious={() => setCurrentImageIndex((currentImageIndex - 1 + images.length) % images.length)}
+        onNext={() => setCurrentImageIndex((currentImageIndex + 1) % images.length)}
+        altText={`${plant.name} - ${currentImageIndex + 1}`}
+      />
     </div>
   );
 }

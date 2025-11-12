@@ -364,46 +364,7 @@
 }
 
 /* === MODAL PLEIN ÉCRAN === */
-.fullscreen-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  cursor: zoom-out;
-}
-
-.fullscreen-modal img {
-  max-width: 90vw;
-  max-height: 90vh;
-  object-fit: contain;
-}
-
-.fullscreen-close {
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: var(--radius-full);
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  z-index: 10000;
-}
-
-.fullscreen-close:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-}
+/* ✅ Styles déplacés vers FullscreenGallery.css (composant réutilisable) */
 
 /* === RESPONSIVE === */
 @media (max-width: 1200px) {
