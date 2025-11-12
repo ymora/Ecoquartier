@@ -174,7 +174,7 @@ function PanneauLateral({
                   obj.customType === 'caisson-eau' || obj.customType === 'canalisation' || 
                   obj.customType === 'cloture' || obj.customType === 'terrasse' || 
                   obj.customType === 'paves' || obj.customType === 'arbre-a-planter' ||
-                  obj.customType === 'arbre-existant' || obj.customType === 'sol')) {
+                  obj.customType === 'arbre-existant' || obj.customType === 'maillage-relief')) {
         // Retirer la mise en évidence de l'objet précédent s'il y en a un
         if (objetSelectionnePrecedentRef.current) {
           unhighlightSelection(objetSelectionnePrecedentRef.current, canvas);
@@ -559,7 +559,7 @@ function PanneauLateral({
                           obj.customType === 'caisson-eau' ? '💦' :
                           obj.customType === 'canalisation' ? '🚰' :
                           obj.customType === 'cloture' ? '🪵' :
-                          obj.customType === 'sol' ? '🌍' : '📦';
+                          obj.customType === 'maillage-relief' ? '🌍' : '📦';
                         
                         const nom = 
                           obj.customType === 'maison' ? 'Maison' :
@@ -569,7 +569,7 @@ function PanneauLateral({
                           obj.customType === 'caisson-eau' ? 'Caisson eau' :
                           obj.customType === 'canalisation' ? 'Canalisation' :
                           obj.customType === 'cloture' ? 'Clôture' :
-                          obj.customType === 'sol' ? 'Terrain' : `Type: ${obj.customType || 'inconnu'}`;
+                          obj.customType === 'maillage-relief' ? 'Relief' : `Type: ${obj.customType || 'inconnu'}`;
                         
                         return (
                           <div 
@@ -653,7 +653,7 @@ function PanneauLateral({
                   {objetSelectionne.customType === 'paves' && `🌱 Pavés enherbés${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'arbre-a-planter' && `🌳 ${objetSelectionne.arbreData?.name || 'Arbre'}${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'arbre-existant' && `🌳 Arbre existant${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
-                  {objetSelectionne.customType === 'sol' && '🌍 Sol'}
+                  {objetSelectionne.customType === 'maillage-relief' && '🌍 Maillage de relief'}
                 </div>
               </div>
               
@@ -1338,8 +1338,8 @@ function PanneauLateral({
                 </div>
               )}
               
-              {/* ✅ Sol : Composition du sol */}
-              {objetSelectionne.customType === 'sol' && (
+              {/* ✅ Maillage Relief : Configurer le relief */}
+              {objetSelectionne.customType === 'maillage-relief' && (
                 <div className="objet-controls">
                   <div className="section-header">
                     <h3 className="section-title">🌍 Configuration du terrain</h3>

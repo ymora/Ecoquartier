@@ -5,7 +5,7 @@ import PanneauLateral from './PanneauLateral';
 import logger from '../utils/logger';
 import { ECHELLE_PIXELS_PAR_METRE, COUCHES_SOL_DEFAUT } from '../config/constants';
 import { notifications } from '../utils/notifications';
-import { ajouterTerrainAuCanvas, agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
+import { agrandirTerrainSiNecessaire } from '../utils/canvas/terrainUtils';
 
 // Dynamic import pour Three.js (évite bundle 3x trop gros)
 const CanvasTerrain3D = lazy(() => import('./CanvasTerrain3D'));
@@ -108,7 +108,7 @@ function CanvasTerrain({
   const echelle = ECHELLE_PIXELS_PAR_METRE;
   
   // ========== STATES ==========
-  const [couchesSol, setCouchesSol] = useState(COUCHES_SOL_DEFAUT);
+  const [couchesSol, setCouchesSol] = useState([]);  // ✅ Vide au départ, sera rempli par canvas.couchesSol
   const [imageFondChargee, setImageFondChargee] = useState(false);
   const [opaciteImage, setOpaciteImage] = useState(0.8);
   const [solTransparent, setSolTransparent] = useState(false);
@@ -327,40 +327,29 @@ function CanvasTerrain({
     ajouterPointUtils(canvas, ligne, pointer);
   }, []);
   
-  
-  
-  // Ajout du terrain
-  const ajouterTerrain = useCallback(() => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
-    
-    // Vérifier s'il existe déjà un terrain
-    const terrainExistant = canvas.getObjects().find(obj => obj.customType === 'sol');
-    if (terrainExistant) {
-      notifications.show('⚠️ Un terrain existe déjà sur le plan', 'warning');
-      canvas.setActiveObject(terrainExistant);
-      canvas.renderAll();
-      setOngletActif('config');
-      return;
+  // ✅ Synchroniser les couches du canvas avec le state React
+  useEffect(() => {
+    if (fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+      
+      // Écouter les changements de couches depuis le canvas
+      const handleCouchesUpdated = (e) => {
+        setCouchesSol(e.couches || []);
+      };
+      
+      canvas.on('couches:updated', handleCouchesUpdated);
+      
+      // Initialiser avec les couches existantes
+      if (canvas.couchesSol && canvas.couchesSol.length > 0) {
+        setCouchesSol(canvas.couchesSol);
+      }
+      
+      return () => {
+        canvas.off('couches:updated', handleCouchesUpdated);
+      };
     }
-    
-    // Ajouter le terrain au canvas
-    ajouterTerrainAuCanvas(canvas, echelle, dimensions);
-    
-    // Sélectionner le terrain et basculer sur Config
-    const nouveauTerrain = canvas.getObjects().find(obj => obj.customType === 'sol');
-    if (nouveauTerrain) {
-      canvas.setActiveObject(nouveauTerrain);
-      canvas.renderAll();
-      setOngletActif('config');
-    }
-    
-    // Exporter le plan
-    exporterPlan(canvas);
-    
-    notifications.show('✅ Terrain ajouté - Configurez le relief et les couches de sol dans Config', 'success');
-    logger.info('Terrain', '✅ Terrain ajouté au plan');
-  }, [echelle, dimensions, exporterPlan]);
+  }, [fabricCanvasRef.current]);
+  
   
   // Création d'objets en mode placement
   const preparerPlacement = useCallback((typeObjet) => {
@@ -672,8 +661,8 @@ function CanvasTerrain({
              !isNaN(obj.top);
     };
     
-    // ✅ Extraire le terrain avec son maillage d'élévation
-    const terrain2D = canvas.getObjects().find(o => o.customType === 'sol');
+    // ✅ NOUVEAU SYSTÈME : Extraire le maillage de relief
+    const maillageRelief = canvas.getObjects().find(o => o.customType === 'maillage-relief');
     
     const extractedData = {
       maisons: canvas.getObjects().filter(o => o.customType === 'maison' && objetValide(o)),
@@ -684,22 +673,23 @@ function CanvasTerrain({
       paves: canvas.getObjects().filter(o => o.customType === 'paves' && objetValide(o)),
       caissonsEau: canvas.getObjects().filter(o => o.customType === 'caisson-eau' && objetValide(o)),
       arbres: canvas.getObjects().filter(o => o.customType === 'arbre-a-planter' && objetValide(o)),
-      terrain: canvas.getObjects().filter(o => o.customType === 'sol' && objetValide(o)),
-      // ✅ Ajouter le maillage d'élévation pour le terrain 3D
-      terrainMaillage: terrain2D?.maillageElevation || null,
-      terrainTailleMaille: terrain2D?.tailleMailleM || 5,
+      // ✅ NOUVEAU SYSTÈME : Plus de terrain visible, juste le maillage de relief
+      terrain: [], // Vide car plus de "terrain" comme objet visible
+      // ✅ Maillage d'élévation pour la 3D
+      terrainMaillage: maillageRelief?.maillageElevation || null,
+      terrainTailleMaille: maillageRelief?.tailleMailleM || 5,
       echelle: echelle3D
     };
     
     // 🔍 DEBUG : Vérifier si le maillage est transmis
-    if (terrain2D?.maillageElevation) {
-      const elevMax = Math.max(...terrain2D.maillageElevation.flat());
-      const elevMin = Math.min(...terrain2D.maillageElevation.flat());
+    if (maillageRelief?.maillageElevation) {
+      const elevMax = Math.max(...maillageRelief.maillageElevation.flat());
+      const elevMin = Math.min(...maillageRelief.maillageElevation.flat());
       if (elevMax !== 0 || elevMin !== 0) {
-        console.log('📊 Sync 2D→3D: Maillage terrain avec déformations', {
+        console.log('📊 Sync 2D→3D: Maillage relief avec déformations', {
           elevMax: elevMax.toFixed(2) + 'm',
           elevMin: elevMin.toFixed(2) + 'm',
-          noeuds: `${terrain2D.maillageElevation.length}×${terrain2D.maillageElevation[0]?.length || 0}`
+          noeuds: `${maillageRelief.maillageElevation.length}×${maillageRelief.maillageElevation[0]?.length || 0}`
         });
       }
     }
