@@ -9,6 +9,7 @@ import {
   unhighlightSelection 
 } from '../utils/canvas/highlightUtils';
 import { mettreAJourCouchesSol, modifierElevationNoeudsSelectionnes, deselectionnerTousLesNoeuds, modifierToutLeMaillage } from '../utils/canvas/terrainUtils';
+import { ajouterCoucheSol, obtenirCouchesSol } from '../utils/canvas/couchesSolUtils';
 import { chargerPlanJSONAvecExplorateur } from '../utils/fileLoader';
 import { canvasOperations } from '../utils/canvas/canvasOperations';
 import { getInfoOmbreArbre } from '../utils/canvas/ombreArbre';
@@ -72,6 +73,27 @@ function PanneauLateral({
   // Séparer arbres et arbustes
   const arbres = plantesData.filter(p => p.type === 'arbre');
   const arbustes = plantesData.filter(p => !p.type || p.type === 'arbuste');
+  
+  // ✅ NOUVEAU SYSTÈME : Handler pour ajouter une couche de sol directement
+  const handleAjouterCouche = (type, nom, profondeur, couleur) => {
+    if (!canvas) {
+      logger.warn('Couche', '⚠️ Canvas non disponible');
+      return;
+    }
+    
+    const couche = ajouterCoucheSol(canvas, type, { nom, profondeur, couleur });
+    
+    if (couche) {
+      // Mettre à jour l'état des couches
+      const nouvellesCouches = obtenirCouchesSol(canvas);
+      onCouchesSolChange(nouvellesCouches);
+      
+      // Basculer sur l'onglet Config pour voir les couches
+      setOngletActif('config');
+      
+      logger.info('Couche', `✅ Couche ajoutée: ${nom}`);
+    }
+  };
   
   const styles = {
     boutonSection: (ouvert, couleur) => ({
@@ -2122,7 +2144,7 @@ function PanneauLateral({
                 transition: 'all 0.2s'
               }}
             >
-              <span>🏗️ Structures (5)</span>
+              <span>🏗️ Structures (4)</span>
               <span style={{ fontSize: '1rem' }}>{batimentsOuvert ? '▼' : '▶'}</span>
             </button>
             {batimentsOuvert && (
@@ -2132,27 +2154,6 @@ function PanneauLateral({
                 borderRadius: '4px',
                 border: '1px solid #ddd'
               }}>
-                <button 
-                  onClick={onAjouterTerrain} 
-                  title="Terrain sélectionnable avec maillage 5×5m pour gérer le relief et les couches de sol"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-                  🌍 Terrain
-                </button>
                 <button 
                   onClick={onAjouterMaison} 
                   title="Maison 10×10m, Hauteur 7m"

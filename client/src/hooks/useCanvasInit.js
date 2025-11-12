@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 import logger from '../utils/logger';
-import { ajouterTerrainAuCanvas } from '../utils/canvas/terrainUtils';
+import { ajouterMaillageReliefAuCanvas } from '../utils/canvas/couchesSolUtils';
 
 /**
  * Hook pour initialiser le canvas Fabric.js
@@ -142,9 +142,9 @@ export const useCanvasInit = ({
     ajouterBoussole(canvas);
     ajouterIndicateurSud(canvas);
     
-    // ✅ Ajouter le terrain avec maillage sélectionnable pour régler les niveaux
-    ajouterTerrainAuCanvas(canvas, echelle, dimensions);
-    logger.info('Canvas', '✅ Terrain avec maillage ajouté');
+    // ✅ NOUVEAU SYSTÈME : Ajouter le maillage de relief automatiquement (invisible/discret)
+    ajouterMaillageReliefAuCanvas(canvas, echelle, dimensions);
+    logger.info('Canvas', '✅ Maillage de relief ajouté (système simplifié)');
 
     // ✅ CHARGEMENT DU PLAN : Uniquement au premier chargement
     // Ne JAMAIS recharger après (sinon perte des modifications utilisateur)
