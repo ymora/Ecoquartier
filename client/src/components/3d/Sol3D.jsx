@@ -35,9 +35,11 @@ function Sol3D({
   }, [onTerrainClick, offsetX, offsetZ, largeur, hauteur, couchesSol]);
   
   // Calculer les profondeurs cumulées
+  console.log('🌍 Sol3D: Couches reçues:', couchesSol);
   let profondeurCumulee = 0;
   const couches = couchesSol.map((couche, index) => {
     const profondeurM = couche.profondeur / 100;
+    console.log(`  Couche ${index}: ${couche.nom}, profondeur=${couche.profondeur}cm (${profondeurM}m)`);
     const position = profondeurCumulee + profondeurM / 2;
     profondeurCumulee += profondeurM;
     

@@ -1572,33 +1572,11 @@ function PanneauLateral({
                     </div>
                   </div>
                   
-                  {/* Composition du sol - Gestion */}
-                  <div className="section-header" style={{ marginTop: '1rem' }}>
-                    <h3 className="section-title">🪨 Composition du sol ({couchesSol?.length || 0} couches)</h3>
-                  </div>
+                  {/* ✅ NOUVEAU SYSTÈME : Les couches de sol sont visibles dans "Sur le plan" */}
+                  {/* Plus besoin de section séparée - Gestion simplifiée via boutons Outils */}
                   
-                  {/* ✅ Info : Ajout depuis Outils */}
-                  {(!couchesSol || couchesSol.length === 0) && (
-                    <div style={{
-                      background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
-                      border: '2px solid #ff9800',
-                      borderRadius: '8px',
-                      padding: '1rem',
-                      marginBottom: '1rem',
-                      textAlign: 'center'
-                    }}>
-                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🪨</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#e65100', marginBottom: '0.3rem' }}>
-                        Aucune couche de sol ajoutée
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#f57c00' }}>
-                        Ajoutez des couches depuis l'onglet <strong>⚙️ Outils</strong> → <strong>🪨 Couches de sol</strong>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* ✅ Liste des couches avec drag & drop et contrôles */}
-                  {couchesSol && couchesSol.length > 0 && (
+                  {/* Ancien système de gestion des couches - SUPPRIMÉ */}
+                  {false && couchesSol && couchesSol.length > 0 && (
                     <div style={{ marginBottom: '1rem' }}>
                       {couchesSol.map((couche, index) => (
                         <div
