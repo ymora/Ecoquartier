@@ -1363,13 +1363,13 @@ function PanneauLateral({
                     
                     {/* ✅ Modifier nœuds sélectionnés - POSITION FIXE */}
                     {(() => {
-                      const nbNoeuds = objetSelectionne?.noeudsSelectionnes?.length || 0;
+                      const nbNoeuds = maillage?.noeudsSelectionnes?.length || 0;
                       return (
                         <div className="config-row" style={{ marginBottom: '0.8rem' }}>
                           <label>{nbNoeuds > 0 ? `${nbNoeuds} nœud${nbNoeuds > 1 ? 's' : ''} sélectionné${nbNoeuds > 1 ? 's' : ''}` : 'Hauteur nœuds'}</label>
                           <div>
                             <button
-                              onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, -0.1)}
+                              onClick={() => modifierElevationNoeudsSelectionnes(maillage, -0.1)}
                               disabled={nbNoeuds === 0}
                               style={{
                                 padding: '0.3rem 0.6rem',
@@ -1391,7 +1391,7 @@ function PanneauLateral({
                             </button>
                             <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', margin: '0 0.3rem' }}>10cm</span>
                             <button
-                              onClick={() => modifierElevationNoeudsSelectionnes(objetSelectionne, 0.1)}
+                              onClick={() => modifierElevationNoeudsSelectionnes(maillage, 0.1)}
                               disabled={nbNoeuds === 0}
                               style={{
                                 padding: '0.3rem 0.6rem',
@@ -1417,11 +1417,11 @@ function PanneauLateral({
                     })()}
                     
                     {/* ✅ Résumé du relief EN DESSOUS - Position dynamique, ne fait pas bouger les boutons */}
-                    {objetSelectionne.maillageElevation && (() => {
+                    {maillage.maillageElevation && (() => {
                       const noeudsModifies = [];
-                      for (let i = 0; i < objetSelectionne.maillageElevation.length; i++) {
-                        for (let j = 0; j < objetSelectionne.maillageElevation[i].length; j++) {
-                          const elev = objetSelectionne.maillageElevation[i][j];
+                      for (let i = 0; i < maillage.maillageElevation.length; i++) {
+                        for (let j = 0; j < maillage.maillageElevation[i].length; j++) {
+                          const elev = maillage.maillageElevation[i][j];
                           if (elev !== 0) {
                             noeudsModifies.push({ i, j, elev });
                           }
