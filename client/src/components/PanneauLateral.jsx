@@ -1757,144 +1757,6 @@ function PanneauLateral({
         </div>
       ) : ongletActif === 'outils' ? (
         <div className="panneau-outils-content">
-          {/* STRUCTURES */}
-          <div style={{ marginBottom: '0.5rem' }}>
-            <button
-              onClick={() => setBatimentsOuvert(!batimentsOuvert)}
-              style={{
-                width: '100%',
-                padding: '0.6rem',
-                background: batimentsOuvert ? '#ff9800' : 'white',
-                color: batimentsOuvert ? 'white' : '#333',
-                border: '1px solid #ff9800',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '0.85rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                transition: 'all 0.2s'
-              }}
-            >
-              <span>🏗️ Structures (5)</span>
-              <span style={{ fontSize: '1rem' }}>{batimentsOuvert ? '▼' : '▶'}</span>
-            </button>
-            {batimentsOuvert && (
-              <div style={{ 
-                marginTop: '0.3rem',
-                background: 'white',
-                borderRadius: '4px',
-                border: '1px solid #ddd'
-              }}>
-                <button 
-                  onClick={onAjouterTerrain} 
-                  title="Terrain sélectionnable avec maillage 5×5m pour gérer le relief et les couches de sol"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-                  🌍 Terrain
-                </button>
-                <button 
-                  onClick={onAjouterMaison} 
-                  title="Maison 10×10m, Hauteur 7m"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-              🏠 Maison
-            </button>
-                <button 
-                  onClick={onAjouterTerrasse} 
-                  title="Terrasse 4×3m"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-              🪨 Terrasse
-            </button>
-                <button 
-                  onClick={onAjouterPaves} 
-                  title="Pavés 5×5m"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-              🌱 Pavés enherbés
-            </button>
-                <button 
-                  onClick={onAjouterCloture} 
-                  title="Clôture limite propriété (structure aérienne à 5cm du sol)"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                >
-              🪵 Clôture
-            </button>
-              </div>
-            )}
-          </div>
-          
           {/* SOL / COMPOSITION */}
           <div style={{ marginBottom: '0.5rem' }}>
             <button
@@ -2239,7 +2101,145 @@ function PanneauLateral({
               </div>
             )}
           </div>
-          
+
+          {/* STRUCTURES */}
+          <div style={{ marginBottom: '0.5rem' }}>
+            <button
+              onClick={() => setBatimentsOuvert(!batimentsOuvert)}
+              style={{
+                width: '100%',
+                padding: '0.6rem',
+                background: batimentsOuvert ? '#ff9800' : 'white',
+                color: batimentsOuvert ? 'white' : '#333',
+                border: '1px solid #ff9800',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span>🏗️ Structures (5)</span>
+              <span style={{ fontSize: '1rem' }}>{batimentsOuvert ? '▼' : '▶'}</span>
+            </button>
+            {batimentsOuvert && (
+              <div style={{ 
+                marginTop: '0.3rem',
+                background: 'white',
+                borderRadius: '4px',
+                border: '1px solid #ddd'
+              }}>
+                <button 
+                  onClick={onAjouterTerrain} 
+                  title="Terrain sélectionnable avec maillage 5×5m pour gérer le relief et les couches de sol"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+                  🌍 Terrain
+                </button>
+                <button 
+                  onClick={onAjouterMaison} 
+                  title="Maison 10×10m, Hauteur 7m"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🏠 Maison
+            </button>
+                <button 
+                  onClick={onAjouterTerrasse} 
+                  title="Terrasse 4×3m"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🪨 Terrasse
+            </button>
+                <button 
+                  onClick={onAjouterPaves} 
+                  title="Pavés 5×5m"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🌱 Pavés enherbés
+            </button>
+                <button 
+                  onClick={onAjouterCloture} 
+                  title="Clôture limite propriété (structure aérienne à 5cm du sol)"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'white',
+                    color: '#333',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                >
+              🪵 Clôture
+            </button>
+              </div>
+            )}
+          </div>
+
           {/* RÉSEAUX */}
           <div style={{ marginBottom: '0.5rem' }}>
             <button
