@@ -1040,7 +1040,6 @@ function CanvasTerrain({
         opaciteImage={opaciteImage}
         solTransparent={solTransparent}
         onSolTransparentChange={setSolTransparent}
-        onAjouterTerrain={ajouterTerrain}
         onAjouterMaison={ajouterMaison}
         onAjouterTerrasse={ajouterTerrasse}
         onAjouterPaves={ajouterPaves}

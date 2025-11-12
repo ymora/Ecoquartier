@@ -26,7 +26,6 @@ function PanneauLateral({
   onDimensionsChange,
   imageFondChargee,
   opaciteImage,
-  onAjouterTerrain,
   onAjouterMaison,
   onAjouterTerrasse,
   onAjouterPaves,
@@ -1825,20 +1824,7 @@ function PanneauLateral({
                     🌱 Terre végétale
                   </span>
                   <button 
-                    onClick={() => {
-                      const typeCouche = { nom: 'Terre végétale', profondeur: 30, couleur: '#8d6e63', type: 'terre' };
-                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (!terrain) {
-                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
-                        return;
-                      }
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                      canvas.setActiveObject(terrain);
-                      canvas.renderAll();
-                      setOngletActif('config');
-                    }}
+                    onClick={() => handleAjouterCouche('terre', 'Terre végétale', 30, '#8d6e63')}
                     style={{
                       background: '#4caf50',
                       color: 'white',
@@ -1877,20 +1863,7 @@ function PanneauLateral({
                     🪨 Marne calcaire
                   </span>
                   <button 
-                    onClick={() => {
-                      const typeCouche = { nom: 'Marne calcaire', profondeur: 70, couleur: '#bdbdbd', type: 'marne' };
-                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (!terrain) {
-                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
-                        return;
-                      }
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                      canvas.setActiveObject(terrain);
-                      canvas.renderAll();
-                      setOngletActif('config');
-                    }}
+                    onClick={() => handleAjouterCouche('marne', 'Marne calcaire', 70, '#bdbdbd')}
                     style={{
                       background: '#4caf50',
                       color: 'white',
@@ -1929,20 +1902,7 @@ function PanneauLateral({
                     ⏳ Sable
                   </span>
                   <button 
-                    onClick={() => {
-                      const typeCouche = { nom: 'Sable', profondeur: 50, couleur: '#fdd835', type: 'sable' };
-                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (!terrain) {
-                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
-                        return;
-                      }
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                      canvas.setActiveObject(terrain);
-                      canvas.renderAll();
-                      setOngletActif('config');
-                    }}
+                    onClick={() => handleAjouterCouche('sable', 'Sable', 50, '#fdd835')}
                     style={{
                       background: '#4caf50',
                       color: 'white',
@@ -1981,20 +1941,7 @@ function PanneauLateral({
                     🧱 Argile
                   </span>
                   <button 
-                    onClick={() => {
-                      const typeCouche = { nom: 'Argile', profondeur: 60, couleur: '#d32f2f', type: 'argile' };
-                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (!terrain) {
-                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
-                        return;
-                      }
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                      canvas.setActiveObject(terrain);
-                      canvas.renderAll();
-                      setOngletActif('config');
-                    }}
+                    onClick={() => handleAjouterCouche('argile', 'Argile', 60, '#d32f2f')}
                     style={{
                       background: '#4caf50',
                       color: 'white',
@@ -2033,20 +1980,7 @@ function PanneauLateral({
                     🪨 Gravier
                   </span>
                   <button 
-                    onClick={() => {
-                      const typeCouche = { nom: 'Gravier', profondeur: 40, couleur: '#9e9e9e', type: 'gravier' };
-                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (!terrain) {
-                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
-                        return;
-                      }
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                      canvas.setActiveObject(terrain);
-                      canvas.renderAll();
-                      setOngletActif('config');
-                    }}
+                    onClick={() => handleAjouterCouche('gravier', 'Gravier', 40, '#9e9e9e')}
                     style={{
                       background: '#4caf50',
                       color: 'white',
@@ -2084,20 +2018,7 @@ function PanneauLateral({
                     ⛰️ Roche mère
                   </span>
                   <button 
-                    onClick={() => {
-                      const typeCouche = { nom: 'Roche mère', profondeur: 100, couleur: '#5d4037', type: 'roche' };
-                      const terrain = canvas?.getObjects().find(obj => obj.customType === 'sol');
-                      if (!terrain) {
-                        alert('⚠️ Ajoutez d\'abord un Terrain (section Structures)');
-                        return;
-                      }
-                      const nouvellesCouches = [...(couchesSol || []), typeCouche];
-                      mettreAJourCouchesSol(terrain, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
-                      canvas.setActiveObject(terrain);
-                      canvas.renderAll();
-                      setOngletActif('config');
-                    }}
+                    onClick={() => handleAjouterCouche('roche', 'Roche mère', 100, '#5d4037')}
                     style={{
                       background: '#4caf50',
                       color: 'white',
