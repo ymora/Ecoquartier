@@ -1,8 +1,9 @@
 import React, { memo, Suspense, useMemo, useRef } from 'react';
-import { useGLTF, Html } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import Arbre3D from './Arbre3D';
 import HaloPulsant from './HaloPulsant';
+import Label3D from './Label3D';
 
 /**
  * Composant pour charger et afficher des modèles 3D réels (GLB)
@@ -158,20 +159,14 @@ function GLBModel({ modelPath, position, hauteurMaturite = 7, envergure = 5, val
         />
       )}
       
-      {/* Label avec nom au-dessus - UNIFIÉ avec Arbre3D.jsx */}
-      <Html distanceFactor={10} position={[0, hauteurFinale + 1, 0]}>
-        <div style={{
-          background: 'rgba(0,0,0,0.8)',
-          color: 'white',
-          padding: '8px 12px',
-          borderRadius: '8px',
-          fontSize: '12px',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none'
-        }}>
-          {arbreData?.name || 'Arbre'} - {Math.round(progression * 100)}% croissance
-        </div>
-      </Html>
+      {/* Label avec nom au-dessus - Composant réutilisable */}
+      <Label3D 
+        position={[0, hauteurFinale + 1, 0]} 
+        variant="large"
+        distanceFactor={10}
+      >
+        {arbreData?.name || 'Arbre'} - {Math.round(progression * 100)}% croissance
+      </Label3D>
     </group>
   );
 }

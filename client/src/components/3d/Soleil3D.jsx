@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Html } from '@react-three/drei';
+import Label3D from './Label3D';
 import { calculerSoleilSimple, soleil3D } from '../../utils/soleilSimple';
 
 /**
@@ -104,21 +104,9 @@ function Soleil3D({
       })}
       
       {/* Label saison - Nom uniquement */}
-      <Html position={[0, tailleSoleil + 1, 0]} center>
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.95)', 
-          padding: '4px 10px', 
-          borderRadius: '5px',
-          fontSize: '11px',
-          fontWeight: '600',
-          color: '#ff6f00',
-          whiteSpace: 'nowrap',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-          border: '1px solid rgba(255, 111, 0, 0.3)'
-        }}>
-          {emoji} {nomsSaisons[saison]}
-        </div>
-      </Html>
+      <Label3D position={[0, tailleSoleil + 1, 0]} variant="light">
+        {emoji} {nomsSaisons[saison]}
+      </Label3D>
       
       {/* Rayon de lumière parallèle du soleil */}
       {/* Direction du soleil normalisée */}

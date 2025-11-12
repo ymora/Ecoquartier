@@ -1,0 +1,58 @@
+/* LABEL 3D - Styles réutilisables pour labels dans scènes 3D */
+
+/* Style de base */
+.label-3d {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Variantes de taille */
+.label-3d-compact {
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.label-3d-default {
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.label-3d-large {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* Variantes de couleur */
+.label-3d.info {
+  background: rgba(33, 150, 243, 0.9);
+}
+
+.label-3d.warning {
+  background: rgba(255, 152, 0, 0.9);
+}
+
+.label-3d.success {
+  background: rgba(76, 175, 80, 0.9);
+}
+
+.label-3d.light {
+  background: rgba(255, 255, 255, 0.95);
+  color: #ff6f00;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255, 111, 0, 0.3);
+}
+

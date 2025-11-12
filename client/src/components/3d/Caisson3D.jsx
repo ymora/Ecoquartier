@@ -1,4 +1,4 @@
-import { Html } from '@react-three/drei';
+import Label3D from './Label3D';
 
 function Caisson3D({ 
   position = [0, 0, 0], 
@@ -35,18 +35,9 @@ function Caisson3D({
       </mesh>
       
       {/* Label avec volume */}
-      <Html position={[0, hauteur / 2 + 0.3, 0]} center>
-        <div style={{
-          background: 'rgba(0,0,0,0.7)',
-          color: 'white',
-          padding: '2px 6px',
-          borderRadius: '4px',
-          fontSize: '11px',
-          whiteSpace: 'nowrap'
-        }}>
-          🟦 {volume}m³ ({largeur}×{profondeur}×{hauteur}m)
-        </div>
-      </Html>
+      <Label3D position={[0, hauteur / 2 + 0.3, 0]}>
+        🟦 {volume}m³ ({largeur}×{profondeur}×{hauteur}m)
+      </Label3D>
     </group>
   );
 }

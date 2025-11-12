@@ -622,8 +622,7 @@ function PanneauLateral({
                                 fontSize: '0.7rem',
                                 transition: 'transform 0.2s'
               }}
-                              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                              className="btn-hover-accent"
                               title={`Supprimer ${nom}`}
             >
                               🗑️
@@ -1817,8 +1816,7 @@ function PanneauLateral({
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
                   <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                     🌱 Terre végétale
@@ -1840,8 +1838,7 @@ function PanneauLateral({
                       fontWeight: 'bold',
                       transition: 'transform 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    className="btn-hover-accent"
                     title="Ajouter Terre végétale"
                   >
                     ➕
@@ -1856,8 +1853,7 @@ function PanneauLateral({
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
                   <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                     🪨 Marne calcaire
@@ -1879,8 +1875,7 @@ function PanneauLateral({
                       fontWeight: 'bold',
                       transition: 'transform 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    className="btn-hover-accent"
                     title="Ajouter Marne calcaire"
                   >
                     ➕
@@ -1895,8 +1890,7 @@ function PanneauLateral({
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
                   <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                     ⏳ Sable
@@ -1918,8 +1912,7 @@ function PanneauLateral({
                       fontWeight: 'bold',
                       transition: 'transform 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    className="btn-hover-accent"
                     title="Ajouter Sable"
                   >
                     ➕
@@ -1934,8 +1927,7 @@ function PanneauLateral({
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
                   <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                     🧱 Argile
@@ -1957,8 +1949,7 @@ function PanneauLateral({
                       fontWeight: 'bold',
                       transition: 'transform 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    className="btn-hover-accent"
                     title="Ajouter Argile"
                   >
                     ➕
@@ -1973,8 +1964,7 @@ function PanneauLateral({
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
                   <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                     🪨 Gravier
@@ -1996,8 +1986,7 @@ function PanneauLateral({
                       fontWeight: 'bold',
                       transition: 'transform 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    className="btn-hover-accent"
                     title="Ajouter Gravier"
                   >
                     ➕
@@ -2011,8 +2000,7 @@ function PanneauLateral({
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
                   <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                     ⛰️ Roche mère
@@ -2034,8 +2022,7 @@ function PanneauLateral({
                       fontWeight: 'bold',
                       transition: 'transform 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    className="btn-hover-accent"
                     title="Ajouter Roche mère"
                   >
                     ➕
@@ -2091,8 +2078,7 @@ function PanneauLateral({
                     textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
               🏠 Maison
             </button>
@@ -2112,8 +2098,7 @@ function PanneauLateral({
                     textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
               🪨 Terrasse
             </button>
@@ -2133,8 +2118,7 @@ function PanneauLateral({
                     textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
               🌱 Pavés enherbés
             </button>
@@ -2153,8 +2137,7 @@ function PanneauLateral({
                     textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
               🪵 Clôture
             </button>
@@ -2208,8 +2191,7 @@ function PanneauLateral({
                     textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
               🚰 Canalisation
             </button>
@@ -2229,8 +2211,7 @@ function PanneauLateral({
                     textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
               💧 Citerne
             </button>
@@ -2250,8 +2231,7 @@ function PanneauLateral({
                     textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
                   🟦 Caisson eau
             </button>
@@ -2302,8 +2282,7 @@ function PanneauLateral({
                         cursor: 'pointer',
                         transition: 'background 0.2s'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                      className="btn-hover-green"
                     >
                       <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                         {plante.name}
@@ -2325,8 +2304,7 @@ function PanneauLateral({
                           fontWeight: 'bold',
                           transition: 'transform 0.2s'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        className="btn-hover-accent"
                         title={`Ajouter ${plante.name}`}
                       >
                         ➕
@@ -2380,8 +2358,7 @@ function PanneauLateral({
                         cursor: 'pointer',
                         transition: 'background 0.2s'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                      className="btn-hover-green"
                     >
                       <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }}>
                         {plante.name}
@@ -2403,8 +2380,7 @@ function PanneauLateral({
                           fontWeight: 'bold',
                           transition: 'transform 0.2s'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        className="btn-hover-accent"
                         title={`Ajouter ${plante.name}`}
                       >
                         ➕
@@ -2461,8 +2437,7 @@ function PanneauLateral({
                     textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  className="btn-hover-green"
                 >
                   🔒 Verrouiller sélection
                 </button>

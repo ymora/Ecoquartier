@@ -1,3 +1,20 @@
+/* === CLASSES RÉUTILISABLES POUR HOVER === */
+.btn-hover-green {
+  transition: background 0.2s;
+}
+
+.btn-hover-green:hover {
+  background: #f1f8e9 !important;
+}
+
+.btn-hover-accent {
+  transition: transform 0.2s;
+}
+
+.btn-hover-accent:hover {
+  transform: scale(1.1);
+}
+
 /* === PANNEAU LATÉRAL NEO GARDEN === */
 .panneau-lateral {
   width: 320px;

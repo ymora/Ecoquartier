@@ -1,7 +1,7 @@
 import { useRef, useMemo, memo, useCallback } from 'react';
-import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import HaloPulsant from './HaloPulsant';
+import Label3D from './Label3D';
 
 /**
  * Composant Arbre 3D Optimisé
@@ -339,19 +339,13 @@ function Arbre3D({
       )}
       
       {/* Label avec informations */}
-      <Html distanceFactor={10} position={[0, arbreCalculs.hauteurActuelle + 1, 0]}>
-        <div style={{
-          background: 'rgba(0,0,0,0.8)',
-          color: 'white',
-          padding: '8px 12px',
-          borderRadius: '8px',
-          fontSize: '12px',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none'
-        }}>
-          {arbreData?.nom || 'Arbre'} - {Math.round(arbreCalculs.progression * 100)}% croissance
-        </div>
-      </Html>
+      <Label3D 
+        position={[0, arbreCalculs.hauteurActuelle + 1, 0]} 
+        variant="large"
+        distanceFactor={10}
+      >
+        {arbreData?.nom || 'Arbre'} - {Math.round(arbreCalculs.progression * 100)}% croissance
+      </Label3D>
     </group>
   );
 }
