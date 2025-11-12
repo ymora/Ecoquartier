@@ -532,12 +532,12 @@ function PanneauLateral({
                       {objetsCanvas.map((obj, index) => {
                         const icone = 
                           obj.customType === 'maison' ? '🏠' :
-                          obj.customType === 'terrasse' ? '🪵' :
-                          obj.customType === 'paves' ? '🌿' :
+                          obj.customType === 'terrasse' ? '🪨' :
+                          obj.customType === 'paves' ? '🌱' :
                           obj.customType === 'citerne' ? '💧' :
                           obj.customType === 'caisson-eau' ? '💦' :
                           obj.customType === 'canalisation' ? '🚰' :
-                          obj.customType === 'cloture' ? '🚧' :
+                          obj.customType === 'cloture' ? '🪵' :
                           obj.customType === 'sol' ? '🌍' : '📦';
                         
                         const nom = 
@@ -627,9 +627,9 @@ function PanneauLateral({
                 {objetSelectionne.customType === 'citerne' && `💧 Citerne${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'caisson-eau' && `🟦 Caisson eau${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                 {objetSelectionne.customType === 'canalisation' && `🚰 Canalisation${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
-                {objetSelectionne.customType === 'cloture' && `🚧 Clôture${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
-                  {objetSelectionne.customType === 'terrasse' && `🏡 Terrasse${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
-                  {objetSelectionne.customType === 'paves' && `🟩 Pavés${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                {objetSelectionne.customType === 'cloture' && `🪵 Clôture${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                  {objetSelectionne.customType === 'terrasse' && `🪨 Terrasse${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
+                  {objetSelectionne.customType === 'paves' && `🌱 Pavés enherbés${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'arbre-a-planter' && `🌳 ${objetSelectionne.arbreData?.name || 'Arbre'}${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'arbre-existant' && `🌳 Arbre existant${objetSelectionne.numero ? ` #${objetSelectionne.numero}` : ''}`}
                   {objetSelectionne.customType === 'sol' && '🌍 Sol'}
@@ -1848,7 +1848,7 @@ function PanneauLateral({
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-              🏡 Terrasse
+              🪨 Terrasse
             </button>
                 <button 
                   onClick={onAjouterPaves} 
@@ -1869,7 +1869,7 @@ function PanneauLateral({
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-              🟩 Pavés
+              🌱 Pavés enherbés
             </button>
                 <button 
                   onClick={onAjouterCloture} 
@@ -1889,7 +1889,7 @@ function PanneauLateral({
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f1f8e9'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
-              🚧 Clôture
+              🪵 Clôture
             </button>
               </div>
             )}
