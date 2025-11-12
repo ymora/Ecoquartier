@@ -257,17 +257,45 @@ export default function ComparisonTable({ plants }) {
         </table>
       </div>
 
-      {/* Modal plein écran */}
-      {fullscreenImage && (
-        <div className="fullscreen-modal" onClick={() => setFullscreenImage(null)}>
-          <button className="fullscreen-close" onClick={() => setFullscreenImage(null)}>✕</button>
-          <img
-            src={`/images/${fullscreenImage.imagePath}`}
-            alt={fullscreenImage.plant.name}
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
+      {/* Modal plein écran - Unifié avec PlantDetailWithImages */}
+      {fullscreenImage && (() => {
+        const plantId = fullscreenImage.plant.nomScientifique || fullscreenImage.plant.name;
+        const imagesDisponibles = getImagesParType(fullscreenImage.plant);
+        const currentIndex = getCurrentIndex(plantId);
+        
+        return (
+          <div className="fullscreen-modal" onClick={() => setFullscreenImage(null)}>
+            <button className="fullscreen-close" onClick={() => setFullscreenImage(null)}>✕</button>
+            <img
+              src={`/images/${imagesDisponibles[currentIndex]}`}
+              alt={`${fullscreenImage.plant.name} - ${currentIndex + 1}`}
+              onClick={(e) => e.stopPropagation()}
+            />
+            {/* ✅ Navigation unifiée comme dans PlantDetailWithImages */}
+            {imagesDisponibles.length > 1 && (
+              <div className="fullscreen-nav">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    changeImage(plantId, -1, imagesDisponibles.length - 1);
+                  }}
+                >
+                  ◀ Précédent
+                </button>
+                <span>{currentIndex + 1} / {imagesDisponibles.length}</span>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    changeImage(plantId, 1, imagesDisponibles.length - 1);
+                  }}
+                >
+                  Suivant ▶
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }
