@@ -334,6 +334,7 @@ function CanvasTerrain({
       
       // Écouter les changements de couches depuis le canvas
       const handleCouchesUpdated = (e) => {
+        console.log('🔧 CanvasTerrain: Événement couches:updated reçu', e.couches);
         setCouchesSol(e.couches || []);
       };
       
@@ -341,7 +342,10 @@ function CanvasTerrain({
       
       // Initialiser avec les couches existantes
       if (canvas.couchesSol && canvas.couchesSol.length > 0) {
+        console.log('🔧 CanvasTerrain: Initialisation avec couches existantes', canvas.couchesSol);
         setCouchesSol(canvas.couchesSol);
+      } else {
+        console.log('🔧 CanvasTerrain: Aucune couche sur le canvas au démarrage');
       }
       
       return () => {
