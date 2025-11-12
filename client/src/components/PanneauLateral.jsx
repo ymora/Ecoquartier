@@ -1572,11 +1572,33 @@ function PanneauLateral({
                     </div>
                   </div>
                   
-                  {/* ✅ NOUVEAU SYSTÈME : Les couches de sol sont visibles dans "Sur le plan" */}
-                  {/* Plus besoin de section séparée - Gestion simplifiée via boutons Outils */}
+                  {/* ✅ Composition du sol - Gestion des couches */}
+                  <div className="section-header" style={{ marginTop: '1rem' }}>
+                    <h3 className="section-title">🪨 Composition du sol ({couchesSol?.length || 0} couches)</h3>
+                  </div>
                   
-                  {/* Ancien système de gestion des couches - SUPPRIMÉ */}
-                  {false && couchesSol && couchesSol.length > 0 && (
+                  {/* Info si aucune couche */}
+                  {(!couchesSol || couchesSol.length === 0) && (
+                    <div style={{
+                      background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                      border: '2px solid #ff9800',
+                      borderRadius: '8px',
+                      padding: '1rem',
+                      marginBottom: '1rem',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🪨</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#e65100', marginBottom: '0.3rem' }}>
+                        Aucune couche de sol ajoutée
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#f57c00' }}>
+                        Ajoutez des couches depuis l'onglet <strong>⚙️ Outils</strong> → <strong>🪨 Couches de sol</strong>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* ✅ Liste des couches avec drag & drop et contrôles */}
+                  {couchesSol && couchesSol.length > 0 && (
                     <div style={{ marginBottom: '1rem' }}>
                       {couchesSol.map((couche, index) => (
                         <div
@@ -1593,12 +1615,14 @@ function PanneauLateral({
                           onDrop={(e) => {
                             e.preventDefault();
                             const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
-                            if (fromIndex !== index) {
+                            if (fromIndex !== index && canvas) {
                               const nouvellesCouches = [...couchesSol];
                               const [deplacee] = nouvellesCouches.splice(fromIndex, 1);
                               nouvellesCouches.splice(index, 0, deplacee);
-                      mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
-                      onCouchesSolChange(nouvellesCouches);
+                              // ✅ NOUVEAU SYSTÈME : Mettre à jour canvas.couchesSol directement
+                              canvas.couchesSol = nouvellesCouches;
+                              canvas.fire('couches:updated', { couches: nouvellesCouches });
+                              onCouchesSolChange(nouvellesCouches);
                             }
                           }}
                           style={{
@@ -1642,9 +1666,13 @@ function PanneauLateral({
                             </div>
                             <button
                               onClick={() => {
-                                const nouvellesCouches = couchesSol.filter((_, i) => i !== index);
-                                mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
-                                onCouchesSolChange(nouvellesCouches);
+                                if (canvas) {
+                                  const nouvellesCouches = couchesSol.filter((_, i) => i !== index);
+                                  // ✅ NOUVEAU SYSTÈME : Mettre à jour canvas.couchesSol directement
+                                  canvas.couchesSol = nouvellesCouches;
+                                  canvas.fire('couches:updated', { couches: nouvellesCouches });
+                                  onCouchesSolChange(nouvellesCouches);
+                                }
                               }}
                               style={{
                                 background: '#f44336',
@@ -1670,10 +1698,14 @@ function PanneauLateral({
                             <label style={{ fontSize: '0.75rem', color: '#666', minWidth: '60px' }}>Épaisseur:</label>
                             <button
                               onClick={() => {
-                                const nouvellesCouches = [...couchesSol];
-                                nouvellesCouches[index].profondeur = Math.max(5, couche.profondeur - 5);
-                                mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
-                                onCouchesSolChange(nouvellesCouches);
+                                if (canvas) {
+                                  const nouvellesCouches = [...couchesSol];
+                                  nouvellesCouches[index].profondeur = Math.max(5, couche.profondeur - 5);
+                                  // ✅ NOUVEAU SYSTÈME
+                                  canvas.couchesSol = nouvellesCouches;
+                                  canvas.fire('couches:updated', { couches: nouvellesCouches });
+                                  onCouchesSolChange(nouvellesCouches);
+                                }
                               }}
                               style={{
                                 background: '#f44336',
@@ -1693,10 +1725,14 @@ function PanneauLateral({
                               type="number"
                               value={couche.profondeur}
                               onChange={(e) => {
-                                const nouvellesCouches = [...couchesSol];
-                                nouvellesCouches[index].profondeur = Math.max(5, Math.min(300, parseInt(e.target.value) || 5));
-                                mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
-                                onCouchesSolChange(nouvellesCouches);
+                                if (canvas) {
+                                  const nouvellesCouches = [...couchesSol];
+                                  nouvellesCouches[index].profondeur = Math.max(5, Math.min(300, parseInt(e.target.value) || 5));
+                                  // ✅ NOUVEAU SYSTÈME
+                                  canvas.couchesSol = nouvellesCouches;
+                                  canvas.fire('couches:updated', { couches: nouvellesCouches });
+                                  onCouchesSolChange(nouvellesCouches);
+                                }
                               }}
                               style={{
                                 width: '60px',
@@ -1711,13 +1747,17 @@ function PanneauLateral({
                             <span style={{ fontSize: '0.75rem', color: '#888', minWidth: '30px' }}>cm</span>
                             <button
                               onClick={() => {
-                                const nouvellesCouches = [...couchesSol];
-                                const profondeurTotaleSansActuelle = nouvellesCouches.reduce((sum, c, i) => 
-                                  i === index ? sum : sum + c.profondeur, 0);
-                                if (profondeurTotaleSansActuelle + couche.profondeur + 5 <= 300) {
-                                  nouvellesCouches[index].profondeur = couche.profondeur + 5;
-                                  mettreAJourCouchesSol(objetSelectionne, nouvellesCouches);
-                                  onCouchesSolChange(nouvellesCouches);
+                                if (canvas) {
+                                  const nouvellesCouches = [...couchesSol];
+                                  const profondeurTotaleSansActuelle = nouvellesCouches.reduce((sum, c, i) => 
+                                    i === index ? sum : sum + c.profondeur, 0);
+                                  if (profondeurTotaleSansActuelle + couche.profondeur + 5 <= 300) {
+                                    nouvellesCouches[index].profondeur = couche.profondeur + 5;
+                                    // ✅ NOUVEAU SYSTÈME
+                                    canvas.couchesSol = nouvellesCouches;
+                                    canvas.fire('couches:updated', { couches: nouvellesCouches });
+                                    onCouchesSolChange(nouvellesCouches);
+                                  }
                                 }
                               }}
                               style={{
