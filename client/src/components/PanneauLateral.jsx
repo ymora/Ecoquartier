@@ -1344,10 +1344,10 @@ function PanneauLateral({
                 if (!maillage) return null;
                 
                 return (
-                  <div className="objet-controls">
-                    <div className="section-header">
+                <div className="objet-controls">
+                  <div className="section-header">
                       <h3 className="section-title">🌍 Relief et Couches de Sol</h3>
-                    </div>
+                  </div>
                   
                   {/* SECTION : Maillage d'élévation - ✅ SIMPLIFIÉ */}
                   <div style={{
@@ -1627,7 +1627,7 @@ function PanneauLateral({
                               // ✅ NOUVEAU SYSTÈME : Mettre à jour canvas.couchesSol directement
                               canvas.couchesSol = nouvellesCouches;
                               canvas.fire('couches:updated', { couches: nouvellesCouches });
-                              onCouchesSolChange(nouvellesCouches);
+                      onCouchesSolChange(nouvellesCouches);
                             }
                           }}
                           style={{
@@ -1779,11 +1779,11 @@ function PanneauLateral({
                             >
                               +
                             </button>
-                          </div>
+                  </div>
                         </div>
                       ))}
-                    </div>
-                  )}
+                </div>
+              )}
                   
                   <div className="info-box info-box-info" style={{ marginTop: '0.5rem' }}>
                     📏 Profondeur totale : {couchesSol ? (couchesSol.reduce((sum, c) => sum + c.profondeur, 0) / 100).toFixed(2) : 0} m / 3.00 m max
@@ -2086,89 +2086,157 @@ function PanneauLateral({
                 borderRadius: '4px',
                 border: '1px solid #ddd'
               }}>
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s'
+                  }}
+                  className="btn-hover-green"
+                >
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }} title="Maison 10×10m, Hauteur 7m">
+                    🏠 Maison
+                  </span>
                 <button 
                   onClick={onAjouterMaison} 
-                  title="Maison 10×10m, Hauteur 7m"
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
+                      background: '#ff9800',
+                      color: 'white',
                     border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    className="btn-hover-accent"
+                    title="Ajouter Maison"
+                  >
+                    ➕
+                  </button>
+                </div>
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
                   className="btn-hover-green"
                 >
-              🏠 Maison
-            </button>
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }} title="Terrasse 4×3m">
+                    🪨 Terrasse
+                  </span>
                 <button 
                   onClick={onAjouterTerrasse} 
-                  title="Terrasse 4×3m"
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
+                      background: '#ff9800',
+                      color: 'white',
                     border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    className="btn-hover-accent"
+                    title="Ajouter Terrasse"
+                  >
+                    ➕
+            </button>
+                </div>
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
                   className="btn-hover-green"
                 >
-              🪨 Terrasse
-            </button>
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }} title="Pavés 5×5m">
+                    🌱 Pavés enherbés
+                  </span>
                 <button 
                   onClick={onAjouterPaves} 
-                  title="Pavés 5×5m"
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
+                      background: '#ff9800',
+                      color: 'white',
                     border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    className="btn-hover-accent"
+                    title="Ajouter Pavés"
+                  >
+                    ➕
+            </button>
+                </div>
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
+                    cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
                   className="btn-hover-green"
                 >
-              🌱 Pavés enherbés
-            </button>
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }} title="Clôture limite propriété (structure aérienne à 5cm du sol)">
+                    🪵 Clôture
+                  </span>
                 <button 
                   onClick={onAjouterCloture} 
-                  title="Clôture limite propriété (structure aérienne à 5cm du sol)"
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
+                      background: '#ff9800',
+                      color: 'white',
                     border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                    transition: 'background 0.2s'
-                  }}
-                  className="btn-hover-green"
-                >
-              🪵 Clôture
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    className="btn-hover-accent"
+                    title="Ajouter Clôture"
+                  >
+                    ➕
             </button>
+                </div>
               </div>
             )}
           </div>
-
+          
           {/* RÉSEAUX */}
           <div style={{ marginBottom: '0.5rem' }}>
             <button
@@ -2199,66 +2267,116 @@ function PanneauLateral({
                 borderRadius: '4px',
                 border: '1px solid #ddd'
               }}>
-                <button 
-                  onClick={onAjouterCanalisation} 
-                  title="Canalisation (prof. 0.6m)"
+                <div 
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
-                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
                   className="btn-hover-green"
                 >
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }} title="Canalisation (prof. 0.6m)">
               🚰 Canalisation
-            </button>
+                  </span>
                 <button 
-                  onClick={onAjouterCiterne} 
-                  title="Citerne Ø1.5m (prof. 2.5m)"
+                    onClick={onAjouterCanalisation}
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
+                      background: '#2196f3',
+                      color: 'white',
                     border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    className="btn-hover-accent"
+                    title="Ajouter Canalisation"
+                  >
+                    ➕
+            </button>
+                </div>
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
                     borderBottom: '1px solid #f0f0f0',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
                     transition: 'background 0.2s'
                   }}
                   className="btn-hover-green"
                 >
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }} title="Citerne Ø1.5m (prof. 2.5m)">
               💧 Citerne
-            </button>
+                  </span>
                 <button 
-                  onClick={onAjouterCaissonEau} 
-                  title="Caisson rétention 5×3×1m (15m³)"
+                    onClick={onAjouterCiterne}
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    background: 'white',
-                    color: '#333',
+                      background: '#2196f3',
+                      color: 'white',
                     border: 'none',
-                    borderBottom: '1px solid #f0f0f0',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    className="btn-hover-accent"
+                    title="Ajouter Citerne"
+                  >
+                    ➕
+            </button>
+                </div>
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.4rem',
+                    cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
                   className="btn-hover-green"
                 >
+                  <span style={{ flex: 1, fontSize: '0.8rem', fontWeight: '500' }} title="Caisson rétention 5×3×1m (15m³)">
                   🟦 Caisson eau
+                  </span>
+                  <button 
+                    onClick={onAjouterCaissonEau}
+                    style={{
+                      background: '#2196f3',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      transition: 'transform 0.2s'
+                    }}
+                    className="btn-hover-accent"
+                    title="Ajouter Caisson eau"
+                  >
+                    ➕
             </button>
+                </div>
           </div>
             )}
           </div>
