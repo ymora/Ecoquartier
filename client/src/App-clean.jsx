@@ -3,11 +3,13 @@
  * Intègre le mode planificateur 2D/3D complet
  */
 import { useState, lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import './styles-v2/reset.css';
 import './styles-v2/design-tokens.css';
 import './styles-v2/app-clean.css';
 import './styles-v2/planner-theme-fix.css';
 import plantesData from './data/arbustesData';
+import './i18n'; // Import i18n configuration
 
 // Lazy load des composants lourds
 const CanvasTerrain = lazy(() => import('./components/CanvasTerrain'));
@@ -16,8 +18,10 @@ const CanvasTerrain = lazy(() => import('./components/CanvasTerrain'));
 import PlantDetailWithImages from './components/PlantDetailWithImages';
 import ComparisonTable from './components/ComparisonTable';
 import LogViewer from './components/LogViewer';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function AppClean() {
+  const { t } = useTranslation();
   const [theme, setTheme] = useState('dark');
   const [mode, setMode] = useState('explorer'); // 'explorer' ou 'planner'
   const [selectedPlants, setSelectedPlants] = useState([plantesData[0]]);
@@ -55,14 +59,15 @@ export default function AppClean() {
   );
 
   return (
-    <div className="app-clean">
+    <ErrorBoundary>
+      <div className="app-clean">
       {/* HEADER */}
       <header className="header-clean">
         <div className="header-brand" style={{ position: 'relative' }}>
           <div className="logo">🌳</div>
           <div className="header-title-menu">
-            <h1>Haies Bessancourt</h1>
-            <p>Écocartier</p>
+            <h1>{t('app.title')}</h1>
+            <p>{t('app.subtitle')}</p>
             
             {/* Menu déroulant au survol */}
             {mode === 'planner' && (
@@ -102,14 +107,18 @@ export default function AppClean() {
           <button
             className={mode === 'explorer' ? 'active' : ''}
             onClick={() => setMode('explorer')}
+            aria-label="Mode exploration des plantes"
+            aria-current={mode === 'explorer' ? 'page' : undefined}
           >
-            🌿 Explorer
+            🌿 {t('app.modes.explorer')}
           </button>
           <button
             className={mode === 'planner' ? 'active' : ''}
             onClick={() => setMode('planner')}
+            aria-label="Mode planification de haies"
+            aria-current={mode === 'planner' ? 'page' : undefined}
           >
-            🌳 Planifier
+            🌳 {t('app.modes.planner')}
           </button>
         </nav>
 
@@ -125,10 +134,20 @@ export default function AppClean() {
             </button>
           )}
           
-          <button onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}>
+          <button 
+            onClick={toggleTheme} 
+            title={theme === 'dark' ? t('app.buttons.theme.light') : t('app.buttons.theme.dark')}
+            aria-label={theme === 'dark' ? t('app.buttons.theme.light') : t('app.buttons.theme.dark')}
+            className="header-icon-btn"
+          >
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
-          <button onClick={() => setLogViewerOpen(true)} title="Journal des logs (Debug)">
+          <button 
+            onClick={() => setLogViewerOpen(true)} 
+            title={t('app.buttons.logs')}
+            aria-label={t('app.buttons.logs')}
+            className="header-icon-btn"
+          >
             🐛
           </button>
         </div>
@@ -141,7 +160,7 @@ export default function AppClean() {
             <div className="search-box">
               <input
                 type="text"
-                placeholder="Rechercher une plante..."
+                placeholder={t('app.search.placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -308,6 +327,7 @@ export default function AppClean() {
         />
       )}
     </div>
+    </ErrorBoundary>
   );
 }
 

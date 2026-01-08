@@ -1,0 +1,1 @@
+{"app": {"title": "Haies Bessancourt", "subtitle": "Écocartier", "modes": {"explorer": "Explorer", "planner": "Planifier"}, "buttons": {"theme": {"light": "Mode clair", "dark": "Mode sombre"}, "logs": "Journal des logs", "admin": "Interface admin"}, "search": {"placeholder": "Rechercher une plante..."}, "sections": {"trees": "Arbres", "shrubs": "Arbustes"}}}

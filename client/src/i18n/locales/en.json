@@ -1,0 +1,1 @@
+{"app": {"title": "Bessancourt Hedges", "subtitle": "Eco-district", "modes": {"explorer": "Explore", "planner": "Plan"}, "buttons": {"theme": {"light": "Light mode", "dark": "Dark mode"}, "logs": "Logs", "admin": "Admin interface"}, "search": {"placeholder": "Search a plant..."}, "sections": {"trees": "Trees", "shrubs": "Shrubs"}}}

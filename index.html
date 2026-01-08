@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les haies de l'écocartier de Bessancourt</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Les haies de l'écocartier de Bessancourt</h1>
+    </header>
+
+    <div class="main-content">
+        <div class="navigation">
+            <a href="#noisetier" data-arbuste="noisetier">Noisetier</a>
+            <a href="#fusain" data-arbuste="fusain">Fusain</a>
+            <a href="#troene" data-arbuste="troene">Troène</a>
+            <a href="#osmanthe" data-arbuste="osmanthe">Osmanthe</a>
+            <a href="#cornouiller" data-arbuste="cornouiller">Cornouiller</a>
+            <a href="#seringat" data-arbuste="seringat">Seringat</a>
+        </div>
+
+        <div class="content" id="arbustes-content">
+            <div class="arbuste-container">
+                <div class="description">
+                    <h2>Description de l'arbuste</h2>
+                    <p id="arbuste-description">Sélectionnez un arbuste pour voir la description.</p>
+                </div>
+                <div class="image-buttons">
+                    <h2>Images</h2>
+                    <img id="arbuste-image" src="" alt="Image d'arbuste" hidden>
+                </div>
+            </div>
+            <div class="button-container">
+                <button id="prev-button">Précédent</button>
+                <button id="next-button">Suivant</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025. Tous droits réservés.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="arbustes.js"></script>
+</body>
+</html>

@@ -2557,7 +2557,25 @@ arbustesData.forEach(arbuste => {
 });
 
 // Données combinées avec distinction type
-export const plantesData = [...arbresData, ...arbustesData];
+const plantesData = [...arbresData, ...arbustesData];
 
-export default plantesData;
+// Validation des données au chargement
+const validatePlantsData = (data) => {
+  try {
+    // Valider chaque plante
+    const validatedPlants = data.map(plant => {
+      const validatedPlant = plantSchema.validateSync(plant);
+      return validatedPlant;
+    });
+    
+    console.log('✅ Données de plantes validées:', validatedPlants.length);
+    return validatedPlants;
+  } catch (error) {
+    console.error('❌ Erreur de validation des données de plantes:', error.message);
+    console.warn('⚠️ Utilisation des données non validées - peut causer des erreurs');
+    return data; // Fallback sur les données originales
+  }
+};
 
+// Exporter les données validées
+export default validatePlantsData(plantesData);
