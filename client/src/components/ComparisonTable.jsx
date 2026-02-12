@@ -4,12 +4,13 @@
  */
 import { useState } from 'react';
 import FullscreenGallery from './FullscreenGallery';
+import MaintenanceGuide from './MaintenanceGuide';
 import './ComparisonTable.css';
 
 export default function ComparisonTable({ plants }) {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [typeImageActif, setTypeImageActif] = useState('toutes');
-  
+
   // ✅ Index de l'image actuelle pour chaque plante (par ID de plante)
   const [currentImageIndexes, setCurrentImageIndexes] = useState({});
 
@@ -17,11 +18,11 @@ export default function ComparisonTable({ plants }) {
   const getImagesParType = (plant) => {
     const images = plant.images || [];
     if (images.length === 0) return [];
-    
+
     if (typeImageActif === 'toutes') {
       return images; // Toutes les images
     }
-    
+
     // ✅ Chercher TOUTES les images contenant le mot-clé du type
     const motsClefs = {
       'vue_generale': ['vue_generale', 'general', 'port', 'silhouette', 'ensemble', 'entier'],
@@ -33,20 +34,20 @@ export default function ComparisonTable({ plants }) {
       'automne': ['automne', 'fall', 'autumn'],
       'hiver': ['hiver', 'winter', 'neige']
     };
-    
+
     const motsRecherche = motsClefs[typeImageActif] || [];
-    const imagesCorrespondantes = images.filter(img => 
+    const imagesCorrespondantes = images.filter(img =>
       motsRecherche.some(mot => img.toLowerCase().includes(mot))
     );
-    
+
     return imagesCorrespondantes; // ✅ Retourne tableau vide si aucune image du type
   };
-  
+
   // ✅ Obtenir l'index actuel pour une plante
   const getCurrentIndex = (plantId) => {
     return currentImageIndexes[plantId] || 0;
   };
-  
+
   // ✅ Changer l'image active pour une plante
   const changeImage = (plantId, delta, maxIndex) => {
     setCurrentImageIndexes(prev => {
@@ -55,7 +56,7 @@ export default function ComparisonTable({ plants }) {
       return { ...prev, [plantId]: newIndex };
     });
   };
-  
+
   // ✅ Réinitialiser les index quand le filtre change
   const handleTypeChange = (newType) => {
     setTypeImageActif(newType);
@@ -69,7 +70,7 @@ export default function ComparisonTable({ plants }) {
         const plantId = plant.nomScientifique || plant.name;
         const imagesDisponibles = getImagesParType(plant);
         const currentIndex = getCurrentIndex(plantId);
-        
+
         // ✅ Si aucune image du type sélectionné
         if (imagesDisponibles.length === 0) {
           return (
@@ -94,7 +95,7 @@ export default function ComparisonTable({ plants }) {
                 onClick={() => setFullscreenImage({ plant, imagePath })}
                 className="comparison-image"
               />
-              
+
               {/* ✅ Flèches de navigation si plusieurs images */}
               {hasMultipleImages && (
                 <>
@@ -118,7 +119,7 @@ export default function ComparisonTable({ plants }) {
                   >
                     ›
                   </button>
-                  
+
                   {/* ✅ Compteur d'images */}
                   <div className="img-counter">
                     {currentIndex + 1} / {imagesDisponibles.length}
@@ -126,7 +127,7 @@ export default function ComparisonTable({ plants }) {
                 </>
               )}
             </div>
-            
+
             {/* ✅ Miniatures si plusieurs images */}
             {hasMultipleImages && (
               <div className="img-thumbnails">
@@ -163,15 +164,42 @@ export default function ComparisonTable({ plants }) {
     { label: '☀️ Exposition', key: 'exposition' },
     { label: '💧 Arrosage', key: 'arrosage' },
     { label: '❄️ Rusticité', key: 'rusticite' },
-    { label: '✂️ Taille période', path: 'taille.periode' },
-    { label: '✂️ Taille fréquence', path: 'taille.frequence' },
-    { label: '🌱 Plantation période', path: 'plantation.periode' },
-    { label: '📏 Distance voisinage', path: 'reglementation.distancesLegales.voisinage.distance' },
-    { label: '🏠 Distance fondations', path: 'reglementation.distancesLegales.infrastructures.fondations' },
-    { label: '🌳 Distance entre arbres', path: 'reglementation.distancesLegales.entreArbres.distance' },
-    { label: '☠️ Toxicité', path: 'toxicite.niveau' },
+    { label: '❄️ Rusticité', key: 'rusticite' },
+
+    // ✅ Intégration du Guide Complet
+    {
+      label: '📅 Guide d\'Entretien',
+      render: (plant) => (
+        <div className="comparison-guide-wrapper">
+          <MaintenanceGuide plant={plant} />
+        </div>
+      )
+    },
+
+    {
+      label: '📏 Réglementation',
+      render: (plant) => (
+        <div className="comparison-regulation">
+          <p><strong>Voisinage :</strong> {plant.reglementation?.distancesLegales?.voisinage?.distance || '-'}</p>
+          {plant.reglementation?.risques && (
+            <ul className="regulation-risks">
+              {plant.reglementation.risques.slice(0, 2).map((r, i) => <li key={i}>⚠️ {r}</li>)}
+            </ul>
+          )}
+        </div>
+      )
+    },
+    {
+      label: '☠️ Toxicité',
+      render: (plant) => plant.toxicite ? (
+        <div className={`toxicity-badge ${plant.toxicite.niveau === 'Nulle' ? 'safe' : 'danger'}`}>
+          {plant.toxicite.niveau}
+          {plant.toxicite.niveau !== 'Nulle' && <div className="toxicity-detail">{plant.toxicite.danger}</div>}
+        </div>
+      ) : '-'
+    },
   ];
-  
+
   // ✅ Types de vues d'images (TOUS les types du mode admin)
   const typesVues = [
     { id: 'toutes', label: 'Toutes', icon: '🖼️' },
@@ -204,7 +232,7 @@ export default function ComparisonTable({ plants }) {
       <div className="comparison-header">
         <h2>Comparaison de {plants.length} plantes</h2>
         <p>Toutes les caractéristiques côte à côte</p>
-        
+
         {/* ✅ Filtres par TYPE d'image */}
         <div className="comparison-filters">
           <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
@@ -263,7 +291,7 @@ export default function ComparisonTable({ plants }) {
         const plantId = fullscreenImage.plant.nomScientifique || fullscreenImage.plant.name;
         const imagesDisponibles = getImagesParType(fullscreenImage.plant);
         const currentIndex = getCurrentIndex(plantId);
-        
+
         return (
           <FullscreenGallery
             isOpen={true}

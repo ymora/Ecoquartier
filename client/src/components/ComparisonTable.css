@@ -1,227 +1,198 @@
-/* === COMPARISON TABLE - Tableau Moderne === */
-
+/* === TABLEAU COMPARATIF === */
 .comparison-table-wrapper {
-  width: 100%;
-  height: 100%;
+  flex: 1;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: var(--space-8);
   background: var(--bg-primary);
 }
 
 .comparison-header {
-  margin-bottom: var(--space-6);
+  padding: var(--space-6);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .comparison-header h2 {
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
   margin: 0 0 var(--space-2);
+  font-size: var(--text-2xl);
+  color: var(--text-primary);
 }
 
 .comparison-header p {
-  font-size: var(--text-base);
+  margin: 0 0 var(--space-6);
   color: var(--text-secondary);
-  margin: 0 0 var(--space-4);
 }
 
-/* === FILTRES PAR CATÉGORIE === */
+/* === FILTRES === */
 .comparison-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  background: var(--bg-secondary);
+  padding: var(--space-4);
+  background: var(--bg-tertiary);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-subtle);
 }
 
 .filter-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background: var(--bg-primary);
+  gap: 6px;
+  padding: 6px 12px;
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  background: var(--bg-primary);
   color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .filter-btn:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--primary);
-  transform: translateY(-1px);
+  background: var(--bg-secondary);
+  border-color: var(--text-secondary);
 }
 
 .filter-btn.active {
-  background: var(--primary);
+  background: var(--accent);
   color: white;
-  border-color: var(--primary);
-  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+  border-color: var(--accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.filter-btn.active:hover {
-  background: var(--primary-dark);
-}
-
-.filter-icon {
-  font-size: 16px;
-  line-height: 1;
-}
-
-.filter-label {
-  white-space: nowrap;
-}
-
-/* === SCROLL CONTAINER === */
+/* === TABLE SCROLL === */
 .comparison-scroll {
   flex: 1;
   overflow: auto;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
+  position: relative;
+  /* Scroll fluide */
+  scroll-behavior: smooth;
+  /* Masquer scrollbar système mais garder fonctionnalité */
+  scrollbar-width: thin;
 }
 
-/* === TABLE === */
 .comparison-table {
   width: 100%;
   border-collapse: separate;
+  /* Nécessaire pour sticky */
   border-spacing: 0;
-  background: var(--bg-secondary);
+  min-width: 800px;
+  /* Force le scroll horizontal sur petit écran */
 }
 
-/* === THEAD === */
-.comparison-table thead {
+/* === HEADER PLANTES (Sticky Top) === */
+.comparison-table thead th {
   position: sticky;
   top: 0;
-  z-index: 10;
-  background: var(--bg-tertiary);
-}
-
-.comparison-table th {
+  z-index: 20;
+  /* Au-dessus du contenu */
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border-default);
   padding: var(--space-4);
   text-align: left;
-  border-bottom: 2px solid var(--border-default);
-  background: var(--bg-tertiary);
-  font-weight: var(--font-semibold);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  /* Ombre légère pour détacher le header */
 }
 
-.row-label-header {
-  min-width: 200px;
-  max-width: 200px;
+/* Première case vide (coin haut gauche) - Double sticky ! */
+.comparison-table thead th:first-child {
   position: sticky;
   left: 0;
-  z-index: 11;
-  background: var(--bg-tertiary);
+  top: 0;
+  z-index: 30;
+  /* Au-dessus des autres headers */
+  background: var(--bg-secondary);
   border-right: 2px solid var(--border-default);
-}
-
-.plant-header {
-  width: 300px;
-  min-width: 300px;
-  max-width: 300px;
-  vertical-align: top;
+  width: 200px;
+  /* Largeur fixe pour la colonne critère */
+  min-width: 150px;
 }
 
 .plant-header-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  align-items: flex-start;
+  min-width: 280px;
+  /* Largeur min pour chaque plante */
 }
 
 .plant-type-badge {
-  font-size: 24px;
-  line-height: 1;
+  font-size: 1.5rem;
+  margin-bottom: var(--space-2);
 }
 
 .plant-header h3 {
+  margin: 0;
   font-size: var(--text-lg);
   color: var(--text-primary);
-  margin: 0;
 }
 
 .plant-header p {
-  font-size: var(--text-sm);
-  font-style: italic;
-  color: var(--text-tertiary);
   margin: 0;
-}
-
-/* === TBODY === */
-.comparison-table tbody tr:nth-child(even) {
-  background: var(--bg-primary);
-}
-
-.comparison-table tbody tr:nth-child(odd) {
-  background: var(--bg-secondary);
-}
-
-.comparison-table tbody tr:hover {
-  background: var(--bg-tertiary);
-}
-
-.comparison-table td {
-  padding: var(--space-4);
-  border-bottom: 1px solid var(--border-default);
-  vertical-align: top;
-  color: var(--text-primary);
   font-size: var(--text-sm);
-  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
+/* === COLONNE ETIQUETTES (Sticky Left) === */
 .row-label {
-  min-width: 200px;
-  max-width: 200px;
-  font-weight: var(--font-medium);
-  color: var(--text-secondary);
   position: sticky;
   left: 0;
-  background: inherit;
-  border-right: 1px solid var(--border-default);
+  z-index: 10;
+  background: var(--bg-tertiary);
+  /* Légèrement différent pour distinguer */
+  border-right: 2px solid var(--border-default);
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  padding: var(--space-4);
+  font-size: var(--text-sm);
+  width: 200px;
 }
 
+/* === CELLULES === */
 .comparison-cell {
-  width: 300px;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  vertical-align: top;
+  background: var(--bg-primary);
   min-width: 300px;
-  max-width: 300px;
+  /* Assez large pour le guide */
+}
+
+.comparison-table tbody tr:hover .comparison-cell {
+  background: var(--bg-secondary);
+  /* Highlight ligne au survol */
+}
+
+.comparison-table tbody tr:hover .row-label {
+  background: var(--bg-secondary);
+  /* Highlight label aussi */
 }
 
 /* === IMAGES DANS LE TABLEAU === */
 .comparison-image-container {
-  position: relative;
-  width: 100%;
-  min-height: 240px; /* ✅ Hauteur minimale (peut augmenter avec miniatures) */
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--bg-tertiary); /* Fond si image pas chargée */
   display: flex;
   flex-direction: column;
+  gap: var(--space-2);
 }
 
-/* ✅ Cadre fixe pour uniformiser les tailles */
 .image-frame {
   position: relative;
-  width: 100%;
-  height: 240px; /* ✅ Hauteur fixe pour l'image elle-même */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-secondary); /* ✅ S'adapte au thème jour/nuit */
-  border: 2px solid var(--border-default);
-  border-radius: var(--radius-md) var(--radius-md) 0 0; /* ✅ Coins arrondis seulement en haut */
+  border-radius: var(--radius-md);
   overflow: hidden;
-  cursor: pointer;
+  height: 250px;
+  /* Force une hauteur fixe */
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
 }
 
 .comparison-image {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* ✅ Contenir plutôt que couvrir = pas de recadrage */
-  transition: transform var(--transition-base);
+  object-fit: cover;
+  /* Garantit que l'image remplit le cadre sans déformation */
+  cursor: zoom-in;
+  transition: transform 0.3s ease;
 }
 
 .comparison-image:hover {
@@ -229,196 +200,163 @@
 }
 
 .comparison-no-image {
-  width: 100%;
-  height: 240px; /* ✅ Même hauteur que les images */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--bg-tertiary);
-  border: 2px solid var(--border-default);
+  height: 200px;
+  background: var(--bg-secondary);
   border-radius: var(--radius-md);
-  opacity: 0.5;
+  border: 1px dashed var(--border-default);
+  color: var(--text-tertiary);
 }
 
 .no-image-placeholder {
-  font-size: 48px;
+  font-size: 2rem;
   margin-bottom: var(--space-2);
-  filter: grayscale(1);
+  opacity: 0.5;
 }
 
-.comparison-no-image p {
-  font-size: var(--text-sm);
-  color: var(--text-tertiary);
-  font-style: italic;
-}
-
-/* === NAVIGATION IMAGES === */
+/* Navigation Overlay */
 .img-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  border: none;
-  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.5);
   color: white;
-  font-size: 24px;
-  font-weight: bold;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   cursor: pointer;
-  opacity: 0;
-  transition: all var(--transition-base);
-  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 5;
 }
 
-.comparison-image-container:hover .img-nav {
+.image-frame:hover .img-nav {
   opacity: 1;
 }
 
-.img-nav:hover {
-  background: rgba(0, 0, 0, 0.9);
-  transform: translateY(-50%) scale(1.15);
-}
-
 .img-nav-left {
-  left: var(--space-2);
+  left: 8px;
 }
 
 .img-nav-right {
-  right: var(--space-2);
+  right: 8px;
 }
 
 .img-counter {
   position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  border-radius: var(--radius-sm);
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
   color: white;
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
-  opacity: 0;
-  transition: opacity var(--transition-base);
-  z-index: 3;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  pointer-events: none;
 }
 
-.comparison-image-container:hover .img-counter {
-  opacity: 1;
-}
-
-/* === MINIATURES === */
 .img-thumbnails {
   display: flex;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  background: var(--bg-tertiary);
-  border-top: 1px solid var(--border-default);
+  gap: 6px;
   overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.img-thumbnails::-webkit-scrollbar {
-  height: 4px;
-}
-
-.img-thumbnails::-webkit-scrollbar-track {
-  background: var(--bg-tertiary);
-}
-
-.img-thumbnails::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: var(--radius-sm);
+  padding-bottom: 4px;
 }
 
 .img-thumbnail {
-  width: 50px;
-  height: 50px;
-  min-width: 50px;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
   background-size: cover;
   background-position: center;
-  border: 2px solid var(--border-default);
-  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-base);
-  opacity: 0.6;
-}
-
-.img-thumbnail:hover {
-  opacity: 0.9;
-  transform: scale(1.1);
-  border-color: var(--primary);
+  flex-shrink: 0;
+  border: 2px solid transparent;
+  opacity: 0.7;
 }
 
 .img-thumbnail.active {
+  border-color: var(--accent);
   opacity: 1;
-  border-color: var(--primary);
-  border-width: 3px;
-  box-shadow: 0 0 0 2px var(--primary-light);
 }
 
-/* === MODAL PLEIN ÉCRAN === */
-/* ✅ Styles déplacés vers FullscreenGallery.css (composant réutilisable) */
+/* === GUIDE WRAPPER === */
+.comparison-guide-wrapper {
+  /* On force le guide à rentrer dans la cellule sans tout casser */
+  width: 100%;
+}
 
-/* === RESPONSIVE === */
-@media (max-width: 1200px) {
-  .comparison-table-wrapper {
+.comparison-guide-wrapper .maintenance-guide {
+  margin-top: 0;
+  /* Enlever marge top pour le tableau */
+  box-shadow: none;
+  /* Moins lourd dans une cellule */
+  border: 1px solid var(--border-default);
+}
+
+/* === REGULATION & TOXICITY === */
+.regulation-risks {
+  margin: var(--space-2) 0 0 0;
+  padding-left: var(--space-4);
+  font-size: var(--text-sm);
+  color: #ef4444;
+}
+
+.toxicity-badge {
+  display: inline-block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-bold);
+  font-size: var(--text-sm);
+}
+
+.toxicity-badge.safe {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.toxicity-badge.danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.toxicity-detail {
+  margin-top: var(--space-1);
+  font-weight: normal;
+  font-size: var(--text-xs);
+  opacity: 0.9;
+}
+
+/* === MOBILE OPTIMIZATION === */
+@media (max-width: 768px) {
+  .comparison-header {
     padding: var(--space-4);
   }
-  
-  .plant-header,
-  .comparison-cell {
-    width: 250px;
-    min-width: 250px;
-    max-width: 250px;
-  }
-  
-  .comparison-image-container,
-  .comparison-no-image {
-    height: 180px; /* ✅ Hauteur réduite mais uniforme */
-  }
-  
-  .comparison-filters {
-    padding: var(--space-2);
-  }
-  
-  .filter-btn {
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--text-xs);
-  }
-}
 
-@media (max-width: 768px) {
-  .row-label-header,
+  /* Réduire la largeur de la première colonne sticky */
+  .comparison-table thead th:first-child,
   .row-label {
-    min-width: 150px;
-    max-width: 150px;
+    width: 120px;
+    font-size: var(--text-xs);
+    padding: var(--space-2);
+    word-wrap: break-word;
+    /* Permettre le retour à la ligne */
   }
-  
-  .plant-header,
+
+  .plant-header-content {
+    min-width: 250px;
+    /* Réduire un peu la largeur des colonnes plantes */
+  }
+
   .comparison-cell {
-    width: 200px;
-    min-width: 200px;
-    max-width: 200px;
-  }
-  
-  .comparison-image-container,
-  .comparison-no-image {
-    height: 150px; /* ✅ Hauteur encore réduite mais toujours uniforme */
-  }
-  
-  .comparison-filters {
-    gap: var(--space-1);
-  }
-  
-  .filter-label {
-    display: none; /* Masquer le texte, garder seulement l'icône */
+    min-width: 250px;
+    padding: var(--space-3);
   }
 }
-

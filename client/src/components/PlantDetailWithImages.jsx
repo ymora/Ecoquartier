@@ -3,22 +3,23 @@
  */
 import { useState } from 'react';
 import FullscreenGallery from './FullscreenGallery';
+import MaintenanceGuide from './MaintenanceGuide';
 import './PlantDetailWithImages.css';
 
 export default function PlantDetailWithImages({ plant }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
   const [typeImageActif, setTypeImageActif] = useState('toutes');
-  
+
   // ✅ Obtenir les images filtrées par type
   const getImagesParType = () => {
     const toutes = plant.images || [];
     if (toutes.length === 0) return [];
-    
+
     if (typeImageActif === 'toutes') {
       return toutes;
     }
-    
+
     // Filtrer par type
     const motsClefs = {
       'vue_generale': ['vue_generale', 'general', 'port', 'silhouette', 'ensemble', 'entier'],
@@ -30,17 +31,17 @@ export default function PlantDetailWithImages({ plant }) {
       'automne': ['automne', 'fall', 'autumn'],
       'hiver': ['hiver', 'winter', 'neige']
     };
-    
+
     const motsRecherche = motsClefs[typeImageActif] || [];
-    return toutes.filter(img => 
+    return toutes.filter(img =>
       motsRecherche.some(mot => img.toLowerCase().includes(mot))
     );
   };
-  
+
   // Récupérer les images filtrées
   const images = getImagesParType();
   const hasImages = images.length > 0;
-  
+
   // Types de vues d'images
   const typesVues = [
     { id: 'toutes', label: 'Toutes', icon: '🖼️' },
@@ -53,7 +54,7 @@ export default function PlantDetailWithImages({ plant }) {
     { id: 'automne', label: 'Automne', icon: '🍁' },
     { id: 'hiver', label: 'Hiver', icon: '❄️' }
   ];
-  
+
   // Réinitialiser l'index quand le filtre change
   const handleTypeChange = (newType) => {
     setTypeImageActif(newType);
@@ -78,25 +79,25 @@ export default function PlantDetailWithImages({ plant }) {
           ))}
         </div>
       </div>
-      
+
       {/* Galerie d'images - Toujours afficher pour garder l'alignement */}
       <div className="image-gallery">
         {hasImages ? (
           <>
             <div className="main-image" onClick={() => setFullscreenOpen(true)} title="Cliquer pour agrandir">
-              <img 
-                src={`/images/${images[currentImageIndex]}`} 
+              <img
+                src={`/images/${images[currentImageIndex]}`}
                 alt={`${plant.name} - ${currentImageIndex + 1}`}
                 onError={(e) => {
                   e.target.src = '/images/placeholder.jpg';
                 }}
               />
               <div className="fullscreen-hint">🔍 Cliquer pour agrandir</div>
-              
+
               {/* Navigation overlay */}
               {images.length > 1 && (
                 <>
-                  <button 
+                  <button
                     className="gallery-nav gallery-nav-prev"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -106,8 +107,8 @@ export default function PlantDetailWithImages({ plant }) {
                   >
                     ◀
                   </button>
-                  
-                  <button 
+
+                  <button
                     className="gallery-nav gallery-nav-next"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -117,14 +118,14 @@ export default function PlantDetailWithImages({ plant }) {
                   >
                     ▶
                   </button>
-                  
+
                   <div className="gallery-counter">
                     {currentImageIndex + 1} / {images.length}
                   </div>
                 </>
               )}
             </div>
-            
+
             {images.length > 1 && (
               <div className="thumbnail-strip">
                 {images.map((img, index) => (
@@ -133,8 +134,8 @@ export default function PlantDetailWithImages({ plant }) {
                     className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                     onClick={() => setCurrentImageIndex(index)}
                   >
-                    <img 
-                      src={`/images/${img}`} 
+                    <img
+                      src={`/images/${img}`}
                       alt={`${plant.name} miniature ${index + 1}`}
                       onError={(e) => {
                         e.target.style.display = 'none';
@@ -203,12 +204,8 @@ export default function PlantDetailWithImages({ plant }) {
         <p>{plant.exposition}</p>
       </div>
 
-      <div className="info-card">
-        <h3>✂️ Taille</h3>
-        <p><strong>Période :</strong> {plant.taille?.periode}</p>
-        <p><strong>Fréquence :</strong> {plant.taille?.frequence}</p>
-        <p>{plant.taille?.methode}</p>
-      </div>
+      {/* ✅ NOUVEAU GUIDE D'ENTRETIEN */}
+      <MaintenanceGuide plant={plant} />
 
       <div className="info-card">
         <h3>💧 Arrosage</h3>

@@ -7,11 +7,11 @@ import Label3D from './Label3D';
  * Composant Arbre 3D Optimisé
  * Version consolidée avec toutes les fonctionnalités
  */
-function Arbre3D({ 
-  position = [0, 0, 0], 
-  arbreData, 
-  hauteur = 6, 
-  envergure = 4, 
+function Arbre3D({
+  position = [0, 0, 0],
+  arbreData,
+  hauteur = 6,
+  envergure = 4,
   profondeurRacines = 1.5,
   validationStatus = 'ok',
   anneeProjection = 0,
@@ -20,22 +20,22 @@ function Arbre3D({
   onClick
 }) {
   const groupRef = useRef();
-  
+
   // Calculs optimisés avec useMemo
   const arbreCalculs = useMemo(() => {
     const hauteurPlantation = 2;
     const envergurePlantation = 0.8;
     const profondeurRacinesPlantation = 0.3;
-    
+
     const progression = Math.min(anneeProjection / 20, 1);
-    
+
     const hauteurActuelle = hauteurPlantation + (hauteur - hauteurPlantation) * progression;
     const envergureActuelle = envergurePlantation + (envergure - envergurePlantation) * progression;
     const profondeurRacinesActuelle = profondeurRacinesPlantation + (profondeurRacines - profondeurRacinesPlantation) * progression;
-    
+
     const rayonTronc = Math.min(0.3, hauteurActuelle * 0.04);
     const rayonTroncBase = rayonTronc * 1.3;
-    
+
     return {
       hauteurActuelle,
       envergureActuelle,
@@ -48,7 +48,7 @@ function Arbre3D({
 
   // Position ajustée avec élévation du sol
   const positionAjustee = useMemo(() => [
-    position[0], 
+    position[0],
     position[1] + elevationSol,
     position[2]
   ], [position, elevationSol]);
@@ -57,7 +57,7 @@ function Arbre3D({
   const configSaison = useMemo(() => {
     const calendrier = arbreData?.calendrierAnnuel || [];
     const isCaduc = arbreData?.feuillage?.type === 'Caduc';
-    
+
     const getCouleurDepuisTexte = (texte) => {
       const couleurs = {
         'blanc': '#ffffff', 'blanche': '#ffffff',
@@ -67,7 +67,7 @@ function Arbre3D({
         'violet': '#8a2be2', 'violette': '#8a2be2',
         'bleu': '#4169e1', 'bleue': '#4169e1'
       };
-      
+
       for (const [mot, couleur] of Object.entries(couleurs)) {
         if (texte?.toLowerCase().includes(mot)) return couleur;
       }
@@ -83,32 +83,32 @@ function Arbre3D({
           bourgeons: isCaduc,
           nombreBourgeons: 20
         };
-      
+
       case 'printemps': {
-        const moisPrintemps = calendrier.find(c => 
+        const moisPrintemps = calendrier.find(c =>
           c.mois?.toLowerCase().includes('mars') ||
           c.mois?.toLowerCase().includes('avril') ||
           c.mois?.toLowerCase().includes('mai')
         );
-        
+
         if (moisPrintemps?.action?.toLowerCase().includes('floraison') && arbreData?.floraison) {
           const couleurFleur = getCouleurDepuisTexte(arbreData.floraison.couleur);
           const description = arbreData.floraison.description?.toLowerCase() || '';
-          
+
           let nombreFleurs = 100;
           if (description.includes('spectaculaire') || description.includes('abondant')) {
             nombreFleurs = 300;
           } else if (description.includes('modéré')) {
             nombreFleurs = 80;
           }
-          
+
           let tailleFleur = 0.15;
           if (description.includes('double') || description.includes('pompon')) {
             tailleFleur = 0.25;
           } else if (description.includes('petit')) {
             tailleFleur = 0.08;
           }
-          
+
           return {
             feuillage: '#4caf50',
             typeRendu: 'floraison',
@@ -118,7 +118,7 @@ function Arbre3D({
             tailleFleur
           };
         }
-        
+
         return {
           feuillage: '#4caf50',
           typeRendu: 'feuillage',
@@ -127,7 +127,7 @@ function Arbre3D({
           nombreBourgeons: 50
         };
       }
-      
+
       case 'ete':
         return {
           feuillage: '#2e7d32',
@@ -139,7 +139,7 @@ function Arbre3D({
             taille: 0.1
           } : null
         };
-      
+
       case 'automne':
         return {
           feuillage: '#ff6f00',
@@ -147,7 +147,7 @@ function Arbre3D({
           densite: 0.7,
           couleursAutomne: ['#ff6f00', '#ff8f00', '#ffa000', '#ffb300']
         };
-      
+
       default:
         return {
           feuillage: '#2e7d32',
@@ -187,19 +187,19 @@ function Arbre3D({
   // Géométries optimisées
   const geometries = useMemo(() => ({
     tronc: new THREE.CylinderGeometry(
-      arbreCalculs.rayonTronc, 
-      arbreCalculs.rayonTroncBase, 
-      arbreCalculs.hauteurActuelle * 0.7, 
+      arbreCalculs.rayonTronc,
+      arbreCalculs.rayonTroncBase,
+      arbreCalculs.hauteurActuelle * 0.7,
       8
     ),
     couronne: new THREE.SphereGeometry(
-      arbreCalculs.envergureActuelle / 2, 
-      12, 
+      arbreCalculs.envergureActuelle / 2,
+      12,
       8
     ),
     racines: new THREE.ConeGeometry(
-      arbreCalculs.rayonTroncBase * 2, 
-      arbreCalculs.profondeurRacinesActuelle, 
+      arbreCalculs.rayonTroncBase * 2,
+      arbreCalculs.profondeurRacinesActuelle,
       6
     )
   }), [arbreCalculs]);
@@ -220,16 +220,16 @@ function Arbre3D({
   // Rendu des fleurs optimisé
   const renderFleurs = useCallback(() => {
     if (configSaison.typeRendu !== 'floraison' || !materials.fleurs) return null;
-    
+
     const fleurs = [];
     const nombreFleurs = configSaison.nombreFleurs || 100;
     const tailleFleur = configSaison.tailleFleur || 0.15;
-    
+
     for (let i = 0; i < nombreFleurs; i++) {
       const angle = (i / nombreFleurs) * Math.PI * 2;
       const rayon = (Math.random() * arbreCalculs.envergureActuelle) / 2;
       const hauteurFleur = Math.random() * arbreCalculs.hauteurActuelle * 0.6 + arbreCalculs.hauteurActuelle * 0.3;
-      
+
       fleurs.push(
         <mesh
           key={i}
@@ -244,22 +244,22 @@ function Arbre3D({
         </mesh>
       );
     }
-    
+
     return fleurs;
   }, [configSaison, materials.fleurs, arbreCalculs]);
 
   // Rendu des fruits optimisé
   const renderFruits = useCallback(() => {
     if (!configSaison.fruits || !materials.fruits) return null;
-    
+
     const fruits = [];
     const nombreFruits = configSaison.fruits.nombre || 30;
-    
+
     for (let i = 0; i < nombreFruits; i++) {
       const angle = (i / nombreFruits) * Math.PI * 2;
       const rayon = (Math.random() * arbreCalculs.envergureActuelle) / 2;
       const hauteurFruit = Math.random() * arbreCalculs.hauteurActuelle * 0.4 + arbreCalculs.hauteurActuelle * 0.4;
-      
+
       fruits.push(
         <mesh
           key={i}
@@ -274,7 +274,7 @@ function Arbre3D({
         </mesh>
       );
     }
-    
+
     return fruits;
   }, [configSaison, materials.fruits, arbreCalculs]);
 
@@ -285,14 +285,14 @@ function Arbre3D({
         <primitive object={geometries.racines} />
         <primitive object={materials.racines} />
       </mesh>
-      
+
       {/* Racines souterraines radiales (4 branches enfouies) */}
       {[0, 90, 180, 270].map((angle) => {
         const rad = (angle * Math.PI) / 180;
         const longueurRacine = arbreCalculs.envergureActuelle * 0.4;
         const epaisseurRacine = arbreCalculs.rayonTroncBase * 0.4;
         const profondeurRacine = arbreCalculs.profondeurRacinesActuelle * 0.5;
-        
+
         return (
           <mesh
             key={angle}
@@ -309,42 +309,71 @@ function Arbre3D({
           </mesh>
         );
       })}
-      
+
       {/* Tronc */}
-      <mesh position={[0, arbreCalculs.hauteurActuelle * 0.35, 0]} castShadow receiveShadow>
+      <mesh
+        position={[0, arbreCalculs.hauteurActuelle * (arbreData?.type === 'arbuste' ? 0.2 : 0.35), 0]}
+        castShadow
+        receiveShadow
+        scale={[1, arbreData?.type === 'arbuste' ? 0.5 : 1, 1]}
+      >
         <primitive object={geometries.tronc} />
         <primitive object={materials.tronc} />
       </mesh>
-      
+
       {/* Couronne de feuillage */}
       {configSaison.typeRendu === 'feuillage' && (
-        <mesh position={[0, arbreCalculs.hauteurActuelle * 0.7, 0]} castShadow>
-          <primitive object={geometries.couronne} />
-          <primitive object={materials.feuillage} />
-        </mesh>
+        arbreData?.type === 'arbuste' ? (
+          // ✅ Rendu spécial ARBUSTE : Multi-sphères pour aspect buissonnant
+          <group position={[0, arbreCalculs.hauteurActuelle * 0.4, 0]}>
+            {[
+              { pos: [0, 0, 0], scale: 1.0 },
+              { pos: [arbreCalculs.envergureActuelle * 0.25, -0.1, 0.1], scale: 0.8 },
+              { pos: [-0.2, 0.1, 0.2], scale: 0.7 },
+              { pos: [0.1, -0.2, -0.2], scale: 0.9 },
+              { pos: [-0.15, -0.15, -0.15], scale: 0.75 }
+            ].map((s, i) => (
+              <mesh
+                key={i}
+                position={s.pos}
+                scale={[s.scale, s.scale, s.scale]}
+                castShadow
+              >
+                <primitive object={geometries.couronne} />
+                <primitive object={materials.feuillage} />
+              </mesh>
+            ))}
+          </group>
+        ) : (
+          // Rendu classique ARBRE
+          <mesh position={[0, arbreCalculs.hauteurActuelle * 0.7, 0]} castShadow>
+            <primitive object={geometries.couronne} />
+            <primitive object={materials.feuillage} />
+          </mesh>
+        )
       )}
-      
+
       {/* Fleurs */}
       {renderFleurs()}
-      
+
       {/* Fruits */}
       {renderFruits()}
-      
+
       {/* Halo de validation */}
       {validationStatus !== 'ok' && (
-        <HaloPulsant 
+        <HaloPulsant
           couleur={validationStatus === 'erreur' ? '#f44336' : '#ff9800'}
           taille={arbreCalculs.envergureActuelle * 1.2}
         />
       )}
-      
+
       {/* Label avec informations */}
-      <Label3D 
-        position={[0, arbreCalculs.hauteurActuelle + 1, 0]} 
+      <Label3D
+        position={[0, arbreCalculs.hauteurActuelle + 1, 0]}
         variant="large"
         distanceFactor={10}
       >
-        {arbreData?.nom || 'Arbre'} - {Math.round(arbreCalculs.progression * 100)}% croissance
+        {arbreData?.name || 'Arbre'} - {Math.round(arbreCalculs.progression * 100)}% croissance
       </Label3D>
     </group>
   );

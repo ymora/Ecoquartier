@@ -1,0 +1,233 @@
+.eco-guide-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--text-primary);
+}
+
+.eco-guide-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.eco-guide-header h2 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.eco-guide-header .subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+/* Tabs */
+.eco-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.eco-tab-btn {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.eco-tab-btn:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+.eco-tab-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+/* Introduction Card */
+.intro-card {
+    background: linear-gradient(135deg, var(--surface-active), var(--surface));
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+    text-align: center;
+    border-left: 5px solid var(--primary);
+}
+
+/* Grid Layouts */
+.grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .grid-2-col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cards */
+.eco-card {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    transition: transform 0.2s;
+}
+
+.eco-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.eco-card h3 {
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.eco-card.full-width {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+/* Sol Styles */
+.sol-item {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.sol-item:last-child {
+    border-bottom: none;
+}
+
+.badge-type {
+    background: var(--surface-active);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.roles-list li {
+    margin-bottom: 0.5rem;
+    list-style: none;
+}
+
+.alert-box {
+    background: rgba(239, 68, 68, 0.1);
+    /* Red tint */
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+/* Techniques Grid */
+.techniques-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.technique-item {
+    background: var(--surface-hover);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+}
+
+.technique-item h4 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+/* Gazon Styles */
+.alternatives-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.alternative-card h3 small {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: normal;
+    font-style: italic;
+    margin-top: 0.2rem;
+}
+
+.benefits-list {
+    padding-left: 0;
+    list-style: none;
+}
+
+.benefits-list li {
+    margin-bottom: 0.5rem;
+}
+
+.usage-info,
+.action-info {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border);
+    font-size: 0.95rem;
+}
+
+/* Steps Grid */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.step-item {
+    text-align: center;
+}
+
+.step-number {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+/* Animation */
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

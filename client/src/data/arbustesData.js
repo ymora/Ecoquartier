@@ -92,7 +92,7 @@ export const arbresData = [
       'Fleurs coupées décoratives'
     ],
     anecdote: '\'Kanzan\' signifie "montagne de fleurs" en japonais. C\'est l\'un des cerisiers japonais les plus plantés au monde pour sa floraison spectaculaire. Au Japon, la contemplation des cerisiers en fleurs (Hanami) est une tradition ancestrale célébrée nationalement.',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -134,7 +134,7 @@ export const arbresData = [
       },
       conseils: 'Excellente pour alignement ou isolé mais prévoir espace suffisant. Éviter proximité immédiate de la maison.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -292,7 +292,7 @@ export const arbresData = [
       'Excellent rapport beauté/entretien'
     ],
     anecdote: '\'Accolade\' est un hybride anglais créé dans les années 1950. Son nom évoque l\'accueil chaleureux du printemps. C\'est un des cerisiers les plus faciles à cultiver et l\'un des premiers à fleurir, annonçant le réveil de la nature.',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -332,7 +332,7 @@ export const arbresData = [
       },
       conseils: 'Un des cerisiers les plus adaptés aux petits jardins. Système racinaire moins problématique.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -351,10 +351,10 @@ export const arbresData = [
           conseil: 'Taille minimale nécessaire - Port naturellement harmonieux'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION 16 mars - 15 août',
-          raison: 'Protection oiseaux nicheurs',
-          sanction: 'Amende + réduction aides PAC',
-          application: 'Toutes zones'
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
+          raison: 'Protection oiseaux nicheurs (Code Rural + Biodiversité)',
+          sanction: 'Agriculteurs : Amende + réduction aides PAC. Particuliers : Responsabilité si destruction habitat protégé.',
+          application: 'Agriculteurs (Loi) / Particuliers (Civisme & arrêtés locaux)'
         }
       },
       allergies: {
@@ -476,7 +476,7 @@ export const arbresData = [
       'Spectacle automnal exceptionnel'
     ],
     anecdote: '\'Sunset Boulevard\' est une variété récente (années 2000) sélectionnée pour sa couleur de fleurs unique rose saumon/corail et son spectacle automnal flamboyant. Son nom évoque les couchers de soleil de Californie. C\'est un des rares cerisiers offrant 2 spectacles : floraison printanière + couleurs automnales exceptionnelles.',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -516,7 +516,7 @@ export const arbresData = [
       },
       conseils: 'Excellent pour petits jardins urbains. Taille et racines modérées. Respecter quand même les distances légales.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -535,10 +535,10 @@ export const arbresData = [
           conseil: 'Variété récente à taille minimale'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION 16 mars - 15 août',
-          raison: 'Protection nidification',
-          sanction: 'Amende',
-          application: 'Toutes zones'
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
+          raison: 'Protection oiseaux nicheurs',
+          sanction: 'Agriculteurs : Amende. Particuliers : Risque verbalisation si destruction nids.',
+          application: 'Agriculteurs (Loi) / Particuliers (Civisme & arrêtés locaux)'
         }
       },
       allergies: {
@@ -658,7 +658,7 @@ export const arbresData = [
       'Stabilisation talus secs et calcaires'
     ],
     anecdote: 'L\'arbre de Judée présente une cauliflorie spectaculaire : ses fleurs rose-pourpre apparaissent directement sur le tronc et les vieilles branches, phénomène rare en climat tempéré ! Selon la légende chrétienne, Judas se serait pendu à cet arbre après avoir trahi Jésus, d\'où son nom. Les fleurs, honteuses, seraient devenues roses (elles étaient blanches avant). Originaire du Moyen-Orient, il symbolise le renouveau printanier méditerranéen. Ses fleurs sont comestibles et utilisées en cuisine depuis l\'Antiquité !',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -704,7 +704,7 @@ export const arbresData = [
       },
       conseils: 'Arbre MAGNIFIQUE mais prévoir emplacement définitif (impossible à déplacer). Racine pivot puissante : éloigner des fondations. Excellent en isolé sur pelouse ou talus sec calcaire. NE PAS planter près infrastructures sensibles. Résiste pollution urbaine.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -730,10 +730,10 @@ export const arbresData = [
           conseil: '🚫 NE JAMAIS TAILLER sauf urgence sécurité (branche cassée dangereuse). Choisir emplacement définitif pour éviter toute taille future. Port naturel étalé/tortueux = beauté de l\'arbre.'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION LÉGALE 16 mars - 15 août (protection nidification oiseaux)',
-          raison: 'Code Rural + arrêtés préfectoraux + directive LPO',
-          sanction: 'Amende jusqu\'à 3 750€ + dédommagement si oiseaux détruits',
-          application: 'Tous arbres en zone rurale et périurbaine',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
+          raison: 'Protection oiseaux nicheurs (Code de l\'Environnement)',
+          sanction: 'Agriculteurs : Aides PAC. Particuliers : Amende si destruction espèce protégée.',
+          application: 'Agriculteurs (Obligation) / Particuliers (Responsabilité)',
           exception: 'Travaux urgents sécurité avec autorisation préfectorale'
         },
         deplacementImpossible: {
@@ -887,7 +887,7 @@ export const arbresData = [
       'Haies libres mixtes'
     ],
     anecdote: 'L\'érable champêtre est le SEUL érable INDIGÈNE de France ! Arbre des campagnes et bocages depuis des millénaires, il était autrefois taillé en têtard dans les haies. Ses samares horizontales (ailes à 180°) sont uniques parmi les érables. Son bois très dur était utilisé pour fabriquer des manches d\'outils et des instruments de musique. Parfaitement adapté au climat et sols d\'Île-de-France (tolère calcaire !), c\'est l\'alternative IDÉALE à l\'érable rouge pour Bessancourt !',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -936,7 +936,7 @@ export const arbresData = [
       },
       conseils: '✅ EXCELLENT CHOIX pour Bessancourt ! Tolère calcaire, pollution, sécheresse. Adapté petits/moyens jardins (10-15m). Racines modérées (beaucoup moins problématiques qu\'Acer rubrum). Parfait : haies champêtres, alignements, isolé, brise-vent. Arbre INDIGÈNE favorisant biodiversité locale. Distances raisonnables vs autres érables.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -959,11 +959,11 @@ export const arbresData = [
           conseil: 'EXCELLENT pour taille ! Supporte taille sévère et régulière (haies champêtres). Peut être taillé en têtard (tradition ancestrale). Moins de problèmes de sève que autres érables.'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION LÉGALE 16 mars - 15 août (protection oiseaux nicheurs)',
-          raison: 'Code Rural + arrêtés préfectoraux + directive LPO',
-          sanction: 'Agriculteurs : amende 3 750€ + réduction 3% aides PAC. Particuliers : responsabilité civile.',
-          application: 'TOUS arbres zones rurales/périurbaines (Bessancourt inclus)',
-          exception: 'Travaux urgents sécurité avec autorisation préfectorale. Haies champêtres : tolérance parfois locale (vérifier mairie).'
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
+          raison: 'Protection oiseaux (Code Rural + Biodiversité)',
+          sanction: 'Agriculteurs : Aides PAC. Particuliers : Amende si destruction nids prouvée.',
+          application: 'Agriculteurs (Loi) / Particuliers (Civisme & arrêtés locaux)',
+          exception: 'Travaux urgents sécurité. Haies champêtres : voir mairie.'
         }
       },
       allergies: {
@@ -1119,7 +1119,7 @@ export const arbresData = [
       'Jardins contemporains et design'
     ],
     anecdote: 'L\'érable du Japon est LE roi des petits jardins ! Avec plus de 1000 variétés (feuillage vert, pourpre, panaché, lacinié), il offre une diversité incroyable. Au Japon, la contemplation des érables en automne (Momijigari) est une tradition aussi importante que celle des cerisiers ! Ses feuilles finement découpées et ses couleurs flamboyantes en font un arbre de collection. Parfait pour Bessancourt car taille modeste (4-8m) et adapté petits espaces urbains. Symbole de l\'élégance japonaise !',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -1167,7 +1167,7 @@ export const arbresData = [
       },
       conseils: '⭐ PARFAIT PETITS JARDINS ! Racines compactes non invasives. Taille modeste (4-8m). Adapté jardins urbains, patios, terrasses. Culture en bac excellente. Distances raisonnables. MAIS exigeant : mi-ombre, sol frais, arrosage régulier, protection vents. Arbre de collection et prestige.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -1191,10 +1191,10 @@ export const arbresData = [
           conseil: '🌿 Taille MINIMALE recommandée. Port naturel sculpté = essence même de l\'érable japonais. Uniquement bois mort ou branches gênantes. Laisser silhouette naturelle. Variétés naines : 0 taille.'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION LÉGALE 16 mars - 15 août',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
           raison: 'Protection oiseaux nicheurs',
-          sanction: 'Amende 3 750€ (agriculteurs) + responsabilité civile',
-          application: 'Tous arbres zones rurales/périurbaines',
+          sanction: 'Agriculteurs : Amende PAC. Particuliers : Amende si destruction nids.',
+          application: 'Agriculteurs (Loi) / Particuliers (Civisme & arrêtés locaux)',
           exception: 'Travaux urgents sécurité'
         },
         sensibilites: {
@@ -1350,7 +1350,7 @@ export const arbresData = [
       'Pot sur terrasse (variétés naines)'
     ],
     anecdote: 'Originaire de Chine, le Lilas des Indes est aussi appelé "arbre aux cent jours" car sa floraison dure exceptionnellement longtemps (juillet à octobre). Son écorce lisse et colorée le rend décoratif même en hiver !',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -1390,7 +1390,7 @@ export const arbresData = [
       },
       conseils: 'Excellent pour petits jardins. Floraison estivale exceptionnelle. Prévoir soleil maximum. Tailler court en hiver pour floraison abondante.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -1409,10 +1409,10 @@ export const arbresData = [
           conseil: '⚠️ IMPORTANT : Tailler en fin d\'hiver (février-mars) pour floraison maximale. Plus vous taillez court, plus il fleurit !'
         },
         reglementationTaille: {
-          loi: '⚠️ AGRICULTEURS : Interdiction 16 mars - 15 août. PARTICULIERS : Recommandation LPO',
-          raison: 'Protection nidification oiseaux',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
+          raison: 'Protection oiseaux nicheurs',
           solution: 'Tailler impérativement en février-mars',
-          sanction: 'Agriculteurs : Réduction aides PAC + amende'
+          sanction: 'Agriculteurs : Réduction aides PAC. Particuliers : Responsabilité si destruction nids.'
         }
       },
       allergies: {
@@ -1529,7 +1529,7 @@ export const arbustesData = [
       'Mellifère précoce'
     ],
     anecdote: 'Le noisetier est l\'un des premiers arbustes à fleurir, dès janvier. Ses chatons produisent un pollen abondant transporté par le vent.',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -1571,7 +1571,7 @@ export const arbustesData = [
       },
       conseils: 'Parfait en haie libre mais CONTRÔLER les drageons. Barrière anti-racines recommandée près des allées. Ne pas planter près canalisations.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -1590,10 +1590,10 @@ export const arbustesData = [
           conseil: 'Supporte très bien la taille. Recépage possible pour rajeunir.'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION LÉGALE 16 mars - 15 août',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
           raison: 'Protection nidification oiseaux (Code Rural + PAC)',
-          sanction: 'Amende 3 750€ + réduction 3% aides PAC',
-          application: 'Haies et arbustes isolés'
+          sanction: 'Agriculteurs : Amende PAC. Particuliers : Amende si destruction nids.',
+          application: 'Agriculteurs (Loi) / Particuliers (Civisme)'
         }
       },
       allergies: {
@@ -1714,7 +1714,7 @@ export const arbustesData = [
       'Excellent pour la biodiversité'
     ],
     anecdote: 'Son nom vient de l\'usage traditionnel de son bois très dur pour fabriquer les fusains utilisés par les artistes. Ses fruits roses éclatants sont un régal pour les yeux en automne !',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -1754,7 +1754,7 @@ export const arbustesData = [
       },
       conseils: 'Racines non problématiques MAIS éloigner des aires de jeux et enfants (toxicité extrême). Excellent en haie taillée.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -1773,10 +1773,10 @@ export const arbustesData = [
           conseil: '⚠️ PORTER DES GANTS - toute la plante est TOXIQUE'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION 16 mars - 15 août',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
           raison: 'Nidification oiseaux',
-          sanction: 'Amende 3 750€',
-          application: 'Toutes haies'
+          sanction: 'Agriculteurs : Amende PAC. Particuliers : Risque verbalisation si destruction nids.',
+          application: 'Agriculteurs (Loi) / Particuliers (Civisme)'
         },
         manipulation: '🔴 GANTS OBLIGATOIRES - Sève irritante, toute plante toxique'
       },
@@ -1897,7 +1897,7 @@ export const arbustesData = [
       'Très apprécié pour la biodiversité'
     ],
     anecdote: 'Le troène est l\'un des arbustes de haie les plus utilisés en Europe. Son nom vient du latin "ligare" (lier) car ses branches flexibles servaient à faire des liens. Champion de la résistance : pollution, sécheresse, taille sévère... rien ne l\'arrête !',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -1938,7 +1938,7 @@ export const arbustesData = [
       },
       conseils: 'Champion des haies taillées. Distance 0.5m légale si maintenu < 2m de haut. Parfait pour brise-vue mais racines superficielles.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -1957,10 +1957,10 @@ export const arbustesData = [
           conseil: 'Champion de la taille ! Supporte recépage complet. Repousse vigoureuse.'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION 16 mars - 15 août',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
           raison: 'Nidification (troène = site privilégié oiseaux)',
-          sanction: 'Amende 3 750€',
-          application: 'Haies et sujets isolés',
+          sanction: 'Agriculteurs : Amende PAC. Particuliers : Responsabilité si destruction nids.',
+          application: 'Agriculteurs (Loi) / Particuliers (Civisme)',
           tolerance: 'Haie taillée stricte : tolérance locale parfois (vérifier mairie)'
         }
       },
@@ -2083,7 +2083,7 @@ export const arbustesData = [
       'Couvre-sol en massif'
     ],
     anecdote: 'L\'osmanthe de Burkwood est un hybride entre O. delavayi et O. decorus. Son parfum envoûtant au printemps en fait l\'un des arbustes les plus appréciés des jardins. En Chine, les fleurs d\'osmanthe parfument le thé et les pâtisseries !',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -2124,7 +2124,7 @@ export const arbustesData = [
       },
       conseils: 'UN DES MEILLEURS pour proximité maison/terrasse. Racines compactes, croissance lente, feuillage persistant. Parfait en bac également.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -2143,10 +2143,10 @@ export const arbustesData = [
           conseil: 'Croissance lente = taille minimale. Très tolérant.'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION 16 mars - 15 août',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
           raison: 'Protection oiseaux',
-          sanction: 'Amende',
-          application: 'Toutes haies'
+          sanction: 'Agriculteurs : Amende PAC. Particuliers : Responsabilité si destruction nids.',
+          application: 'Agriculteurs (Loi) / Particuliers (Civisme)'
         }
       },
       allergies: {
@@ -2270,7 +2270,7 @@ export const arbustesData = [
       'Excellent pour biodiversité'
     ],
     anecdote: 'Son nom "sanguin" vient de la couleur rouge sang de ses jeunes rameaux en hiver. En hiver, après la taille, les jeunes pousses forment un spectacle flamboyant ! Autrefois, on utilisait ses rameaux flexibles pour la vannerie.',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -2311,7 +2311,7 @@ export const arbustesData = [
       },
       conseils: 'Parfait pour zones humides et berges. Recépage régulier recommandé pour rameaux colorés ET pour réduire hauteur (distance 0.5m alors possible).'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -2330,9 +2330,9 @@ export const arbustesData = [
           conseil: 'RECÉPAGE SÉVÈRE recommandé tous les 2-3 ans pour rameaux rouges spectaculaires. Couper à 10-20 cm du sol.'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION 16 mars - 15 août',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
           raison: 'Site de nidification important',
-          sanction: 'Amende 3 750€',
+          sanction: 'Agriculteurs : Amende PAC. Particuliers : Responsabilité si destruction nids.',
           application: 'Toutes haies champêtres',
           note: 'Respecter impérativement - excellent site nidification'
         }
@@ -2449,7 +2449,7 @@ export const arbustesData = [
       'Fleurs coupées pour bouquets parfumés'
     ],
     anecdote: 'Appelé "Jasmin des poètes" pour son parfum envoûtant rappelant le jasmin. Son nom "seringat" vient du grec "syrinx" (flûte) car ses rameaux creux servaient à fabriquer des instruments. C\'est l\'un des arbustes les plus parfumés du jardin !',
-    
+
     // ========== RÉGLEMENTATION ==========
     reglementation: {
       systemeRacinaire: {
@@ -2490,7 +2490,7 @@ export const arbustesData = [
       },
       conseils: 'Parfait près terrasses pour parfum MAIS attention fenêtres chambres (parfum peut être entêtant la nuit). Racines non problématiques.'
     },
-    
+
     // ========== INFORMATIONS COMPLÉMENTAIRES ==========
     informationsComplementaires: {
       pollinisation: {
@@ -2509,11 +2509,11 @@ export const arbustesData = [
           conseil: '🔴 CRUCIAL : Tailler UNIQUEMENT après floraison ! Fleurit sur bois de l\'année précédente. Taille tardive = pas de fleurs année suivante.'
         },
         reglementationTaille: {
-          loi: '⚠️ INTERDICTION 16 mars - 15 août',
+          loi: '⚠️ AGRICULTEURS : Interdiction légale (16 mars - 15 août). PARTICULIERS : Recommandation forte.',
           raison: 'Période inclut la floraison (mai-juin)',
-          conflit: '⚠️ Conflit : Période légale chevauche période de taille optimale (juin-juillet)',
-          solution: 'Tailler début juin (avant 15 juin) OU fin août-septembre (perd floraison suivante)',
-          sanction: 'Amende si taille pendant période interdite'
+          conflit: '⚠️ Conflit : La taille optimale (juin-juillet) tombe en période sensible.',
+          solution: 'Vérifier ABSENCE de nids avant taille. Préférer taille légère.',
+          sanction: 'Amende si destruction de nids prouvée'
         }
       },
       allergies: {
@@ -2567,7 +2567,7 @@ const validatePlantsData = (data) => {
       const validatedPlant = plantSchema.validateSync(plant);
       return validatedPlant;
     });
-    
+
     console.log('✅ Données de plantes validées:', validatedPlants.length);
     return validatedPlants;
   } catch (error) {

@@ -1,11 +1,39 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 import { compression } from 'vite-plugin-compression2'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    // PWA - Application installable
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'favicon-32x32.png', 'apple-touch-icon.png', 'images/*.png', 'images/*.jpg'],
+      manifest: {
+        name: "Les Haies de l'Écocartier de Bessancourt",
+        short_name: 'Haies Bessancourt',
+        description: 'Guide des arbustes et planificateur de haies champêtres',
+        theme_color: '#0a0e1a',
+        background_color: '#0a0e1a',
+        display: 'standalone',
+        orientation: 'portrait',
+        icons: [
+          {
+            src: '/pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ]
+      }
+    }),
     // Compression Brotli pour réduire la taille des bundles JS/CSS
     compression({
       algorithm: 'brotliCompress',
@@ -23,19 +51,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Chunking optimisé pour cache navigateur optimal
-        manualChunks: {
-          // Vendor React (changement rare, cache longue durée)
-          'react-vendor': ['react', 'react-dom'],
-          
-          // Three.js (gros package ~500 KB, séparé pour cache optimal)
-          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
-          
-          // Fabric.js pour canvas 2D (gros package ~400 KB)
-          'fabric-vendor': ['fabric'],
-          
-          // Icons (changement fréquent, petit)
-          'icons': ['react-icons']
-        }
+        manualChunks: undefined
       }
     }
   },

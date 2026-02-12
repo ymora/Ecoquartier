@@ -28,7 +28,7 @@ import './CanvasTerrain3D.css';
 // Ex: "6-10 m" → 8 (moyenne), "4 m" → 4
 function parseHauteur(tailleMaturite) {
   if (!tailleMaturite) return 7; // Valeur par défaut
-  
+
   const match = tailleMaturite.match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
   if (match) {
     // Format "6-10 m" → prendre la moyenne
@@ -36,17 +36,17 @@ function parseHauteur(tailleMaturite) {
     const max = parseFloat(match[2]);
     return (min + max) / 2;
   }
-  
+
   // Format "4 m" → prendre la valeur
   const singleMatch = tailleMaturite.match(/(\d+(?:\.\d+)?)/);
   if (singleMatch) {
     return parseFloat(singleMatch[1]);
   }
-  
+
   return 7; // Défaut
 }
 
-function CanvasTerrain3D({ 
+function CanvasTerrain3D({
   dimensions = { largeur: 30, hauteur: 30 },
   planData = null,
   anneeProjection = 0,
@@ -60,6 +60,7 @@ function CanvasTerrain3D({
   syncKey = 0, // ✅ Clé pour forcer la synchronisation
   onObjetPositionChange = null,
   onObjetSelectionChange = null, // ✅ Callback pour sélectionner un objet 3D
+  onPlantSelect = null, // ✅ Callback pour afficher les détails d'une plante
   canvas2D = null, // ✅ Référence au canvas 2D pour les actions
   contextMenuRef2D = null, // ✅ Référence au modal 2D existant
   imageFondUrl = null, // ✅ URL de l'image de fond 2D
@@ -71,12 +72,12 @@ function CanvasTerrain3D({
   const [objetSelectionne3D, setObjetSelectionne3D] = useState(null); // ✅ Objet sélectionné en 3D pour highlight
   const solTransparent = true; // ✅ Sol transparent TOUJOURS ACTIF
   const orbitControlsRef = useRef();
-  
+
   // ✅ Gérer l'activation/désactivation d'OrbitControls selon la sélection d'objets
   useEffect(() => {
     if (orbitControlsRef.current) {
       const controls = orbitControlsRef.current;
-      
+
       // Si un OBJET (hors sol) est sélectionné, désactiver la rotation
       const isObjetBloquant = !!(objetSelectionne3D && objetSelectionne3D.type !== 'sol');
       if (isObjetBloquant) {
@@ -94,41 +95,41 @@ function CanvasTerrain3D({
       }
     }
   }, [objetSelectionne3D]);
-  
+
   // ✅ Configuration des boutons de la souris pour OrbitControls
   useEffect(() => {
     // Délai pour s'assurer que OrbitControls est bien monté
     const timer = setTimeout(() => {
       if (orbitControlsRef.current) {
         const controls = orbitControlsRef.current;
-        
+
         // Configuration des boutons de la souris
         if (controls.mouseButtons) {
           controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;    // Bouton gauche = rotation
           controls.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;   // Molette = zoom
           controls.mouseButtons.RIGHT = THREE.MOUSE.PAN;      // Bouton droit = déplacement linéaire (panning)
         }
-        
+
         // S'assurer que le zoom avec la molette fonctionne
         controls.enableZoom = true;
         controls.enablePan = true;
         controls.enableRotate = true;
-        
-        
+
+
         logger.info('OrbitControls', '✅ Configuration des boutons de souris: gauche=rotation, droit=pan, molette=zoom');
       }
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
-  
+
   // Convertir les données 2D en 3D
   // Recalculer quand planData OU anneeProjection change
   const convertir2DTo3D = () => {
     const echelle = ECHELLE_PIXELS_PAR_METRE; // Utilisation de la constante globale : 30 pixels = 1 mètre
-    
+
     // Debug désactivé pour performance (produit des logs volumineux)
-    
+
     const data3D = {
       maison: null,
       arbres: [],
@@ -138,23 +139,23 @@ function CanvasTerrain3D({
       terrasses: [],
       bounds: { minX: 0, maxX: 0, minZ: 0, maxZ: 0 } // Limites des objets
     };
-    
+
     if (!planData) return data3D;
-    
+
     // Tracker les limites de tous les objets
     let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
-    
+
     const updateBounds = (centreX, centreZ, largeur = 0, profondeur = 0) => {
       // ✅ CORRECTION : Calculer les limites depuis le CENTRE de l'objet
       const demiLargeur = largeur / 2;
       const demiProfondeur = profondeur / 2;
-      
+
       minX = Math.min(minX, centreX - demiLargeur);
       maxX = Math.max(maxX, centreX + demiLargeur);
       minZ = Math.min(minZ, centreZ - demiProfondeur);
       maxZ = Math.max(maxZ, centreZ + demiProfondeur);
     };
-    
+
     // Maisons (tableau)
     if (planData.maisons && planData.maisons.length > 0) {
       data3D.maisons = planData.maisons.map((maison) => {
@@ -162,21 +163,21 @@ function CanvasTerrain3D({
         // Cela garantit que 2D et 3D affichent la même chose
         const maisonWidth = maison.getScaledWidth ? maison.getScaledWidth() : maison.width;
         const maisonHeight = maison.getScaledHeight ? maison.getScaledHeight() : maison.height;
-        
+
         const largeur = maisonWidth / echelle;
         const profondeur = maisonHeight / echelle;
-        
+
         // Les objets 2D avec originX/Y: 'center' sont déjà centrés
         // Donc on utilise directement left/top pour la position 3D
         const posX = maison.left / echelle;
         const posZ = maison.top / echelle;
-        
+
         // Debug désactivé pour performance
-        
+
         // ✅ CORRECTION : Les bounds doivent être calculés depuis le CENTRE de l'objet
         // car la position 3D est le centre, pas le coin
         updateBounds(posX, posZ, largeur, profondeur);
-        
+
         return {
           position: [posX, 0, posZ],
           largeur: largeur, // ✅ TOUJOURS utiliser les dimensions visuelles calculées
@@ -192,7 +193,7 @@ function CanvasTerrain3D({
         };
       });
     }
-    
+
     // Citernes (objets circulaires - Groups)
     if (planData.citernes && planData.citernes.length > 0) {
       data3D.citernes = planData.citernes.map(c => {
@@ -200,12 +201,12 @@ function CanvasTerrain3D({
         // Position centrée (les cercles utilisent origin: 'center')
         const posX = c.left / echelle;
         const posZ = c.top / echelle;
-        
+
         // Debug désactivé pour performance
-        
+
         // ✅ CORRECTION : Les bounds doivent être calculés depuis le CENTRE de l'objet
         updateBounds(posX, posZ, diametre, diametre);
-        
+
         return {
           position: [posX, 0, posZ],
           diametre: diametre,
@@ -218,7 +219,7 @@ function CanvasTerrain3D({
         };
       });
     }
-    
+
     // Caissons d'eau rectangulaires
     if (planData.caissonsEau && planData.caissonsEau.length > 0) {
       planData.caissonsEau.forEach(c => {
@@ -228,11 +229,11 @@ function CanvasTerrain3D({
         const largeur = caissonWidth / echelle;
         const profondeur = caissonHeight / echelle;
         const hauteur = c.hauteur || 1;
-        
+
         // Position centrée
         const posX = c.left / echelle;
         const posZ = c.top / echelle;
-        
+
         if (!data3D.citernes) data3D.citernes = [];
         data3D.citernes.push({
           position: [posX, 0, posZ],
@@ -246,12 +247,12 @@ function CanvasTerrain3D({
           type: 'caisson',
           customType: 'caisson-eau'
         });
-        
+
         // ✅ CORRECTION : posX/posZ sont déjà le CENTRE (originX/Y: 'center')
         updateBounds(posX, posZ, largeur, profondeur);
       });
     }
-    
+
     // Canalisations (Groups avec x1, y1, x2, y2)
     if (planData.canalisations && planData.canalisations.length > 0) {
       data3D.canalisations = planData.canalisations.map(c => {
@@ -260,7 +261,7 @@ function CanvasTerrain3D({
         const y1 = c.y1 !== undefined ? c.y1 : c.top;
         const x2 = c.x2 !== undefined ? c.x2 : c.left + 100;
         const y2 = c.y2 !== undefined ? c.y2 : c.top;
-        
+
         return {
           x1: x1 / echelle,
           y1: y1 / echelle,
@@ -272,7 +273,7 @@ function CanvasTerrain3D({
         };
       });
     }
-    
+
     // Clôtures (Groups avec x1, y1, x2, y2)
     if (planData.clotures && planData.clotures.length > 0) {
       data3D.clotures = planData.clotures.map(c => {
@@ -281,7 +282,7 @@ function CanvasTerrain3D({
         const y1 = c.y1 !== undefined ? c.y1 : c.top;
         const x2 = c.x2 !== undefined ? c.x2 : c.left + 100;
         const y2 = c.y2 !== undefined ? c.y2 : c.top;
-        
+
         return {
           x1: x1 / echelle,
           y1: y1 / echelle,
@@ -294,10 +295,10 @@ function CanvasTerrain3D({
         };
       });
     }
-    
+
     // Terrasses/Pavés - ✅ Support des DEUX types
     data3D.terrasses = [];
-    
+
     // Terrasses classiques
     if (planData.terrasses && planData.terrasses.length > 0) {
       planData.terrasses.forEach(t => {
@@ -305,11 +306,11 @@ function CanvasTerrain3D({
         const terrasseHeight = t.getScaledHeight ? t.getScaledHeight() : t.height;
         const largeur = terrasseWidth / echelle;
         const profondeur = terrasseHeight / echelle;
-        
+
         // Position centrée (les groupes 2D utilisent originX/Y: 'center')
         const posX = t.left / echelle;
         const posZ = t.top / echelle;
-        
+
         data3D.terrasses.push({
           position: [posX, 0, posZ],
           largeur: largeur, // ✅ Dimensions visuelles calculées
@@ -321,12 +322,12 @@ function CanvasTerrain3D({
           type: 'terrasse',
           customType: 'terrasse'
         });
-        
+
         // ✅ CORRECTION : Les bounds doivent être calculés depuis le CENTRE de l'objet
         updateBounds(posX, posZ, largeur, profondeur);
       });
     }
-    
+
     // Pavés enherbés (customType='paves' en 2D)
     if (planData.paves && planData.paves.length > 0) {
       planData.paves.forEach(p => {
@@ -334,11 +335,11 @@ function CanvasTerrain3D({
         const paveHeight = p.getScaledHeight ? p.getScaledHeight() : p.height;
         const largeur = paveWidth / echelle;
         const profondeur = paveHeight / echelle;
-        
+
         // Position centrée
         const posX = p.left / echelle;
         const posZ = p.top / echelle;
-        
+
         data3D.terrasses.push({
           position: [posX, 0, posZ],
           largeur: largeur, // ✅ Dimensions visuelles calculées
@@ -349,12 +350,12 @@ function CanvasTerrain3D({
           type: 'pave-enherbe',
           customType: 'paves'
         });
-        
+
         // ✅ CORRECTION : posX/posZ sont déjà le CENTRE (originX/Y: 'center')
         updateBounds(posX, posZ, largeur, profondeur);
       });
     }
-    
+
     // Arbres à planter
     // ✅ Les arbres viennent directement comme objets Fabric.js depuis syncCanvasTo3D
     if (planData.arbres && planData.arbres.length > 0) {
@@ -365,24 +366,24 @@ function CanvasTerrain3D({
         const hauteurMax = parseFloat(hauteurStr.split('-').pop().replace('m', '').trim());
         const envergureStr = arbreData.envergure || '4';
         const envergureMax = parseFloat(envergureStr.split('-').pop());
-        
+
         // Profondeur des racines
         let profondeurRacines = 1.5;
         if (arbreData.reglementation?.systemeRacinaire?.profondeur) {
           const profStr = arbreData.reglementation.systemeRacinaire.profondeur;
           profondeurRacines = parseFloat(profStr.split('-')[0]);
         }
-        
+
         // ✅ Position depuis l'objet Fabric.js (déjà en pixels)
         const posX = (a.left || 0) / echelle;
         const posZ = (a.top || 0) / echelle;
-        
+
         // Mettre à jour les bounds avec l'envergure de l'arbre
-        updateBounds(posX - envergureMax/2, posZ - envergureMax/2, envergureMax, envergureMax);
-        
+        updateBounds(posX - envergureMax / 2, posZ - envergureMax / 2, envergureMax, envergureMax);
+
         // IMPORTANT : La croissance temporelle est gérée dans Arbre3D.jsx
         // On passe les tailles max, Arbre3D calcule la taille actuelle selon anneeProjection
-        
+
         return {
           position: [posX, 0, posZ],
           arbreData: arbreData,
@@ -396,8 +397,8 @@ function CanvasTerrain3D({
         };
       });
     }
-    
-    
+
+
     // ✅ Calculer les dimensions du terrain avec marge de 5m
     const marge = 5;
     if (minX !== Infinity) {
@@ -416,15 +417,15 @@ function CanvasTerrain3D({
         maxZ: 10
       };
     }
-    
+
     return data3D;
   };
-  
+
   // Optimisation : Mémoriser la conversion 2D→3D (calcul coûteux)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const data3D = useMemo(() => {
     const result = convertir2DTo3D();
-    
+
     // ✅ DIAGNOSTIC : Activer en développement pour vérifier la synchronisation
     if (window.location.hostname === 'localhost' && planData && !window.__syncDiagnosticDone3D) {
       setTimeout(() => {
@@ -440,13 +441,13 @@ function CanvasTerrain3D({
       }, 3000);
       window.__syncDiagnosticDone3D = true;
     }
-    
+
     return result;
   }, [planData, anneeProjection, dimensions.largeur, dimensions.hauteur, syncKey]);
-  
+
   // ✅ Plus besoin de validerArbres3D - la validation est faite en 2D
   // Le validationStatus vient directement des objets 2D synchronisés
-  
+
   // Calculer les dimensions du terrain adaptatif (mémorisé)
   const terrainDimensions = useMemo(() => {
     // Si un terrain 2D existe, utiliser ses dimensions
@@ -458,30 +459,30 @@ function CanvasTerrain3D({
         centreX: 0,
         centreZ: 0
       };
-      
+
       // ✅ DEBUG : Log des dimensions du terrain
       console.log('🌍 Dimensions terrain 2D→3D:', {
         'Terrain 2D (pixels)': { width: terrain2D.width, height: terrain2D.height },
         'Échelle': ECHELLE_PIXELS_PAR_METRE,
         'Terrain 3D (mètres)': dimensions
       });
-      
+
       return dimensions;
     }
-    
+
     // Sinon, calculer à partir des objets
     const largeur = data3D.bounds.maxX - data3D.bounds.minX;
     const hauteur = data3D.bounds.maxZ - data3D.bounds.minZ;
     return {
       largeur: Math.max(largeur, 20), // Minimum 20m
       hauteur: Math.max(hauteur, 20), // Minimum 20m
-    centreX: 0,
-    centreZ: 0
+      centreX: 0,
+      centreZ: 0
     };
   }, [data3D]);
-  
+
   const { largeur: terrainLargeur, hauteur: terrainHauteur, centreX: terrainCentreX, centreZ: terrainCentreZ } = terrainDimensions;
-  
+
   // Calculer les bounds des maisons pour validation collision (mémorisé)
   // ✅ Les positions 3D sont centrées, donc on doit soustraire/ajouter la demi-dimension
   const maisonsBounds = useMemo(() => (data3D?.maisons || []).map(maison => ({
@@ -490,13 +491,13 @@ function CanvasTerrain3D({
     minZ: maison.position[2] - maison.profondeur / 2,
     maxZ: maison.position[2] + maison.profondeur / 2
   })), [data3D]);
-  
+
   // Positions de caméra selon mode (mémorisées)
   const cameraPositions = useMemo(() => {
     const centreX = terrainCentreX;
     const centreZ = terrainCentreZ;
     const maxDim = Math.max(terrainLargeur, terrainHauteur);
-    
+
     return {
       perspective: [centreX + maxDim * 0.6, maxDim * 0.5, centreZ + maxDim * 0.6],
       dessus: [centreX, maxDim * 1.2, centreZ],
@@ -504,14 +505,14 @@ function CanvasTerrain3D({
       coupe: [centreX, maxDim * 0.3, centreZ + maxDim * 0.8]
     };
   }, [terrainLargeur, terrainHauteur, terrainCentreX, terrainCentreZ]);
-  
+
   const handleObjetClick = useCallback((objet) => {
     setObjetSelectionne3D(objet);
-    
+
     // ✅ Trouver l'objet 2D correspondant
     if (canvas2D && contextMenuRef2D) {
       const objets2D = canvas2D.getObjects();
-      
+
       // ✅ GESTION SPÉCIALE POUR LE TERRAIN (complet ou nœud individuel)
       if (objet.customType === 'sol' || objet.customType === 'sol-noeud') {
         const terrain2D = objets2D.find(obj => obj.customType === 'sol');
@@ -522,16 +523,16 @@ function CanvasTerrain3D({
             if (!terrain2D.noeudsSelectionnes) {
               terrain2D.noeudsSelectionnes = [];
             }
-            
+
             // Trouver le nœud 2D correspondant dans les objets du groupe terrain
             const items = terrain2D.getObjects();
             const noeudKey = `${objet.noeudI},${objet.noeudJ}`;
-            const noeud2D = items.find(item => 
-              item.customType === 'noeud-elevation' && 
-              item.i === objet.noeudI && 
+            const noeud2D = items.find(item =>
+              item.customType === 'noeud-elevation' &&
+              item.i === objet.noeudI &&
               item.j === objet.noeudJ
             );
-            
+
             if (noeud2D) {
               // Désélectionner tous les autres nœuds d'abord
               terrain2D.noeudsSelectionnes.forEach(({ noeud }) => {
@@ -542,7 +543,7 @@ function CanvasTerrain3D({
                   radius: 6
                 });
               });
-              
+
               // Sélectionner le nouveau nœud
               noeud2D.isSelected = true;
               noeud2D.set({
@@ -550,10 +551,10 @@ function CanvasTerrain3D({
                 strokeWidth: 3,
                 radius: 8
               });
-              
+
               // Mettre à jour la liste des nœuds sélectionnés
               terrain2D.noeudsSelectionnes = [{ i: objet.noeudI, j: objet.noeudJ, key: noeudKey, noeud: noeud2D }];
-              
+
               logger.info('3D', `✅ Nœud [${objet.noeudI},${objet.noeudJ}] sélectionné depuis la vue 3D`);
             }
           } else {
@@ -570,7 +571,7 @@ function CanvasTerrain3D({
               terrain2D.noeudsSelectionnes = [];
             }
           }
-          
+
           // ✅ Sélectionner le terrain 2D
           canvas2D.setActiveObject(terrain2D);
           canvas2D.renderAll();
@@ -579,72 +580,77 @@ function CanvasTerrain3D({
         }
       } else {
         // Pour les autres objets, rechercher par position
-      const objet2D = objets2D.find(obj => 
-        obj.customType === objet.customType && 
-        Math.abs(obj.left - objet.position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
-        Math.abs(obj.top - objet.position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
-      );
-      
-      if (objet2D) {
-        // ✅ Sélectionner l'objet 2D
-        canvas2D.setActiveObject(objet2D);
-        canvas2D.renderAll();
-        
-        // ✅ Afficher le menu contextuel 2D (maintenant aussi pour la 3D)
-        if (contextMenuRef2D && contextMenuRef2D.current) {
-          const canvasRect = canvas2D.lowerCanvasEl.getBoundingClientRect();
-          const menu = contextMenuRef2D.current;
-          const objCenter = objet2D.getCenterPoint();
-          const objHeight = objet2D.getScaledHeight ? objet2D.getScaledHeight() : objet2D.height || 50;
-          
-          const menuWidth = 220; // Largeur réelle du menu (4 boutons)
-          const menuHeight = 45;
-          
-          // ✅ POSITIONNEMENT SIMPLE : CENTRÉ AU-DESSUS DE L'OBJET (vue 3D)
-          // Position horizontale : centrée sur l'objet
-          let menuLeft = canvasRect.left + objCenter.x - (menuWidth / 2);
-          
-          // Position verticale : AU-DESSUS de l'objet (pour la 3D)
-          let menuTop = canvasRect.top + objCenter.y - (objHeight / 2) - menuHeight - 10;
-          
-          // Contraintes pour rester visible à l'écran
-          if (menuLeft < canvasRect.left + 10) {
-            menuLeft = canvasRect.left + 10;
-          }
-          if (menuLeft + menuWidth > canvasRect.right - 10) {
-            menuLeft = canvasRect.right - menuWidth - 10;
-          }
-          if (menuTop < canvasRect.top + 10) {
-            menuTop = canvasRect.top + 10;
-          }
-          if (menuTop + menuHeight > canvasRect.bottom - 10) {
-            menuTop = canvasRect.bottom - menuHeight - 10;
-          }
-          
-          menu.style.left = `${menuLeft}px`;
-          menu.style.top = `${menuTop}px`;
-          menu.style.display = 'flex';
-          
-          // Mettre à jour l'état verrouillé
-          const btnLock = menu.querySelector('.context-lock');
-          if (btnLock) {
-            if (objet2D.locked) {
-              btnLock.textContent = '🔓';
-              btnLock.title = 'Déverrouiller';
-            } else {
-              btnLock.textContent = '🔒';
-              btnLock.title = 'Verrouiller';
+        const objet2D = objets2D.find(obj =>
+          obj.customType === objet.customType &&
+          Math.abs(obj.left - objet.position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
+          Math.abs(obj.top - objet.position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
+        );
+
+        if (objet2D) {
+          // ✅ Sélectionner l'objet 2D
+          canvas2D.setActiveObject(objet2D);
+          canvas2D.renderAll();
+
+          // ✅ Afficher le menu contextuel 2D (maintenant aussi pour la 3D)
+          if (contextMenuRef2D && contextMenuRef2D.current) {
+            const canvasRect = canvas2D.lowerCanvasEl.getBoundingClientRect();
+            const menu = contextMenuRef2D.current;
+            const objCenter = objet2D.getCenterPoint();
+            const objHeight = objet2D.getScaledHeight ? objet2D.getScaledHeight() : objet2D.height || 50;
+
+            const menuWidth = 220; // Largeur réelle du menu (4 boutons)
+            const menuHeight = 45;
+
+            // ✅ POSITIONNEMENT SIMPLE : CENTRÉ AU-DESSUS DE L'OBJET (vue 3D)
+            // Position horizontale : centrée sur l'objet
+            let menuLeft = canvasRect.left + objCenter.x - (menuWidth / 2);
+
+            // Position verticale : AU-DESSUS de l'objet (pour la 3D)
+            let menuTop = canvasRect.top + objCenter.y - (objHeight / 2) - menuHeight - 10;
+
+            // Contraintes pour rester visible à l'écran
+            if (menuLeft < canvasRect.left + 10) {
+              menuLeft = canvasRect.left + 10;
+            }
+            if (menuLeft + menuWidth > canvasRect.right - 10) {
+              menuLeft = canvasRect.right - menuWidth - 10;
+            }
+            if (menuTop < canvasRect.top + 10) {
+              menuTop = canvasRect.top + 10;
+            }
+            if (menuTop + menuHeight > canvasRect.bottom - 10) {
+              menuTop = canvasRect.bottom - menuHeight - 10;
+            }
+
+            menu.style.left = `${menuLeft}px`;
+            menu.style.top = `${menuTop}px`;
+            menu.style.display = 'flex';
+
+            // Mettre à jour l'état verrouillé
+            const btnLock = menu.querySelector('.context-lock');
+            if (btnLock) {
+              if (objet2D.locked) {
+                btnLock.textContent = '🔓';
+                btnLock.title = 'Déverrouiller';
+              } else {
+                btnLock.textContent = '🔒';
+                btnLock.title = 'Verrouiller';
+              }
             }
           }
         }
-        }
       }
     }
-    
+
     if (onObjetSelectionChange) {
       onObjetSelectionChange(objet);
     }
-  }, [onObjetSelectionChange, canvas2D, contextMenuRef2D]);
+
+    // ✅ Déclencher la sélection de la plante pour le modal d'inspection
+    if (onPlantSelect && (objet.type === 'arbre' || objet.customType === 'arbre-a-planter') && objet.arbreData) {
+      onPlantSelect(objet.arbreData);
+    }
+  }, [onObjetSelectionChange, onPlantSelect, canvas2D, contextMenuRef2D]);
 
   // ✅ Synchroniser la sélection 3D -> 2D (utilisé pour drag/select)
   const syncSelection2D = useCallback((data) => {
@@ -661,7 +667,7 @@ function CanvasTerrain3D({
         return;
       }
       // Sélection par proximité (tolérance 50px)
-      const match = canvas2D.getObjects().find(obj => 
+      const match = canvas2D.getObjects().find(obj =>
         obj.customType === type &&
         Math.abs(obj.left - position[0] * ECHELLE_PIXELS_PAR_METRE) < 50 &&
         Math.abs(obj.top - position[2] * ECHELLE_PIXELS_PAR_METRE) < 50
@@ -676,9 +682,9 @@ function CanvasTerrain3D({
       canvas2D.renderAll();
     }
   }, [canvas2D]);
-  
+
   // handleProprieteChange supprimé - modal d'édition non nécessaire
-  
+
   // Callback pour le drag end d'un objet (mémorisé)
   // ✅ FIXE : Ajouter un délai pour éviter le figement dû au re-render
   const handleObjetDragEnd = useCallback((dragData) => {
@@ -689,7 +695,7 @@ function CanvasTerrain3D({
       }, 100); // 100ms de délai pour laisser l'animation se terminer
     }
   }, [onObjetPositionChange]);
-  
+
   // ========== CENTRAGE AUTOMATIQUE 3D AU DÉMARRAGE ==========
   useEffect(() => {
     if (orbitControlsRef.current) {
@@ -702,7 +708,7 @@ function CanvasTerrain3D({
           logger.info('3D', `🎯 Caméra centrée sur le terrain (${terrainCentreX}, 0, ${terrainCentreZ})`);
         }
       }, 100); // Rapide
-      
+
       return () => clearTimeout(timer);
     }
   }, []); // Seulement au montage
@@ -714,16 +720,16 @@ function CanvasTerrain3D({
         // S'assurer que la caméra regarde le centre du terrain
         orbitControlsRef.current.target.set(terrainCentreX, 0, terrainCentreZ);
         orbitControlsRef.current.update();
-        
+
         // Revenir en vue perspective si on est dans une autre vue
         setVueMode('perspective');
-        
+
         logger.info('3D', '🔄 Caméra réinitialisée');
       }
     };
-    
+
     window.addEventListener('reset3DCamera', handleResetCamera);
-    
+
     return () => {
       window.removeEventListener('reset3DCamera', handleResetCamera);
     };
@@ -731,15 +737,15 @@ function CanvasTerrain3D({
 
   // ✅ Le modal 2D gère déjà le clic extérieur
 
-  
+
   return (
     <div className="canvas-terrain-3d">
-        {/* ✅ Vue sous terre TOUJOURS ACTIVE - racines, fondations, citernes et canalisations toujours visibles */}
-      
+      {/* ✅ Vue sous terre TOUJOURS ACTIVE - racines, fondations, citernes et canalisations toujours visibles */}
+
       {/* Canvas 3D */}
-      <Canvas 
-        shadows 
-        dpr={[1, 2]} 
+      <Canvas
+        shadows
+        dpr={[1, 2]}
         className="canvas-3d"
         onCreated={({ gl }) => {
           // ✅ Gestion du contexte WebGL perdu
@@ -747,7 +753,7 @@ function CanvasTerrain3D({
             console.warn('⚠️ Contexte WebGL perdu, tentative de récupération...');
             e.preventDefault();
           });
-          
+
           gl.domElement.addEventListener('webglcontextrestored', () => {
             console.log('✅ Contexte WebGL restauré');
             // Recharger la page pour réinitialiser
@@ -765,16 +771,16 @@ function CanvasTerrain3D({
       >
         {/* Ciel */}
         <Sky sunPosition={[100, 20, 100]} />
-        
+
         {/* Soleil 3D visuel selon la saison et l'angle fluide */}
-        <Soleil3D 
-          saison={saison} 
-          angleJournee={heureJournee} 
+        <Soleil3D
+          saison={saison}
+          angleJournee={heureJournee}
           distance={60}
           terrainCentreX={terrainCentreX}
           terrainCentreZ={terrainCentreZ}
         />
-        
+
         {/* Croix rouge au centre du terrain (comme en 2D) - Version compacte */}
         {/* Barre horizontale (axe X) */}
         <mesh position={[0, 0.05, 0]}>
@@ -791,10 +797,10 @@ function CanvasTerrain3D({
           <circleGeometry args={[0.2, 16]} />
           <meshBasicMaterial color="#ff0000" />
         </mesh>
-        
+
         {/* Lumière ambiante (éclairage global) */}
         <ambientLight intensity={0.5} />
-        
+
         {/* Lumière directionnelle synchronisée avec le soleil (génère les ombres) */}
         <LumiereDirectionnelle
           saison={saison}
@@ -804,7 +810,7 @@ function CanvasTerrain3D({
           intensity={1.2}
           shadowMapSize={2048}
         />
-        
+
         {/* Image de fond 3D - En arrière-plan du sol */}
         {imageFondUrl && (
           <ImageFond3D
@@ -816,10 +822,10 @@ function CanvasTerrain3D({
             opacite={opaciteImageFond}
           />
         )}
-        
+
         {/* Sol avec couches - Taille adaptative */}
-        <Sol3D 
-          largeur={terrainLargeur} 
+        <Sol3D
+          largeur={terrainLargeur}
           hauteur={terrainHauteur}
           offsetX={data3D.bounds.minX}
           offsetZ={data3D.bounds.minZ}
@@ -829,16 +835,16 @@ function CanvasTerrain3D({
           tailleMailleM={planData.terrainTailleMaille || 5}
           onTerrainClick={handleObjetClick}
         />
-        
+
         {/* Maisons */}
         {data3D?.maisons?.map((maison, idx) => {
           // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
           const elevationY = maison.elevationSol || 0;
           const positionY = elevationY > 0 ? elevationY : 0.1; // Au-dessus du terrain
-          
+
           return (
             <ObjetDraggable3D
-            key={`maison-${idx}`}
+              key={`maison-${idx}`}
               position={[maison.position[0], positionY, maison.position[2]]}
               type="maison"
               enabled={true}
@@ -851,7 +857,7 @@ function CanvasTerrain3D({
                 const largeur = maison.largeur || 10;
                 const profondeur = maison.profondeur || 8;
                 const orientationToit = maison.orientationToit || 0;
-                
+
                 let hauteurToit = 0;
                 if (typeToit === 'plan' || typeToit === 'plat') {
                   hauteurToit = 0; // Toit plat
@@ -863,37 +869,37 @@ function CanvasTerrain3D({
                   const dimensionPente = (orientationToit === 90 || orientationToit === 270) ? profondeur : largeur;
                   hauteurToit = Math.tan((penteToit * Math.PI) / 180) * (dimensionPente / 2);
                 }
-                
+
                 return hauteurMurs + hauteurToit + 0.05; // Point le plus haut + 5 cm
               })()}
               onDragEnd={handleObjetDragEnd}
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
-            <Maison3D 
-            position={[0, 0, 0]}
-            largeur={maison.largeur}
-            profondeur={maison.profondeur}
-            hauteur={maison.hauteur}
-            angle={maison.angle}
-            typeToit={maison.typeToit || 'deux-pentes'}
-            penteToit={maison.penteToit}
-            orientationToit={maison.orientationToit}
-            onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
-          />
-          </ObjetDraggable3D>
+              <Maison3D
+                position={[0, 0, 0]}
+                largeur={maison.largeur}
+                profondeur={maison.profondeur}
+                hauteur={maison.hauteur}
+                angle={maison.angle}
+                typeToit={maison.typeToit || 'deux-pentes'}
+                penteToit={maison.penteToit}
+                orientationToit={maison.orientationToit}
+                onClick={() => handleObjetClick({ type: 'maison', ...maison, index: idx })}
+              />
+            </ObjetDraggable3D>
           );
         })}
-        
+
         {/* Citernes cylindriques */}
         {data3D?.citernes?.filter(c => c.type !== 'caisson').map((citerne, idx) => {
           // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
           const elevationY = citerne.elevationSol || 0;
           const positionY = elevationY > 0 ? elevationY : 0.1; // Au-dessus du terrain
-          
+
           return (
             <ObjetDraggable3D
-            key={`citerne-${idx}`}
+              key={`citerne-${idx}`}
               position={[citerne.position[0], positionY, citerne.position[2]]}
               type="citerne"
               enabled={true}
@@ -909,32 +915,32 @@ function CanvasTerrain3D({
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
-            <Citerne3D 
-            position={[0, 0, 0]}
-            diametre={citerne.diametre}
-            longueur={citerne.longueur}
-            volume={citerne.volume}
-            elevationSol={citerne.elevationSol}
-            onClick={() => handleObjetClick({ 
-              type: 'citerne', 
-              ...citerne, 
-              index: idx,
-                position: [citerne.position[0], elevationY, citerne.position[2]]
-            })}
-          />
-          </ObjetDraggable3D>
+              <Citerne3D
+                position={[0, 0, 0]}
+                diametre={citerne.diametre}
+                longueur={citerne.longueur}
+                volume={citerne.volume}
+                elevationSol={citerne.elevationSol}
+                onClick={() => handleObjetClick({
+                  type: 'citerne',
+                  ...citerne,
+                  index: idx,
+                  position: [citerne.position[0], elevationY, citerne.position[2]]
+                })}
+              />
+            </ObjetDraggable3D>
           );
         })}
-        
+
         {/* Caissons d'eau rectangulaires */}
         {data3D?.citernes?.filter(c => c.type === 'caisson').map((caisson, idx) => {
           // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
           const elevationY = caisson.elevationSol || 0;
           const positionY = elevationY > 0 ? elevationY : 0.1; // Au-dessus du terrain
-          
+
           return (
             <ObjetDraggable3D
-            key={`caisson-${idx}`}
+              key={`caisson-${idx}`}
               position={[caisson.position[0], positionY, caisson.position[2]]}
               type="caisson-eau"
               enabled={true}
@@ -949,61 +955,61 @@ function CanvasTerrain3D({
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
-            <Caisson3D 
-            position={[0, 0, 0]}
-            largeur={caisson.largeur}
-            profondeur={caisson.profondeur}
-            hauteur={caisson.hauteur}
-            volume={caisson.volume}
-            angle={caisson.angle}
-            elevationSol={caisson.elevationSol}
-            onClick={() => handleObjetClick({ 
-              type: 'caisson-eau', 
-              ...caisson, 
-              index: idx,
-                position: [caisson.position[0], elevationY, caisson.position[2]]
-            })}
-          />
-          </ObjetDraggable3D>
+              <Caisson3D
+                position={[0, 0, 0]}
+                largeur={caisson.largeur}
+                profondeur={caisson.profondeur}
+                hauteur={caisson.hauteur}
+                volume={caisson.volume}
+                angle={caisson.angle}
+                elevationSol={caisson.elevationSol}
+                onClick={() => handleObjetClick({
+                  type: 'caisson-eau',
+                  ...caisson,
+                  index: idx,
+                  position: [caisson.position[0], elevationY, caisson.position[2]]
+                })}
+              />
+            </ObjetDraggable3D>
           );
         })}
-        
+
         {/* Canalisations - Visibles uniquement si sol transparent */}
         {solTransparent && data3D?.canalisations?.map((canal, idx) => {
           const centerX = (canal.x1 + canal.x2) / 2;
           const centerY = (canal.y1 + canal.y2) / 2;
           return (
-            <Canalisation3D 
+            <Canalisation3D
               key={`canal-${idx}`}
               {...canal}
-              onClick={() => handleObjetClick({ 
-                type: 'canalisation', 
-                ...canal, 
+              onClick={() => handleObjetClick({
+                type: 'canalisation',
+                ...canal,
                 index: idx,
                 position: [centerX, canal.elevationSol, centerY]
               })}
             />
           );
         })}
-        
+
         {/* Clôtures */}
         {data3D?.clotures?.map((cloture, idx) => {
           const centerX = (cloture.x1 + cloture.x2) / 2;
           const centerY = (cloture.y1 + cloture.y2) / 2;
           return (
-            <Cloture3D 
+            <Cloture3D
               key={`cloture-${idx}`}
               {...cloture}
-              onClick={() => handleObjetClick({ 
-                type: 'cloture', 
-                ...cloture, 
+              onClick={() => handleObjetClick({
+                type: 'cloture',
+                ...cloture,
                 index: idx,
                 position: [centerX, cloture.hauteur / 2, centerY] // ✅ Position réelle rendue
               })}
             />
           );
         })}
-        
+
         {/* Terrasses/Pavés enherbés ultra-réalistes */}
         {data3D?.terrasses?.map((terrasse, idx) => (
           terrasse.type === 'pave-enherbe' ? (
@@ -1020,16 +1026,16 @@ function CanvasTerrain3D({
             >
               <PaveEnherbe3D
                 position={[0, 0, 0]} // Position relative dans le groupe
-              largeur={terrasse.largeur}
-              profondeur={terrasse.profondeur}
-              onClick={() => handleObjetClick({ 
-                ...terrasse, 
-                type: 'paves',
-                customType: 'paves',
-                index: idx,
-                position: [terrasse.position[0], 0, terrasse.position[2]]
-              })}
-            />
+                largeur={terrasse.largeur}
+                profondeur={terrasse.profondeur}
+                onClick={() => handleObjetClick({
+                  ...terrasse,
+                  type: 'paves',
+                  customType: 'paves',
+                  index: idx,
+                  position: [terrasse.position[0], 0, terrasse.position[2]]
+                })}
+              />
             </ObjetDraggable3D>
           ) : (
             // Terrasse classique (béton gris)
@@ -1043,46 +1049,46 @@ function CanvasTerrain3D({
               onSelectionChange={(data) => { setObjetSelectionne3D(data.isSelected ? data : null); syncSelection2D(data); }}
               maisonBounds={maisonsBounds}
             >
-              <mesh 
+              <mesh
                 position={[0, 0, 0]} // Position relative dans le groupe
-              rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
-              receiveShadow
-              castShadow
-              onClick={() => handleObjetClick({ 
-                ...terrasse, 
-                type: 'terrasse',
-                customType: 'terrasse',
-                index: idx,
-                position: [terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]
-              })}
-            >
-              <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
-              <meshStandardMaterial 
-                color="#8d6e63"
-                roughness={0.9}
-                metalness={0.1}
-              />
-            </mesh>
+                rotation={[0, terrasse.angle ? -(terrasse.angle * Math.PI / 180) : 0, 0]}
+                receiveShadow
+                castShadow
+                onClick={() => handleObjetClick({
+                  ...terrasse,
+                  type: 'terrasse',
+                  customType: 'terrasse',
+                  index: idx,
+                  position: [terrasse.position[0], terrasse.elevationSol || 0, terrasse.position[2]]
+                })}
+              >
+                <boxGeometry args={[terrasse.largeur, terrasse.hauteur, terrasse.profondeur]} />
+                <meshStandardMaterial
+                  color="#8d6e63"
+                  roughness={0.9}
+                  metalness={0.1}
+                />
+              </mesh>
             </ObjetDraggable3D>
           )
         ))}
-        
+
         {/* Arbres à planter (draggable si mode activé) */}
         {data3D?.arbres?.map((arbre, idx) => {
           // Vérifier si un modèle 3D réel existe
           const model3D = arbre.arbreData?.id ? getModelPourArbre(arbre.arbreData.id) : null;
-          
+
           // ✅ Utiliser le validationStatus de la 2D (pas de recalcul 3D)
           // Le validationStatus vient de la 2D qui fait la validation officielle
           const validationStatus = arbre.validationStatus || 'ok';
-          
+
           // ✅ Position Y selon l'élévation : au-dessus du terrain si élévation > 0
           // Si elevationSol > 0 : arbre sur une colline/butte
           // Si elevationSol < 0 : arbre dans une fosse/dépression
           // Si elevationSol = 0 : arbre au niveau du terrain
           const elevationY = arbre.elevationSol || 0;
           const positionY = elevationY !== 0 ? elevationY : 0.1; // Au-dessus du terrain si niveau 0
-          
+
           return (
             <ObjetDraggable3D
               key={arbre.arbreData?.id ? `arbre-${arbre.arbreData.id}-${idx}` : `arbre-plante-${idx}`}
@@ -1143,10 +1149,10 @@ function CanvasTerrain3D({
             </ObjetDraggable3D>
           );
         })}
-        
-        
+
+
         {/* Caméra contrôlable */}
-        <OrbitControls 
+        <OrbitControls
           ref={orbitControlsRef}
           enablePan={true} // ✅ Panning activé (bouton droit)
           enableZoom={true} // ✅ Zoom activé (molette)
@@ -1159,25 +1165,25 @@ function CanvasTerrain3D({
           minDistance={5} // Distance minimale (5m)
           maxDistance={200} // Distance maximale (200m)
         />
-        
-        <PerspectiveCamera 
-          makeDefault 
+
+        <PerspectiveCamera
+          makeDefault
           position={cameraPositions[vueMode]}
           fov={60}
           near={0.1}
           far={1000}
         />
-        
+
         {/* Lumière hémisphérique pour éclairage naturel */}
-        <hemisphereLight 
-          skyColor="#87CEEB" 
-          groundColor="#8B4513" 
-          intensity={0.6} 
+        <hemisphereLight
+          skyColor="#87CEEB"
+          groundColor="#8B4513"
+          intensity={0.6}
         />
       </Canvas>
-      
+
       {/* ✅ Pas de modal 3D - on utilise le modal 2D existant */}
-      
+
       {/* Panneau d'édition supprimé - pas nécessaire */}
     </div>
   );
