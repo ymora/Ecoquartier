@@ -233,9 +233,9 @@ export default function ComparisonTable({ plants }) {
         })()}
 
         {/* FOOTER ACTIONS */}
-        <div className="grid-label footer-label" style={{ gridRow: 100 }}>Actions</div>
+        <div className="grid-label footer-label" style={{ gridRow: currentRow }}>Actions</div>
         {plants.map((plant, idx) => (
-          <div key={`foot-${plant.id}`} className="grid-cell footer-cell" style={{ gridRow: 100, gridColumn: idx + 2 }}>
+          <div key={`foot-${plant.id}`} className="grid-cell footer-cell" style={{ gridRow: currentRow, gridColumn: idx + 2 }}>
              <MaintenanceGuide plant={plant} compact />
           </div>
         ))}

@@ -62,7 +62,10 @@
 
 .data-label-row {
   border-bottom: 1px solid var(--glass-border);
-  height: 60px; /* Force une hauteur cohérente */
+  min-height: 48px;
+  display: flex;
+  align-items: flex-start;
+  padding-top: var(--space-4);
 }
 
 /* CELLS (Données des plantes) */
@@ -71,7 +74,7 @@
   z-index: 1;
   padding: var(--space-2) var(--space-4);
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Aligne tout en haut pour une lecture horizontale parfaite */
   transition: all 0.3s ease;
 }
 
@@ -137,7 +140,8 @@
   border-bottom: 1px solid var(--glass-border);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  height: 60px; /* Doit matcher le label */
+  min-height: 48px;
+  padding-top: var(--space-4);
 }
 
 .data-value-cell.highlight {
