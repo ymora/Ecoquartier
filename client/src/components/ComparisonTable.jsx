@@ -1,5 +1,6 @@
 /**
- * COMPARISON TABLE - Version 2026 Premium (Grid-based)
+ * COMPARISON TABLE - Version 2026 Premium (Synchronized Grid)
+ * This version ensures perfect horizontal alignment between all plants.
  */
 import { useState, useMemo } from 'react';
 import FullscreenGallery from './FullscreenGallery';
@@ -45,7 +46,7 @@ export default function ComparisonTable({ plants }) {
     });
   };
 
-  // Définition des lignes de données (sections)
+  // Définition des métriques (rows)
   const sections = [
     {
       title: 'Caractéristiques Générales',
@@ -96,7 +97,6 @@ export default function ComparisonTable({ plants }) {
     return '-';
   };
 
-  // Détermine si une valeur est différente des autres pour la ligne donnée
   const isDifferent = (row, plants) => {
     if (!highlightDifferences) return false;
     const values = plants.map(p => getValue(p, row));
@@ -136,71 +136,110 @@ export default function ComparisonTable({ plants }) {
         </div>
       </header>
 
-      <div className="comparison-grid">
-        {plants.map(plant => (
-          <motion.div 
-            key={plant.id}
-            layout
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="plant-card-v2"
-          >
-            {/* Zone Image Dynamique */}
-            <div className="card-image-wrapper">
+      <div 
+        className="sync-comparison-grid"
+        style={{ '--col-count': plants.length }}
+      >
+        {/* BACKGROUNDS POUR L'EFFET COLONNE/CARTE */}
+        {plants.map((_, idx) => (
+          <div key={`bg-${idx}`} className="grid-column-bg" style={{ gridColumn: idx + 2 }} />
+        ))}
+
+        {/* LABELS (Colonne 1) */}
+        <div className="grid-label header-label" style={{ gridRow: 1 }}>Images</div>
+        <div className="grid-label header-label" style={{ gridRow: 2 }}>Type & Nom</div>
+        
+        {/* Données des Plantes (Images & Titres) */}
+        {plants.map((plant, idx) => (
+          <div key={`head-${plant.id}`} className="grid-cell plant-header-cell" style={{ gridColumn: idx + 2 }}>
+             <div className="card-image-wrapper">
               {(() => {
                 const imgs = getImagesParType(plant);
-                const idx = getCurrentIndex(plant.id);
+                const i = getCurrentIndex(plant.id);
                 if (imgs.length === 0) return <div className="no-img">🚫 Photo indisponible</div>;
-                
                 return (
                   <>
-                    <img 
-                      src={`/images/${imgs[idx]}`} 
+                    <motion.img 
+                      key={imgs[i]}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      src={`/images/${imgs[i]}`} 
                       alt={plant.name} 
-                      onClick={() => setFullscreenImage({ plant, imagePath: imgs[idx] })}
+                      onClick={() => setFullscreenImage({ plant, imagePath: imgs[i] })}
                     />
                     {imgs.length > 1 && (
                       <div className="card-img-nav">
-                        <button onClick={() => changeImage(plant.id, -1, imgs.length - 1)}>‹</button>
-                        <span>{idx + 1}/{imgs.length}</span>
-                        <button onClick={() => changeImage(plant.id, 1, imgs.length - 1)}>›</button>
+                        <button onClick={(e) => { e.stopPropagation(); changeImage(plant.id, -1, imgs.length - 1); }}>‹</button>
+                        <span>{i + 1}/{imgs.length}</span>
+                        <button onClick={(e) => { e.stopPropagation(); changeImage(plant.id, 1, imgs.length - 1); }}>›</button>
                       </div>
                     )}
                   </>
                 );
               })()}
             </div>
-
             <div className="card-main-info">
               <span className="type-badge">{plant.type === 'arbre' ? '🌳 Arbre' : '🌿 Arbuste'}</span>
               <h3>{plant.name}</h3>
             </div>
-
-            {/* Sections de données */}
-            {sections.map(section => (
-              <div key={section.title} className="card-section">
-                <h4>{section.title}</h4>
-                <div className="data-rows">
-                  {section.rows.map(row => {
-                    const diff = isDifferent(row, plants);
-                    return (
-                      <div key={row.label} className={`data-row ${diff ? 'highlight' : ''}`}>
-                        <span className="row-label">{row.label}</span>
-                        <span className={`row-value ${row.italic ? 'italic' : ''}`}>
-                          {getValue(plant, row)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-
-            <div className="card-footer-actions">
-               <MaintenanceGuide plant={plant} compact />
-            </div>
-          </motion.div>
+          </div>
         ))}
+
+        {/* SECTIONS DYMANIQUES */}
+        {(() => {
+          let currentRow = 3;
+          return sections.map((section, sIdx) => {
+            const sectionStartRow = currentRow;
+            currentRow += 1 + section.rows.length;
+            
+            return (
+              <React.Fragment key={section.title}>
+                {/* Titre de Section */}
+                <div className="grid-label section-title-row" style={{ gridRow: sectionStartRow }}>
+                  {section.title}
+                </div>
+                {plants.map((_, pIdx) => (
+                   <div key={`section-bg-${sIdx}-${pIdx}`} className="grid-cell section-title-cell" style={{ gridRow: sectionStartRow, gridColumn: pIdx + 2 }} />
+                ))}
+
+                {/* Lignes de données */}
+                {section.rows.map((row, rIdx) => {
+                  const rowPos = sectionStartRow + 1 + rIdx;
+                  return (
+                    <React.Fragment key={row.label}>
+                      <div className="grid-label data-label-row" style={{ gridRow: rowPos }}>
+                        {row.label}
+                      </div>
+                      {plants.map((plant, pIdx) => {
+                        const diff = isDifferent(row, plants);
+                        return (
+                          <div 
+                            key={`cell-${plant.id}-${row.label}`} 
+                            className={`grid-cell data-value-cell ${diff ? 'highlight' : ''}`}
+                            style={{ gridRow: rowPos, gridColumn: pIdx + 2 }}
+                          >
+                            <span className={row.italic ? 'italic' : ''}>
+                              {getValue(plant, row)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
+                  );
+                })}
+              </React.Fragment>
+            );
+          });
+        })()}
+
+        {/* FOOTER ACTIONS */}
+        <div className="grid-label footer-label" style={{ gridRow: 100 }}>Actions</div>
+        {plants.map((plant, idx) => (
+          <div key={`foot-${plant.id}`} className="grid-cell footer-cell" style={{ gridRow: 100, gridColumn: idx + 2 }}>
+             <MaintenanceGuide plant={plant} compact />
+          </div>
+        ))}
+
       </div>
 
       <AnimatePresence>
