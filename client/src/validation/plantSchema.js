@@ -16,13 +16,13 @@ const plantSchema = yup.object().shape({
   utilisation: yup.string().required('L\'utilisation est requise'),
   multiplication: yup.string().required('La méthode de multiplication est requise'),
   images: yup.array().of(
-    yup.object().shape({
+    yup.lazy(val => typeof val === 'string' ? yup.string() : yup.object().shape({
       spring: yup.string().optional(),
       summer: yup.string().optional(),
       autumn: yup.string().optional(),
       winter: yup.string().optional(),
       details: yup.string().optional()
-    })
+    }))
   ).optional()
 });
 

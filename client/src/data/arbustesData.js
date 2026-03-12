@@ -1,3 +1,5 @@
+import plantSchema from '../validation/plantSchema';
+
 export const arbresData = [
   {
     id: 'prunus-kanzan',

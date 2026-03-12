@@ -2,7 +2,7 @@
  * COMPARISON TABLE - Version 2026 Premium (Synchronized Grid)
  * This version ensures perfect horizontal alignment between all plants.
  */
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo, Fragment } from 'react';
 import FullscreenGallery from './FullscreenGallery';
 import MaintenanceGuide from './MaintenanceGuide';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -193,7 +193,7 @@ export default function ComparisonTable({ plants }) {
             currentRow += 1 + section.rows.length;
             
             return (
-              <React.Fragment key={section.title}>
+              <Fragment key={section.title}>
                 {/* Titre de Section */}
                 <div className="grid-label section-title-row" style={{ gridRow: sectionStartRow }}>
                   {section.title}
@@ -206,7 +206,7 @@ export default function ComparisonTable({ plants }) {
                 {section.rows.map((row, rIdx) => {
                   const rowPos = sectionStartRow + 1 + rIdx;
                   return (
-                    <React.Fragment key={row.label}>
+                    <Fragment key={row.label}>
                       <div className="grid-label data-label-row" style={{ gridRow: rowPos }}>
                         {row.label}
                       </div>
@@ -224,7 +224,7 @@ export default function ComparisonTable({ plants }) {
                           </div>
                         );
                       })}
-                    </React.Fragment>
+                    </Fragment>
                   );
                 })}
               </React.Fragment>
