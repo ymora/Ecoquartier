@@ -73,26 +73,10 @@ function CanvasTerrain3D({
   const solTransparent = true; // ✅ Sol transparent TOUJOURS ACTIF
   const orbitControlsRef = useRef();
 
-  // ✅ Gérer l'activation/désactivation d'OrbitControls selon la sélection d'objets
+  // ✅ Gérer l'état de l'objet sélectionné (log uniquement)
   useEffect(() => {
-    if (orbitControlsRef.current) {
-      const controls = orbitControlsRef.current;
-
-      // Si un OBJET (hors sol) est sélectionné, désactiver la rotation
-      const isObjetBloquant = !!(objetSelectionne3D && objetSelectionne3D.type !== 'sol');
-      if (isObjetBloquant) {
-        controls.enableRotate = false;  // ❌ Pas de rotation avec clic gauche
-        controls.enablePan = true;      // ✅ Pan avec clic droit
-        controls.enableZoom = true;     // ✅ Zoom avec molette
-        controls.enabled = true;        // ✅ OrbitControls reste actif
-        logger.info('OrbitControls', '🔄 Mode objet sélectionné - rotation désactivée, pan/zoom activés');
-      } else {
-        controls.enableRotate = true;   // ✅ Rotation avec clic gauche
-        controls.enablePan = true;      // ✅ Pan avec clic droit
-        controls.enableZoom = true;     // ✅ Zoom avec molette
-        controls.enabled = true;        // ✅ OrbitControls actif
-        logger.info('OrbitControls', '✅ Mode normal - rotation/pan/zoom activés');
-      }
+    if (objetSelectionne3D) {
+      logger.info('3D', `Sélection: ${objetSelectionne3D.type}`);
     }
   }, [objetSelectionne3D]);
 

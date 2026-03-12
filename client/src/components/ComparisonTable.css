@@ -1,362 +1,240 @@
-/* === TABLEAU COMPARATIF === */
-.comparison-table-wrapper {
-  flex: 1;
+/* === COMPARISON V2 - PREMIUM GRID === */
+.comparison-v2 {
+  padding: var(--space-6);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+.comparison-header-v2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--space-8);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.header-text h2 {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--accent);
+  margin-bottom: var(--space-1);
+}
+
+.header-text p {
+  color: var(--text-tertiary);
+}
+
+.header-controls {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--bg-secondary);
+  padding: var(--space-1);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+}
+
+.filter-pill {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.filter-pill.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 12px var(--accent-muted);
+}
+
+.toggle-diff {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  background: var(--bg-secondary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+}
+
+.toggle-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+/* GRID LAYOUT */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+  perspective: 1000px;
+}
+
+.plant-card-v2 {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: var(--shadow-md);
 }
 
-.comparison-header {
-  padding: var(--space-6);
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-default);
+.plant-card-v2:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--accent-muted);
 }
 
-.comparison-header h2 {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-2xl);
-  color: var(--text-primary);
-}
-
-.comparison-header p {
-  margin: 0 0 var(--space-6);
-  color: var(--text-secondary);
-}
-
-/* === FILTRES === */
-.comparison-filters {
-  padding: var(--space-4);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-}
-
-.filter-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--border-default);
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-  border-radius: var(--radius-full);
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.filter-btn:hover {
-  background: var(--bg-secondary);
-  border-color: var(--text-secondary);
-}
-
-.filter-btn.active {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* === TABLE SCROLL === */
-.comparison-scroll {
-  flex: 1;
-  overflow: auto;
+.card-image-wrapper {
+  height: 220px;
   position: relative;
-  /* Scroll fluide */
-  scroll-behavior: smooth;
-  /* Masquer scrollbar système mais garder fonctionnalité */
-  scrollbar-width: thin;
+  background: #000;
+  overflow: hidden;
 }
 
-.comparison-table {
+.card-image-wrapper img {
   width: 100%;
-  border-collapse: separate;
-  /* Nécessaire pour sticky */
-  border-spacing: 0;
-  min-width: 800px;
-  /* Force le scroll horizontal sur petit écran */
+  height: 100%;
+  object-fit: cover;
+  cursor: zoom-in;
+  transition: transform 0.5s ease;
 }
 
-/* === HEADER PLANTES (Sticky Top) === */
-.comparison-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  /* Au-dessus du contenu */
-  background: var(--bg-secondary);
-  border-bottom: 2px solid var(--border-default);
-  padding: var(--space-4);
-  text-align: left;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  /* Ombre légère pour détacher le header */
+.plant-card-v2:hover .card-image-wrapper img {
+  transform: scale(1.05);
 }
 
-/* Première case vide (coin haut gauche) - Double sticky ! */
-.comparison-table thead th:first-child {
-  position: sticky;
-  left: 0;
-  top: 0;
-  z-index: 30;
-  /* Au-dessus des autres headers */
-  background: var(--bg-secondary);
-  border-right: 2px solid var(--border-default);
-  width: 200px;
-  /* Largeur fixe pour la colonne critère */
-  min-width: 150px;
-}
-
-.plant-header-content {
+.card-img-nav {
+  position: absolute;
+  bottom: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 280px;
-  /* Largeur min pour chaque plante */
+  align-items: center;
+  gap: var(--space-3);
+  color: white;
+  font-size: 10px;
 }
 
-.plant-type-badge {
-  font-size: 1.5rem;
-  margin-bottom: var(--space-2);
+.card-img-nav button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.plant-header h3 {
-  margin: 0;
-  font-size: var(--text-lg);
-  color: var(--text-primary);
-}
-
-.plant-header p {
-  margin: 0;
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  font-style: italic;
-}
-
-/* === COLONNE ETIQUETTES (Sticky Left) === */
-.row-label {
-  position: sticky;
-  left: 0;
-  z-index: 10;
-  background: var(--bg-tertiary);
-  /* Légèrement différent pour distinguer */
-  border-right: 2px solid var(--border-default);
-  font-weight: var(--font-semibold);
-  color: var(--text-secondary);
+.card-main-info {
   padding: var(--space-4);
-  font-size: var(--text-sm);
-  width: 200px;
+  border-bottom: 1px solid var(--glass-border);
 }
 
-/* === CELLULES === */
-.comparison-cell {
+.type-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.5px;
+}
+
+.card-main-info h3 {
+  font-size: var(--text-xl);
+  margin-top: var(--space-1);
+}
+
+.card-section {
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border-subtle);
-  border-right: 1px solid var(--border-subtle);
-  vertical-align: top;
-  background: var(--bg-primary);
-  min-width: 300px;
-  /* Assez large pour le guide */
+  border-bottom: 1px solid var(--glass-border);
 }
 
-.comparison-table tbody tr:hover .comparison-cell {
-  background: var(--bg-secondary);
-  /* Highlight ligne au survol */
+.card-section h4 {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-3);
+  letter-spacing: 1px;
 }
 
-.comparison-table tbody tr:hover .row-label {
-  background: var(--bg-secondary);
-  /* Highlight label aussi */
-}
-
-/* === IMAGES DANS LE TABLEAU === */
-.comparison-image-container {
+.data-rows {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.image-frame {
-  position: relative;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  height: 250px;
-  /* Force une hauteur fixe */
-  width: 100%;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-default);
-}
-
-.comparison-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Garantit que l'image remplit le cadre sans déformation */
-  cursor: zoom-in;
-  transition: transform 0.3s ease;
-}
-
-.comparison-image:hover {
-  transform: scale(1.05);
-}
-
-.comparison-no-image {
+.data-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  background: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  border: 1px dashed var(--border-default);
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  padding: 2px 0;
+  transition: all 0.3s ease;
+}
+
+.row-label {
+  color: var(--text-secondary);
+}
+
+.row-value {
+  font-weight: var(--font-medium);
+  text-align: right;
+}
+
+.row-value.italic {
+  font-style: italic;
+  font-size: 0.8rem;
   color: var(--text-tertiary);
 }
 
-.no-image-placeholder {
-  font-size: 2rem;
-  margin-bottom: var(--space-2);
-  opacity: 0.5;
+/* Highlight Differences */
+.data-row.highlight {
+  background: var(--accent-muted);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin: 0 -8px;
 }
 
-/* Navigation Overlay */
-.img-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
+.card-footer-actions {
+  padding: var(--space-4);
+  margin-top: auto;
+}
+
+.no-img {
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  opacity: 0;
-  transition: opacity 0.2s;
-  z-index: 5;
-}
-
-.image-frame:hover .img-nav {
-  opacity: 1;
-}
-
-.img-nav-left {
-  left: 8px;
-}
-
-.img-nav-right {
-  right: 8px;
-}
-
-.img-counter {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  pointer-events: none;
-}
-
-.img-thumbnails {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.img-thumbnail {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  border: 2px solid transparent;
-  opacity: 0.7;
-}
-
-.img-thumbnail.active {
-  border-color: var(--accent);
-  opacity: 1;
-}
-
-/* === GUIDE WRAPPER === */
-.comparison-guide-wrapper {
-  /* On force le guide à rentrer dans la cellule sans tout casser */
-  width: 100%;
-}
-
-.comparison-guide-wrapper .maintenance-guide {
-  margin-top: 0;
-  /* Enlever marge top pour le tableau */
-  box-shadow: none;
-  /* Moins lourd dans une cellule */
-  border: 1px solid var(--border-default);
-}
-
-/* === REGULATION & TOXICITY === */
-.regulation-risks {
-  margin: var(--space-2) 0 0 0;
-  padding-left: var(--space-4);
-  font-size: var(--text-sm);
-  color: #ef4444;
-}
-
-.toxicity-badge {
-  display: inline-block;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  font-weight: var(--font-bold);
+  color: var(--text-tertiary);
   font-size: var(--text-sm);
 }
 
-.toxicity-badge.safe {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-}
-
-.toxicity-badge.danger {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.toxicity-detail {
-  margin-top: var(--space-1);
-  font-weight: normal;
-  font-size: var(--text-xs);
-  opacity: 0.9;
-}
-
-/* === MOBILE OPTIMIZATION === */
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .comparison-header {
-    padding: var(--space-4);
+  .comparison-header-v2 {
+    flex-direction: column;
+    align-items: flex-start;
   }
-
-  /* Réduire la largeur de la première colonne sticky */
-  .comparison-table thead th:first-child,
-  .row-label {
-    width: 120px;
-    font-size: var(--text-xs);
-    padding: var(--space-2);
-    word-wrap: break-word;
-    /* Permettre le retour à la ligne */
-  }
-
-  .plant-header-content {
-    min-width: 250px;
-    /* Réduire un peu la largeur des colonnes plantes */
-  }
-
-  .comparison-cell {
-    min-width: 250px;
-    padding: var(--space-3);
+  
+  .comparison-grid {
+    grid-template-columns: 1fr;
   }
 }

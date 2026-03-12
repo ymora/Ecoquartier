@@ -1,4 +1,4 @@
-import './FiabiliteBadge-clean.css';
+import './FiabiliteBadge.css';
 
 function FiabiliteBadge({ niveau, info, compact }) {
   const configs = {

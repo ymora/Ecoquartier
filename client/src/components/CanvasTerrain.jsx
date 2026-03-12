@@ -114,7 +114,7 @@ function CanvasTerrain({
   const [imageFondChargee, setImageFondChargee] = useState(false);
   const [opaciteImage, setOpaciteImage] = useState(0.8);
   const [solTransparent, setSolTransparent] = useState(false);
-  // ✅ anneeProjection, heureJournee et saison sont maintenant des props (gérées par App-clean.jsx)
+  // ✅ anneeProjection, heureJournee et saison sont maintenant des props (gérées par App.jsx)
   const [ongletActif, setOngletActif] = useState(null); // ✅ Pour forcer l'ouverture de l'onglet Config depuis 3D
   const [mode3D, setMode3D] = useState(false);
   const [planDataSync, setPlanDataSync] = useState(null); // État partagé 2D↔3D

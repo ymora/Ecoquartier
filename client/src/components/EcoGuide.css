@@ -1,233 +1,180 @@
-.eco-guide-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    color: var(--text-primary);
+/* === ECO GUIDE V2 - MODERN & INTERACTIVE === */
+.eco-v2 {
+  padding: var(--space-6);
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.eco-guide-header {
-    text-align: center;
-    margin-bottom: 2rem;
+.eco-header {
+  text-align: center;
+  margin-bottom: var(--space-12);
 }
 
-.eco-guide-header h2 {
-    font-size: 2.5rem;
-    color: var(--primary);
-    margin-bottom: 0.5rem;
+.eco-title-block h1 {
+  font-size: var(--text-3xl);
+  color: var(--accent);
+  margin-bottom: var(--space-2);
 }
 
-.eco-guide-header .subtitle {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
+.eco-nav-pills {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
 }
 
-/* Tabs */
-.eco-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
+.eco-pill {
+  padding: var(--space-3) var(--space-8);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: var(--font-medium);
 }
 
-.eco-tab-btn {
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    border: 2px solid var(--border);
-    background: var(--surface);
-    color: var(--text-secondary);
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    transition: all 0.2s;
+.eco-pill.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 8px 20px var(--accent-muted);
+  transform: scale(1.05);
 }
 
-.eco-tab-btn:hover {
-    background: var(--surface-hover);
-    color: var(--text-primary);
+/* SOIL SIMULATOR */
+.soil-simulator {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-lg);
 }
 
-.eco-tab-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+.sim-header {
+  margin-bottom: var(--space-6);
 }
 
-/* Introduction Card */
-.intro-card {
-    background: linear-gradient(135deg, var(--surface-active), var(--surface));
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    margin-bottom: 2rem;
-    font-size: 1.2rem;
-    text-align: center;
-    border-left: 5px solid var(--primary);
+.sol-types-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
-/* Grid Layouts */
-.grid-2-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
+.sol-type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sol-type-card .sol-icon {
+  font-size: 32px;
+}
+
+.sol-type-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+}
+
+.sol-type-card.selected {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.sol-result-card {
+  overflow: hidden;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--accent-muted);
+}
+
+.tip-content {
+  padding: var(--space-6);
+}
+
+.action-box {
+  margin-top: var(--space-4);
+  background: var(--accent);
+  color: white;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+/* GRID LAYOUTS */
+.eco-grid-v2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+.eco-card-v2 {
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+}
+
+.eco-card-v2.highlight {
+  border-left: 4px solid var(--accent);
+}
+
+.eco-card-v2.danger {
+  border-left: 4px solid #ef4444;
+}
+
+.eco-card-v2 ul {
+  margin-top: var(--space-4);
+  padding-left: var(--space-4);
+  color: var(--text-secondary);
+}
+
+/* GAZON ALTERNATIVES */
+.alt-grid-v2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+
+.alt-card-v2 {
+  padding: var(--space-6);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.alt-card-v2 h4 {
+  color: var(--accent);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-lg);
+}
+
+.alt-card-v2 ul {
+  list-style: none;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.alt-usage {
+  margin-top: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  font-style: italic;
 }
 
 @media (max-width: 768px) {
-    .grid-2-col {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Cards */
-.eco-card {
-    background: var(--surface);
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border);
-    transition: transform 0.2s;
-}
-
-.eco-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.eco-card h3 {
-    color: var(--text-primary);
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.eco-card.full-width {
-    grid-column: 1 / -1;
-    width: 100%;
-}
-
-/* Sol Styles */
-.sol-item {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-}
-
-.sol-item:last-child {
-    border-bottom: none;
-}
-
-.badge-type {
-    background: var(--surface-active);
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius-sm);
-    font-weight: bold;
-    font-size: 0.9rem;
-    margin-right: 0.5rem;
-}
-
-.roles-list li {
-    margin-bottom: 0.5rem;
-    list-style: none;
-}
-
-.alert-box {
-    background: rgba(239, 68, 68, 0.1);
-    /* Red tint */
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #ef4444;
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    margin-top: 1rem;
-    font-weight: bold;
-}
-
-/* Techniques Grid */
-.techniques-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.technique-item {
-    background: var(--surface-hover);
-    padding: 1rem;
-    border-radius: var(--radius-md);
-}
-
-.technique-item h4 {
-    color: var(--primary);
-    margin-bottom: 0.5rem;
-}
-
-/* Gazon Styles */
-.alternatives-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.alternative-card h3 small {
-    display: block;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: normal;
-    font-style: italic;
-    margin-top: 0.2rem;
-}
-
-.benefits-list {
-    padding-left: 0;
-    list-style: none;
-}
-
-.benefits-list li {
-    margin-bottom: 0.5rem;
-}
-
-.usage-info,
-.action-info {
-    margin-top: 1rem;
-    padding-top: 0.5rem;
-    border-top: 1px dashed var(--border);
-    font-size: 0.95rem;
-}
-
-/* Steps Grid */
-.steps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
-
-.step-item {
-    text-align: center;
-}
-
-.step-number {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    background: var(--primary);
-    color: white;
-    border-radius: 50%;
-    font-weight: bold;
-    margin-bottom: 1rem;
-}
-
-/* Animation */
-.animate-fade-in {
-    animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  .sol-types-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .eco-grid-v2 {
+    grid-template-columns: 1fr;
+  }
 }

@@ -30,14 +30,7 @@
   height: 100%;
 }
 
-/* En-tête avec onglets - utilise le système unifié */
-.panneau-tabs {
-  /* Hérite des styles .tabs-unified */
-}
-
-.tab-btn {
-  /* Hérite des styles .tab-unified */
-}
+/* Les onglets utilisent le système unifié .tabs-unified et .tab-unified défini dans planner-theme-fix.css */
 
 /* Contenu du panneau outils - NEO */
 .panneau-outils-content {
@@ -103,11 +96,12 @@
 }
 
 /* Conteneur des boutons +/- aligné à droite */
-.config-row > div {
+.config-row>div {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  justify-content: flex-end; /* Alignement à droite */
+  justify-content: flex-end;
+  /* Alignement à droite */
 }
 
 .config-row label {
@@ -552,9 +546,10 @@
 /* Responsive */
 @media (max-width: 1024px) {
   .panneau-lateral {
-    width: 280px; /* Élargi de 260px à 280px (+20px) */
+    width: 280px;
+    /* Élargi de 260px à 280px (+20px) */
   }
-  
+
   .outils-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -562,9 +557,27 @@
 
 @media (max-width: 768px) {
   .panneau-lateral {
-    width: 240px; /* Élargi de 220px à 240px (+20px) */
+    position: fixed;
+    right: 0;
+    top: 60px;
+    bottom: 0;
+    width: 280px;
+    z-index: 1400;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+    border-right: none;
+    border-left: 1px solid var(--border-default);
   }
-  
+
+  .app-body.sidebar-visible .panneau-lateral {
+    transform: translateX(0);
+  }
+
+  .panneau-outils-content {
+    padding: var(--space-3);
+  }
+
   .btn-outil {
     font-size: 1.2rem;
     padding: 0.5rem;
@@ -672,7 +685,7 @@
 
 .sol-couche-label {
   color: white;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   font-size: 0.75rem;
   text-align: center;
   display: flex;
@@ -768,4 +781,3 @@
 }
 
 /* Les styles des boutons d'heure ont été supprimés - on utilise maintenant GaugeHeure.css */
-

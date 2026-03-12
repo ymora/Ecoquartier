@@ -32,7 +32,19 @@ export const MODELES_ARBRES = {
   // NOTE: Les modèles actuels (12 MB) sont trop lourds
   // → Fallback automatique vers arbre procédural
   // → À remplacer par des modèles plus légers (< 5 MB)
-  
+
+  'lavande': {
+    name: 'Lavande',
+    path: '/assets/models/plants/lavender_low.glb',
+    scale: 0.15,
+    disabled: false
+  },
+  'laurier': {
+    name: 'Laurier Rose',
+    path: '/assets/models/plants/oleander_low.glb',
+    scale: 0.2,
+    disabled: false
+  },
   'cerisier-tree-1': {
     path: '/models/cerisier/cerisier-tree-1.glb',
     type: 'glb',
@@ -54,7 +66,7 @@ export const MODELES_ARBRES = {
     nom: 'Cerisier Modèle 3 (Érable)',
     disabled: false
   },
-  
+
   // Modèle générique léger (à ajouter)
   'cerisier-general': {
     path: '/models/cerisier/cerisier-general.glb',
@@ -63,7 +75,7 @@ export const MODELES_ARBRES = {
     nom: 'Cerisier (Générique)',
     disabled: true
   },
-  
+
   // === ÉRABLES ===
   'erable-general': {
     path: '/models/erable/erable-general.glb',
@@ -72,7 +84,7 @@ export const MODELES_ARBRES = {
     nom: 'Érable (Générique)',
     disabled: true
   },
-  
+
   // === MAGNOLIAS ===
   'magnolia-general': {
     path: '/models/magnolia/magnolia-general.glb',
@@ -94,7 +106,7 @@ export const ARBRE_TO_MODEL = {
   'prunus-kanzan': 'cerisier-tree-1',
   'prunus-accolade': 'cerisier-tree-1',
   'prunus-sunset-boulevard': 'cerisier-tree-1', // ✅ Uniformisé avec les autres cerisiers
-  
+
   // Érable japonais utilise le modèle tree-3
   'erable-japonais': 'cerisier-tree-3',
 };
@@ -107,16 +119,16 @@ export const ARBRE_TO_MODEL = {
 export function getModelPourArbre(arbreId) {
   const modelId = ARBRE_TO_MODEL[arbreId];
   if (!modelId) return null;
-  
+
   const model = MODELES_ARBRES[modelId];
   if (!model) return null;
-  
+
   // Ne pas charger si désactivé (trop lourd)
   if (model.disabled) {
     // Modèle désactivé (trop lourd) - utilisation arbre procédural
     return null;
   }
-  
+
   return {
     ...model,
     id: modelId

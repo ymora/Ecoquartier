@@ -1,29 +1,23 @@
 /**
- * COMPARISON TABLE - Tableau de Comparaison Moderne
- * Toutes les infos alignées côte à côte
+ * COMPARISON TABLE - Version 2026 Premium (Grid-based)
  */
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import FullscreenGallery from './FullscreenGallery';
 import MaintenanceGuide from './MaintenanceGuide';
+import { motion, AnimatePresence } from 'framer-motion';
 import './ComparisonTable.css';
 
 export default function ComparisonTable({ plants }) {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [typeImageActif, setTypeImageActif] = useState('toutes');
-
-  // ✅ Index de l'image actuelle pour chaque plante (par ID de plante)
+  const [highlightDifferences, setHighlightDifferences] = useState(false);
   const [currentImageIndexes, setCurrentImageIndexes] = useState({});
 
-  // ✅ Obtenir TOUTES les images correspondant au type de filtre
   const getImagesParType = (plant) => {
     const images = plant.images || [];
     if (images.length === 0) return [];
+    if (typeImageActif === 'toutes') return images;
 
-    if (typeImageActif === 'toutes') {
-      return images; // Toutes les images
-    }
-
-    // ✅ Chercher TOUTES les images contenant le mot-clé du type
     const motsClefs = {
       'vue_generale': ['vue_generale', 'general', 'port', 'silhouette', 'ensemble', 'entier'],
       'bourgeons': ['bourgeon', 'bud', 'printemps_debut'],
@@ -36,19 +30,13 @@ export default function ComparisonTable({ plants }) {
     };
 
     const motsRecherche = motsClefs[typeImageActif] || [];
-    const imagesCorrespondantes = images.filter(img =>
+    return images.filter(img =>
       motsRecherche.some(mot => img.toLowerCase().includes(mot))
     );
-
-    return imagesCorrespondantes; // ✅ Retourne tableau vide si aucune image du type
   };
 
-  // ✅ Obtenir l'index actuel pour une plante
-  const getCurrentIndex = (plantId) => {
-    return currentImageIndexes[plantId] || 0;
-  };
+  const getCurrentIndex = (plantId) => currentImageIndexes[plantId] || 0;
 
-  // ✅ Changer l'image active pour une plante
   const changeImage = (plantId, delta, maxIndex) => {
     setCurrentImageIndexes(prev => {
       const currentIndex = prev[plantId] || 0;
@@ -57,160 +45,43 @@ export default function ComparisonTable({ plants }) {
     });
   };
 
-  // ✅ Réinitialiser les index quand le filtre change
-  const handleTypeChange = (newType) => {
-    setTypeImageActif(newType);
-    setCurrentImageIndexes({}); // Reset tous les index
-  };
-
-  const rows = [
+  // Définition des lignes de données (sections)
+  const sections = [
     {
-      label: '📸 Photos',
-      render: (plant) => {
-        const plantId = plant.nomScientifique || plant.name;
-        const imagesDisponibles = getImagesParType(plant);
-        const currentIndex = getCurrentIndex(plantId);
-
-        // ✅ Si aucune image du type sélectionné
-        if (imagesDisponibles.length === 0) {
-          return (
-            <div className="comparison-no-image">
-              <div className="no-image-placeholder">🚫</div>
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>
-                Aucune image<br />{typeImageActif !== 'toutes' ? 'de ce type' : 'disponible'}
-              </p>
-            </div>
-          );
-        }
-
-        const imagePath = imagesDisponibles[currentIndex];
-        const hasMultipleImages = imagesDisponibles.length > 1;
-
-        return (
-          <div className="comparison-image-container">
-            <div className="image-frame">
-              <img
-                src={`/images/${imagePath}`}
-                alt={plant.name}
-                onClick={() => setFullscreenImage({ plant, imagePath })}
-                className="comparison-image"
-              />
-
-              {/* ✅ Flèches de navigation si plusieurs images */}
-              {hasMultipleImages && (
-                <>
-                  <button
-                    className="img-nav img-nav-left"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      changeImage(plantId, -1, imagesDisponibles.length - 1);
-                    }}
-                    title="Image précédente"
-                  >
-                    ‹
-                  </button>
-                  <button
-                    className="img-nav img-nav-right"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      changeImage(plantId, 1, imagesDisponibles.length - 1);
-                    }}
-                    title="Image suivante"
-                  >
-                    ›
-                  </button>
-
-                  {/* ✅ Compteur d'images */}
-                  <div className="img-counter">
-                    {currentIndex + 1} / {imagesDisponibles.length}
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* ✅ Miniatures si plusieurs images */}
-            {hasMultipleImages && (
-              <div className="img-thumbnails">
-                {imagesDisponibles.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className={`img-thumbnail ${idx === currentIndex ? 'active' : ''}`}
-                    onClick={() => setCurrentImageIndexes(prev => ({ ...prev, [plantId]: idx }))}
-                    style={{ backgroundImage: `url(/images/${img})` }}
-                    title={`Image ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      }
-    },
-    { label: '🌿 Nom commun', key: 'name' },
-    { label: '🔬 Nom scientifique', key: 'nomScientifique' },
-    { label: '👨‍👩‍👧‍👦 Famille', key: 'famille' },
-    { label: '🏷️ Type', render: (p) => p.type === 'arbre' ? '🌳 Arbre' : '🌿 Arbuste' },
-    { label: '📏 Hauteur', key: 'tailleMaturite' },
-    { label: '↔️ Envergure', key: 'envergure' },
-    { label: '📈 Croissance', key: 'croissance' },
-    { label: '🌸 Floraison période', path: 'floraison.periode' },
-    { label: '🎨 Floraison couleur', path: 'floraison.couleur' },
-    { label: '👃 Parfum', path: 'floraison.parfum' },
-    { label: '🍂 Feuillage type', path: 'feuillage.type' },
-    { label: '🍁 Couleur automne', path: 'feuillage.couleurAutomne' },
-    { label: '🌍 Sol type', path: 'sol.type' },
-    { label: '⚗️ Sol pH', path: 'sol.ph' },
-    { label: '💧 Sol humidité', path: 'sol.humidite' },
-    { label: '☀️ Exposition', key: 'exposition' },
-    { label: '💧 Arrosage', key: 'arrosage' },
-    { label: '❄️ Rusticité', key: 'rusticite' },
-    { label: '❄️ Rusticité', key: 'rusticite' },
-
-    // ✅ Intégration du Guide Complet
-    {
-      label: '📅 Guide d\'Entretien',
-      render: (plant) => (
-        <div className="comparison-guide-wrapper">
-          <MaintenanceGuide plant={plant} />
-        </div>
-      )
-    },
-
-    {
-      label: '📏 Réglementation',
-      render: (plant) => (
-        <div className="comparison-regulation">
-          <p><strong>Voisinage :</strong> {plant.reglementation?.distancesLegales?.voisinage?.distance || '-'}</p>
-          {plant.reglementation?.risques && (
-            <ul className="regulation-risks">
-              {plant.reglementation.risques.slice(0, 2).map((r, i) => <li key={i}>⚠️ {r}</li>)}
-            </ul>
-          )}
-        </div>
-      )
+      title: 'Caractéristiques Générales',
+      rows: [
+        { label: '🌿 Nom commun', key: 'name' },
+        { label: '🔬 Scientifique', key: 'nomScientifique', italic: true },
+        { label: '👨‍👩‍👧‍👦 Famille', key: 'famille' },
+        { label: '📏 Hauteur/Largeur', render: (p) => `${p.tailleMaturite} / ${p.envergure}` },
+        { label: '📈 Croissance', key: 'croissance' },
+      ]
     },
     {
-      label: '☠️ Toxicité',
-      render: (plant) => plant.toxicite ? (
-        <div className={`toxicity-badge ${plant.toxicite.niveau === 'Nulle' ? 'safe' : 'danger'}`}>
-          {plant.toxicite.niveau}
-          {plant.toxicite.niveau !== 'Nulle' && <div className="toxicity-detail">{plant.toxicite.danger}</div>}
-        </div>
-      ) : '-'
+      title: 'Aspect Visuel',
+      rows: [
+        { label: '🍂 Feuillage', path: 'feuillage.type' },
+        { label: '🍁 Couleur Automne', path: 'feuillage.couleurAutomne' },
+        { label: '🌸 Floraison', render: (p) => `${p.floraison?.periode} (${p.floraison?.couleur})` },
+      ]
     },
+    {
+      title: 'Besoins & Culture',
+      rows: [
+        { label: '☀️ Exposition', key: 'exposition' },
+        { label: '🌍 Sol', render: (p) => `${p.sol?.type} (pH: ${p.sol?.ph})` },
+        { label: '💧 Arrosage', key: 'arrosage' },
+        { label: '❄️ Rusticité', key: 'rusticite' },
+      ]
+    }
   ];
 
-  // ✅ Types de vues d'images (TOUS les types du mode admin)
   const typesVues = [
     { id: 'toutes', label: 'Toutes', icon: '🖼️' },
-    { id: 'vue_generale', label: 'Vue générale', icon: '🌳' },
-    { id: 'bourgeons', label: 'Bourgeons', icon: '🌱' },
+    { id: 'vue_generale', label: 'Générale', icon: '🌳' },
     { id: 'fleurs', label: 'Fleurs', icon: '🌸' },
     { id: 'feuilles', label: 'Feuilles', icon: '🍃' },
-    { id: 'fruits', label: 'Fruits', icon: '🫐' },
-    { id: 'tronc', label: 'Tronc/Écorce', icon: '🪵' },
-    { id: 'automne', label: 'Automne', icon: '🍁' },
-    { id: 'hiver', label: 'Hiver', icon: '❄️' }
+    { id: 'fruits', label: 'Fruits', icon: '🫐' }
   ];
 
   const getValue = (plant, row) => {
@@ -219,93 +90,131 @@ export default function ComparisonTable({ plants }) {
     if (row.path) {
       const parts = row.path.split('.');
       let value = plant;
-      for (const part of parts) {
-        value = value?.[part];
-      }
+      for (const part of parts) { value = value?.[part]; }
       return value || '-';
     }
     return '-';
   };
 
-  return (
-    <div className="comparison-table-wrapper">
-      <div className="comparison-header">
-        <h2>Comparaison de {plants.length} plantes</h2>
-        <p>Toutes les caractéristiques côte à côte</p>
+  // Détermine si une valeur est différente des autres pour la ligne donnée
+  const isDifferent = (row, plants) => {
+    if (!highlightDifferences) return false;
+    const values = plants.map(p => getValue(p, row));
+    return new Set(values).size > 1;
+  };
 
-        {/* ✅ Filtres par TYPE d'image */}
-        <div className="comparison-filters">
-          <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-            🖼️ Type de vue :
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+  return (
+    <div className="comparison-v2">
+      <header className="comparison-header-v2">
+        <div className="header-text">
+          <h2>Comparaison Premium</h2>
+          <p>{plants.length} espèces sélectionnées</p>
+        </div>
+        
+        <div className="header-controls">
+          <div className="filter-group">
             {typesVues.map(type => (
               <button
                 key={type.id}
-                onClick={() => handleTypeChange(type.id)}
-                className={`filter-btn ${typeImageActif === type.id ? 'active' : ''}`}
-                title={`Afficher les images : ${type.label}`}
+                onClick={() => setTypeImageActif(type.id)}
+                className={`filter-pill ${typeImageActif === type.id ? 'active' : ''}`}
               >
-                {type.icon} {type.label}
+                <span className="pill-icon">{type.icon}</span>
+                <span className="pill-label">{type.label}</span>
               </button>
             ))}
           </div>
+
+          <label className="toggle-diff">
+            <input 
+              type="checkbox" 
+              checked={highlightDifferences} 
+              onChange={() => setHighlightDifferences(!highlightDifferences)} 
+            />
+            <span className="toggle-label">🔍 Différences</span>
+          </label>
         </div>
-      </div>
+      </header>
 
-      <div className="comparison-scroll">
-        <table className="comparison-table">
-          <thead>
-            <tr>
-              <th className="row-label-header">Critère</th>
-              {plants.map(plant => (
-                <th key={plant.id} className="plant-header">
-                  <div className="plant-header-content">
-                    <span className="plant-type-badge">
-                      {plant.type === 'arbre' ? '🌳' : '🌿'}
-                    </span>
-                    <h3>{plant.name}</h3>
-                    <p>{plant.nomScientifique}</p>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, idx) => (
-              <tr key={idx}>
-                <td className="row-label">{row.label}</td>
-                {plants.map(plant => (
-                  <td key={plant.id} className="comparison-cell">
-                    {getValue(plant, row)}
-                  </td>
-                ))}
-              </tr>
+      <div className="comparison-grid">
+        {plants.map(plant => (
+          <motion.div 
+            key={plant.id}
+            layout
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="plant-card-v2"
+          >
+            {/* Zone Image Dynamique */}
+            <div className="card-image-wrapper">
+              {(() => {
+                const imgs = getImagesParType(plant);
+                const idx = getCurrentIndex(plant.id);
+                if (imgs.length === 0) return <div className="no-img">🚫 Photo indisponible</div>;
+                
+                return (
+                  <>
+                    <img 
+                      src={`/images/${imgs[idx]}`} 
+                      alt={plant.name} 
+                      onClick={() => setFullscreenImage({ plant, imagePath: imgs[idx] })}
+                    />
+                    {imgs.length > 1 && (
+                      <div className="card-img-nav">
+                        <button onClick={() => changeImage(plant.id, -1, imgs.length - 1)}>‹</button>
+                        <span>{idx + 1}/{imgs.length}</span>
+                        <button onClick={() => changeImage(plant.id, 1, imgs.length - 1)}>›</button>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+
+            <div className="card-main-info">
+              <span className="type-badge">{plant.type === 'arbre' ? '🌳 Arbre' : '🌿 Arbuste'}</span>
+              <h3>{plant.name}</h3>
+            </div>
+
+            {/* Sections de données */}
+            {sections.map(section => (
+              <div key={section.title} className="card-section">
+                <h4>{section.title}</h4>
+                <div className="data-rows">
+                  {section.rows.map(row => {
+                    const diff = isDifferent(row, plants);
+                    return (
+                      <div key={row.label} className={`data-row ${diff ? 'highlight' : ''}`}>
+                        <span className="row-label">{row.label}</span>
+                        <span className={`row-value ${row.italic ? 'italic' : ''}`}>
+                          {getValue(plant, row)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+
+            <div className="card-footer-actions">
+               <MaintenanceGuide plant={plant} compact />
+            </div>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Modal plein écran - Composant réutilisable unifié */}
-      {fullscreenImage && (() => {
-        const plantId = fullscreenImage.plant.nomScientifique || fullscreenImage.plant.name;
-        const imagesDisponibles = getImagesParType(fullscreenImage.plant);
-        const currentIndex = getCurrentIndex(plantId);
-
-        return (
+      <AnimatePresence>
+        {fullscreenImage && (
           <FullscreenGallery
             isOpen={true}
             onClose={() => setFullscreenImage(null)}
-            currentImage={`/images/${imagesDisponibles[currentIndex]}`}
-            currentIndex={currentIndex}
-            totalImages={imagesDisponibles.length}
-            onPrevious={() => changeImage(plantId, -1, imagesDisponibles.length - 1)}
-            onNext={() => changeImage(plantId, 1, imagesDisponibles.length - 1)}
-            altText={`${fullscreenImage.plant.name} - ${currentIndex + 1}`}
+            currentImage={`/images/${fullscreenImage.imagePath}`}
+            currentIndex={0}
+            totalImages={1}
+            altText={fullscreenImage.plant.name}
           />
-        );
-      })()}
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-

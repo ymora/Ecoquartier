@@ -62,6 +62,11 @@
   --timeline-height: 100px;
   --content-max-width: 1400px;
   
+  /* === GLASSMORPHISM === */
+  --glass-blur: 12px;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  
   /* === Z-INDEX === */
   --z-base: 0;
   --z-sidebar: 10;
@@ -92,6 +97,14 @@ body[data-theme="dark"] {
   --accent-muted: rgba(16, 185, 129, 0.1);
   
   --shadow-color: rgba(0, 0, 0, 0.5);
+  
+  /* Glass Dark */
+  --glass-bg: rgba(24, 24, 27, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  
+  /* Gradients */
+  --grad-nature: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+  --grad-surface: linear-gradient(180deg, rgba(39, 39, 42, 0.5) 0%, rgba(24, 24, 27, 0.8) 100%);
 }
 
 /* === MODE CLAIR === */
@@ -114,6 +127,14 @@ body[data-theme="light"] {
   --accent-muted: rgba(5, 150, 105, 0.1);
   
   --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  /* Glass Light */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(9, 9, 11, 0.08);
+  
+  /* Gradients */
+  --grad-nature: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --grad-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(249, 250, 251, 0.9) 100%);
 }
 
 /* === BASE === */
