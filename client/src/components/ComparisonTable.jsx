@@ -227,7 +227,7 @@ export default function ComparisonTable({ plants }) {
                     </Fragment>
                   );
                 })}
-              </React.Fragment>
+              </Fragment>
             );
           });
         })()}
